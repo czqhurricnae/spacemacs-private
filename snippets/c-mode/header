@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: header
+# key: header
+# --
+/**
+ *
+ * @copyright:
+ * @file: `(file-name-nondirectory (buffer-file-name))`
+ * @since: `(format-time-string "%Y-%m-%d")`
+ * @author: czq | 7160844@qq.com
+ * @description:
+ *     `(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`
+ * @usage:
+ * @others:
+ * @TODO:
+ * @Revision History:
+ * Date            Rel Ver.        Notes
+ * `(format-time-string "%Y-%m-%d")`        1.0             开始创建
+ *
+ **/

@@ -64,16 +64,19 @@ values."
      pdf-tools
      ;; version-control
      czqhurricane
+     theming
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(color-theme-solarized
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(org-pdfview
+   dotspacemacs-excluded-packages '(highlight-parentheses
+                                    org-pdfview
                                     doc-view)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -313,7 +316,7 @@ values."
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init', before layer configuration
 executes.
- This function is mostly useful for variables that need to be set
+ This function is mostly us ful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
 (setq configuration-layer--elpa-archives
@@ -334,14 +337,50 @@ you should place your code here."
   (global-hl-line-highlight)
   (setcdr evil-insert-state-map nil)
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  (setq-default indent-tabs-mode nil)
+  (setq default-tab-width 4)
+  (setq c-default-style "k&r")
+  (setq c-basic-offset 4)
   (setq ns-use-srgb-colorspace nil)
   (setq powerline-default-separator 'arrow)
+  (setq ns-pop-up-frames nil)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
   (set-variable 'ycmd-server-command '("python" "/home/c/.vim/bundle/YouCompleteMe/third_party/ycmd/ycmd/"))
   (set-variable 'ycm-global-config "/home/c/.emacs.d/layers/+tools/ycmd/global_conf.py")
   (add-hook 'c-mode-hook 'ycmd-mode)
   (add-hook 'python-mode-hook 'ycmd-mode)
-  )
+  (add-hook 'prog-mode-hook 'turn-on-fci-mode)
+  (add-hook 'c-mode-hook (lambda ()
+                           (electric-indent-mode -1)))
+  ;; Get color-theme-solarized working. It is specified as an additional package
+  ;; above. First we setup some theme modifications - we must do this *before*
+  ;; we load the theme. Note that the color-theme-solarized package appears in
+  ;; the list of themes as plain old 'solarized'.
+  (setq theming-modifications
+      '((solarized
+         ;; Provide a sort of "on-off" modeline whereby the current buffer has a nice
+         ;; bright blue background, and all the others are in cream.
+         ;; TODO: Change to use variables here. However, got error:
+         ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
+         (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
+         (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
+         (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
+         (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
+         (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
+         (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
+         ;; Make a really prominent helm selection line.
+         (helm-selection :foreground "white" :background "red" :inverse-video nil)
+         ;; See comment above about dotspacemacs-colorize-cursor-according-to-state.
+         (cursor :background "#b58900")
+       )))
+
+  (set-terminal-parameter nil 'background-mode 'dark)
+  (set-frame-parameter nil 'background-mode 'dark)
+  (spacemacs/load-theme 'solarized)
+  ;; Turn this off to stop it interfering with mic-paren.
+  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
+  (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
+)
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -352,7 +391,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (unfill smeargle orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (color-theme-solarized color-theme mic-paren pyim pyim-basedict fasd youdao-dictionary names chinese-word-at-point wgrep smex pdf-tools tablist org-category-capture ivy-hydra flyspell-correct-ivy disaster counsel-projectile counsel swiper company-c-headers cmake-mode clang-format ivy unfill smeargle orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

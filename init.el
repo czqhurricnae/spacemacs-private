@@ -348,6 +348,7 @@ you should place your code here."
   (spacemacs/set-leader-keys "ha" 'toggle-frame-fullscreen)
   (spacemacs/set-leader-keys "hc" 'evil-invert-char)
   (spacemacs/set-leader-keys "hu" 'evil-invert-case)
+  (spacemacs/set-leader-keys "h;" 'comment-line)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
   (set-variable 'ycmd-server-command '("python" "/home/c/.vim/bundle/YouCompleteMe/third_party/ycmd/ycmd/"))
   (set-variable 'ycm-global-config "/home/c/.emacs.d/layers/+tools/ycmd/global_conf.py")
@@ -384,7 +385,7 @@ you should place your code here."
   (set-frame-parameter nil 'background-mode 'dark)
   (spacemacs/load-theme 'solarized)
   ;; Turn this off to stop it interfering with mic-paren.
-  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
+  (set-face-attribute 'sp-show-air-match-face nil :foreground 'unspecified :background 'unspecified)
   (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
 )
 

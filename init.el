@@ -390,6 +390,8 @@ you should place your code here."
   ;; Turn this off to stop it interfering with mic-paren.
   (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
   (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 0)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will

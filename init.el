@@ -327,6 +327,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
     '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
       ("org-cn"   . "http://elpa.emacs-china.org/org/")
       ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+(setq tramp-ssh-controlmaster-options
+      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
 )
 
 (defun dotspacemacs/user-config ()
@@ -353,6 +355,7 @@ you should place your code here."
   (spacemacs/set-leader-keys "h;" 'comment-line)
   (spacemacs/set-leader-keys "za" 'origami-toggle-node)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
+
     ;; Get color-theme-solarized working. It is specified as an additional package
   ;; above. First we setup some theme modifications - we must do this *before*
   ;; we load the theme. Note that the color-theme-solarized package appears in
@@ -385,8 +388,7 @@ you should place your code here."
   (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
-  (setq tramp-ssh-controlmaster-options
-        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+  
   (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
   (set-variable 'ycm-global-config "/Users/c/.emacs.d/layers/+tools/ycmd/global_conf.py")
   (setq ycmd-force-semantic-completion t)

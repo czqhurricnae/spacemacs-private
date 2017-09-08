@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ifndef
+# key: ifndef
+# --
+#ifndef `(upcase (replace-regexp-in-string "\\." "_" (file-name-nondirectory (buffer-file-name))))`
+#define `(upcase (replace-regexp-in-string "\\." "_" (file-name-nondirectory (buffer-file-name))))`
+$0
+#endif    /*`(upcase (replace-regexp-in-string "\\." "_" (file-name-nondirectory (buffer-file-name))))`*/

@@ -31,7 +31,6 @@
 
 (defconst czqhurricane-packages
   '(youdao-dictionary
-    pyim
     mic-paren)
   (occur-mode :location build-in)
 ;;  " list of Lisp packages required by the czqhurricane layer.
@@ -77,39 +76,6 @@
     (paren-activate)
     (setq paren-match-face 'mode-line)
   )
-)
-
-(defun czqhurricane/init-pyim()
-  (use-package pyim
-    :ensure nil
-    :config
-    (use-package pyim-basedict
-      :ensure nil
-      :config (pyim-basedict-enable))
-
-    (setq default-input-method "pyim")
-    (global-set-key (kbd "C-\\") 'toggle-input-method)
-    (setq pyim-default-scheme "quanpin")
-
-    (setq-default pyim-english-input-switch-functions
-                  '(pyim-probe-dynamic-english
-                    pyim-probe-isearch-mode
-                    pyim-probe-program-mode
-                    pyim-probe-org-structure-template))
-    (setq-default pyim-punctuation-half-width-functions
-                  '(pyim-probe-punctuation-line-beginning
-                    pyim-probe-punctuation-after-punctuation))
-    (setq pyim-isearch-enable-pinyin-search t)
-    (setq pyim-page-tooltip 'popup)
-
-    (setq pyim-page-length 5)
-
-    (add-hook 'emacs-startup-hook
-              #'(lambda () (pyim-restart-1 t)))
-    :bind
-    (("M-j" . pyim-convert-code-at-point)
-     ("C-;" . pyim-delete-word-from-personal-buffer))
-    )
 )
 
 (defun czqhurricane/post-init-projectile ()

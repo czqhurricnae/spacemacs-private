@@ -31,7 +31,8 @@
 
 (defconst czqhurricane-packages
   '(youdao-dictionary
-    mic-paren)
+    mic-paren
+    )
   (occur-mode :location build-in)
 ;;  " list of Lisp packages required by the czqhurricane layer.
 

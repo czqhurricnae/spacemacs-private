@@ -159,7 +159,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro" :size
-                                                 18
+                                                 10
                                                  :weight
                                                  normal
                                                  :width
@@ -360,7 +360,7 @@ you should place your code here."
        (list (ido-completing-read "Source code type: " src-code-types))))
     (progn
       (newline-and-indent)
-      (insert (format "#+BEGIN_SRC %s :results output :exports both\n" src-code-type))
+      (insert (format "#+BEGIN_SRC %s :preamble '# -*- coding: utf-8 -*-' results output :exports both\n" src-code-type))
       (newline-and-indent)
       (insert "#+END_SRC\n")
       (previous-line 2)

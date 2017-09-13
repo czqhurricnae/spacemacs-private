@@ -31,48 +31,47 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     javascript
-     html
-     python
-     ipython-notebook
-     c-c++
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ivy
      ;; helm
-     (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip t)
-     ycmd
-     (better-defaults :variables
-                      better-defaults-move-to-end-of-code-first t)
-     emacs-lisp
-     git
-     markdown
-     org
-     (org :variables org-enable-github-support t
-                     org-enable-reveal-js-support t)
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
+     ;; version-control
+     (better-defaults :variables
+                      better-defaults-move-to-end-of-code-first t)
+     javascript
+     html
+     python
+     ipython-notebook
+     c-c++
+     ivy
+     ycmd
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup nil 
+                      auto-completion-enable-help-tooltip nil)
+     emacs-lisp
+     git
+     markdown
+     (org :variables org-enable-github-support t
+                    org-enable-reveal-js-support t)
      (spell-checking :variables
                      ispell-progam-name "aspell"
                      ispell-dictionary "american"
                      spell-checking-enable-by-default nil)
      syntax-checking
+
      ;; 必须先安装fasd
      fasd
      (spacemacs-layouts :variables
                         layouts-enable-autosave nil
                         layouts-autosave-delay 300)
      pdf-tools
-     ;; version-control
-     czqhurricane
      theming
-     )
+     czqhurricane)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -159,11 +158,14 @@ values."
    dotspacemacs-colorize-cursor-according-to-state nil 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 18
-                               :weight normal
-                               :width normal
-                               :powerline-scale 1.1)
+   dotspacemacs-default-font '("Source Code Pro" :size
+                                                 18
+                                                 :weight
+                                                 normal
+                                                 :width
+                                                 normal
+                                                 :powerline-scale
+                                                 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -328,16 +330,14 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
 (setq configuration-layer--elpa-archives
-      '(("gnu" . "https://elpa.gnu.org.packages/")
-        ("melpa" . "https://melpa.org/packages/")
-        ;; ("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-        ;; ("org-cn"   . "http://elpa.emacs-china.org/org/")
-        ;; ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
-        )
-)
+      '(("gnu"      . "https://elpa.gnu.org.packages/")
+        ("melpa"    . "https://melpa.org/packages/")
+        ("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+        ("org-cn"   . "http://elpa.emacs-china.org/org/")
+        ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
+        ))
 (setq tramp-ssh-controlmaster-options
-      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-)
+      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no"))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -346,6 +346,13 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  (spacemacs/load-theme 'solarized)
+  ;; Turn this off to stop it interfering with mic-paren.
+  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
+  (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
+
+  ;; 在org-mode为快捷插入代码块创建的自动补全函数
   (defun org-insert-src-block (src-code-type)
     "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
     (interactive
@@ -364,21 +371,18 @@ you should place your code here."
       (previous-line 2)
       (org-edit-src-code)))
   (require 'ein-dev)
+  (require 'virtualenvwrapper)
   (eval-after-load "org"
     '(require 'ox-gfm nil t))
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '(
-     (python . t)
-     (js . t)
-     )
-   )
-  (setq org-export-backends (quote (ascii html icalendar latex md)))
-  (setq org-src-fontify-natively t)
+   '((python . t)
+     (js . t)))
   (global-company-mode 1)
   (global-hl-line-highlight)
-  (setcdr evil-insert-state-map nil)
-  (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  
+  (setq org-export-backends (quote (ascii html icalendar latex md)))
+  (setq org-src-fontify-natively t)
   (setq-default indent-tabs-mode nil)
   (setq default-tab-width 4)
   (setq c-default-style "k&r")
@@ -392,22 +396,15 @@ you should place your code here."
         )
   ;; 这样设置就不会导致`_`被org当做是下表符号, 相应的新下表符号是`_{}`.
   (setq org-export-with-sub-superscriptor '{})
-  (spacemacs/set-leader-keys "ha" 'toggle-frame-fullscreen)
-  (spacemacs/set-leader-keys "hc" 'evil-invert-char)
-  (spacemacs/set-leader-keys "hu" 'evil-invert-case)
-  (spacemacs/set-leader-keys "h;" 'comment-line)
-  (spacemacs/set-leader-keys "za" 'origami-toggle-node)
-  (spacemacs/set-leader-keys "so" 'occur-dwin)
-  (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
-  (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)
-  (spacemacs/set-leader-keys "it" 'ein:worksheet-change-cell-type)
-  (spacemacs/set-leader-keys "id" 'ein:worksheet-kill-cell)
-  (spacemacs/set-leader-keys "is" 'ein:notebook-save-notebook-command)
-  (spacemacs/set-leader-keys "oi" 'org-insert-src-block)
-  (spacemacs/set-leader-keys "oe" 'org-edit-special)
-  (spacemacs/set-leader-keys "or" 'org-src-do-at-code-block)
-  (spacemacs/set-leader-keys "oc" 'org-gfm-export-to-markdown)
-    ;; Get color-theme-solarized working. It is specified as an additional package
+  ;; 让gittur的窗口在右侧显示
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 0)
+  (setq ycmd-force-semantic-completion t)
+  (setq company-backends-c-mode-common '((company-c-headers
+                                          company-ycmd
+                                          company-dabbrev :with company-yasnippet)))
+  (setq venv-location "/Users/c/.virtualenvs")
+  ;; Get color-theme-solarized working. It is specified as an additional package
   ;; above. First we setup some theme modifications - we must do this *before*
   ;; we load the theme. Note that the color-theme-solarized package appears in
   ;; the list of themes as plain old 'solarized'.
@@ -431,32 +428,38 @@ you should place your code here."
          (ivy-minibuffer-match-face-2 :background "#555555")
        )))
 
-  (set-terminal-parameter nil 'background-mode 'dark)
-  (set-frame-parameter nil 'background-mode 'dark)
-  (spacemacs/load-theme 'solarized)
-  ;; Turn this off to stop it interfering with mic-paren.
-  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
-  (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 0)
-  
+  (venv-initialize-interactive-shells)
+  (venv-initialize-eshell)
+
   (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
   (set-variable 'ycm-global-config "/Users/c/.emacs.d/layers/+tools/ycmd/global_conf.py")
-  (setq ycmd-force-semantic-completion t)
+  (setcdr evil-insert-state-map nil)
+  (set-terminal-parameter nil 'background-mode 'dark)
+  (set-frame-parameter nil 'background-mode 'dark)
+
   (add-hook 'c++-mode-hook 'ycmd-mode)
   (add-hook 'python-mode-hook 'ycmd-mode)
   (add-hook 'prog-mode-hook 'turn-on-fci-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
-  (setq company-backends-c-mode-common '((company-c-headers
-                                          company-ycmd
-                                          company-dabbrev :with company-yasnippet)))
-  
-  (require 'virtualenvwrapper)
-  (venv-initialize-interactive-shells)
-  (venv-initialize-eshell)
-  (setq venv-location "/Users/c/.virtualenvs")
-)
+
+  (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  (spacemacs/set-leader-keys "ha" 'toggle-frame-fullscreen)
+  (spacemacs/set-leader-keys "hc" 'evil-invert-char)
+  (spacemacs/set-leader-keys "hu" 'evil-invert-case)
+  (spacemacs/set-leader-keys "h;" 'comment-line)
+  (spacemacs/set-leader-keys "za" 'origami-toggle-node)
+  (spacemacs/set-leader-keys "so" 'occur-dwin)
+  (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
+  (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)
+  (spacemacs/set-leader-keys "it" 'ein:worksheet-change-cell-type)
+  (spacemacs/set-leader-keys "id" 'ein:worksheet-kill-cell)
+  (spacemacs/set-leader-keys "is" 'ein:notebook-save-notebook-command)
+  (spacemacs/set-leader-keys "oi" 'org-insert-src-block)
+  (spacemacs/set-leader-keys "oe" 'org-edit-special)
+  (spacemacs/set-leader-keys "or" 'org-src-do-at-code-block)
+  (spacemacs/set-leader-keys "oc" 'org-gfm-export-to-markdown)
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.

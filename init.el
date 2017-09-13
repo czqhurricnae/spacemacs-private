@@ -51,7 +51,7 @@ values."
      ivy
      ycmd
      (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup nil 
+                      auto-completion-enable-snippets-in-popup t 
                       auto-completion-enable-help-tooltip nil)
      emacs-lisp
      git
@@ -347,11 +347,6 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  (spacemacs/load-theme 'solarized)
-  ;; Turn this off to stop it interfering with mic-paren.
-  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
-  (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
-
   ;; 在org-mode为快捷插入代码块创建的自动补全函数
   (defun org-insert-src-block (src-code-type)
     "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
@@ -370,6 +365,7 @@ you should place your code here."
       (insert "#+END_SRC\n")
       (previous-line 2)
       (org-edit-src-code)))
+
   (require 'ein-dev)
   (require 'virtualenvwrapper)
   (eval-after-load "org"
@@ -380,7 +376,8 @@ you should place your code here."
      (js . t)))
   (global-company-mode 1)
   (global-hl-line-highlight)
-  
+
+  (setq org-confirm-babel-evaluate nil)
   (setq org-export-backends (quote (ascii html icalendar latex md)))
   (setq org-src-fontify-natively t)
   (setq-default indent-tabs-mode nil)
@@ -396,7 +393,7 @@ you should place your code here."
         )
   ;; 这样设置就不会导致`_`被org当做是下表符号, 相应的新下表符号是`_{}`.
   (setq org-export-with-sub-superscriptor '{})
-  ;; 让gittur的窗口在右侧显示
+  ;; 让magit的窗口在右侧显示
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
   (setq ycmd-force-semantic-completion t)
@@ -427,6 +424,13 @@ you should place your code here."
          (ivy-current-match :foreground "white" :background "#555555" :inverse-video nil)
          (ivy-minibuffer-match-face-2 :background "#555555")
        )))
+  
+  ;; Turn this off to stop it interfering with mic-paren.
+  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
+  (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
+  (set-terminal-parameter nil 'background-mode 'dark)
+  (set-frame-parameter nil 'background-mode 'dark)
+  (spacemacs/load-theme 'solarized)
 
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell)
@@ -434,8 +438,7 @@ you should place your code here."
   (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
   (set-variable 'ycm-global-config "/Users/c/.emacs.d/layers/+tools/ycmd/global_conf.py")
   (setcdr evil-insert-state-map nil)
-  (set-terminal-parameter nil 'background-mode 'dark)
-  (set-frame-parameter nil 'background-mode 'dark)
+  
 
   (add-hook 'c++-mode-hook 'ycmd-mode)
   (add-hook 'python-mode-hook 'ycmd-mode)

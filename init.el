@@ -160,7 +160,7 @@ values."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro" :size
-                                                 14
+                                                 16
                                                  :weight
                                                  normal
                                                  :width
@@ -361,12 +361,13 @@ you should place your code here."
        (list (ido-completing-read "Source code type: " src-code-types))))
     (progn
       (newline-and-indent)
-      (insert (format "#+BEGIN_SRC %s :session :results raw drawer output :exports both\n" src-code-type))
+      ;; (insert (format "#+BEGIN_SRC %s :session :results raw drawer output :exports both\n" src-code-type))
+      (insert (format "#+BEGIN_SRC %s :results output :exports both\n" src-code-type))
       (newline-and-indent)
       (insert "#+END_SRC\n")
       (previous-line 2)
       (org-edit-src-code)))
-  (require 'ob-ipython)
+  ;; (require 'ob-ipython)
   (require 'ein-dev)
   (require 'virtualenvwrapper)
   (eval-after-load "org"
@@ -374,7 +375,7 @@ you should place your code here."
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python . t)
-     (ipython . t)
+     ;; (ipython . t)
      (js . t)))
   (global-company-mode 1)
   (global-hl-line-highlight)
@@ -394,7 +395,7 @@ you should place your code here."
         '("~/.spacemacs.d/snippets")
         )
   ;; 这样设置就不会导致`_`被org当做是下表符号, 相应的新下表符号是`_{}`.
-  (setq org-export-with-sub-superscriptor '{})
+  (setq org-export-with-sub-superscripts '{})
   ;; 让magit的窗口在右侧显示
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
@@ -438,7 +439,7 @@ you should place your code here."
   (venv-initialize-eshell)
 
   (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
-  (set-variable 'ycm-global-config "/Users/c/.emacs.d/layers/+tools/ycmd/global_conf.py")
+  (set-variable 'ycm-global-config "/Users/c/.ycm_extra_conf.py")
   (setcdr evil-insert-state-map nil)
   
 
@@ -453,7 +454,6 @@ you should place your code here."
   (spacemacs/set-leader-keys "hc" 'evil-invert-char)
   (spacemacs/set-leader-keys "hu" 'evil-invert-case)
   (spacemacs/set-leader-keys "h;" 'comment-line)
-  (spacemacs/set-leader-keys "za" 'origami-toggle-node)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
   (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
   (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)

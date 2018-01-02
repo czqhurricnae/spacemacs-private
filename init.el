@@ -359,7 +359,7 @@ you should place your code here."
     "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
     (interactive
      (let ((src-code-types
-            '("ipython" "emacs-lisp" "python" "C" "sh" "java" "js" "clojure" "C++" "css"
+            '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
               "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
               "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
               "haskell" "latex" "lisp" "matlab" "ocaml" "org" "perl" "ruby"
@@ -368,7 +368,7 @@ you should place your code here."
     (progn
       (newline-and-indent)
       (if (equal src-code-type "ipython")
-          (insert (format "#+BEGIN_SRC %s :session :results raw drawer output :exports both\n" src-code-type))
+          (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :session :results raw drawer output :exports both\n" src-code-type))
         (insert (format "#+BEGIN_SRC %s\n" src-code-type)))
       ;; (insert (format "#+BEGIN_SRC %s :results out put :exports both\n" src-code-type))
       (newline-and-indent)

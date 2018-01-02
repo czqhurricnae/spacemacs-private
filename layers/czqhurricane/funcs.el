@@ -50,7 +50,7 @@
         (setq filename (concat img-dir "/" (file-name-base temp-name) ".png"))
         (call-process-shell-command "screencapture" nil nil nil nil "-i" (concat
                                                                           "\"" filename "\"" ))
-        (setq fullpath (concat "/Users/c/" filename))
+        (setq fullpath (concat default-directory filename))
         (setq result (replace-regexp-in-string "[\t\n ]+" "" (format "data:image/png;base64,%s" (tobase64 fullpath))))
         (print result)
         (insert (concat "[" temp-name "]:" result ))))))

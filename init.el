@@ -367,10 +367,14 @@ you should place your code here."
        (list (ido-completing-read "Source code type: " src-code-types))))
     (progn
       (newline-and-indent)
-      (if (equal src-code-type "ipython")
-          (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :session :results raw drawer output :exports both\n" src-code-type))
-        (insert (format "#+BEGIN_SRC %s\n" src-code-type)))
-      ;; (insert (format "#+BEGIN_SRC %s :results out put :exports both\n" src-code-type))
+      ;; (if (equal src-code-type "ipython")
+      ;;     (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output :exports both :session\n" src-code-type))
+      ;;   (insert (format "#+BEGIN_SRC %s\n" src-code-type)))
+      (cond ((equal src-code-type "ipython")
+             (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output :exports both :session\n" src-code-type)))
+            ((equal src-code-type "C")
+             (insert (format "#+BEGIN_SRC %s :includes <stdio.h> :exports both\n" src-code-type)))
+            (t (insert (format "#+BEGIN_SRC %s\n" src-code-type))))
       (newline-and-indent)
       (insert "#+END_SRC\n")
       (previous-line 2)
@@ -405,6 +409,8 @@ you should place your code here."
   (setq org-latex-create-formula-image-program 'dvipng)
   (setq org-latex-listings 'minted)
   (add-to-list 'org-latex-packages-alist '("" "minted"))
+  (add-to-list 'org-entities-user
+               '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
   (setq org-export-backends (quote (ascii html icalendar latex md)))
   (setq org-src-fontify-natively t)
   (setq-default indent-tabs-mode nil)
@@ -416,9 +422,9 @@ you should place your code here."
   (setq ns-pop-up-frames nil)
   (setq spacemacs-show-trailing-whitespace t)
   (setq yas-snippet-dirs
-        '("~/.spacemacs.d/snippets")
+        '("/Users/c/.spacemacs.d/snippets")
         )
-  ;; 这样设置就不会导致`_`被org当做是下表符号, 相应的新下表符号是`_{}`.
+  ;; 这样设置就不会导致`_`被org当做是下标符号, 相应的新下标符号是`_{}`.
   (setq org-export-with-sub-superscripts '{})
   ;; 让magit的窗口在右侧显示
   (setq split-height-threshold nil)

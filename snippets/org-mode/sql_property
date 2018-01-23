@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: sql_property
+# key: sql_property
+# --
+#+PROPERTY: header-args:sql :engine mysql
+#+PROPERTY: header-args:sql+ :dbhost localhost
+#+PROPERTY: header-args:sql+ :dbport 3306
+#+PROPERTY: header-args:sql+ :dbuser root 
+#+PROPERTY: header-args:sql+ :dbpassword c 
+#+PROPERTY: header-args:sql+ :database mysql

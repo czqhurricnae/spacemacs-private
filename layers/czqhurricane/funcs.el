@@ -96,3 +96,11 @@ just like `((name begin-position end-position))'"
           (delete-file temp-name))
       (if (yes-or-no-p "Do you also want to delete the image links?")
           (do-delete-link-function begin-end-list)))))
+
+(defun replace-dollar ()
+  (interactive)
+  (save-excursion
+  (goto-char (point-min))
+  (while (re-search-forward "\\$" nil t)
+    (replace-match "\\\\dollar" nil nil)))
+  )

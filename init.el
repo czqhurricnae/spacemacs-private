@@ -491,6 +491,7 @@ you should place your code here."
   (spacemacs/set-leader-keys "hc" 'evil-invert-char)
   (spacemacs/set-leader-keys "hu" 'evil-invert-case)
   (spacemacs/set-leader-keys "h;" 'comment-line)
+  (spacemacs/set-leader-keys "h$" 'replace-dollar)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
   (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
   (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)

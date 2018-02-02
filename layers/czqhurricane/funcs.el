@@ -137,7 +137,10 @@
   (replace-in-the-entire-buffer "\\\\times" "×"))
 
 (defun create-graphviz ()
+<<<<<<< HEAD
   "默认存放在主目录的dotimg文件夹下面"
+=======
+>>>>>>> 8fc97ff14aeceff4090b0afc73d85e6d1b777e7c
   (interactive)
   (let* ((img-dir dot-image-dir-name))
     (progn

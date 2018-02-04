@@ -462,8 +462,9 @@ you should place your code here."
   (spacemacs/set-leader-keys "h;" 'comment-line)
   (spacemacs/set-leader-keys "h$" 'replace-dollar)
   (spacemacs/set-leader-keys "hs" 'org-screenshot)
-  (spacemacs/set-leader-keys "hS" 'delete-org-screenshot-image-file-and-link)
-  (spacemacs/set-leader-keys "he" 'dot-image-to-base64-converter)
+  (spacemacs/set-leader-keys "hS" 'org-delete-screenshot-image-file-and-link)
+  (spacemacs/set-leader-keys "he" 'org-dot-image-to-base64-converter)
+  (spacemacs/set-leader-keys "hE" 'org-delete-dot-image-file-and-link)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
   (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
   (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)
@@ -473,7 +474,7 @@ you should place your code here."
   (spacemacs/set-leader-keys "oi" 'org-insert-src-block)
   (spacemacs/set-leader-keys "oe" 'org-edit-special)
   (spacemacs/set-leader-keys "or" 'org-src-do-at-code-block)
-  (spacemacs/set-leader-keys "oc" 'org-gfm-export-to-markdown)
+  (spacemacs/set-leader-keys "oc" 'org-gfm-export-to-markdown-filter)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

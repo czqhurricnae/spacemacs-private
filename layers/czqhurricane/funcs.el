@@ -1,5 +1,5 @@
 (defun occur-dwin ()
-  "Call `occur` with a same default."
+  "Call 'occur' with a same default."
   (interactive)
   (push (if (region-active-p)
             (buffer-substring-no-properties
@@ -44,6 +44,17 @@
 (defun trim-space-in-string (string)
   (replace-regexp-in-string "[\t\n ]+" "" string))
 
+(defun replace-in-the-entire-buffer (query replace subexp)
+  "query: 所需要被替换的字符串
+  replace: 用来替换的字符串
+  subexp:
+          1. 在函数'replace-mathc'中使用
+          2. 用来表示'replace'参数被应用在第几个匹配到的模式组"
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward query nil t)
+      (replace-match replace nil nil nil subexp))))
+
 (defun jump-to-penultimate-line ()
   (delete-blank-lines)
   (save-current-buffer)
@@ -52,8 +63,8 @@
   (delete-blank-lines)
   (previous-line 1))
 
-;; file-full-path: the full path of image which will be converted
 (defun image-to-base64-converter (file-full-path)
+  "file-full-path: the full path of image which will be converted."
   (interactive)
   (progn
     (setq result (trim-space-in-string (format "data:image/png;base64,%s" (tobase64 file-full-path))))
@@ -72,8 +83,8 @@
   (let* ((img-dir org-dot-image-dir-name))
     (progn
     (setq temp-name (file-name-base (select-or-enter-file-name img-dir)))
-    (setq fullpath (concat img-dir "/" (file-name-base temp-name) ".png"))
-    (image-to-base64-converter fullpath fullpath))))
+    (setq full-file-path (concat default-directory img-dir "/" temp-name ".png"))
+    (image-to-base64-converter full-file-path))))
 
 (defun org-screenshot ()
   "Take a screenshot into a user specified file in the current
@@ -96,7 +107,7 @@
 
 (defun find-org-link-begin-and-end (plist string)
   "Find link from plist whose link is equal to string, return a
-  list just like `((name begin-position end-position))`'"
+  list just like '((name begin-position end-position))''"
   (let ((return-list '()))
     (progn
       (while plist
@@ -109,7 +120,7 @@
 
 (defun do-delete-link-function (be-list)
   "goto the begining of link and delete it, be-list is a list
-  just like `((name begin-position end-position))`"
+  just like '((name begin-position end-position))'"
   (while be-list
     (progn
       (goto-char (car (car be-list)))
@@ -131,12 +142,12 @@
          (file-full-path (concat absolute-img-dir "/" temp-name))
          (begin-end-list (find-org-link-begin-and-end link-list file-full-path)))
     (progn
-      (print temp-name)
-      (print begin-end-list)
+      (if (yes-or-no-p "Do you want to delete the image links?")
+          (do-delete-link-function begin-end-list))
       (if (yes-or-no-p "Do you really want to delete the image file? This can't be revert!!")
-          (delete-file file-full-path))
-      (if (yes-or-no-p "Do you also want to delete the image links?")
-          (do-delete-link-function begin-end-list)))))
+          (progn 
+                 (delete-file file-full-path)
+                 (replace-in-the-entire-buffer (concat "\\[" file-full-path "\\]\.*") "" nil))))))
 
 (defun org-delete-screenshot-image-file-and-link ()
   (interactive)
@@ -146,32 +157,21 @@
   (interactive)
   (delete-image-file-and-link org-dot-image-dir-name))
 
-(defun replace-in-the-entire-buffer (query replace subexp)
-  "query: 所需要被替换的字符串
-  replace: 用来替换的字符串
-  subexp:
-          1. 在函数`replace-mathc`中使用
-          2. 用来表示`replace`参数被应用在第几个匹配到的模式组"
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward query nil t)
-        (replace-match replace nil nil nil subexp))))
-
 (defun replace-symbols-dollar-and-times ()
   "Used in markdown file:
-                         `\(` -> `$`
-                         `\)` -> `$`
-                         `\times` -> `×`
-                         `![imag](...)` -> `![img][...]`
-                         '```comment' -> ``
-                         '```' -> ``"
+                         '\(' -> '$'
+                         '\)' -> '$'
+                         '\times' -> '×'
+                         '![imag](...)' -> '![img][...]'
+                         `'''comment` -> `'`
+                         `'''` ->`"` 
   (interactive)
   (replace-in-the-entire-buffer "\\\\(" " $" nil)
   (replace-in-the-entire-buffer "\\\\)" "$ " nil)
   (replace-in-the-entire-buffer "\\\\times" "×" nil)
   (replace-in-the-entire-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
   (replace-in-the-entire-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]" 1)
-  (replace-in-the-entire-buffer "```comment" "" nil)
+  (replace-in-the-entire-buffer "```comment" nil)
   (replace-in-the-entire-buffer "```" "" nil))
 
 (defun create-graphviz ()
@@ -229,7 +229,7 @@
   )))
 
 (defun org-insert-src-block (src-code-type)
-  "Insert a `SRC-CODE-TYPE' type source code block in org-mode."
+  "Insert a 'SRC-CODE-TYPE' type source code block in org-mode."
   (interactive
     (let ((src-code-types
           '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"

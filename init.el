@@ -85,13 +85,14 @@
                                       exec-path-from-shell
                                       nodejs-repl
                                       dash-at-point
-                                      elpy)
+                                      emmet-mode)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(highlight-parentheses
                                     org-pdfview
-                                    doc-view)
+                                    doc-view
+                                    pyenv-mode)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -376,6 +377,7 @@ you should place your code here."
   (require 'ox-latex)
   (require 'ox-md)
   (require 'nodejs-repl)
+  (require 'emmet-mode)
   ;; setup JavaScript auto-complete
   (setq tern-command '("node" "/usr/local/bin/tern"))
   (setq js2-include-node-externs t)

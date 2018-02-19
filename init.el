@@ -4,8 +4,8 @@
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
-You should not put any user code in this function besides modifying the variable
-values."
+   You should not put any user code in this function besides modifying the variable
+   values."
   (setq-default
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
@@ -83,7 +83,9 @@ values."
                                       ob-ipython
                                       slime
                                       exec-path-from-shell
-                                      nodejs-repl)
+                                      nodejs-repl
+                                      dash-at-point
+                                      elpy)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -101,10 +103,10 @@ values."
 
 (defun dotspacemacs/init ()
   "Initialization function.
-This function is called at the very startup of Spacemacs initialization
-before layers configuration.
-You should not put any user code in there besides modifying the variable
-values."
+  This function is called at the very startup of Spacemacs initialization
+  before layers configuration.
+  You should not put any user code in there besides modifying the variable
+  values."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
@@ -335,8 +337,7 @@ executes.
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
 (setq configuration-layer--elpa-archives
-      '(("gnu"      . "https://elpa.gnu.org.packages/")
-        ("melpa"    . "https://melpa.org/packages/")
+      '(("melpa"    . "https://melpa.org/packages/")
         ("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
         ("org-cn"   . "http://elpa.emacs-china.org/org/")
         ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
@@ -455,16 +456,21 @@ you should place your code here."
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
 
+  (add-to-list 'load-path "/path/to/dash-at-point")
+  (autoload 'dash-at-point "dash-at-point"
+    "Search the word at point with Dash." t nil)
+  (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
   (spacemacs/set-leader-keys "ha" 'toggle-frame-fullscreen)
   (spacemacs/set-leader-keys "hc" 'evil-invert-char)
   (spacemacs/set-leader-keys "hu" 'evil-invert-case)
   (spacemacs/set-leader-keys "h;" 'comment-line)
-  (spacemacs/set-leader-keys "h$" 'replace-dollar)
   (spacemacs/set-leader-keys "hs" 'org-screenshot)
   (spacemacs/set-leader-keys "hS" 'org-delete-screenshot-image-file-and-link)
   (spacemacs/set-leader-keys "he" 'org-dot-image-to-base64-converter)
   (spacemacs/set-leader-keys "hE" 'org-delete-dot-image-file-and-link)
+  (spacemacs/set-leader-keys "hp" 'dash-at-point-with-docset)
+  (spacemacs/set-leader-keys "hP" 'dash-at-point)
   (spacemacs/set-leader-keys "so" 'occur-dwin)
   (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
   (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)
@@ -475,6 +481,7 @@ you should place your code here."
   (spacemacs/set-leader-keys "oe" 'org-edit-special)
   (spacemacs/set-leader-keys "or" 'org-src-do-at-code-block)
   (spacemacs/set-leader-keys "oc" 'org-gfm-export-to-markdown-filter)
+  (spacemacs/set-leader-keys "fs" 'save-buffer-filter)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will

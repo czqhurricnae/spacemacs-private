@@ -48,7 +48,7 @@
   "query: 所需要被替换的字符串
   replace: 用来替换的字符串
   subexp:
-          1. 在函数'replace-mathc'中使用
+          1. 在函数'replace-match'中使用
           2. 用来表示'replace'参数被应用在第几个匹配到的模式组"
   (save-excursion
     (goto-char (point-min))
@@ -107,7 +107,7 @@
 
 (defun find-org-link-begin-and-end (plist string)
   "Find link from plist whose link is equal to string, return a
-  list just like '((name begin-position end-position))''"
+  list just like '((name begin-position end-position))'"
   (let ((return-list '()))
     (progn
       (while plist
@@ -163,16 +163,17 @@
                          '\)' -> '$'
                          '\times' -> '×'
                          '![imag](...)' -> '![img][...]'
-                         `'''comment` -> `'`
-                         `'''` ->`"` 
+                         `'''comment` -> ``
+                         `'''` ->``
+  "
   (interactive)
   (replace-in-the-entire-buffer "\\\\(" " $" nil)
   (replace-in-the-entire-buffer "\\\\)" "$ " nil)
   (replace-in-the-entire-buffer "\\\\times" "×" nil)
   (replace-in-the-entire-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
   (replace-in-the-entire-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]" 1)
-  (replace-in-the-entire-buffer "```comment" nil)
-  (replace-in-the-entire-buffer "```" "" nil))
+  (replace-in-the-entire-buffer "```comment\\[\t\n\r \\]\.*\\[\t\n\r \\]\\(```\\)" "" 1))
+  (replace-in-the-entire-buffer "```comment" "" nil)
 
 (defun create-graphviz ()
   (interactive)
@@ -242,21 +243,22 @@
   (progn
     (newline-and-indent)
       (cond ((equal src-code-type "ipython")
-            (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session\n" src-code-type)))
-          ((equal src-code-type "example")
-            (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session example\n"))
-          ((equal src-code-type "value")
-            (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output value :exports both :session \n" src-code-type)) 
-          ((equal src-code-type "C")
-            (insert (format "#+BEGIN_SRC %s :includes <stdio.h> :results output list :exports both\n" src-code-type)))
-          ((equal src-code-type "sql")
-            (insert (format "#+BEGIN_SRC %s :results value table :exports both\n" src-code-type)))
-          ((equal src-code-type "dot") 
-          (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
-          ((equal src-code-type "graphviz")
-           (create-graphviz)
-           (throw 'return-catch "I will not going any where else"))
-          (t (insert (format "#+BEGIN_SRC %s\n" src-code-type))))
+              (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session\n" src-code-type)))
+            ((equal src-code-type "example")
+              (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session example\n"))
+            ((equal src-code-type "value")
+              (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output value :exports both :session \n" src-code-type))
+            ((equal src-code-type "C")
+              (insert "#+header: :cmdline :includes <stdio.h> \"/Users/c/Unix/error_function.c\" \"/Users/c/Unix/get_num.c\"\n")
+              (insert (format "#+BEGIN_SRC %s :results output list :exports both\n" src-code-type)))
+            ((equal src-code-type "sql")
+              (insert (format "#+BEGIN_SRC %s :results value table :exports both\n" src-code-type)))
+            ((equal src-code-type "dot")
+              (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
+            ((equal src-code-type "graphviz")
+              (create-graphviz)
+            (throw 'return-catch "I will not going any where else"))
+            (t (insert (format "#+BEGIN_SRC %s\n" src-code-type))))
     (newline-and-indent)
     (insert "#+END_SRC\n")
     (previous-line 2)
@@ -269,3 +271,49 @@
   (save-buffer)
   (kill-buffer-and-window)
 )
+
+(defun save-buffer-filter ()
+  "Replace the expected charaters except 'funcs.el' file."
+  (interactive)
+  (save-buffer)
+  (and (not (string-equal (buffer-name) "funcs.el"))
+    (progn
+      (replace-in-the-entire-buffer "，" "," nil)
+      (replace-in-the-entire-buffer "。" "." nil)
+      (replace-in-the-entire-buffer "（" "(" nil)
+      (replace-in-the-entire-buffer "）" ")" nil))))
+
+(defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
+  "Check is the buffer useless one.
+  '(= ?* (aref name 0))' <- check whether the first character of string name is '*'
+   or not? if yes, then compara the 'useless-buffer-name' with the name of current buffer.
+  "
+  (let ((name (buffer-name buffer-to-be-inspected)))
+    (and (= ?* (aref name 0))
+         (string-equal useless-buffer-name name))))
+
+(defun kill-buffer-without-confirmation (buffer)
+  "'kill-buffer' references the varibale 'kill-buffer-query-functions',
+  Remove the expected function form the relevant varibale."
+  (interactive)
+  (let ((buffer-modified-p nil))
+    (setq kill-buffer-query-functions
+          (delq 'process-kill-buffer-query-function
+                kill-buffer-query-functions))
+    (kill-buffer buffer)))
+
+(defun kill-useless-buffer (useless-buffer-name)
+  "'(require 'cl)' brings in Emacs's Common Lisp Package,
+  which is where the 'loop' macro lives."
+  (require 'cl)
+  (interactive)
+  (loop for buffer being the buffers
+        do (and (is-useless-buffer buffer useless-buffer-name) (kill-buffer-without-confirmation buffer))))
+
+(defun org-venv-workon ()
+  "Kill the existing Python buffer,so make the new virtual envirnment take effect,
+  should only be used in org-mode."
+  (interactive)
+  (ignore-errors
+   (kill-useless-buffer "*Python*"))
+  (venv-workon))

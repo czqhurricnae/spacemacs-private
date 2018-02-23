@@ -90,9 +90,9 @@
     (defvar my-simple-todo-regex "\\<\\(FIXME\\|TODO\\|BUG\\):")
 
     (defun my-simple-todo ()
-      "When in a project, create a `multi-occur' buffer matching the
-  regex in `my-simple-todo-regex' across all buffers in the
-  current project. Otherwise do `occur' in the current file."
+      "When in a project, create a 'multi-occur' buffer matching the
+      regex in `my-simple-todo-regex' across all buffers in the
+      current project. Otherwise do 'occur' in the current file."
       (interactive)
       (if (projectile-project-p)
           (multi-occur (projectile-project-buffers) my-simple-todo-regex)
@@ -100,4 +100,17 @@
     (spacemacs/set-leader-keys "pf" 'czqhurricane/open-file-with-projectile-or-counsel-git)
     (spacemacs/set-leader-keys "pt" 'my-simple-todo)))
 
+(defun czqhurricane/init-yasnippet ()
+  (use-package yasnippet
+    :ensure t
+    :load-path "/Users/c/.spacemacs.d/snippets")
+    :diminish (yas-minor-mode . "Y")
+    :defer t
+    :init
+    (setq yas-snippet-dirs '("/Users/c/.spacemacs.d/snippets")
+          yas-indent-line 'fixed
+          yas-verbosity 0)
+    (add-hook 'prog-mode-hook #'yas-minor-mode)
+    :config
+    (yas-global-mode 1))
 ;;; packages.el ends here

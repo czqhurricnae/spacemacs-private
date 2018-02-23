@@ -404,7 +404,7 @@ you should place your code here."
   (add-to-list 'org-entities-user
                '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
   (setq org-export-backends (quote (ascii html icalendar latex md)))
-  (setq org-src-fontify-natively t)
+  
   (setq-default indent-tabs-mode nil)
   (setq default-tab-width 4)
   (setq c-default-style "k&r")
@@ -415,9 +415,6 @@ you should place your code here."
   (setq-default mode-line-format (cons '(:exec venv-current-name) mode-line-format))
   (setq ns-pop-up-frames nil)
   (setq spacemacs-show-trailing-whitespace t)
-  (setq yas-snippet-dirs
-        '("/Users/c/.spacemacs.d/snippets")
-        )
   ;; Make org not to treat `_` with sub-superscript, but `_{}`.
   (setq org-export-with-sub-superscripts '{})
   ;; Make magit's windown display in the right side.
@@ -471,6 +468,15 @@ you should place your code here."
                            (electric-indent-mode -1)))
   ;; Display/update images in the buffer after I evaluate.
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+  ;; Make Yasnippet effect when the editing org source code is JavaScript. 
+  (add-to-list 'org-src-lang-modes '("js" . js2))
+  ;; When editing org-files with source-blocks, we want the
+  ;; source blocks to be themed as they would in their native mode.
+  ;; Turn on native code fontification in the Org buffer.
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-confirm-babel-evaluate nil
+        org-edit-src-content-indentation 0)
 
   (add-to-list 'load-path "/path/to/dash-at-point")
   (autoload 'dash-at-point "dash-at-point"

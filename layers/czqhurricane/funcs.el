@@ -162,7 +162,7 @@
                          '\(' -> '$'
                          '\)' -> '$'
                          '\times' -> '×'
-                         '![imag](...)' -> '![img][...]'
+                         '![imag](...)' -> '![img][...]\r' <- '\r':new line
                          `'''comment` -> ``
                          `'''` ->``
   "
@@ -171,9 +171,8 @@
   (replace-in-the-entire-buffer "\\\\)" "$ " nil)
   (replace-in-the-entire-buffer "\\\\times" "×" nil)
   (replace-in-the-entire-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
-  (replace-in-the-entire-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]" 1)
-  (replace-in-the-entire-buffer "```comment\\[\t\n\r \\]\.*\\[\t\n\r \\]\\(```\\)" "" 1))
-  (replace-in-the-entire-buffer "```comment" "" nil)
+  (replace-in-the-entire-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]\r" 1)
+  (replace-in-the-entire-buffer "```comment" "" nil))
 
 (defun create-graphviz ()
   (interactive)
@@ -247,7 +246,9 @@
             ((equal src-code-type "example")
               (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session example\n"))
             ((equal src-code-type "value")
-              (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output value :exports both :session \n" src-code-type))
+              (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer value list :exports both :session\n" src-code-type))
+            ((equal src-code-type "js")
+             (insert (format "#+BEGIN_SRC %s :results values list :exports both\n" src-code-type)))
             ((equal src-code-type "C")
               (insert "#+header: :cmdline :includes <stdio.h> \"/Users/c/Unix/error_function.c\" \"/Users/c/Unix/get_num.c\"\n")
               (insert (format "#+BEGIN_SRC %s :results output list :exports both\n" src-code-type)))
@@ -266,10 +267,14 @@
 
 (defun org-gfm-export-to-markdown-filter ()
   (interactive)
-  (org-open-file (org-gfm-export-to-markdown))
-  (replace-symbols-dollar-and-times)
-  (save-buffer)
-  (kill-buffer-and-window)
+  (progn
+    (org-open-file (org-gfm-export-to-markdown))
+    (end-of-buffer)
+    (previous-line 1)
+    (kill-line)
+    (replace-symbols-dollar-and-times)
+    (save-buffer)
+    (kill-buffer-and-window))
 )
 
 (defun save-buffer-filter ()

@@ -1,9 +1,9 @@
 # -*- mode: snippet -*-
-# name: try {
-# key: try {
+# name: try
+# key: try
 # --
 try {
-    $0;  
-} catch (err) {
     $1;
+} catch(e) {
+    $0;
 }

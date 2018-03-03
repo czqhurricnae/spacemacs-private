@@ -41,6 +41,7 @@
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
      ;; version-control
+     ivy
      (better-defaults :variables
                       better-defaults-move-to-end-of-code-first t)
      (javascript :variables
@@ -49,40 +50,38 @@
      python
      ipython-notebook
      c-c++
-     ivy
      ycmd
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t 
+                      auto-completion-enable-sort-by-usage t
                       auto-completion-enable-help-tooltip nil)
      emacs-lisp
      git
      markdown
-     (org :variables org-enable-github-support t
-                    org-enable-reveal-js-support t)
+     (org :variables
+          org-enable-github-support t
+          org-enable-reveal-js-support t)
      (spell-checking :variables
                      ispell-progam-name "aspell"
                      ispell-dictionary "american"
                      spell-checking-enable-by-default nil)
      syntax-checking
-
-     ;; 必须先安装fasd
+     ;; Must ensure fasd installed first. 
      fasd
      (spacemacs-layouts :variables
                         layouts-enable-autosave nil
                         layouts-autosave-delay 300)
-     pdf-tools
      theming
      czqhurricane)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(color-theme-solarized
+   dotspacemacs-additional-packages '(
                                       ox-gfm
                                       virtualenvwrapper
                                       ob-ipython
                                       slime
-                                      exec-path-from-shell
                                       nodejs-repl
                                       dash-at-point
                                       emmet-mode)
@@ -92,6 +91,8 @@
    dotspacemacs-excluded-packages '(highlight-parentheses
                                     org-pdfview
                                     doc-view)
+                                    doc-view
+                                    )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any

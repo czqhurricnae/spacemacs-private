@@ -1,30 +1,3 @@
-(defun occur-dwin ()
-  "Call 'occur' with a same default."
-  (interactive)
-  (push (if (region-active-p)
-            (buffer-substring-no-properties
-             (region-beginning)
-             (region-end))
-          (let ((sym (thing-at-point 'symbol)))
-            (when (stringp sym)
-              (regexp-quote sym))))
-        regexp-history)
-  (call-interactively 'occur))
-
-(defun czqhurricane/vcs-project-root ()
-  "Return the project root for current buffer."
-  (let ((directory default-directory))
-    (locate-dominating-file directory ".git")))
-
-(defun czqhurricane/open-file-with-projectile-or-counsel-git ()
-  "vcs: version control system."
-  (interactive)
-  (if (czqhurricane/vcs-project-root)
-      (counsel-git)
-    (if (projectile-project-p)
-        (projectile-find-file)
-      (ido-find-file))))
-
 (defcustom org-screenshot-image-dir-name  "screenshotImg"
   "Default directory name for org screenshot image."
   :type 'string
@@ -159,12 +132,12 @@
 
 (defun replace-symbols-dollar-and-times ()
   "Used in markdown file:
-                         '\(' -> '$'
-                         '\)' -> '$'
-                         '\times' -> '×'
+                                   '\(' -> '$'
+                                   '\)' -> '$'
+                               '\times' -> '×'
                          '![imag](...)' -> '![img][...]\r' <- '\r':new line
-                         `'''comment` -> ``
-                         `'''` ->``
+                           `'''comment` -> ``
+                                   '\`' -> '`'
   "
   (interactive)
   (replace-in-the-entire-buffer "\\\\(" " $" nil)
@@ -172,7 +145,8 @@
   (replace-in-the-entire-buffer "\\\\times" "×" nil)
   (replace-in-the-entire-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
   (replace-in-the-entire-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]\r" 1)
-  (replace-in-the-entire-buffer "```comment" "" nil))
+  (replace-in-the-entire-buffer "```comment" "" nil)
+  (replace-in-the-entire-buffer "\\\\`" "`" nil))
 
 (defun create-graphviz ()
   (interactive)
@@ -259,7 +233,7 @@
             ((equal src-code-type "graphviz")
               (create-graphviz)
             (throw 'return-catch "I will not going any where else"))
-            (t (insert (format "#+BEGIN_SRC %s\n" src-code-type))))
+            (t (insert (format "#+BEGIN_SRC %s :results valuse list :exports both\n" src-code-type))))
     (newline-and-indent)
     (insert "#+END_SRC\n")
     (previous-line 2)
@@ -281,7 +255,7 @@
   "Replace the expected charaters except 'funcs.el' file."
   (interactive)
   (save-buffer)
-  (and (not (string-equal (buffer-name) "funcs.el"))
+  (and (not (string-equal (buffer-name) "funcs.el<czqhurricane-org>"))
     (progn
       (replace-in-the-entire-buffer "，" "," nil)
       (replace-in-the-entire-buffer "。" "." nil)

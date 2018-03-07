@@ -1,11 +1,6 @@
-(global-linum-mode t)
 (defvar org-agenda-dir ""
   "gtd org files location")
 
-;; 自动切换到occur buffer
-(add-hook 'occur-hook
-          '(lambda ()
-          (switch-to-buffer-other-window "*Occur*")))
 (defvar deft-dir ""
   "deft org files locaiton")
 

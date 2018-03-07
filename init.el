@@ -31,16 +31,6 @@
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
-     ;; ----------------------------------------------------------------
-     ;; helm
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; version-control
      ivy
      (better-defaults :variables
                       better-defaults-move-to-end-of-code-first t)
@@ -90,8 +80,8 @@
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(highlight-parentheses
                                     org-pdfview
-                                    doc-view)
                                     doc-view
+                                    org-projectile
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -344,7 +334,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
         ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
         ))
 (setq tramp-ssh-controlmaster-options
-      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no"))
+      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+(setq evil-shift-round nil)
+(setq byte-compile-warnings '(not obsolete)))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -353,7 +345,8 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-
+(set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified) 
+(set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
   (package-initialize)
   (require 'ein-dev)
   (require 'emmet-mode)
@@ -384,6 +377,7 @@ you should place your code here."
      (sqlite . t)
      (dot . t)
      (emacs-lisp . t)
+     (lisp . t)
      (sh . t)))
   (global-company-mode 1)
   (global-hl-line-highlight)
@@ -405,7 +399,7 @@ you should place your code here."
   (add-to-list 'org-entities-user
                '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
   (setq org-export-backends (quote (ascii html icalendar latex md)))
-  
+
   (setq-default indent-tabs-mode nil)
   (setq default-tab-width 4)
   (setq c-default-style "k&r")
@@ -427,38 +421,7 @@ you should place your code here."
   (setq company-backends-c-mode-common '((company-c-headers
                                           company-ycmd
                                           company-dabbrev :with company-yasnippet)))
-  ;; Get color-theme-solarized working. It is specified as an additional package
-  ;; above. First we setup some theme modifications - we must do this *before*
-  ;; we load the theme. Note that the color-theme-solarized package appears in
-  ;; the list of themes as plain old 'solarized'.
-  (setq theming-modifications
-      '((solarized
-         ;; Provide a sort of "on-off" modeline whereby the current buffer has a nice
-         ;; bright blue background, and all the others are in cream.
-         ;; TODO: Change to use variables here. However, got error:
-         ;; (Spacemacs) Error in dotspacemacs/user-config: Wrong type argument: stringp, pd-blue
-         (mode-line :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-         (powerline-active1 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-         (powerline-active2 :foreground "#e9e2cb" :background "#2075c7" :inverse-video nil)
-         (mode-line-inactive :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-         (powerline-inactive1 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-         (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
-         ;; Make a really prominent helm selection line.
-         (helm-selection :foreground "white" :background "red" :inverse-video nil)
-         ;; See comment above about dotspacemacs-colorize-cursor-according-to-state.
-         (cursor :background "#b58900")
-         (ivy-current-match :foreground "white" :background "#555555" :inverse-video nil)
-         (ivy-minibuffer-match-face-2 :background "#555555")
-       )))
-  
-  ;; Turn this off to stop it interfering with mic-paren.
-  (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
-  (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
-  (set-terminal-parameter nil 'background-mode 'dark)
-  (set-frame-parameter nil 'background-mode 'dark)
-  (spacemacs/load-theme 'solarized)
-
-  (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
+    (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
   (set-variable 'ycm-global-config "/Users/c/.ycm_extra_conf.py")
   (setcdr evil-insert-state-map nil)
   
@@ -485,89 +448,13 @@ you should place your code here."
   (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))
 
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
-  (spacemacs/set-leader-keys "ha" 'toggle-frame-fullscreen)
-  (spacemacs/set-leader-keys "hc" 'evil-invert-char)
-  (spacemacs/set-leader-keys "hu" 'evil-invert-case)
-  (spacemacs/set-leader-keys "h;" 'comment-line)
-  (spacemacs/set-leader-keys "hs" 'org-screenshot)
-  (spacemacs/set-leader-keys "hS" 'org-delete-screenshot-image-file-and-link)
-  (spacemacs/set-leader-keys "he" 'org-dot-image-to-base64-converter)
-  (spacemacs/set-leader-keys "hE" 'org-delete-dot-image-file-and-link)
-  (spacemacs/set-leader-keys "hp" 'dash-at-point-with-docset)
-  (spacemacs/set-leader-keys "hP" 'dash-at-point)
-  (spacemacs/set-leader-keys "so" 'occur-dwin)
-  (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
-  (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)
-  (spacemacs/set-leader-keys "it" 'ein:worksheet-change-cell-type)
-  (spacemacs/set-leader-keys "id" 'ein:worksheet-kill-cell)
-  (spacemacs/set-leader-keys "is" 'ein:notebook-save-notebook-command)
-  (spacemacs/set-leader-keys "oi" 'org-insert-src-block)
-  (spacemacs/set-leader-keys "oe" 'org-edit-special)
-  (spacemacs/set-leader-keys "or" 'org-src-do-at-code-block)
-  (spacemacs/set-leader-keys "oc" 'org-gfm-export-to-markdown-filter)
-  (spacemacs/set-leader-keys "fs" 'save-buffer-filter)
+  
   )
-
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
- '(evil-want-Y-yank-to-eol nil)
- '(notmuch-search-line-faces
-   (quote
-    (("unread" :foreground "#aeee00")
-     ("flagged" :foreground "#0a9dff")
-     ("deleted" :foreground "#ff2c4b" :bold t))))
- '(package-selected-packages
-   (quote
-    (elpy find-file-in-project dash-at-point org-plus-contrib ghub org-mime nodejs-repl slime ob-ipython virtualenvwrapper ox-reveal ox-gfm ein websocket flycheck-ycmd company-ycmd ycmd request-deferred let-alist deferred company-quickhelp vimish-fold origami web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode haml-mode emmet-mode company-web web-completion-data reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl color-theme-solarized color-theme mic-paren pyim pyim-basedict fasd youdao-dictionary names chinese-word-at-point wgrep smex pdf-tools tablist org-category-capture ivy-hydra flyspell-correct-ivy disaster counsel-projectile counsel swiper company-c-headers cmake-mode clang-format ivy unfill smeargle orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(request-backend (quote curl)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(company-scrollbar-fg ((t (:background "alternateSelectedControlColor"))))
- '(counsel-selection ((t (:foreground "white" :background "red" :inverse-video nil))))
- '(cursor ((t (:background "#b58900"))))
- '(helm-selection ((t (:foreground "white" :background "red" :inverse-video nil))))
- '(ivy-current-match ((t (:foreground "white" :background "#555555" :inverse-video nil))))
- '(ivy-minibuffer-match-face-2 ((t (:background "#e9e2cb" :weight bold))))
- '(mode-line ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(mode-line-inactive ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(powerline-active1 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(powerline-active2 ((t (:foreground "#e9e2cb" :background "#2075c7" :inverse-video nil))))
- '(powerline-inactive1 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil))))
- '(powerline-inactive2 ((t (:foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)))))
+(setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
+(load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-format-latex-options
-   (quote
-    (:foreground default :background default :scale 3.0 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers
-                 ("begin" "$1" "$" "$$" "\\(" "\\["))))
- '(package-selected-packages
-   (quote
-    (unfill smeargle orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-(exec-path-from-shell-copy-env "PATH")
 )

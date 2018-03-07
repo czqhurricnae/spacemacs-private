@@ -1,0 +1,177 @@
+;;; -*- lexical-binding: t -*-
+;;; packages.el --- czqhurricane Layer packages File for Spacemacs
+;;
+;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
+;;
+;; Author: c <c@ubuntu>
+;; URL: https://github.com/syl20bnr/spacemacs
+;;
+;; This file is not part of GNU Emacs.
+;;
+;;; License: GPLv3
+
+(defconst czqhurricane-better-defaults-packages
+  '(
+    (youdao-dictionary :location elpa)
+    (mic-paren :location elpa)
+    (recentf :location elpa)
+    projectile
+    (occur-mode :location local)
+    (dired-mode :location local)))
+
+(defun czqhurricane-better-defaults/init-youdao-dictionary ()
+  (use-package youdao-dictionay
+    :defer
+    :init
+    (spacemacs/set-leader-keys "hy" 'youdao-dictionary-search-at-point+)))
+
+(defun czqhurricane-better-defaults/init-mic-paren ()
+  (use-package mic-paren
+    :config
+    (setq blink-matching-paren nil)
+    (paren-activate)
+    (setq paren-match-face 'mode-line)))
+
+(defun czqhurricane-better-defaults/post-init-projectile ()
+  (progn
+    (with-eval-after-load 'projectile
+      (progn
+        (setq projectile-completion-system 'ivy)
+        (add-to-list 'projectile-other-file-alist '("html" "js"))
+        (add-to-list 'projectile-other-file-alist '("js" "html"))))
+
+        (defvar my-simple-todo-regex "\\[\\(FIXME\\|TODO\\|BUG\\): \\.*\\]")
+
+        (defun my-simple-todo ()
+          "When in a project, create a 'multi-occur' buffer matching the
+          regex in `my-simple-todo-regex' across all buffers in the
+          current project. Otherwise do 'occur' in the current file."
+          (interactive)
+          (if (projectile-project-p)
+              (multi-occur (projectile-project-buffers) my-simple-todo-regex)
+            (occur my-simple-todo-regex)))
+        (spacemacs/set-leader-keys "pf" 'czqhurricane/open-file-with-projectile-or-counsel-git)
+        (spacemacs/set-leader-keys "po" 'my-simple-todo)))
+
+(defun czqhurricane-better-defaults/post-init-yasnippet ()
+  (progn
+    (spacemacs|diminish yas-minor-mode)
+    (set-face-background 'secondary-selection "gray")
+    (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
+    (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
+                                                                           org-mode-hook
+                                                                           markdown-mode-hook))
+
+    (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
+                                                           markdown-mode-hook
+                                                           org-mode-hook))
+    ))
+
+(defun czqhurricane-better-defaults/post-init-recentf ()
+  (progn
+    (setq recentf-exclude
+          '("COMMIT_MSG"
+            "COMMIT_EDITMSG"
+            "github.*txt$"
+            "/tmp/"
+            "/ssh:"
+            "/sudo:"
+            "/TAGS$"
+            "/GTAGS$"
+            "/GRAGS$"
+            "/GPATH$"
+            "\\.mkv$"
+            "\\.mp[34]$"
+            "\\.avi$"
+            "\\.pdf$"
+            "\\.sub$"
+            "\\.srt$"
+            "\\.ass$"
+            ".*png$"))
+    (setq recentf-max-saved-items 2048)))
+
+(defun czqhurricane-better-defaults/init-dired-mode ()
+  (use-package dired-mode
+    :defer t
+    :init
+    (progn
+      (require 'dired-x)
+      (require 'dired-aux)
+      (setq dired-listing-switches "-alh")
+      (setq dired-guess-shell-alist-user
+            '(("\\.pdf\\'" "open")
+              ("\\.docx\\'" "open")
+              ("\\.\\(?:djvu\\|eps\\)\\'" "open")
+              ("\\.\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)\\'" "open")
+              ("\\.\\(?:xcf\\)\\'" "open")
+              ("\\.csv\\'" "open")
+              ("\\.tex\\'" "open")
+              ("\\.\\(?:mp4\\|mkv\\|avi\\|flv\\|ogv\\)\\(?:\\.part\\)?\\'"
+               "open")
+              ("\\.\\(?:mp3\\|flac\\)\\'" "open")
+              ("\\.html?\\'" "open")
+              ("\\.md\\'" "open")))
+
+      (setq dired-omit-files
+            (concat dired-omit-files "\\|^.DS_Store$\\|^.projectile$\\|\\.js\\.meta$\\|\\.meta$"))
+
+      ;; always delete and copy recursively
+      (setq dired-recursive-deletes 'always)
+      (setq dired-recursive-copies 'always)
+
+      (defun ora-ediff-files ()
+        (interactive)
+        (let ((files (dired-get-marked-files))
+              (wnd (current-window-configuration)))
+          (if (<= (length files) 2)
+              (let ((file1 (car files))
+                    (file2 (if (cdr files)
+                               (cadr files)
+                             (read-file-name
+                              "file: "
+                              (dired-dwim-target-directory)))))
+                (if (file-newer-than-file-p file1 file2)
+                    (ediff-files file2 file1)
+                  (ediff-files file1 file2))
+                (add-hook 'ediff-after-quit-hook-internal
+                          (lambda ()
+                            (setq ediff-after-quit-hook-internal nil)
+                            (set-window-configuration wnd))))
+            (error "no more than 2 files should be marked"))))
+
+      (define-key dired-mode-map "e" 'ora-ediff-files)
+
+      (defvar dired-filelist-cmd
+        '(("vlc" "-L")))
+
+      ;; FIXME: evilify dired mode will lead to startup warnings
+      (evilified-state-evilify-map dired-mode-map
+        :mode dired-mode
+        :bindings
+        (kbd "C-k") 'czqhurricane/dired-up-directory
+        "<RET>" 'dired-find-alternate-file
+        "E" 'dired-toggle-read-only
+        "C" 'dired-do-copy
+        "<mouse-2>" 'my-dired-find-file
+        "`" 'dired-open-term
+        "p" 'peep-dired-prev-file
+        "n" 'peep-dired-next-file
+        "z" 'dired-get-size
+        "c" 'dired-copy-file-here
+        "J" 'counsel-find-file
+        "f" 'czqhurricane/open-file-with-projectile-or-counsel-git
+        ")" 'dired-omit-mode)
+      )))
+
+(defun czqhurricane-better-defaults/init-profiler ()
+  (use-package profiler
+    :defer t
+    :init
+    (evilified-state-evilify profiler-report-mode profiler-report-mode-map)))
+
+(defun czqhurricane-better-defaults/post-init-occur-mode ()
+    ;; Auto switch to `occur buffer`
+    (add-hook 'occur-hook
+              '(lambda ()
+                 (switch-to-buffer-other-window "*Occur*"))))
+;;; packages.el ends here

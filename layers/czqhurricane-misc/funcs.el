@@ -6,9 +6,8 @@
         ;; force update evil keymaps after git-timemachine-mode loaded
         (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
 
-
-;; insert ; at the end of current line
 (defun czqhurricane/insert-semicolon-at-the-end-of-this-line ()
+  "insert`;'at the end of current line"
   (interactive)
   (save-excursion
     (end-of-line)
@@ -38,65 +37,63 @@
           (backward-char)
           (delete-char 1)))))
 
-
 (defun czqhurricane/load-my-layout ()
   (interactive)
-  (persp-load-state-from-file (concat persp-save-dir "zilong")))
+  (persp-load-state-from-file (concat persp-save-dir "czqhurricane")))
 
 (defun czqhurricane/save-my-layout ()
   (interactive)
-  (persp-save-state-to-file (concat persp-save-dir "zilong")))
+  (persp-save-state-to-file (concat persp-save-dir "czqhurricane")))
 
 ;; http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
-;; ;FIXME: make it work with zsh
+;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun counsel-yank-bash-history ()
-  "Yank the bash history"
+  "Yank the zsh history"
   (interactive)
   (let (hist-cmd collection val)
     (shell-command "history -r") ; reload history
     (setq collection
           (nreverse
-           (split-string (with-temp-buffer (insert-file-contents (file-truename "~/.bash_history"))
+           (split-string (with-temp-buffer (insert-file-contents (file-truename "~/.zsh_history"))
                                            (buffer-string))
                          "\n"
                          t)))
+    (setq collection (mapcar (lambda (item) (replace-regexp-in-string ".*;" "" item)) collection))
     (when (and collection (> (length collection) 0)
                (setq val (if (= 1 (length collection)) (car collection)
-                           (ivy-read (format "Bash history:") collection))))
+                           (ivy-read (format "Zsh history:") collection))))
+      ;; (setq val (replace-regexp-in-string "^:[^;]*;" "" val))
+      ;; (setq val (replace-regexp-in-string ".*;" "" val))
       (kill-new val)
       (message "%s => kill-ring" val))))
 
-  ;; my fix for tab indent
 (defun czqhurricane/indent-region(numSpaces)
   (progn
-                                      ; default to start and end of current line
+    ;; default to start and end of current line
     (setq regionStart (line-beginning-position))
     (setq regionEnd (line-end-position))
 
-                                      ; if there's a selection, use that instead of the current line
+    ;; if there's a selection, use that instead of the current line
     (when (use-region-p)
       (setq regionStart (region-beginning))
       (setq regionEnd (region-end))
       )
 
-    (save-excursion                          ; restore the position afterwards
-      (goto-char regionStart)                ; go to the start of region
-      (setq start (line-beginning-position)) ; save the start of the line
-      (goto-char regionEnd)                  ; go to the end of region
-      (setq end (line-end-position))         ; save the end of the line
+    (save-excursion                          ;; restore the position afterwards
+      (goto-char regionStart)                ;; go to the start of region
+      (setq start (line-beginning-position)) ;; save the start of the line
+      (goto-char regionEnd)                  ;; go to the end of region
+      (setq end (line-end-position))         ;; save the end of the line
 
-      (indent-rigidly start end numSpaces) ; indent between start and end
-      (setq deactivate-mark nil)           ; restore the selected region
-      )
-    )
-  )
-
+      (indent-rigidly start end numSpaces)   ;; indent between start and end
+      (setq deactivate-mark nil)             ;; restore the selected region
+      )))
 
 (defun czqhurricane/tab-region (N)
   (interactive "p")
   (if (use-region-p)
-      (czqhurricane/indent-region 4)               ; region was selected, call indent-region
-    (insert "    ")                   ; else insert four spaces as expected
+      (czqhurricane/indent-region 4)         ;; region was selected, call indent-region
+    (insert "    ")                          ;; else insert four spaces as expected
     ))
 
 (defun czqhurricane/untab-region (N)
@@ -148,9 +145,8 @@
     (require 'git-timemachine))
   (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 
-
 (defun czqhurricane/helm-hotspots ()
-  "helm interface to my hotspots, which includes my locations,
+  "Helm interface to my hotspots, which includes my locations,
 org-files and bookmarks"
   (interactive)
   (helm :buffer "*helm: utities*"
@@ -170,7 +166,6 @@ org-files and bookmarks"
     (candidate-number-limit)
     (action . (("Open" . (lambda (x) (funcall x)))))))
 
-;; insert date and time
 (defun czqhurricane/now ()
   "Insert string for the current time formatted like '2:34 PM'."
   (interactive)                 ; permit invocation in minibuffer
@@ -195,7 +190,6 @@ e.g. Sunday, September 17, 2000."
   end tell
 " )))
 
-
 (define-minor-mode
   shadowsocks-proxy-mode
   :global t
@@ -205,11 +199,9 @@ e.g. Sunday, September 17, 2000."
       (setq url-gateway-method 'socks)
     (setq url-gateway-method 'native)))
 
-
 (define-global-minor-mode
   global-shadowsocks-proxy-mode shadowsocks-proxy-mode shadowsocks-proxy-mode
   :group 'shadowsocks-proxy)
-
 
 (defun czqhurricane/open-file-with-projectile-or-counsel-git ()
   (interactive)
@@ -218,7 +210,6 @@ e.g. Sunday, September 17, 2000."
     (if (projectile-project-p)
         (projectile-find-file)
       (counsel-file-jump))))
-
 
 ;; http://blog.lojic.com/2009/08/06/send-growl-notifications-from-carbon-emacs-on-osx/
 (defun czqhurricane/growl-notification (title message &optional sticky)
@@ -288,23 +279,22 @@ e.g. Sunday, September 17, 2000."
     (format "%s" (s-chop-suffix "\"" (s-chop-prefix "\"" result)))))
 
 
-;; remove all the duplicated emplies in current buffer
+;; Remove all the duplicated emplies in current buffer
 (defun czqhurricane/single-lines-only ()
-  "replace multiple blank lines with a single one"
+  "Replace multiple blank lines with a single one"
   (interactive)
   (goto-char (point-min))
   (while (re-search-forward "\\(^\\s-*$\\)\n" nil t)
     (replace-match "\n")
     (forward-char 1)))
 
-;; for running long run ansi-term
+;; For running long run ansi-term
 (defun czqhurricane/named-term (name)
   (interactive "sName: ")
   (ansi-term "/bin/zsh" name))
 
-
 (defun czqhurricane/ash-term-hooks ()
-  ;; dabbrev-expand in term
+  ;; Dabbrev-expand in term
   (define-key term-raw-escape-map "/"
     (lambda ()
       (interactive)
@@ -358,7 +348,7 @@ e.g. Sunday, September 17, 2000."
                                                                 (buffer-substring-no-properties (point-min) (point-max))))
               (setq v-buffer-string (buffer-substring-no-properties (point-min) (point-max))))
             (replace-regexp-in-string (format "^ *%s *.+" comment-start) "" v-buffer-string)))
-                                        ; 把註解行刪掉(不把註解算進字數).
+                                          ; 把註解行刪掉(不把註解算進字數).
          (chinese-char-and-punc 0)
          (chinese-punc 0)
          (english-word 0)
@@ -402,7 +392,6 @@ e.g. Sunday, September 17, 2000."
   (let ((directory default-directory))
     (locate-dominating-file directory ".git")))
 
-
 ;; "http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/"
 (defun czqhurricane/iterm-shell-command (command &optional prefix)
   "cd to `default-directory' then run COMMAND in iTerm.
@@ -427,7 +416,6 @@ With PREFIX, cd to project root."
   end tell
   " cmd))))
 
-
 (defadvice persp-switch (after my-quit-helm-perspectives activate)
   (setq hydra-deactivate t))
 
@@ -436,7 +424,6 @@ With PREFIX, cd to project root."
   (if (region-active-p)
       (mc/mark-next-like-this 1)
     (er/expand-region 1)))
-
 
 (defun wrap-sexp-with-new-round-parens ()
   (interactive)
@@ -450,7 +437,8 @@ With PREFIX, cd to project root."
     (call-interactively 'evil-paste-after)))
 
 (defun my-erc-hook (match-type nick message)
-  "Shows a growl notification, when user's nick was mentioned. If the buffer is currently not visible, makes it sticky."
+  "Shows a growl notification, when user's nick was mentioned.
+If the buffer is currently not visible, makes it sticky."
   (unless (posix-string-match "^\\** *Users on #" message)
     (czqhurricane/growl-notification
      (concat "ERC: : " (buffer-name (current-buffer)))
@@ -466,8 +454,8 @@ With PREFIX, cd to project root."
        #'counsel-grep-or-swiper))))
 
 (defun ivy-ff-checksum ()
-  (interactive)
   "Calculate the checksum of FILE. The checksum is copied to kill-ring."
+  (interactive)
   (let ((file (expand-file-name (ivy-state-current ivy-last) ivy--directory))
         (algo (intern (ivy-read
                        "Algorithm: "
@@ -562,15 +550,14 @@ With PREFIX, cd to project root."
 
 (defun github-browse-file--relative-url ()
   "Return \"username/repo\" for current repository.
-
-Error out if this isn't a GitHub repo."
+  Error out if this isn't a GitHub repo."
   (require 'vc-git)
   (let ((url (vc-git--run-command-string nil "config" "remote.origin.url")))
     (unless url (error "Not in a GitHub repo"))
     (when (and url (string-match "github.com:?/?\\(.*\\)" url))
       (replace-regexp-in-string "\\.git$" "" (match-string 1 url)))))
 
-(defun zilong/github-browse-commit ()
+(defun czqhurricane/github-browse-commit ()
   "Show the GitHub page for the current commit."
   (interactive)
   (let* ((commit git-messenger:last-commit-id)
@@ -585,7 +572,6 @@ Error out if this isn't a GitHub repo."
   (interactive)
   (helm-do-ag (expand-file-name "~/Github/fireball/")))
 
-
 (defun czqhurricane/show-current-buffer-major-mode ()
   (interactive)
   (describe-variable 'major-mode))
@@ -594,3 +580,171 @@ Error out if this isn't a GitHub repo."
   (interactive)
   (counsel-imenu)
   (evil-set-jump))
+
+(defun append-string-to-file (string filename)
+  "Append STRING to FILENAME"
+  (interactive)
+  (append-to-file string nil filename))
+
+(defun get-filename-from-url (url)
+  "Get the substring of url which after the final slash."
+  (with-temp-buffer
+    (insert url)
+    (let ((filename-origin 0))
+      (goto-char filename-origin)
+      (while (string-match "/" url filename-origin)
+        (progn
+          (goto-char filename-origin)
+          (setq filename-start (re-search-forward "/"))
+          (setq filename-origin (match-end 0))))
+      (substring (buffer-string) (- filename-start 1)))))  
+
+(defun pandoc-converter (input-file output-file read-format write-format)
+  (with-temp-buffer
+    (find-file-other-window input-file)
+    (pandoc-mode t)
+    (pandoc-set-output write-format)
+    (pandoc--set 'read read-format)
+    (pandoc--set 'write write-format)
+    (setq pandoc--settings-modified-flag nil)
+    (setq pandoc--output-format-for-pdf nil)
+    (pandoc-set-output output-file)
+    (pandoc--call-external t)
+    (kill-buffer-and-window)))
+
+(defun install-monitor (file secs func)
+  "Pretend to monitor the given file (AS FILE) by issuing a check every secs (AS SECS) seconds.
+If a change in `file-attributes` happended call func."
+  (let ((monitor-attributes (file-attributes file))
+        (fun func))
+    (run-with-timer
+     0 secs
+     (lambda (f p)
+       (let ((att (file-attributes f)))
+         (unless (or (null monitor-attributes) (equalp monitor-attributes att))
+           (funcall fun))
+         (setq monitor-attributes att)))
+     file secs)))
+
+(defun install-monitor-file-exists (file secs func)
+  (setq inner-timer
+    (run-with-idle-timer
+     secs t
+     (lambda (file func)
+       (let ((file file)
+             (func func))
+        (unless (not (file-exists-p file))
+          (progn
+            (funcall func)
+            (cancel-timer inner-timer)
+            (message "%s" "Done"))
+          (message "%s" "Not yet"))))
+     file func)))
+
+(defvar match-question-string-list '("<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
+(defvar match-answer-string-list '("\\(<div class=\"answercell post-layout--right\">\\|<div style=\"display: block;\" class=\"comment-body\">\\)" . "</div>"))
+
+(defun unexpected-strings-filter (filename replace-string-rule-lists)
+  (with-temp-buffer 
+    (insert-file-contents filename)
+    (dolist (replace-string replace-string-rule-lists)
+      (replace-in-the-entire-buffer (car replace-string) (cdr replace-string) nil))
+    (write-file filename)))
+
+(defun extract-content-from-stackoverflow-to-file (src-code-type)
+
+  ;; Insert a 'SRC-CODE-TYPE' type source code block in org-mode.
+  (interactive
+   (let ((src-code-types
+          '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
+            "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
+            "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
+            "haskell" "latex" "lisp" "matlab" "ocaml" "org" "perl" "ruby"
+            "scheme" "sqlite" "graphviz")))
+     (list (ido-completing-read "Source code type: " src-code-types))))
+
+  (cond ((string-equal src-code-type "") (setq begin-marker (concat "#+BEGIN_SRC" "python")))
+        (t (setq begin-marker (concat "#+BEGIN_SRC" src-code-type))))
+
+  (setq url "" html-file-name "" org-file-name "")
+
+  (setq html-replace-string-rule-lists '(("<span class=\"comment-date\" dir=\"ltr\">\.*" . "")
+                                         ("<span\[^>\]*>" . "<blockquote>")
+                                         ("</span\[^>\]*>" . "</blockquote>")
+                                         ("<h1>" . "")
+                                         ("<h2>" . "")
+                                         ("<h3>" . "")
+                                         ("<h4>" . "")
+                                         ("<h5>" . "")
+                                         ("<h6>" . "")
+                                         ("</h1>" . "")
+                                         ("</h2>" . "")
+                                         ("</h3>" . "")
+                                         ("</h4>" . "")
+                                         ("</h5>" . "")
+                                         ("</h6>" . "")
+                                         ("{%" . "<")
+                                         ("%}" . ">")))
+
+  (setq org-replace-string-rule-lists '(("#\\+BEGIN_QUOTE\[\t\r\n \]*#\\+END_QUOTE" .  "")
+                                        ("\\\\_" . "_")
+                                        ("#\\+BEGIN_EXAMPLE" . "#+BEGIN_SRC python")
+                                        ("#\\+END_EXAMPLE" . "#+END_SRC")))
+
+  ;; Read url string from minibuffer.
+  (while (string-equal url "")
+    (setq url (read-string "Please input the StackOverFlow url to extract: "
+                           nil nil "" nil)))
+
+  ;; Get filename from url
+  (setq html-file-name (concat
+                        (concat "~/"
+                                (get-filename-from-url url))
+                        ".html")
+        org-file-name (concat
+                       (concat "~/"
+                               (get-filename-from-url url))
+                       ".org"))
+
+  ;; Extract content to file.
+  (with-current-buffer (url-retrieve-synchronously url)
+    ;; Remove the "^M" character in html file.
+    (dos2unix)
+
+    ;; Extract question strings to file.
+    (progn
+      (goto-char 0)
+      (setq question-start (re-search-forward (car match-question-string-list)))
+      (goto-char question-start)
+      (setq question-end (re-search-forward (cdr match-question-string-list)))
+      (setq question-string (buffer-substring question-start (- question-end 6)))
+      (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
+      (append-string-to-file question-string html-file-name))
+
+    ;; Extract answer and comment strings to file.
+    (let ((answer-origin 0) (answer-number 1))
+      (while (string-match (car match-answer-string-list) (buffer-string) answer-origin)
+        (progn
+          (goto-char answer-origin)
+          (setq answer-start (re-search-forward (car match-answer-string-list)))
+          (setq answer-end (re-search-forward (cdr match-answer-string-list)))
+          (setq answer-string (buffer-substring  answer-start (- answer-end 6)))
+          (if answer-string
+              (progn
+                (if (string-suffix-p "</span>" (replace-regexp-in-string "[\t\n\r ]+" "" answer-string))
+                    (append-string-to-file "{%h2%}Comment{%/h2%}" html-file-name)
+                  (progn 
+                    (append-string-to-file (concat (concat "{%h1%}Answer" (number-to-string answer-number)) "{%/h1%}") html-file-name)
+                    (setq answer-number (+ 1 answer-number))))
+                (append-string-to-file answer-string html-file-name)
+                (setq answer-origin (match-end 0))))))))
+
+    (unexpected-strings-filter html-file-name html-replace-string-rule-lists)
+
+    (pandoc-converter html-file-name org-file-name "html" "org")
+
+    (defun callback-unexpected-strings-filter ()
+      (unexpected-strings-filter org-file-name org-replace-string-rule-lists))
+
+    (install-monitor-file-exists org-file-name 1 'callback-unexpected-strings-filter)
+)

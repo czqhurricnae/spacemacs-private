@@ -49,6 +49,7 @@
      git
      markdown
      (org :variables
+          org-want-to-do-binding t
           org-enable-github-support t
           org-enable-reveal-js-support t)
      (spell-checking :variables
@@ -68,7 +69,6 @@
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
-                                      ox-gfm
                                       virtualenvwrapper
                                       ob-ipython
                                       slime
@@ -365,40 +365,19 @@ you should place your code here."
 
   (setq python-shell-completion-native-disabled-interpreters '("python"))
 
-  (eval-after-load "org"
-    '(require 'ox-gfm nil t))
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)
-     (ipython . t)
-     (js . t)
-     (C . t)
-     (sql . t)
-     (sqlite . t)
-     (dot . t)
-     (emacs-lisp . t)
-     (lisp . t)
-     (sh . t)))
+  
   (global-company-mode 1)
   (global-hl-line-highlight)
   (require 'ox-latex)
   (require 'ox-md)
   (require 'nodejs-repl)
   (require 'emmet-mode)
-  ;; Setup JavaScript auto-complete.
+  ;; setup javascript auto-complete.
   (setq tern-command '("node" "/usr/local/bin/tern"))
   (setq js2-include-node-externs t)
   ;; Set your lisp system and, optionally, some contribs.
   (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
   (setq slime-contribs '(slime-fancy))
-  ;; Don't prompt me to confirm everytime I want to evaluate a block.
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-latex-create-formula-image-program 'dvipng)
-  (setq org-latex-listings 'minted)
-  (add-to-list 'org-latex-packages-alist '("" "minted"))
-  (add-to-list 'org-entities-user
-               '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
-  (setq org-export-backends (quote (ascii html icalendar latex md)))
 
   (setq-default indent-tabs-mode nil)
   (setq default-tab-width 4)
@@ -410,8 +389,6 @@ you should place your code here."
   (setq-default mode-line-format (cons '(:exec venv-current-name) mode-line-format))
   (setq ns-pop-up-frames nil)
   (setq spacemacs-show-trailing-whitespace t)
-  ;; Make org not to treat `_` with sub-superscript, but `_{}`.
-  (setq org-export-with-sub-superscripts '{})
   ;; Make magit's windown display in the right side.
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
@@ -430,18 +407,6 @@ you should place your code here."
   (add-hook 'prog-mode-hook 'turn-on-fci-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
-  ;; Display/update images in the buffer after I evaluate.
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-  ;; Make Yasnippet effect when the editing org source code is JavaScript. 
-  (add-to-list 'org-src-lang-modes '("js" . js2))
-  ;; When editing org-files with source-blocks, we want the
-  ;; source blocks to be themed as they would in their native mode.
-  ;; Turn on native code fontification in the Org buffer.
-  (setq org-src-fontify-natively t
-        org-src-tab-acts-natively t
-        org-confirm-babel-evaluate nil
-        org-edit-src-content-indentation 0)
-
   (add-to-list 'load-path "/path/to/dash-at-point")
   (autoload 'dash-at-point "dash-at-point"
     "Search the word at point with Dash." t nil)

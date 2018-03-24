@@ -32,6 +32,8 @@
         golden-ratio
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         browse-at-remote
+        (shell-mode :location local)
+        pandoc-mode
         ))
 
 (defun czqhurricane-misc/init-browse-at-remote ()
@@ -139,9 +141,9 @@
 
       (defun spacemacs/helm-file-smart-do-search (&optional default-inputp)
         "Search in current file using `dotspacemacs-search-tools'.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'
-If DEFAULT-INPUTP is non nil then the current region or symbol at point
-are used as default input."
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'
+        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        are used as default input."
         (interactive)
         (call-interactively
          (spacemacs//helm-do-search-find-tool "helm-file-do"
@@ -150,8 +152,8 @@ are used as default input."
 
       (defun spacemacs/helm-file-smart-do-search-region-or-symbol ()
         "Search in current file using `dotspacemacs-search-tools' with
- default input.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'."
+        default input.
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-file-smart-do-search t))
 
@@ -191,9 +193,9 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
       (defun spacemacs/helm-files-smart-do-search (&optional default-inputp)
         "Search in opened buffers using `dotspacemacs-search-tools'.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'
-If DEFAULT-INPUTP is non nil then the current region or symbol at point
-are used as default input."
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'
+        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        are used as default input."
         (interactive)
         (call-interactively
          (spacemacs//helm-do-search-find-tool "helm-files-do"
@@ -202,8 +204,8 @@ are used as default input."
 
       (defun spacemacs/helm-files-smart-do-search-region-or-symbol ()
         "Search in opened buffers using `dotspacemacs-search-tools'.
-with default input.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'."
+        with default input.
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-files-smart-do-search t))
 
@@ -243,9 +245,9 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
       (defun spacemacs/helm-buffers-smart-do-search (&optional default-inputp)
         "Search in opened buffers using `dotspacemacs-search-tools'.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'
-If DEFAULT-INPUTP is non nil then the current region or symbol at point
-are used as default input."
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'
+        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        are used as default input."
         (interactive)
         (call-interactively
          (spacemacs//helm-do-search-find-tool "helm-buffers-do"
@@ -254,8 +256,8 @@ are used as default input."
 
       (defun spacemacs/helm-buffers-smart-do-search-region-or-symbol ()
         "Search in opened buffers using `dotspacemacs-search-tools' with
-default input.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'."
+        default input.
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-buffers-smart-do-search t))
 
@@ -313,9 +315,9 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
 
       (defun spacemacs/helm-project-smart-do-search (&optional default-inputp)
         "Search in current project using `dotspacemacs-search-tools'.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'
-If DEFAULT-INPUTP is non nil then the current region or symbol at point
-are used as default input."
+        Search for a search tool in the order provided by `dotspacemacs-search-tools'
+        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        are used as default input."
         (interactive)
         (let ((projectile-require-project-root nil))
           (call-interactively
@@ -325,8 +327,8 @@ are used as default input."
 
       (defun spacemacs/helm-project-smart-do-search-region-or-symbol ()
         "Search in current project using `dotspacemacs-search-tools' with
- default input.
-Search for a search tool in the order provided by `dotspacemacs-search-tools'."
+         default input.
+         Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-project-smart-do-search t))
 
@@ -704,7 +706,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     (define-key evil-normal-state-map (kbd "[ SPC") (lambda () (interactive) (evil-insert-newline-above) (forward-line)))
     (define-key evil-normal-state-map (kbd "] SPC") (lambda () (interactive) (evil-insert-newline-below) (forward-line -1)))
 
-
     (define-key evil-normal-state-map (kbd "[ b") 'previous-buffer)
     (define-key evil-normal-state-map (kbd "] b") 'next-buffer)
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
@@ -988,7 +989,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     (prodigy-define-service
       :name "Debug Fireball"
       :command "npm"
-      :args '("start" "--" "--nologin" "/Users/guanghui/Github/example-cases")
+      :args '("start" "--" "--nologin" "/Users/czqhurricane/Github/example-cases")
       :cwd "~/Github/fireball/"
       :tags '(work)
       :kill-signal 'sigkill
@@ -1019,7 +1020,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
       (moz-controller-global-mode t)
       (spacemacs|hide-lighter moz-controller-mode))))
 
-
 (defun czqhurricane-misc/init-ag ()
   (use-package ag
     :init))
@@ -1047,8 +1047,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     :config
     (spacemacs|hide-lighter wrap-region-mode)))
 
-
-
 (defun czqhurricane-misc/init-keyfreq ()
   (use-package keyfreq
     :init
@@ -1061,7 +1059,6 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
   (progn
     (setq ivy-use-virtual-buffers t)
     (setq ivy-display-style 'fancy)
-
 
     (evilified-state-evilify ivy-occur-mode ivy-occur-mode-map)
 
@@ -1123,7 +1120,7 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
     ;; prefer two way ediff
     (setq magit-ediff-dwim-show-on-hunks t)
 
-    (setq magit-repository-directories '("~/cocos2d-x/"))
+    (setq magit-repository-directories '("~/Python/"))
     (setq magit-push-always-verify nil)
 
     (eval-after-load 'magit
@@ -1154,5 +1151,112 @@ Search for a search tool in the order provided by `dotspacemacs-search-tools'."
           "p" 'czqhurricane/markdown-to-html)
 
         (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
-        ))
-    ))
+        ))))
+
+;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
+(defun czqhurricane-misc/post-init-shell-mode ()
+  (progn
+    ;; Fix, add colors and highlight text.
+    (require 'ansi-color)
+    (defun colorize-compilation-buffer ()
+      (toggle-read-only)
+      (ansi-color-apply-on-region (point-min) (point-max))
+      (toggle-read-only))
+    (add-hook 'compilation-filter-hook 'colorize-
+              compilation-buffer)
+    (add-hook 'shell-mode-hook (lambda () (highlight-regexp
+                                       "\\[OK\\]" "hi-green-b")))
+    ;; Make URLs clickable.
+    (add-hook 'shell-mode-hook (lambda ()(goto-address-mode)))
+
+    ;; Make file paths clickable.
+    (add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
+    )
+
+  ;; Shell completion with a nice menu.
+  (add-hook 'shell-mode-hook #'company-mode)
+  (define-key shell-mode-map (kbd "TAB" #'company-manual-begin))
+
+  ;; https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
+  ;; Change directory with ido.
+  ;; Ido will keep asking for subdirectory after selecting directory with RET, to finish selection press C-RET.
+  (require 'ido)
+  (require 'cl-lib)
+  (require 'shell)
+
+  (defvar my-dir-selected nil "Flag to indicate that user has selected the directory")
+
+  (defun my-filter-cd-input (current-input)
+    "Takes current user input for `cd' the a list
+    whose car is the 'maximum possible directory path'
+    and cdr is remaining string.
+
+    Examples:
+    '~/.emacs.d/in => ('~./emacs.d/' 'in')
+    '/home/gue' => ('/home/' 'gue')
+    '~/../' => ('~/../' '')"
+    (let* ((unquoted-input (shell-unquote-argument current-input))
+           (components (split-string unquoted-input "/"))
+           (directory-parts (butlast components))
+           (possible-prefix (car (last components))))
+      (list (if (string= possible-prefix "")
+                unquoted-input
+              (concat (mapconcat 'identity directory-parts "/")
+                      (when directory-parts "/")))
+            possible-prefix)))
+
+  (defun my-complete-directory-name (directory current-input)
+    "Prompts user for directories in `directory', `current-input'
+    is the string entered by the user till now"
+    (let* ((filtered-input (my-filter-cd-input current-input))
+           (directory-path (car filtered-input))
+           (partial-input (cadr filtered-input))
+           (directory-choices (mapcar 'file-name-nondirectory
+                                      (condition-case nil
+                                          (cl-remove-if-not 'file-directory-p
+                                                            (directory-files (concat directory directory-path) t))
+                                        ('file-error (list)))))
+           (selected-name (ido-completing-read "Directory: "
+                                               directory-choices
+                                               nil nil partial-input)))
+      (comint-delete-input)
+      (insert (concat "cd " 
+                      (shell-quote-argument (concat directory-path selected-name "/"))))))
+
+  (defun my-prompt-for-dir-or-fallback ()
+    "If current shell command is `cd' prompt for directory
+    using ido otherwise fallback to normal completion"
+    (interactive)
+    (let* ((user-input (buffer-substring-no-properties (comint-line-beginning-position)
+                                                       (point-max))))
+      (if (and (>= (length user-input) 3)
+               (string= (substring user-input 0 3) "cd "))
+          (progn 
+            (setq my-dir-selected nil)
+            (while (not my-dir-selected)
+              (my-complete-directory-name default-directory 
+                                          (buffer-substring-no-properties (+ (comint-line-beginning-position) 3) 
+                                                                          (point-max))))
+            (comint-send-input))
+        (call-interactively 'completion-at-point))))
+
+  (define-key shell-mode-map (kbd "<tab>") 'my-prompt-for-dir-or-fallback)
+
+  (add-hook 'ido-setup-hook 'ido-my-keys)
+
+  (defun ido-my-keys ()
+    "Add my keybindings for ido."
+    (define-key ido-completion-map (kbd "<C-return>") (lambda ()
+                                                        (interactive)
+                                                        (setq my-dir-selected t)
+                                                        (ido-exit-minibuffer))))
+  ;; Shared and persistent history.
+  (add-hook 'shell-mode-hook 'my-shell-mode-hook)
+  (defun my-shell-mode-hook ()
+    (setq comint-input-ring-file-name "~/.zsh_history")  ;; or bash_history
+    (comint-read-input-ring t))
+)
+
+(defun czqhurricane-misc/init-pandoc-mode()
+  (use-package pandoc-mode
+    :defer t))

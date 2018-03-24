@@ -26,7 +26,7 @@
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward query nil t)
-      (replace-match replace nil nil nil subexp))))
+      (replace-match replace t nil nil subexp))))
 
 (defun jump-to-penultimate-line ()
   (delete-blank-lines)
@@ -296,3 +296,10 @@
   (ignore-errors
    (kill-useless-buffer "*Python*"))
   (venv-workon))
+
+(defun dos2unix ()
+  "Replace DOS eolns CR LF with Unix eolns CR"
+  (interactive)
+  (goto-char (point-min))
+  (while (search-forward "\r" nil t) (replace-match ""))
+  )

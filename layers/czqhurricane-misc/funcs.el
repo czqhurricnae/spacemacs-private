@@ -183,7 +183,7 @@ e.g. Sunday, September 17, 2000."
   (do-applescript
    (format
     "
-  tell application \"Google Chrome\"
+  tell application \"Chrome\"
     set winref to a reference to (first window whose title does not start with \"Developer Tools - \")
     set winref's index to 1
     reload active tab of winref
@@ -211,29 +211,6 @@ e.g. Sunday, September 17, 2000."
         (projectile-find-file)
       (counsel-file-jump))))
 
-;; http://blog.lojic.com/2009/08/06/send-growl-notifications-from-carbon-emacs-on-osx/
-(defun czqhurricane/growl-notification (title message &optional sticky)
-  "Send a Growl notification"
-  (do-applescript
-   (format "tell application \"GrowlHelperApp\" \n
-              notify with name \"Emacs Notification\" title \"%s\" description \"%s\" application name \"Emacs.app\" sticky \"%s\"
-              end tell
-              "
-           title
-           message
-           (if sticky "yes" "no"))))
-
-(defun czqhurricane/growl-timer (minutes message)
-  "Issue a Growl notification after specified minutes"
-  (interactive (list (read-from-minibuffer "Minutes: " "10")
-                     (read-from-minibuffer "Message: " "Reminder") ))
-  (run-at-time (* (string-to-number minutes) 60)
-               nil
-               (lambda (minute message)
-                 (czqhurricane/growl-notification "Emacs Reminder" message t))
-               minutes
-               message))
-
 (defun czqhurricane/goto-match-paren (arg)
   "Go to the matching  if on (){}[], similar to vi style of % "
   (interactive "p")
@@ -257,20 +234,15 @@ e.g. Sunday, September 17, 2000."
   (goto-char (point-min))
   (while (search-forward "\r" nil t) (replace-match "")))
 
-(defun czqhurricane/insert-chrome-current-tab-url()
-  "Get the URL of the active tab of the first window"
-  (interactive)
-  (insert (czqhurricane/retrieve-chrome-current-tab-url)))
-
-(defun czqhurricane/retrieve-chrome-current-tab-url()
+(defun czqhurricane/retrieve-chrome-current-tab-url ()
   "Get the URL of the active tab of the first window"
   (interactive)
   (let ((result (do-applescript
                  (concat
                   "set frontmostApplication to path to frontmost application\n"
                   "tell application \"Google Chrome\"\n"
-                  "	set theUrl to get URL of active tab of first window\n"
-                  "	set theResult to (get theUrl) \n"
+                  "    set theUrl to get URL of active tab of first window\n"
+                  "    set theResult to (get theUrl) \n"
                   "end tell\n"
                   "activate application (frontmostApplication as text)\n"
                   "set links to {}\n"
@@ -278,6 +250,14 @@ e.g. Sunday, September 17, 2000."
                   "return links as string\n"))))
     (format "%s" (s-chop-suffix "\"" (s-chop-prefix "\"" result)))))
 
+(defun czqhurricane/insert-chrome-current-tab-url ()
+  "Get the URL of the active tab of the first window"
+  (interactive)
+  (insert (czqhurricane/retrieve-chrome-current-tab-url)))
+
+(defun czqhurricane/copy-chrome-current-tab-url ()
+  (interactive)
+  (kill-new (czqhurricane/retrieve-chrome-current-tab-url)))
 
 ;; Remove all the duplicated emplies in current buffer
 (defun czqhurricane/single-lines-only ()
@@ -437,10 +417,10 @@ With PREFIX, cd to project root."
     (call-interactively 'evil-paste-after)))
 
 (defun my-erc-hook (match-type nick message)
-  "Shows a growl notification, when user's nick was mentioned.
+  "Shows a terminal notification, when user's nick was mentioned.
 If the buffer is currently not visible, makes it sticky."
   (unless (posix-string-match "^\\** *Users on #" message)
-    (czqhurricane/growl-notification
+    (czqhurricane/notify-osx
      (concat "ERC: : " (buffer-name (current-buffer)))
      message
      t
@@ -535,7 +515,7 @@ If the buffer is currently not visible, makes it sticky."
       (message "No remote branch"))
      (t
       (browse-url
-       (format "https://github.com/%s/pull/new/%s"
+       (format "%s"
                (replace-regexp-in-string
                 "\\`.+github\\.com:\\(.+\\)\\.git\\'" "\\1"
                 (magit-get "remote"
@@ -597,20 +577,13 @@ If the buffer is currently not visible, makes it sticky."
           (goto-char filename-origin)
           (setq filename-start (re-search-forward "/"))
           (setq filename-origin (match-end 0))))
-      (substring (buffer-string) (- filename-start 1)))))  
+      (substring (buffer-string) (- filename-start 1)))))
 
 (defun pandoc-converter (input-file output-file read-format write-format)
-  (with-temp-buffer
-    (find-file-other-window input-file)
-    (pandoc-mode t)
-    (pandoc-set-output write-format)
-    (pandoc--set 'read read-format)
-    (pandoc--set 'write write-format)
-    (setq pandoc--settings-modified-flag nil)
-    (setq pandoc--output-format-for-pdf nil)
-    (pandoc-set-output output-file)
-    (pandoc--call-external t)
-    (kill-buffer-and-window)))
+  "Call pandoc-mode to convert file."
+  (let ((command-string (concat "pandoc " input-file " -f " read-format " -t "
+                                write-format " -s -o " output-file)))
+    (shell-command command-string)))
 
 (defun install-monitor (file secs func)
   "Pretend to monitor the given file (AS FILE) by issuing a check every secs (AS SECS) seconds.
@@ -636,39 +609,23 @@ If a change in `file-attributes` happended call func."
         (unless (not (file-exists-p file))
           (progn
             (funcall func)
-            (cancel-timer inner-timer)
-            (message "%s" "Done"))
-          (message "%s" "Not yet"))))
+            (cancel-timer inner-timer)))))
      file func)))
 
-(defvar match-question-string-list '("<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
-(defvar match-answer-string-list '("\\(<div class=\"answercell post-layout--right\">\\|<div style=\"display: block;\" class=\"comment-body\">\\)" . "</div>"))
-
 (defun unexpected-strings-filter (filename replace-string-rule-lists)
-  (with-temp-buffer 
+  (with-temp-buffer
     (insert-file-contents filename)
-    (dolist (replace-string replace-string-rule-lists)
-      (replace-in-the-entire-buffer (car replace-string) (cdr replace-string) nil))
+    (dolist (replace-string-rule replace-string-rule-lists)
+      (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
     (write-file filename)))
 
-(defun extract-content-from-stackoverflow-to-file (src-code-type)
-
-  ;; Insert a 'SRC-CODE-TYPE' type source code block in org-mode.
-  (interactive
-   (let ((src-code-types
-          '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
-            "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
-            "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
-            "haskell" "latex" "lisp" "matlab" "ocaml" "org" "perl" "ruby"
-            "scheme" "sqlite" "graphviz")))
-     (list (ido-completing-read "Source code type: " src-code-types))))
-
-  (cond ((string-equal src-code-type "") (setq begin-marker (concat "#+BEGIN_SRC" "python")))
-        (t (setq begin-marker (concat "#+BEGIN_SRC" src-code-type))))
-
-  (setq url "" html-file-name "" org-file-name "")
-
-  (setq html-replace-string-rule-lists '(("<span class=\"comment-date\" dir=\"ltr\">\.*" . "")
+(defvar question-string-pattern-list
+  '("<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
+(defvar answer-string-pattern-list
+  '("\\(<div class=\"answercell post-layout--right\">\\|<div style=\"display: block;\" class=\"comment-body\">\\|<div class=\"comment-body\" style=\"display: block;\" >\\)" . "</div>"))
+;; Used to replace unexpected strings in raw extracted html file.
+(defvar html-replace-string-rule-lists
+  '(("<span class=\"comment-date\" dir=\"ltr\">\.*" . "")
                                          ("<span\[^>\]*>" . "<blockquote>")
                                          ("</span\[^>\]*>" . "</blockquote>")
                                          ("<h1>" . "")
@@ -686,58 +643,96 @@ If a change in `file-attributes` happended call func."
                                          ("{%" . "<")
                                          ("%}" . ">")))
 
-  (setq org-replace-string-rule-lists '(("#\\+BEGIN_QUOTE\[\t\r\n \]*#\\+END_QUOTE" .  "")
-                                        ("\\\\_" . "_")
-                                        ("#\\+BEGIN_EXAMPLE" . "#+BEGIN_SRC python")
-                                        ("#\\+END_EXAMPLE" . "#+END_SRC")))
+(defvar image-url-pattern-list '("<img src=\"" . "\""))
 
-  ;; Read url string from minibuffer.
-  (while (string-equal url "")
-    (setq url (read-string "Please input the StackOverFlow url to extract: "
-                           nil nil "" nil)))
+(setq org-download-timestamp "")
+(setq org-download-heading-lvl nil)
 
-  ;; Get filename from url
-  (setq html-file-name (concat
-                        (concat "~/"
-                                (get-filename-from-url url))
-                        ".html")
-        org-file-name (concat
-                       (concat "~/"
-                               (get-filename-from-url url))
-                       ".org"))
-
-  ;; Extract content to file.
-  (with-current-buffer (url-retrieve-synchronously url)
-    ;; Remove the "^M" character in html file.
-    (dos2unix)
-
-    ;; Extract question strings to file.
-    (progn
-      (goto-char 0)
-      (setq question-start (re-search-forward (car match-question-string-list)))
-      (goto-char question-start)
-      (setq question-end (re-search-forward (cdr match-question-string-list)))
-      (setq question-string (buffer-substring question-start (- question-end 6)))
-      (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
-      (append-string-to-file question-string html-file-name))
-
-    ;; Extract answer and comment strings to file.
-    (let ((answer-origin 0) (answer-number 1))
-      (while (string-match (car match-answer-string-list) (buffer-string) answer-origin)
+(defun download-all-images (file)
+  ;; Use `org-download-image' to download image from `html' file.
+  (with-temp-buffer
+    (insert-file-contents file)
+    (let ((search-origin 0) )
+      (while (string-match (car image-url-pattern-list) (buffer-string) search-origin)
         (progn
-          (goto-char answer-origin)
-          (setq answer-start (re-search-forward (car match-answer-string-list)))
-          (setq answer-end (re-search-forward (cdr match-answer-string-list)))
-          (setq answer-string (buffer-substring  answer-start (- answer-end 6)))
-          (if answer-string
+          (goto-char search-origin)
+          (setq image-url-start (re-search-forward (car image-url-pattern-list)))
+          (setq image-url-end (re-search-forward (cdr image-url-pattern-list)))
+          (setq image-url (buffer-substring  image-url-start (- image-url-end 1)))
+          (if image-url
               (progn
-                (if (string-suffix-p "</span>" (replace-regexp-in-string "[\t\n\r ]+" "" answer-string))
-                    (append-string-to-file "{%h2%}Comment{%/h2%}" html-file-name)
-                  (progn 
-                    (append-string-to-file (concat (concat "{%h1%}Answer" (number-to-string answer-number)) "{%/h1%}") html-file-name)
-                    (setq answer-number (+ 1 answer-number))))
-                (append-string-to-file answer-string html-file-name)
-                (setq answer-origin (match-end 0))))))))
+                (setq org-download-image-dir (concat default-directory "/screenshotImg"))
+                (org-download-image image-url)
+                (setq search-origin (match-end 0)))))))))
+
+(defun extract-content-from-stackoverflow-to-org-file (src-code-type)
+  ;; Insert a `SRC-CODE-TYPE' type source code block in org-mode.
+  (interactive
+   (let ((src-code-types
+          '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
+            "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
+            "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
+            "haskell" "latex" "lisp" "matlab" "ocaml" "org" "perl" "ruby"
+            "scheme" "sqlite" "graphviz")))
+     (list (ido-completing-read "Source code type: " src-code-types))))
+
+    (setq begin-marker "" url "" html-file-name "" org-file-name "")
+    ;; Used to replace unexpected strings in org file generated by pandoc.
+    (setq org-replace-string-rule-lists '(("#\\+BEGIN_QUOTE\[\t\r\n \]*#\\+END_QUOTE" .  "")
+                                            ("\\\\_" . "_")
+                                            ("#\\+END_EXAMPLE" . "#+END_SRC")
+                                            ("\\[\\[\.*png\.*/\\(.*\\)\\]\\]" . "[[file:screenshotImg/\\1")
+                                            ("\\[\\[http.*/" . "[[file:screenshotImg/")))
+    ;; Read url string from minibuffer, while the string read is empty, this loop will not stop.
+    (setq url "")
+    (while (string-equal url "")
+      (setq url (read-string "Please input the StackOverFlow url to extract: "
+                             nil nil "" nil)))
+    ;; Create begin-marker used to replace unexpected string `#+BEGIN_EXAMPLE'.
+    (cond ((string-equal src-code-type "")
+           (setq begin-marker (concat "#+BEGIN_SRC " "python")))
+          (t
+           (setq begin-marker (concat "#+BEGIN_SRC " src-code-type))))
+    (add-to-list 'org-replace-string-rule-lists `("#\\+BEGIN_EXAMPLE" . ,begin-marker))
+    ;; Get filename from url to create html and org file.
+    (setq html-file-name (concat
+                          (concat "~/"
+                                  (get-filename-from-url url))
+                          ".html")
+          org-file-name (concat
+                         (concat "~/"
+                                 (get-filename-from-url url))
+                         ".org"))
+    ;; Extract content to file.
+    (with-current-buffer (url-retrieve-synchronously url)
+      ;; Remove the "^M" character in html file.
+      (dos2unix)
+      ;; Extract question strings to file.
+      (progn
+        (goto-char 0)
+        (setq question-start (re-search-forward (car question-string-pattern-list)))
+        (goto-char question-start)
+        (setq question-end (re-search-forward (cdr question-string-pattern-list)))
+        (setq question-string (buffer-substring question-start (- question-end 6)))
+        (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
+        (append-string-to-file question-string html-file-name))
+      ;; Extract image and comment strings to file.
+      (let ((answer-search-origin 0) (answer-number 1))
+        (while (string-match (car answer-string-pattern-list) (buffer-string) answer-search-origin)
+          (progn
+            (goto-char answer-search-origin)
+            (setq answer-string-start (re-search-forward (car answer-string-pattern-list)))
+            (setq answer-string-end (re-search-forward (cdr answer-string-pattern-list)))
+            (setq answer-string (buffer-substring  answer-string-start (- answer-string-end 6)))
+            (if answer-string
+                (progn
+                  (if (string-suffix-p "</span>" (replace-regexp-in-string "[\t\n\r ]+" "" answer-string))
+                      (append-string-to-file "{%h2%}Comment{%/h2%}" html-file-name)
+                    (progn
+                      (append-string-to-file (concat (concat "{%h1%}Answer" (number-to-string answer-number)) "{%/h1%}") html-file-name)
+                      (setq answer-number (+ 1 answer-number))))
+                  (append-string-to-file answer-string html-file-name)
+                  (setq answer-search-origin (match-end 0))))))))
 
     (unexpected-strings-filter html-file-name html-replace-string-rule-lists)
 
@@ -746,5 +741,22 @@ If a change in `file-attributes` happended call func."
     (defun callback-unexpected-strings-filter ()
       (unexpected-strings-filter org-file-name org-replace-string-rule-lists))
 
-    (install-monitor-file-exists org-file-name 1 'callback-unexpected-strings-filter)
+    (install-monitor-file-exists org-file-name 1 #'callback-unexpected-strings-filter)
+
+    (append-string-to-file
+     "\n#+BEGIN_SRC comment :results valuse list :exports both\n\n#+END_SRC"
+     org-file-name)
+
+    ;; Download all images.
+    (download-all-images html-file-name)
 )
+
+(defun czqhurricane/org-as-mac-iTerm2-get-link ()
+  (do-applescript
+   (concat
+    "tell application \"iTerm2\"\n"
+    " set theName to custom title in tab 1 of window 1\n"
+    " do script \"pwd | pbcopy\" in window 1\n"
+    " set theUrl to do shell script \"pbpaste\"\n"
+    " return theUrl & \"::split::\" & theName\n"
+    "end tell")))

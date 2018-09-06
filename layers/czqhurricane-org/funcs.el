@@ -1,28 +1,36 @@
-(defcustom org-screenshot-image-dir-name  "screenshotImg"
-  "Default directory name for org screenshot image."
-  :type 'string
-  )
-
 (defcustom org-dot-image-dir-name "dotImg"
-  "Default directory name for org dot image." 
+  "Default directory name for org dot image."
   :type 'string
   )
 
-(defun tobase64 (file-full-path)
-  (base64-encode-string
-   (with-temp-buffer
-     (insert-file-contents file-full-path)
-     (buffer-string))))
+(defcustom org-screenshot-image-dir-name "screenshotImg"
+  "Default directory name for org dot image."
+  :type 'string
+  )
+
+(defun org-dot-image-dir ()
+  (or org-dot-image-dir-name "."))
+
+(defun org-screenshot-image-dir ()
+  (or org-screenshot-image-dir-name "."))
+
+(defun select-or-enter-file-name (img-dir)
+  (ivy-read
+   "please selete or enter a image name (Ctrl-n for next item, Ctrl-p for previous item)"
+            (delete ".."
+                    (delete "."
+                            (directory-files img-dir)))))
 
 (defun trim-space-in-string (string)
   (replace-regexp-in-string "[\t\n ]+" "" string))
 
 (defun replace-in-the-entire-buffer (query replace subexp)
-  "query: 所需要被替换的字符串
-  replace: 用来替换的字符串
-  subexp:
-          1. 在函数'replace-match'中使用
-          2. 用来表示'replace'参数被应用在第几个匹配到的模式组"
+  "replace query string with the replace string in the entire buffer..
+query: the string will be replaced.
+replace: the string used to replace.
+subexp:
+  1. used in function 'replace-match'.
+  2. represent 'replace' argument will be implemented in which one match group."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward query nil t)
@@ -36,51 +44,68 @@
   (delete-blank-lines)
   (previous-line 1))
 
-(defun image-to-base64-converter (file-full-path)
-  "file-full-path: the full path of image which will be converted."
-  (interactive)
+(defun tobase64 (file-full-path)
+  (base64-encode-string
+   (with-temp-buffer
+     (insert-file-contents file-full-path)
+     (buffer-string))))
+
+(defun image-to-base64-handler (file-full-path)
+  "Encode the image file to base64 string.
+file-full-path: the full path of image which will be converted."
   (progn
-    (setq result (trim-space-in-string (format "data:image/png;base64,%s" (tobase64 file-full-path))))
-    (jump-to-penultimate-line) 
-    (insert (concat "[" file-full-path "]:" result ))
+    (setq result (trim-space-in-string (format "data:image/png;base64,%s"
+                                               (tobase64 file-full-path))))
+    (jump-to-penultimate-line)
+    (insert (concat "[" (file-relative-name file-full-path default-directory) "]:" result ))
     (newline-and-indent)))
 
-(defun select-or-enter-file-name (img-dir)
-  (ivy-read "please selete or enter a image name (Ctrl-n for next item, Ctrl-p for previous item)"
-            (delete ".."
-                    (delete "."
-                            (directory-files img-dir)))))
-
-(defun org-dot-image-to-base64-converter ()
+(defun image-to-base64-converter (file-full-path)
   (interactive)
-  (let* ((img-dir org-dot-image-dir-name))
+  (image-to-base64-handler file-full-path))
+
+(defun org-image-to-base64-converter ()
+  (interactive)
+  (let* ((img-dir (if (file-directory-p org-screenshot-image-dir-name)
+                      (org-screenshot-image-dir)
+                    (org-dot-image-dir))))
     (progn
-    (setq temp-name (file-name-base (select-or-enter-file-name img-dir)))
-    (setq full-file-path (concat default-directory img-dir "/" temp-name ".png"))
-    (image-to-base64-converter full-file-path))))
+      (setq temp-name (select-or-enter-file-name img-dir))
+      (setq full-file-path (concat default-directory img-dir "/" temp-name))
+      (image-to-base64-handler full-file-path))))
+
+(defun org-download-images-to-base64-converter ()
+  (interactive)
+  (cl-loop for image-file in (delete ".." (delete "." (directory-files (concat default-directory "screenshotImg"))))
+           do (progn
+                (setq full-file-path (concat default-directory "screenshotImg" "/" image-file))
+                (image-to-base64-handler full-file-path))))
 
 (defun org-screenshot ()
   "Take a screenshot into a user specified file in the current
-  buffer file directory and insert a link to this file."
+buffer file directory and insert a link to this file."
   (interactive)
   (let* ((img-dir org-screenshot-image-dir-name))
     (progn
       (if (file-exists-p img-dir)
-          (print (format "yes directory: '%s' exists" img-dir))
+          (print (format "Screnshot image directory: '%s' already exists." img-dir))
         (mkdir img-dir))
-      (setq absolute-img-dir (concat default-directory img-dir))
-      (let ((temp-name (select-or-enter-file-name absolute-img-dir)))
+      ;; 统一将截图和下载图片存放的文件夹, 为以文件的同一目录下的'screenshotImg'文件夹.
+      ;; (setq absolute-img-dir (concat default-directory img-dir))
+      ;; (let ((temp-name (select-or-enter-file-name absolute-img-dir)))
+      (let ((temp-name (select-or-enter-file-name img-dir)))
         (setq name-base (file-name-base temp-name))
         (setq file-name (concat name-base ".png"))
-        (setq file-full-path (concat absolute-img-dir "/" file-name))
-        (call-process-shell-command "screencapture" nil nil nil nil "-i" (concat
-                                                                          "\"" file-full-path "\"" ))
-        (insert (concat "[[" file-full-path "]]"))
-        (image-to-base64-converter file-full-path)))))
+        ;; (setq full-file-path (concat absolute-img-dir "/" file-name))
+        (setq full-file-path (concat img-dir "/" file-name))
+        (call-process-shell-command "screencapture" nil nil nil nil "-i"
+                                    (concat "\"" full-file-path "\"" ))
+        (insert (concat "[[file:" full-file-path "]]"))
+        (image-to-base64-converter full-file-path)))))
 
 (defun find-org-link-begin-and-end (plist string)
   "Find link from plist whose link is equal to string, return a
-  list just like '((name begin-position end-position))'"
+list just like '((name begin-position end-position))'"
   (let ((return-list '()))
     (progn
       (while plist
@@ -93,7 +118,7 @@
 
 (defun do-delete-link-function (be-list)
   "goto the begining of link and delete it, be-list is a list
-  just like '((name begin-position end-position))'"
+just like '((name begin-position end-position))'"
   (while be-list
     (progn
       (goto-char (car (car be-list)))
@@ -111,34 +136,37 @@
                                 (org-element-property :end link))))))
          (absolute-img-dir (concat default-directory img-dir))
          (temp-name (ivy-read "please selete a image name you want to delete"
-                              (delete ".." (delete "." (directory-files img-dir)))))
+                              (delete ".."
+                                      (delete "." (directory-files img-dir)))))
          (file-full-path (concat absolute-img-dir "/" temp-name))
          (begin-end-list (find-org-link-begin-and-end link-list file-full-path)))
     (progn
       (if (yes-or-no-p "Do you want to delete the image links?")
-          (do-delete-link-function begin-end-list))
-      (if (yes-or-no-p "Do you really want to delete the image file? This can't be revert!!")
-          (progn 
-                 (delete-file file-full-path)
-                 (replace-in-the-entire-buffer (concat "\\[" file-full-path "\\]\.*") "" nil))))))
+        (do-delete-link-function begin-end-list))
+      (if (yes-or-no-p
+           "Do you really want to delete the image file? This can't be revert!!")
+        (progn
+          (delete-file file-full-path)
+          (replace-in-the-entire-buffer
+            (concat "\\[" file-full-path "\\]\.*") "" nil))))))
 
 (defun org-delete-screenshot-image-file-and-link ()
   (interactive)
   (delete-image-file-and-link org-screenshot-image-dir-name))
 
-(defun org-delete-dot-image-file-and-link ()
+(defun org-delete-image-file-and-link ()
   (interactive)
-  (delete-image-file-and-link org-dot-image-dir-name))
+  (delete-image-file-and-link (or org-screenshot-image-dir-name org-dot-image-dir-name)))
 
 (defun replace-symbols-dollar-and-times ()
-  "Used in markdown file:
-                                   '\(' -> '$'
-                                   '\)' -> '$'
-                               '\times' -> '×'
-                         '![imag](...)' -> '![img][...]\r' <- '\r':new line
-                           `'''comment` -> ``
-                                   '\`' -> '`'
-  "
+  "Used in markdown file , replace unexpected symbols:
+           '\(' -> '$'
+           '\)' -> '$'
+       '\times' -> '×'
+ '![imag](...)' -> '![img][...]\r' <- '\r' : new line
+   '```comment' -> ''
+           '\`' -> ''
+"
   (interactive)
   (replace-in-the-entire-buffer "\\\\(" " $" nil)
   (replace-in-the-entire-buffer "\\\\)" "$ " nil)
@@ -154,7 +182,7 @@
     (setq absolute-img-dir (concat default-directory img-dir))
     (progn
       (if (file-exists-p img-dir)
-          (print (format "yes directory: '%s' exists" img-dir))
+          (print (format "Org dot image directory: '%s' already exists." img-dir))
         (mkdir img-dir))
       (setq temp-name (select-or-enter-file-name absolute-img-dir))
       (setq name-base (file-name-base temp-name))
@@ -175,7 +203,8 @@
       (insert "#+BEGIN_SRC emacs-lisp :results output :exports none\n")
       (insert "#+END_SRC\n")
       (newline-and-indent)
-      (insert (format "#+BEGIN_SRC dot :file %s :var input=create-%s-from-tables :exports results\n" file-full-path graph-name))
+      (insert (format "#+BEGIN_SRC dot :file %s :var input=create-%s-from-tables :exports results\n"
+                      file-full-path graph-name))
       (insert "digraph {
   $input
 }\n")
@@ -202,25 +231,30 @@
       (org-edit-src-exit)
   )))
 
-(defun org-insert-src-block (src-code-type)
+(defun czqhurricane/org-insert-src-block (src-code-type)
   "Insert a 'SRC-CODE-TYPE' type source code block in org-mode."
   (interactive
     (let ((src-code-types
-          '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
+          '("ipython" "example" "value" "org-download" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
             "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
             "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
-            "haskell" "latex" "lisp" "matlab" "ocaml" "org" "perl" "ruby"
+            "haskell" "latex" "lisp" "matlab" "ocaml" "perl" "ruby"
             "scheme" "sqlite" "graphviz")))
       (list (ido-completing-read "Source code type: " src-code-types))))
   (catch 'return-catch
   (progn
+    (setq region-active-flag nil)
+    (if (region-active-p)
+        (progn
+          (clipboard-kill-region (region-beginning) (region-end))
+          (setq region-active-flag t)))
     (newline-and-indent)
       (cond ((equal src-code-type "ipython")
               (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session\n" src-code-type)))
             ((equal src-code-type "example")
-              (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session example\n"))
+              (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports both :session example\n"))
             ((equal src-code-type "value")
-              (insert "#+BEGIN_SRC ipython :preamble # -*- coding: utf-8 -*- :results raw drawer value list :exports both :session\n" src-code-type))
+              (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer values list :exports both :session\n"))
             ((equal src-code-type "js")
              (insert (format "#+BEGIN_SRC %s :results values list :exports both\n" src-code-type)))
             ((equal src-code-type "C")
@@ -230,6 +264,14 @@
               (insert (format "#+BEGIN_SRC %s :results value table :exports both\n" src-code-type)))
             ((equal src-code-type "dot")
               (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
+            ((equal src-code-type "org-download")
+             (progn
+               (goto-char (point-min))
+               (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n")
+               (save-buffer)
+               (spacemacs/kill-this-buffer)
+               (reopen-killed-file))
+             (throw 'return-catch "I will not going any where else"))
             ((equal src-code-type "graphviz")
               (create-graphviz)
             (throw 'return-catch "I will not going any where else"))
@@ -237,7 +279,9 @@
     (newline-and-indent)
     (insert "#+END_SRC\n")
     (previous-line 2)
-    (org-edit-src-code))))
+    (org-edit-src-code)
+    (if region-active-flag
+        (clipboard-yank)))))
 
 (defun org-gfm-export-to-markdown-filter ()
   (interactive)
@@ -262,18 +306,19 @@
       (replace-in-the-entire-buffer "（" "(" nil)
       (replace-in-the-entire-buffer "）" ")" nil))))
 
+
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.
-  '(= ?* (aref name 0))' <- check whether the first character of string name is '*'
-   or not? if yes, then compara the 'useless-buffer-name' with the name of current buffer.
-  "
+'(= ?* (aref name 0))' <- check whether the first character of string name
+is '*'or not?
+if yes, then compara the 'useless-buffer-name' with the name of current buffer."
   (let ((name (buffer-name buffer-to-be-inspected)))
     (and (= ?* (aref name 0))
          (string-equal useless-buffer-name name))))
 
 (defun kill-buffer-without-confirmation (buffer)
   "'kill-buffer' references the varibale 'kill-buffer-query-functions',
-  Remove the expected function form the relevant varibale."
+remove the expected function from the relevant varibale."
   (interactive)
   (let ((buffer-modified-p nil))
     (setq kill-buffer-query-functions
@@ -283,23 +328,92 @@
 
 (defun kill-useless-buffer (useless-buffer-name)
   "'(require 'cl)' brings in Emacs's Common Lisp Package,
-  which is where the 'loop' macro lives."
+which is where the 'loop' macro lives."
   (require 'cl)
   (interactive)
   (loop for buffer being the buffers
-        do (and (is-useless-buffer buffer useless-buffer-name) (kill-buffer-without-confirmation buffer))))
+        do (and (is-useless-buffer buffer useless-buffer-name)
+                (kill-buffer-without-confirmation buffer))))
 
 (defun org-venv-workon ()
   "Kill the existing Python buffer,so make the new virtual envirnment take effect,
-  should only be used in org-mode."
+should only be used in org-mode."
   (interactive)
   (ignore-errors
-   (kill-useless-buffer "*Python*"))
+    (progn
+      (kill-useless-buffer "*Python*")
+      (kill-useless-buffer "*ob-ipython-out*")
+      (kill-useless-buffer "*ob-ipython-kernel-default*")))
   (venv-workon))
 
 (defun dos2unix ()
   "Replace DOS eolns CR LF with Unix eolns CR"
   (interactive)
   (goto-char (point-min))
-  (while (search-forward "\r" nil t) (replace-match ""))
-  )
+  (while (search-forward "\r" nil t) (replace-match "")))
+
+(defvar killed-file-list nil
+  "List of recently killed files.")
+
+(defun add-file-to-killed-file-list ()
+  "If buffer is associated with a file name, add that file to the
+'killed-file-list' when killing the buffer."
+  (when buffer-file-name
+    (push buffer-file-name killed-file-list)))
+
+(add-hook 'kill-buffer-hook #'add-file-to-killed-file-list)
+
+(defun reopen-killed-file ()
+  "Reopen the most recently killed file, if one exists."
+  (when killed-file-list
+    (find-file (pop killed-file-list))))
+
+(defun czqhurricane/filter-by-tags ()
+  (let ((head-tags (org-get-tags-at)))
+    (member current-tag head-tags)))
+
+(defun czqhurricane/org-clock-sum-today-by-tags (timerange &optional tstart tend noinsert)
+  (interactive "P")
+  (let* ((timerange-numeric-value (prefix-numeric-value timerange))
+         (files (org-add-archive-files (org-agenda-files)))
+         (include-tags '("TODO" "NEXT" "DONE" "MEETING" "WAITING"
+                         ))
+         (tags-time-alist (mapcar (lambda (tag) `(,tag . 0)) include-tags))
+         (output-string "")
+         (tstart (or tstart
+                     (and timerange (equal timerange-numeric-value 4) (- (org-time-today) 86400))
+                     (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "Start Date/Time:"))
+                     (org-time-today)))
+         (tend (or tend
+                   (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "End Date/Time:"))
+                   (+ tstart 86400)))
+         h m file item prompt donesomething)
+    (while (setq file (pop files))
+      (setq org-agenda-buffer (if (file-exists-p file)
+                                  (org-get-agenda-file-buffer file)
+                                (error "No such file %s" file)))
+      (with-current-buffer org-agenda-buffer
+        (dolist (current-tag include-tags)
+          (org-clock-sum tstart tend 'czqhurricane/filter-by-tags)
+          (setcdr (assoc current-tag tags-time-alist)
+                  (+ org-clock-file-total-minutes (cdr (assoc current-tag tags-time-alist)))))))
+    (while (setq item (pop tags-time-alist))
+      (unless (equal (cdr item) 0)
+        (setq donesomething t)
+        (setq h (/ (cdr item) 60)
+              m (- (cdr item) (* 60 h)))
+        (setq output-string (concat output-string (format "[-%s-] %.2d:%.2d\n" (car item) h m)))))
+    (unless donesomething
+      (setq output-string (concat output-string "[-Nothing-] Done nothing!!!\n")))
+    (unless noinsert
+      (insert output-string))
+    output-string))
+
+(defun notify-osx (title message)
+  (call-process "terminal-notifier"
+                nil 0 nil
+                "-group" "Emacs"
+                "-title" title
+                "-sender" "org.gnu.Emacs"
+                "-message" message
+                "-activate" "oeg.gnu.Emacs"))

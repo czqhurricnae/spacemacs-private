@@ -500,7 +500,6 @@
     :bind (:map dired-mode-map
                 ("P" . peep-dired))))
 
-
 (defun czqhurricane-misc/post-init-flyspell-correct ()
   (progn
     (with-eval-after-load 'flyspell
@@ -616,7 +615,6 @@
     :defer t
     :config
     (progn
-
       (setq elfeed-feeds
             '("http://nullprogram.com/feed/"
               "http://z.caudate.me/rss/"
@@ -674,12 +672,12 @@
     (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
     (define-key evil-insert-state-map (kbd "C-r") 'evil-paste-from-register)
 
-    ;; ;; change evil initial mode state
+    ;; change evil initial mode state
     (loop for (mode . state) in
           '((shell-mode . normal))
           do (evil-set-initial-state mode state))
 
-    ;;mimic "nzz" behaviou in vim
+    ;; mimic "nzz" behaviou in vim
     (defadvice evil-search-next (after advice-for-evil-search-next activate)
       (evil-scroll-line-to-center (line-number-at-pos)))
 
@@ -699,10 +697,6 @@
     (define-key evil-normal-state-map
       (kbd "Y") 'czqhurricane/yank-to-end-of-line)
 
-    ;; rebind g,k to gj and gk
-    ;; (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-    ;; (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-
     (define-key evil-normal-state-map (kbd "[ SPC") (lambda () (interactive) (evil-insert-newline-above) (forward-line)))
     (define-key evil-normal-state-map (kbd "] SPC") (lambda () (interactive) (evil-insert-newline-below) (forward-line -1)))
 
@@ -710,13 +704,20 @@
     (define-key evil-normal-state-map (kbd "] b") 'next-buffer)
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
 
-    ;; (define-key evil-insert-state-map "\C-e" 'end-of-line)
-    ;; (define-key evil-insert-state-map "\C-n" 'next-line)
-    ;; (define-key evil-insert-state-map "\C-k" 'kill-line)
-    (define-key evil-emacs-state-map (kbd "s-f") 'forward-word)
-    (define-key evil-insert-state-map (kbd "s-f") 'forward-word)
-    (define-key evil-emacs-state-map (kbd "s-b") 'backward-word)
-    (define-key evil-insert-state-map (kbd "s-b") 'backward-word)
+    ;; {{ Unbinding Evil's mappings
+    ;; see https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
+    (eval-after-load "evil-maps"
+      (dolist (map '(evil-motion-state-map
+                     evil-insert-state-map
+                     evil-emacs-state-map))
+        (define-key (eval map) "\C-f" nil)))
+
+    (eval-after-load "evil-maps"
+      (dolist (map '(evil-motion-state-map
+                     evil-insert-state-map
+                     evil-emacs-state-map))
+        (define-key (eval map) "\C-b" nil)))
+    ;; }}
 
     (spacemacs/set-leader-keys "bi" 'ibuffer)
     (define-key evil-ex-completion-map "\C-a" 'move-beginning-of-line)
@@ -732,7 +733,6 @@
     (define-key evil-visual-state-map (kbd "mp") 'mc/mark-previous-like-this)
     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
     (define-key evil-visual-state-map (kbd "mf") 'mc/mark-all-like-this-in-defun)
-
 
     ;; in spacemacs, we always use evilify miscro state
     (evil-add-hjkl-bindings package-menu-mode-map 'emacs)
@@ -750,7 +750,6 @@
     ;; (define-key evil-emacs-state-map (kbd "s-f") 'ido-find-file)
     (evil-define-key 'emacs term-raw-map (kbd "C-w")
       'evil-delete-backward-word)
-
 
     (setq evil-normal-state-tag   (propertize "[N]" 'face '((:background "DarkGoldenrod2" :foreground "black")))
           evil-emacs-state-tag    (propertize "[E]" 'face '((:background "SkyBlue2" :foreground "black")))
@@ -788,7 +787,6 @@
   (use-package multiple-cursors
     :init
     (progn
-
       (bind-key* "s-." 'mc/mark-next-like-this)
       (bind-key* "s-," 'mc/mark-previous-like-this)
       (bind-key* "s->" 'mc/unmark-next-like-this)
@@ -918,9 +916,6 @@
           ;; (setq-default ffip-prune-patterns '(".git" ".hg" "*.svn" "node_modules" "bower_components" "obj"))
           ))
       (ad-activate 'find-file-in-project))))
-
-
-
 
 (defun czqhurricane-misc/post-init-projectile ()
   (progn
@@ -1083,9 +1078,6 @@
         (setq ivy-wrap t)
         (setq confirm-nonexistent-file-or-buffer t)
 
-        ;; (when (not (configuration-layer/layer-usedp 'helm))
-        ;;   (spacemacs/set-leader-keys "sp" 'counsel-git-grep)
-        ;;   (spacemacs/set-leader-keys "sP" 'spacemacs/counsel-git-grep-region-or-symbol))
         (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
         (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-call)
         (define-key ivy-minibuffer-map (kbd "C-s-m") 'ivy-partial-or-done)
@@ -1098,7 +1090,6 @@
         (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
 
     (define-key global-map (kbd "C-s") 'my-swiper-search)))
-
 
 (defun czqhurricane-misc/post-init-magit ()
   (progn
@@ -1220,7 +1211,7 @@
                                                directory-choices
                                                nil nil partial-input)))
       (comint-delete-input)
-      (insert (concat "cd " 
+      (insert (concat "cd "
                       (shell-quote-argument (concat directory-path selected-name "/"))))))
 
   (defun my-prompt-for-dir-or-fallback ()
@@ -1231,11 +1222,11 @@
                                                        (point-max))))
       (if (and (>= (length user-input) 3)
                (string= (substring user-input 0 3) "cd "))
-          (progn 
+          (progn
             (setq my-dir-selected nil)
             (while (not my-dir-selected)
-              (my-complete-directory-name default-directory 
-                                          (buffer-substring-no-properties (+ (comint-line-beginning-position) 3) 
+              (my-complete-directory-name default-directory
+                                          (buffer-substring-no-properties (+ (comint-line-beginning-position) 3)
                                                                           (point-max))))
             (comint-send-input))
         (call-interactively 'completion-at-point))))
@@ -1254,8 +1245,7 @@
   (add-hook 'shell-mode-hook 'my-shell-mode-hook)
   (defun my-shell-mode-hook ()
     (setq comint-input-ring-file-name "~/.zsh_history")  ;; or bash_history
-    (comint-read-input-ring t))
-)
+    (comint-read-input-ring t)))
 
 (defun czqhurricane-misc/init-pandoc-mode()
   (use-package pandoc-mode

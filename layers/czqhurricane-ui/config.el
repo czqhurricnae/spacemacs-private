@@ -25,8 +25,10 @@
         (powerline-inactive2 :foreground "#2075c7" :background "#e9e2cb" :inverse-video nil)
         (company-scrollbar-fg :background "alternateSelectedControlColor")
         (cursor :background "#b58900")
-        (ivy-current-match :inherit hl-line)
+        (ivy-current-match :inherit region)
+        (helm-selection-line :inherit isearch)
         (ivy-minibuffer-match-face-2 :inherit isearch)
+        (ivy-minibuffer-match-face-3 :inherit isearch)
         (org-format-latex-options :foreground default :background default :scale 3.0 :html-foreground "Black" :html-background "Transparent" :html-scale 1.0 :matchers ("begin" "$1" "$" "$$" "\\(" "\\["))
         ;; Turn this off to stop it interfering with mic-paren.
         (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)

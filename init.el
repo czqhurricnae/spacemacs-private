@@ -4,8 +4,8 @@
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration.
-   You should not put any user code in this function besides modifying the variable
-   values."
+You should not put any user code in this function besides modifying the variable
+values."
   (setq-default
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
@@ -20,10 +20,10 @@
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
    ;; (default 'unused)
-   dotspacemacs-enable-lazy-installation 'unused
+   dotspacemacs-enable-lazy-installation nil
    ;; If non-nil then Spacemacs will ask for confirmation before installing
    ;; a layer lazily. (default t)
-   dotspacemacs-ask-for-lazy-installation t
+   dotspacemacs-ask-for-lazy-installation nil
    ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
@@ -32,32 +32,63 @@
    dotspacemacs-configuration-layers
    '(
      ivy
-     (better-defaults :variables
-                      better-defaults-move-to-end-of-code-first t)
+     better-defaults
+     ranger
+     colors
+     prodigy
+     search-engine
+     graphviz
+     (syntax-checking :variables
+                      syntax-checking-enable-by-default nil
+                      syntax-checking-enable-tooltips nil)
+     (spell-checking :variables
+                     spell-checking-enable-by-default nil)
+     (vinegar :variables vinegar-reuse-dired-buffer t)
+     (spacemacs-layouts :variables layouts-enable-autosave nil
+                        layouts-autosave-delay 300)
+     (git :variables
+          git-magit-status-fullscreen t
+          magit-push-always-verify nil
+          magit-save-repository-buffers 'dontask
+          magit-revert-buffers 'silent
+          magit-refs-show-commit-count 'all
+          magit-revision-show-gravatars nil)
+     (ibuffer :variables ibuffer-group-buffers-by 'projects)
+     (auto-completion :variables
+                      auto-completion-enable-sort-by-usage t
+                      auto-completion-enable-snippets-in-popup t
+		      auto-completion-enable-help-tooltip nil
+                      :disabled-for org markdown)
+     (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English"
+          osx-command-as 'super)
+     restclient
+     (gtags :disabled-for clojure emacs-lisp javascript latex python shell-scripts)
+     (shell :variables shell-default-shell 'eshell)
+     ;; docker
+     latex
+     deft
+     markdown
      (javascript :variables
                  javascript-disable-tern-port-files nil)
+     (typescript :variables
+                 typescript-fmt-on-save nil
+                 typescript-fmt-tool 'typescript-formatter)
      html
-     python
+     react
+     (python :variables
+             python-test-runner '(nose pytest))
      ipython-notebook
-     c-c++
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c++-mode)
      ycmd
-     (auto-completion :variables
-                      auto-completion-enable-snippets-in-popup t 
-                      auto-completion-enable-sort-by-usage t
-                      auto-completion-enable-help-tooltip nil)
+     common-lisp
      emacs-lisp
-     git
      markdown
      (org :variables
           org-want-to-do-binding t
           org-enable-github-support t
           org-enable-reveal-js-support t)
-     (spell-checking :variables
-                     ispell-progam-name "aspell"
-                     ispell-dictionary "american"
-                     spell-checking-enable-by-default nil)
-     syntax-checking
-     ;; Must ensure fasd installed first. 
+     ;; Must ensure fasd installed first.
      fasd
      (spacemacs-layouts :variables
                         layouts-enable-autosave nil
@@ -78,10 +109,23 @@
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(highlight-parentheses
-                                    org-pdfview
-                                    doc-view
-                                    org-projectile
+   dotspacemacs-excluded-packages '(
+                    magit-gh-pulls magit-gitflow org-projectile evil-mc realgud
+                    evil-args evil-ediff evil-exchange evil-unimpaired
+                    evil-indent-plus volatile-highlights
+                    holy-mode skewer-mode rainbow-delimiters
+                    highlight-indentation vi-tilde-fringe eyebrowse
+                    org-bullets smooth-scrolling org-repo-todo org-timer
+                    livid-mode git-gutter git-gutter-fringe  evil-escape
+                    leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
+                    ac-ispell ace-jump-mode auto-complete auto-dictionary
+                    clang-format define-word google-translate disaster epic
+                    fancy-battery org-present orgit orglue
+                    helm-flyspell flyspell-correct-helm clean-aindent-mode
+                    helm-c-yasnippet ace-jump-helm-line helm-make magithub
+                    helm-swoop helm-spacemacs-help smeargle
+                    ido-vertical-mode flx-ido company-quickhelp counsel-projectile
+		    highlight-parentheses org-pdfview doc-view org-projectile
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -153,7 +197,7 @@
    dotspacemacs-themes '(spacemacs-dark
                          spacemacs-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
-   dotspacemacs-colorize-cursor-according-to-state nil 
+   dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro" :size
@@ -188,13 +232,13 @@
    ;; works in the GUI. (default nil)
    dotspacemacs-distinguish-gui-tab nil
    ;; If non nil `Y' is remapped to `y$' in Evil states. (default nil)
-   dotspacemacs-remap-Y-to-y$ nil
+   dotspacemacs-remap-Y-to-y$ t
    ;; If non-nil, the shift mappings `<' and `>' retain visual state if used
    ;; there. (default t)
    dotspacemacs-retain-visual-state-on-shift t
    ;; If non-nil, J and K move lines up and down when in visual mode.
    ;; (default nil)
-   dotspacemacs-visual-line-move-text nil
+   dotspacemacs-visual-line-move-text t
    ;; If non nil, inverse the meaning of `g' in `:substitute' Evil ex-command.
    ;; (default nil)
    dotspacemacs-ex-substitute-global nil
@@ -250,7 +294,7 @@
    dotspacemacs-fullscreen-at-startup nil
    ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
-   dotspacemacs-fullscreen-use-non-native nil 
+   dotspacemacs-fullscreen-use-non-native nil
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
@@ -286,7 +330,7 @@
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers t 
+   dotspacemacs-line-numbers t
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'origami
@@ -307,7 +351,7 @@
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
    ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("ack" "pt" "ag" "grep")
    ;; The default package repository used if no explicit repository has been
    ;; specified with an installed package.
    ;; Not used for now. (default nil)
@@ -317,26 +361,34 @@
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
-   dotspacemacs-whitespace-cleanup nil
+   dotspacemacs-whitespace-cleanup 'trailing
    ))
 
 (defun dotspacemacs/user-init ()
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init', before layer configuration
 executes.
- This function is mostly us ful for variables that need to be set
+ This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-(setq configuration-layer--elpa-archives
-      '(("melpa"    . "https://melpa.org/packages/")
-        ("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-        ("org-cn"   . "http://elpa.emacs-china.org/org/")
-        ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
-        ))
-(setq tramp-ssh-controlmaster-options
-      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-(setq evil-shift-round nil)
-(setq byte-compile-warnings '(not obsolete)))
+  (setq configuration-layer--elpa-archives
+        '(("melpa"    . "https://melpa.org/packages/")
+          ("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+          ("org-cn"   . "http://elpa.emacs-china.org/org/")
+          ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")
+          ))
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+  ;; ss proxy. But it will cause anacond-mode failed.
+  (setq socks-server '("Default server" "127.0.0.1" 1080 5))
+  (setq evil-shift-round nil)
+  (setq byte-compile-warnings '(not obsolete))
+  (setq warning-minimum-level :error)
+  ;; Hack for remove purpose mode
+  (setq purpose-mode nil)
+  ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
+  (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
+  )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -345,40 +397,30 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-(set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified) 
-(set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
   (package-initialize)
-  (require 'ein-dev)
-  (require 'emmet-mode)
-  (require 'ob-ipython)
-  ;; set ob-ipython-command to the path of jupyter, must be be corresponding to
-  ;; the path of ipython virtual envirnment which setting in
-  ;; '(setq venv-location "/Users/c/.virtualenvs/")'.
-  ;; In ipy virtual envirnment must install ipython and jupyter:
-  ;; 'pip install ipython'
-  ;; 'pip install --upgrade jupyter'.
-  (setq ob-ipython-command "/Users/c/.virtualenvs/ipy/bin/jupyter")
-  (require 'virtualenvwrapper)
-  (venv-initialize-interactive-shells)
-  (venv-initialize-eshell)
-  (setq venv-location "/Users/c/.virtualenvs/")
 
-  (setq python-shell-completion-native-disabled-interpreters '("python"))
+  ;; {{fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
+  ;; https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
+  (with-eval-after-load 'python
+    (defun python-shell-completion-native-try ()
+      "Return non-nil if can trigger native completion."
+      (let ((python-shell-completion-native-enable t)
+            (python-shell-completion-native-output-timeout
+             python-shell-completion-native-try-output-timeout))
+        (python-shell-completion-native-get-completions
+         (get-buffer-process (current-buffer))
+         nil "_"))))
+  ;; }}
 
-  
+  (server-start)
+  (require 'org-protocol)
+  (require 'org-protocol-capture-html)
   (global-company-mode 1)
   (global-hl-line-highlight)
-  (require 'ox-latex)
-  (require 'ox-md)
   (require 'nodejs-repl)
-  (require 'emmet-mode)
   ;; setup javascript auto-complete.
   (setq tern-command '("node" "/usr/local/bin/tern"))
   (setq js2-include-node-externs t)
-  ;; Set your lisp system and, optionally, some contribs.
-  (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
-  (setq slime-contribs '(slime-fancy))
-
   (setq-default indent-tabs-mode nil)
   (setq default-tab-width 4)
   (setq c-default-style "k&r")
@@ -392,18 +434,7 @@ you should place your code here."
   ;; Make magit's windown display in the right side.
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
-  (setq ycmd-force-semantic-completion t)
-  ;; Use ob-ipython queries the jupyter kernel for completions at a position
-  (add-to-list 'company-backends 'company-ob-ipython)
-  (setq company-backends-c-mode-common '((company-c-headers
-                                          company-ycmd
-                                          company-dabbrev :with company-yasnippet)))
-    (set-variable 'ycmd-server-command '("python" "/Users/c/YouCompleteMe/third_party/ycmd/ycmd/"))
-  (set-variable 'ycm-global-config "/Users/c/.ycm_extra_conf.py")
   (setcdr evil-insert-state-map nil)
-  
-  (add-hook 'c++-mode-hook 'ycmd-mode)
-  (add-hook 'python-mode-hook 'ycmd-mode)
   (add-hook 'prog-mode-hook 'turn-on-fci-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
@@ -411,9 +442,7 @@ you should place your code here."
   (autoload 'dash-at-point "dash-at-point"
     "Search the word at point with Dash." t nil)
   (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))
-
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
-  
   )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

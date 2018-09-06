@@ -30,9 +30,11 @@
 ;;; Code:
 (defconst czqhurricane-programming-packages
   '(
-    yasnippet
+    web-mode
+    slime
     (exec-path-from-shell :location elpa)
-;;  " list of Lisp packages required by the czqhurricane-better-defaults layer.
+    dumb-jump
+;;  " list of Lisp packages required by the czqhurricane-programming layer.
 
 ;; Each entry is either:
 
@@ -61,37 +63,75 @@
 ))
 
 (defun czqhurricane-programming/post-init-yasnippet ()
-  (use-package yasnippet
-    :ensure t
-    :load-path "/Users/c/.spacemacs.d/snippets")
-    :defer t
-    :init
-    (setq yas-snippet-dirs '("/Users/c/.spacemacs.d/snippets")
-          yas-indent-line 'fixed
-          yas-verbosity 0)
-    (add-hook 'prog-mode-hook #'yas-minor-mode)
-    :config
     (progn
-      (yas-global-mode 1)
-      (spacemacs|diminish yas-minor-mode)
       (set-face-background 'secondary-selection "gray")
       (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
       (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
-                                                                             org-mode-hook
-                                                                             markdown-mode-hook))
-
+                                                                        org-mode-hook
+                                                                        markdown-mode-hook))
       (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
-                                                             markdown-mode-hook
-                                                             org-mode-hook))
-      ))
+                                                             org-mode-hook
+                                                             markdown-mode-hook))))
 
 (defun czqhurricane-programming/post-init-exec-path-from-shell ()
-  (use-package exec-path-from-shell
+  (progn
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))
+    (exec-path-from-shell-copy-env "PATH")))
+
+(defun czqhurricane-programming/init-virtualenvwrapper ()
+  (use-package virtualenvwrapper
     :config
     (progn
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-(exec-path-from-shell-copy-env "PATH")
-)))
-;;; packages.el ends here
+      (venv-initialize-interactive-shells)
+      (venv-initialize-eshell)
+      (setq venv-location virtualenv-dir))))
 
+(defun czqhurricane-programming/post-init-web-mode ()
+  (with-eval-after-load "web-mode"
+    (web-mode-toggle-current-element-highlight)
+    (web-mode-dom-errors-show))
+  (setq company-backends-web-mode '((company-dabbrev-code
+                                     company-keywords
+                                     company-etags)
+                                    company-files company-dabbrev)))
+
+(defun czqhurricane-programming/post-init-dumb-jump ()
+  (setq dumb-jump-selector 'ivy)
+  (defun my-dumb-jump ()
+    (interactive)
+    (evil-set-jump)
+    (dumb-jump-go-other-window))
+  (global-set-key (kbd "C-x g") 'my-dumb-jump))
+
+(defun czqhurricane-programming/init-ycmd ()
+  (use-package ycmd
+    :init
+    (progn
+      (set-variable 'ycmd-global-config "/Users/c/.ycm_extra_conf.py")
+      (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
+      (setq ycmd-tag-files 'auto)
+      (setq ycmd-force-semantic-completion t)
+      (setq ycmd-request-message-level -1)
+      (add-hook 'c++-mode-hook 'ycmd-mode)
+      (add-hook 'python-mode-hook 'ycmd-mode)
+      (setq company-backends-c-mode-common '((company-c-headers
+                                              company-dabbrev-code
+                                              company-keywords
+                                              company-gtags :with company-yasnippet)
+                                              company-files company-dabbrev ))
+      (czqhurricane|toggle-company-backends company-ycmd)
+      :config
+      (eval-after-load 'ycmd
+        '(spacemacs|hide-lighter ycmd-mode)))))
+
+;; {{ https://github.com/slime/slime
+;; https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/common-lisp
+;; This layer defaults to using sbcl.
+;; 'brew install sbcl'
+;; Set your lisp system and, optionally, some contribs.
+(defun czqhurricane-programming/post-init-slime ()
+  (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
+  (setq slime-contribs '(slime-fancy))
+)
+;; }}

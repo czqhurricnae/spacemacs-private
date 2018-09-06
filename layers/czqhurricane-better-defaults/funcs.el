@@ -13,13 +13,14 @@
         (indent-buffer)
         (message "Indent buffer.")))))
 
-;;http://emacsredux.com/blog/2013/03/26/smarter-open-line/
+;; {{http://emacsredux.com/blog/2013/03/26/smarter-open-line/
 (defun czqhurricane/smart-open-line ()
   "Insert an empty line after the current line.
 Position the cursor at its beginning, according to the current mode."
   (interactive)
   (move-end-of-line nil)
   (newline-and-indent))
+;; }}
 
 (defun czqhurricane/rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
@@ -40,7 +41,7 @@ Position the cursor at its beginning, according to the current mode."
   (evil-yank (point) (point-at-eol)))
 
 (defun czqhurricane/occur-dwin ()
-  "Call `occur` with a sane default."
+  "Call 'occur` with a sane default."
   (interactive)
   (push (if (region-active-p)
             (buffer-substring-no-properties
@@ -90,7 +91,7 @@ Position the cursor at its beginning, according to the current mode."
       (mapconcat #'expand-file-name file-list "\" \"")))))
 
 (defun dired-open-term ()
-  "Open an `ansi-term' that corresponds to current directory."
+  "Open an 'ansi-term' that corresponds to current directory."
   (interactive)
   (let* ((current-dir (dired-current-directory))
          (buffer (if (get-buffer "*zshell*")
@@ -106,6 +107,10 @@ Position the cursor at its beginning, according to the current mode."
        (format "cd '%s'\n" current-dir)))))
 
 (defun dired-copy-file-here (file)
+  "This command copies the file oldname to newname.
+An error is signaled if oldname is not a regular file.
+If newname names a directory, it copies oldname into that directory,
+preserving its final name component."
   (interactive "fCopy file: ")
   (copy-file file default-directory))
 
@@ -129,6 +134,6 @@ open and unsaved."
           (dired-get-marked-files))))
 
 (defun czqhurricane/dired-up-directory ()
-  "goto up directory and resue buffer"
+  "Goto up directory and resue buffer"
   (interactive)
   (find-alternate-file ".."))

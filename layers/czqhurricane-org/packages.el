@@ -2,43 +2,32 @@
   '(
     (org :location built-in)
     (org-mac-link :location built-in)
-    org-pomodoro
-    ox-gfm
+    (org-pomodoro :location (recipe :fetcher github :repo "lolownia/org-pomodoro"))
+    (ox-latex :location built-in)
+    (ox-md :location built-in)
     deft
-    (blog-admin :location (recipe
-                           :fetcher github
-                           :repo "codefalling/blog-admin"))
+    (org-protocol-capture-html :location (recipe
+                                          :fetcher github
+                                          :repo "alphapapa/org-protocol-capture-html"))
+    ;; (blog-admin :location (recipe
+    ;;                        :fetcher github
+    ;;                        :repo "codefalling/blog-admin"))
+    ob-ipython
     ;; org-tree-slide
     ;; ox-reveal
     ;; worf
-    ;; org-download
     ;; plain-org-wiki
-    )
-  )
-
-(defun czqhurricane-org/init-blog-admin ()
-  (use-package blog-admin
-    :defer t
-    :commands blog-admin-start
-    :init
-    (progn
-      ;; do your configuration here
-      (setq blog-admin-backend-type 'hexo
-            blog-admin-backend-path blog-admin-dir
-            blog-admin-backend-new-post-with-same-name-dir nil
-            blog-admin-backend-hexo-config-file "_config.yml"
-            )
-      (add-hook 'blog-admin-backend-after-new-post-hook 'find-file)
-      )))
+    ))
 
 (defun czqhurricane-org/post-init-org-pomodoro ()
   (progn
-    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/growl-notification "Pomodoro Finished" "☕️ Have a break!" t)))
-    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/growl-notification "Short Break" "� Ready to Go?" t)))
-    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/growl-notification "Long Break" " � Ready to Go?" t)))
+    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "☕️ Have a break!" t)))
+    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "� Ready to Go?" t)))
+    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" " � Ready to Go?" t)))
+    (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
     ))
 
-;;In order to export pdf to support Chinese, I should install Latex at here:
+;; In order to export pdf to support Chinese, I should install Latex at here:
 ;; https://www.tug.org/mactex/
 ;; http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
 ;; http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
@@ -51,15 +40,16 @@
         "," 'org-priority)
       (require 'org-compat)
       (require 'org)
-      ;; (add-to-list 'org-modules "org-habit")
       (add-to-list 'org-modules 'org-habit)
       (require 'org-habit)
-
+      (require 'ob-emacs-lisp)
+      (require 'ob-lisp)
+      (require 'ob-ipython)
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((perl . t)
          (ruby . t)
-         (sh . t)
+         (shell . t)
          (dot . t)
          (js . t)
          (latex .t)
@@ -70,12 +60,9 @@
          (C . t)
          (ditaa . t)))
 
-      ;; Don't prompt me to confirm everytime I want to evaluate a block.
-      (setq org-confirm-babel-evaluate nil)
-      ;; Display/update images in the buffer after I evaluate.
-      (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-      ;; Make Yasnippet effect when the editing org source code is JavaScript. 
+      ;; Make Yasnippet effect when the editing org source code is JavaScript.
       (add-to-list 'org-src-lang-modes '("js" . js2))
+
       ;; When editing org-files with source-blocks, we want the
       ;; source blocks to be themed as they would in their native mode.
       ;; Turn on native code fontification in the Org buffer.
@@ -121,15 +108,11 @@
       ;; (add-to-list 'auto-mode-alist '("\.org\\'" . org-mode))
 
       (setq org-todo-keywords
-            (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
+            (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
                     (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
 
-      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-            ;; Org clock
-      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
       ;; Change task state to STARTED when clocking in
-      (setq org-clock-in-switch-to-state "STARTED")
+      (setq org-clock-in-switch-to-state "NEXT")
       ;; Save clock data and notes in the LOGBOOK drawer
       (setq org-clock-into-drawer t)
       ;; Removes clocked tasks with 0:00 duration
@@ -138,10 +121,18 @@
       (setq org-tags-match-list-sublevels nil)
 
       (add-hook 'org-mode-hook '(lambda ()
-                                  ;; keybinding for editing source code blocks
                                   ;; keybinding for inserting code blocks
-                                  (local-set-key (kbd "C-c i s")
-                                                 'czqhurricane/org-insert-src-block)))
+                                  (local-set-key (kbd "C-c s i")
+                                                 'czqhurricane/org-insert-src-block)
+                                  ;; keybinding for editing source code blocks
+                                  (local-set-key (kbd "C-c s e")
+                                                 'org-edit-special)
+                                  (local-set-key (kbd "C-c s r")
+                                                 'org-src-do-at-code-block)
+                                  (local-set-key (kbd "C-c f c")
+                                                 'org-gfm-export-to-markdown-filter)
+                                  ))
+
       (require 'ox-publish)
       (setq org-latex-create-formula-image-program 'dvipng)
       (setq org-latex-listings 'minted)
@@ -149,7 +140,7 @@
       (add-to-list 'org-entities-user
                    '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
       (setq org-export-backends (quote (ascii html icalendar latex md)))
-      ;; Make org not to treat `_` with sub-superscript, but `_{}`.
+      ;; Make org not to treat '_' with sub-superscript, but '_{}'.
       (setq org-export-with-sub-superscripts '{})
       (add-to-list 'org-latex-classes '("ctexart" "\\documentclass[11pt]{ctexart}
                                         [NO-DEFAULT-PACKAGES]
@@ -197,11 +188,11 @@
                                         ("\\paragraph{%s}" . "\\paragraph*{%s}")
                                         ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-      ;; {{ export org-mode in Chinese into PDF
+      ;; {{ Export org-mode in Chinese into PDF.
       ;; @see http://freizl.github.io/posts/tech/2012-04-06-export-orgmode-file-in-Chinese.html
       ;; and you need install texlive-xetex on different platforms
       ;; To install texlive-xetex:
-      ;;    `sudo USE="cjk" emerge texlive-xetex` on Gentoo Linux
+      ;;    'sudo USE="cjk" emerge texlive-xetex' on Gentoo Linux.
       ;; }}
       (setq org-latex-default-class "ctexart")
       (setq org-latex-pdf-process
@@ -213,7 +204,7 @@
 
       (setq org-latex-listings t)
 
-      ;;reset subtask
+      ;; reset subtask
       (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties))
 
       ;; (add-hook 'org-after-todo-state-change-hook 'org-subtask-reset)
@@ -237,7 +228,7 @@
                   "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
           (ad-set-arg 1 fixed-contents)))
 
-      ;; define the refile targets
+      ;; Define the refile targets
       (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
       (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
@@ -250,9 +241,10 @@
         (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
           "." 'spacemacs/org-agenda-transient-state/body)
         )
-      ;; the %i would copy the selected text into the template
-      ;;http://www.howardism.org/Technical/Emacs/journaling-org.html
-      ;;add multi-file journal
+      ;; {{The %i would copy the selected text into the template.
+      ;; @see http://www.howardism.org/Technical/Emacs/journaling-org.html
+      ;; add multi-file journal.
+      ;; }}
       (setq org-capture-templates
             '(("t" "Todo" entry (file+headline org-agenda-file-gtd "Workspace")
                "* TODO [#B] %?\n  %i\n"
@@ -266,7 +258,7 @@
               ("s" "Code Snippet" entry
                (file org-agenda-file-code-snippet)
                "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
-              ("w" "work" entry (file+headline org-agenda-file-gtd "Cocos2D-X")
+              ("W" "Work" entry (file+headline org-agenda-file-gtd "Work")
                "* TODO [#A] %?\n  %i\n %U"
                :empty-lines 1)
               ("c" "Chrome" entry (file+headline org-agenda-file-note "Quick notes")
@@ -277,11 +269,15 @@
                :empty-lines 1)
               ("j" "Journal Entry"
                entry (file+datetree org-agenda-file-journal)
-               "* %?"
-               :empty-lines 1)))
+               "* %U - %^{heading}\n %?"
+               :empty-lines 1)
+              ("p" "Protocol"
+               entry (file+headline org-agenda-file-note "Quick notes")
+               "* %^{Title}\n %:initial")
+              ))
 
-      ;;An entry without a cookie is treated just like priority ' B '.
-      ;;So when create new task, they are default 重要且紧急
+      ;; An entry without a cookie is treated just like priority ' B '.
+      ;; So when create new task, they are default 重要且紧急
       (setq org-agenda-custom-commands
             '(
               ("w" . "任务安排")
@@ -340,17 +336,15 @@
                )
               ("blog" :components ("blog-notes" "blog-static"))))
 
-
-
+      ;; Used by czqhurricane/org-clock-sum-today-by-tags
       (add-hook 'org-after-todo-statistics-hook 'czqhurricane/org-summary-todo)
-      ;; used by czqhurricane/org-clock-sum-today-by-tags
 
       (define-key org-mode-map (kbd "s-p") 'org-priority)
       (spacemacs/set-leader-keys-for-major-mode 'org-mode
         "tl" 'org-toggle-link-display)
       (define-key evil-normal-state-map (kbd "C-c C-w") 'org-refile)
 
-      ;; hack for org headline toc
+      ;; Hack for org headline toc
       (defun org-html-headline (headline contents info)
         "Transcode a HEADLINE element from Org to HTML.
         CONTENTS holds the contents of the headline.  INFO is a plist
@@ -424,7 +418,7 @@
                         ;; When there is no section, pretend there is an
                         ;; empty one to get the correct <div
                         ;; class="outline-...> which is needed by
-                        ;; `org-info.js'.
+                        ;; 'org-info.js'.
                         (if (eq (org-element-type first-content) 'section) contents
                           (concat (org-html-section first-content "" info) contents))
                         (org-html--container headline info)))))))
@@ -433,39 +427,34 @@
 
 (defun czqhurricane-org/init-org-mac-link ()
   (use-package org-mac-link
+    :after (org)
     :commands org-mac-grab-link
     :init
     (progn
       (add-hook 'org-mode-hook
                 (lambda ()
-                  (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))
-    :defer t))
-
+                  (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link)
+                  )))))
+;; FIXME:
 (defun czqhurricane-org/post-init-ox-reveal ()
   (setq org-reveal-root "file:///Users/guanghui/.emacs.d/reveal-js"))
 
-
 (defun czqhurricane-org/init-org-tree-slide ()
-  (use-package org-tree-slide
-    :init
+  (spacemacs|use-package-add-hook org
+    :post-config
+    (require 'ox-md)
     (spacemacs/set-leader-keys "oto" 'org-tree-slide-mode)))
 
-
-(defun czqhurricane-org/init-org-download ()
-  (use-package org-download
-    :defer t
-    :init
-    (org-download-enable)))
-
 (defun czqhurricane-org/init-plain-org-wiki ()
-  (use-package plain-org-wiki
-    :init
+  (spacemacs|use-package-add-hook org
+    :post-config
+    (require 'ox-md)
     (setq pow-directory "~/org-notes")))
 
 (defun czqhurricane-org/init-worf ()
-  (use-package worf
-    :defer t
-    :init
+  (spacemacs|use-package-add-hook org
+    :post-config
+    (require 'ox-md)
     (add-hook 'org-mode-hook 'worf-mode)))
 
 (defun czqhurricane-org/post-init-deft ()
@@ -475,7 +464,33 @@
     (setq deft-extension "org")
     (setq deft-directory deft-dir)))
 
-(defun czqhurricane-org/post-init-ox-gfm ()
-    (eval-after-load "org"
-      '(require 'ox-gfm nil t)))
+(defun czqhurricane-org/init-org-protocol-capture-html ()
+  (spacemacs|use-package-add-hook org-protocol :post-config (require 'org-protocol-capture-html)))
+
+(defun czqhurricane-org/init-ox-latex ()
+  (spacemacs|use-package-add-hook org :post-config (require 'ox-latex)))
+
+(defun czqhurricane-org/init-ox-md ()
+  (spacemacs|use-package-add-hook org :post-config (require 'ox-md)))
+
+;; {{
+;; @see https://github.com/gregsexton/ob-ipython
+;; set ob-ipython-command to the path of jupyter, must be be corresponding to
+;; the path of ipython virtual envirnment which is setting by
+;; '(setq venv-location virtualenv-dir)'.
+;; Must install ipython and jupyter in ipy virtual envirnment first:
+;; 'pip install ipython'
+;; 'pip install --upgrade jupyter'.
+(defun czqhurricane-org/init-ob-ipython ()
+  (use-package ob-ipython
+    :after (org)
+    :init
+    (progn
+      (setq ob-ipython-command jupyter-dir)
+      (with-eval-after-load 'company
+        (add-to-list 'company-backends 'company-ob-ipython))
+      ;; Display/update images in the buffer after I evaluate.
+      (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+)))
+;; }}
 ;;; packages.el ends here

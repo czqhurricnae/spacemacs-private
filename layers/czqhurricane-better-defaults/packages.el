@@ -16,7 +16,8 @@
     (mic-paren :location elpa)
     (recentf :location elpa)
     (occur-mode :location local)
-    (dired-mode :location local)))
+    (dired-mode :location local)
+    ))
 
 (defun czqhurricane-better-defaults/init-youdao-dictionary ()
   (use-package youdao-dictionay
@@ -30,20 +31,6 @@
     (setq blink-matching-paren nil)
     (paren-activate)
     (setq paren-match-face 'mode-line)))
-
-(defun czqhurricane-better-defaults/post-init-yasnippet ()
-  (progn
-    (spacemacs|diminish yas-minor-mode)
-    (set-face-background 'secondary-selection "gray")
-    (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
-    (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
-                                                                           org-mode-hook
-                                                                           markdown-mode-hook))
-
-    (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
-                                                           markdown-mode-hook
-                                                           org-mode-hook))
-    ))
 
 (defun czqhurricane-better-defaults/post-init-recentf ()
   (progn
@@ -75,6 +62,7 @@
     (progn
       (require 'dired-x)
       (require 'dired-aux)
+      (setq dired-dwin-target 1)
       (setq dired-listing-switches "-alh")
       (setq dired-guess-shell-alist-user
             '(("\\.pdf\\'" "open")
@@ -93,10 +81,11 @@
       (setq dired-omit-files
             (concat dired-omit-files "\\|^.DS_Store$\\|^.projectile$\\|\\.js\\.meta$\\|\\.meta$"))
 
-      ;; always delete and copy recursively
+      ;; Always delete and copy recursively
       (setq dired-recursive-deletes 'always)
       (setq dired-recursive-copies 'always)
 
+      ;; {{https://oremacs.com/2017/03/18/dired-ediff/
       (defun ora-ediff-files ()
         (interactive)
         (let ((files (dired-get-marked-files))
@@ -118,11 +107,12 @@
             (error "no more than 2 files should be marked"))))
 
       (define-key dired-mode-map "e" 'ora-ediff-files)
+      ;; }}
 
       (defvar dired-filelist-cmd
         '(("vlc" "-L")))
 
-      ;; FIXME: evilify dired mode will lead to startup warnings
+      ;; FIXME: Evilify dired mode will lead to startup warnings
       (evilified-state-evilify-map dired-mode-map
         :mode dired-mode
         :bindings
@@ -148,7 +138,7 @@
     (evilified-state-evilify profiler-report-mode profiler-report-mode-map)))
 
 (defun czqhurricane-better-defaults/post-init-occur-mode ()
-    ;; Auto switch to `occur buffer`
+  "Auto switch to 'occur buffer'"
     (add-hook 'occur-hook
               '(lambda ()
                  (switch-to-buffer-other-window "*Occur*"))))

@@ -32,7 +32,8 @@
   '(
     (color-theme-solarized :location elpa)
     which-func
-;;  " list of Lisp packages required by the czqhurricane-better-defaults layer.
+    pangu-spacing
+;;  " list of Lisp packages required by the czqhurricane-ui layer.
 
 ;; Each entry is either:
 
@@ -81,6 +82,20 @@
   :init
   (spacemacs/load-theme 'solarized)
   :defer t))
+
+(defun czqhurricane-ui/init-pangu-spacing ()
+  (use-package pangu-spacing
+  :init
+  (progn
+    ;; add toggle options
+    (spacemacs|add-toggle toggle-pangu-spaceing
+      :status pangu-spacing-mode
+      :on (global-pangu-spacing-mode)
+      :off (global-pangu-spacing-mode -1)
+      :documentation "Toggle pangu spacing mode"
+      :evil-leader "ots")
+    (add-hook 'org-mode-hook
+              #'(lambda ()
+                  (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
+                  (pangu-spacing-space-current-buffer))))))
 ;;; packages.el ends here
-
-

@@ -409,7 +409,7 @@ should only be used in org-mode."
       (insert output-string))
     output-string))
 
-(defun notify-osx (title message)
+(defun czqhurricane/notify-osx (title message)
   (call-process "terminal-notifier"
                 nil 0 nil
                 "-group" "Emacs"

@@ -21,9 +21,9 @@
 
 (defun czqhurricane-org/post-init-org-pomodoro ()
   (progn
-    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "☕️ Have a break!" t)))
-    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "� Ready to Go?" t)))
-    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" " � Ready to Go?" t)))
+    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "☕️ Have a break!")))
+    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "� Ready to Go?")))
+    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" " � Ready to Go?")))
     (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
     ))
 
@@ -76,36 +76,32 @@
       (setq org-refile-targets
             '((nil :maxlevel . 4)
               (org-agenda-files :maxlevel . 4)))
-      ;; config stuck project
+
+      ;; Config stuck project
       (setq org-stuck-projects
             '("TODO={.+}/-DONE" nil nil "SCHEDULED:\\|DEADLINE:"))
 
-      (setq org-agenda-inhibit-startup t) ;; ~50x speedup
+      (setq org-agenda-inhibit-startup t)
       (setq org-agenda-span 'day)
-      (setq org-agenda-use-tag-inheritance nil) ;; 3-4x speedup
+      (setq org-agenda-use-tag-inheritance nil)
       (setq org-agenda-window-setup 'current-window)
       (setq org-log-done t)
 
-      ;; 加密文章
-      ;; "http://coldnew.github.io/blog/2013/07/13_5b094.html"
-      ;; org-mode 設定
+      ;; {{ 加密文章
+      ;; see: http://coldnew.github.io/blog/2013/07/13_5b094.html
+      ;; org-mode 设定
       (require 'org-crypt)
-
-      ;; 當被加密的部份要存入硬碟時,自動加密回去
+      ;; 当被加密的部分要存入硬盘时, 自动加密回去
       (org-crypt-use-before-save-magic)
-
-      ;; 設定要加密的 tag 標籤為 secret
+      ;; 设定要加密的tag标签为secret
       (setq org-crypt-tag-matcher "secret")
-
-      ;; 避免 secret 這個 tag 被子項目繼承 造成重複加密
-      ;; (但是子項目還是會被加密喔)
+      ;; 避免secret这个标签被子项目继承, 造成重复加密
+      ;; 但是子项目还是会被加密
       (setq org-tags-exclude-from-inheritance (quote ("secret")))
-
-      ;; 用於加密的 GPG 金鑰
-      ;; 可以設定任何 ID 或是設成 nil 來使用對稱式加密 (symmetric encryption)
+      ;; 用于加密的 GPG 钥匙
+      ;; 可以设定成任何值或者nil 来进行加密 (symmetric encryption)
       (setq org-crypt-key nil)
-
-      ;; (add-to-list 'auto-mode-alist '("\.org\\'" . org-mode))
+      ;; }}
 
       (setq org-todo-keywords
             (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")

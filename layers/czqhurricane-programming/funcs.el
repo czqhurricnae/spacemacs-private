@@ -39,5 +39,6 @@
 
 (with-eval-after-load 'web-mode
   (add-hook 'web-mode-hook (lambda ()
-(when (equal "js" (file-name-extension buffer-file-name))
-    (add-to-list (make-local-variable 'yas-snippet-dirs) "~/.spacemacs.d/snippets/React")))))
+(when (equal "js" (file-name-extension (buffer-file-name)))
+  (add-to-list (make-local-variable 'yas-snippet-dirs)
+               concate((expand-file-name snippet-dir) "/react-mode"))))))

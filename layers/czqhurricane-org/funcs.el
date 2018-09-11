@@ -296,16 +296,15 @@ just like '((name begin-position end-position))'"
 )
 
 (defun save-buffer-filter ()
-  "Replace the expected charaters except 'funcs.el' file."
+  "Replace the expected charaters except 'funcs.el<czqhurricane-org>' file."
   (interactive)
   (save-buffer)
-  (and (not (string-equal (buffer-name) "funcs.el<czqhurricane-org>"))
+  (and (not (string-equal (buffer-file-name) "funcs.el<czqhurricane-org>"))
     (progn
       (replace-in-the-entire-buffer "，" "," nil)
       (replace-in-the-entire-buffer "。" "." nil)
       (replace-in-the-entire-buffer "（" "(" nil)
       (replace-in-the-entire-buffer "）" ")" nil))))
-
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.
@@ -416,4 +415,5 @@ should only be used in org-mode."
                 "-title" title
                 "-sender" "org.gnu.Emacs"
                 "-message" message
-                "-activate" "oeg.gnu.Emacs"))
+                "-activate" "oeg.gnu.Emacs"
+                "-sound" "default"))

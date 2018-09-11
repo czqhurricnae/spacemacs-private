@@ -23,3 +23,6 @@
 (global-set-key (kbd "C-c i e") 'spacemacs/auto-yasnippet-expand)
 (global-set-key (kbd "C-c C-x t") 'czqhurricane/org-clock-sum-today-by-tags)
 (define-key evil-normal-state-map (kbd "C-u") nil)
+(spacemacs/set-leader-keys "jg" 'dumb-jump-go)
+(spacemacs/set-leader-keys "pf" 'czqhurricane/open-file-with-projectile-or-counsel-git)
+(spacemacs/set-leader-keys "po" 'my-simple-todo)

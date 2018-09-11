@@ -21,9 +21,9 @@
 
 (defun czqhurricane-org/post-init-org-pomodoro ()
   (progn
-    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "☕️ Have a break!")))
-    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "� Ready to Go?")))
-    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" " � Ready to Go?")))
+    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "Have a break!")))
+    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" "Ready to Go?")))
     (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
     ))
 
@@ -461,7 +461,8 @@
     (setq deft-directory deft-dir)))
 
 (defun czqhurricane-org/init-org-protocol-capture-html ()
-  (spacemacs|use-package-add-hook org-protocol :post-config (require 'org-protocol-capture-html)))
+  (spacemacs|use-package-add-hook org-protocol
+    :post-config (require 'org-protocol-capture-html)))
 
 (defun czqhurricane-org/init-ox-latex ()
   (spacemacs|use-package-add-hook org :post-config (require 'ox-latex)))

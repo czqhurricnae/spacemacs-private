@@ -717,37 +717,42 @@
                      evil-insert-state-map
                      evil-emacs-state-map))
         (define-key (eval map) "\C-b" nil)))
+
+    (eval-after-load "evil-maps"
+      (dolist (map '(evil-motion-state-map
+                     evil-insert-state-map
+                     evil-emacs-state-map))
+        (define-key (eval map) "\C-e" nil)))
+
+    (eval-after-load "evil-maps"
+      (dolist (map '(evil-motion-state-map
+                     evil-insert-state-map
+                     evil-emacs-state-map))
+        (define-key (eval map) "\C-w" nil)))
     ;; }}
 
     (spacemacs/set-leader-keys "bi" 'ibuffer)
     (define-key evil-ex-completion-map "\C-a" 'move-beginning-of-line)
+    (define-key evil-ex-completion-map "\C-e" 'move-end-of-line)
     (define-key evil-ex-completion-map "\C-b" 'backward-char)
     (define-key evil-ex-completion-map "\C-k" 'kill-line)
     (define-key minibuffer-local-map (kbd "C-w") 'evil-delete-backward-word)
+    ;; (define-key evil-motion-state-map "\C-e" 'evil-end-of-line)
+    ;; (define-key evil-insert-state-map "\C-e" 'evil-end-of-line)
+    ;; (define-key evil-emacs-state-map "\C-e" 'evil-end-of-line)
 
     (define-key evil-visual-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
-    ;; (define-key evil-visual-state-map (kbd "x") 'er/expand-region)
-    ;; (define-key evil-visual-state-map (kbd "X") 'er/contract-region)
     (define-key evil-visual-state-map (kbd "C-r") 'czqhurricane/evil-quick-replace)
     (define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
     (define-key evil-visual-state-map (kbd "mp") 'mc/mark-previous-like-this)
     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
     (define-key evil-visual-state-map (kbd "mf") 'mc/mark-all-like-this-in-defun)
 
-    ;; in spacemacs, we always use evilify miscro state
+    ;; In spacemacs, we always use evilify miscro state
     (evil-add-hjkl-bindings package-menu-mode-map 'emacs)
     ;; Don't move back the cursor one position when exiting insert mode
     (setq evil-move-cursor-back nil)
 
-    ;; (define-key evil-emacs-state-map (kbd "C-w h") 'evil-window-left)
-    (define-key evil-emacs-state-map (kbd "C-w") 'evil-delete-backward-word)
-    ;; (define-key evil-emacs-state-map (kbd "C-w j") 'evil-window-down)
-    ;; (define-key evil-emacs-state-map (kbd "C-w k") 'evil-window-up)
-    ;; (define-key evil-emacs-state-map (kbd "C-w l") 'evil-window-right)
-
-    ;; for emacs shell mode
-    ;; (define-key evil-emacs-state-map (kbd "s-b") 'ido-switch-buffer)
-    ;; (define-key evil-emacs-state-map (kbd "s-f") 'ido-find-file)
     (evil-define-key 'emacs term-raw-map (kbd "C-w")
       'evil-delete-backward-word)
 
@@ -933,10 +938,9 @@
     current project. Otherwise do `occur' in the current file."
       (interactive)
       (if (projectile-project-p)
-          (multi-occur (projectile-project-buffers) my-simple-todo-regex)
+          (multi-occur (projectile-project-buffer-files) my-simple-todo-regex)
         (occur my-simple-todo-regex)))
-    (spacemacs/set-leader-keys "pf" 'czqhurricane/open-file-with-projectile-or-counsel-git)
-    (spacemacs/set-leader-keys "po" 'my-simple-todo)))
+    ))
 
 (defun czqhurricane-misc/post-init-prodigy ()
   (progn
@@ -1127,22 +1131,22 @@
     (progn
       (define-key git-messenger-map (kbd "f") 'czqhurricane/github-browse-commit))))
 
+;; {{ Fix:markdown failed with exit code 127
+;; see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
+;; see: https://github.com/jrblevin/markdown-mode/issues/177
 (defun czqhurricane-misc/post-init-markdown-mode ()
   (progn
     (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
-
     (with-eval-after-load 'markdown-mode
       (progn
-        ;; (when (configuration-layer/package-usedp 'company)
-        ;;   (spacemacs|add-company-hook markdown-mode))
-
+        (setq markdown-command "pandoc -s -f markdown -t html5 --mathjax --highlight-style pygments --standalone")
         (spacemacs/set-leader-keys-for-major-mode 'gfm-mode-map
           "p" 'czqhurricane/markdown-to-html)
         (spacemacs/set-leader-keys-for-major-mode 'markdown-mode
           "p" 'czqhurricane/markdown-to-html)
-
         (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
         ))))
+;; }}
 
 ;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun czqhurricane-misc/post-init-shell-mode ()
@@ -1249,4 +1253,7 @@
 
 (defun czqhurricane-misc/init-pandoc-mode()
   (use-package pandoc-mode
-    :defer t))
+    :defer t
+    :config
+    (progn
+      (add-hook 'markdown-mode-hook 'pandoc-mode))))

@@ -67,7 +67,6 @@ values."
      ;; docker
      latex
      deft
-     markdown
      (javascript :variables
                  javascript-disable-tern-port-files nil)
      (typescript :variables
@@ -125,7 +124,7 @@ values."
                     helm-c-yasnippet ace-jump-helm-line helm-make magithub
                     helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp counsel-projectile
-		    highlight-parentheses org-pdfview doc-view org-projectile
+		                highlight-parentheses org-pdfview doc-view org-projectile
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -388,6 +387,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq purpose-mode nil)
   ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
+  (setq evil-want-C-w-delete t)
   )
 
 (defun dotspacemacs/user-config ()
@@ -400,7 +400,7 @@ you should place your code here."
   (package-initialize)
 
   ;; {{fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
-  ;; https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
+  ;; see: https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
   (with-eval-after-load 'python
     (defun python-shell-completion-native-try ()
       "Return non-nil if can trigger native completion."
@@ -414,11 +414,10 @@ you should place your code here."
 
   (server-start)
   (require 'org-protocol)
-  (require 'org-protocol-capture-html)
   (global-company-mode 1)
   (global-hl-line-highlight)
   (require 'nodejs-repl)
-  ;; setup javascript auto-complete.
+  ;; Setup javascript auto-complete.
   (setq tern-command '("node" "/usr/local/bin/tern"))
   (setq js2-include-node-externs t)
   (setq-default indent-tabs-mode nil)

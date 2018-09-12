@@ -354,7 +354,7 @@
       (spacemacs/set-leader-keys
         ;; helm-ag marks
         "s`"  'helm-ag-pop-stack
-        ;; opened buffers scope
+        ;; Opened buffers scope
         "sb"  'spacemacs/helm-buffers-smart-do-search
         "sB"  'spacemacs/helm-buffers-smart-do-search-region-or-symbol
         "sab" 'helm-do-ag-buffers
@@ -363,12 +363,12 @@
         "skB" 'spacemacs/helm-buffers-do-ack-region-or-symbol
         "stb" 'spacemacs/helm-buffers-do-pt
         "stB" 'spacemacs/helm-buffers-do-pt-region-or-symbol
-        ;; current file scope
+        ;; Current file scope
         "ss"  'spacemacs/helm-file-smart-do-search
         "sS"  'spacemacs/helm-file-smart-do-search-region-or-symbol
         "saa" 'helm-ag-this-file
         "saA" 'spacemacs/helm-file-do-ag-region-or-symbol
-        ;; files scope
+        ;; Files scope
         "sf"  'spacemacs/helm-files-smart-do-search
         "sF"  'spacemacs/helm-files-smart-do-search-region-or-symbol
         "saf" 'helm-do-ag
@@ -377,7 +377,7 @@
         "skF" 'spacemacs/helm-files-do-ack-region-or-symbol
         "stf" 'spacemacs/helm-files-do-pt
         "stF" 'spacemacs/helm-files-do-pt-region-or-symbol
-        ;; current project scope
+        ;; Current project scope
         "/"   'spacemacs/helm-project-smart-do-search
         "*"   'spacemacs/helm-project-smart-do-search-region-or-symbol
         "sp"  'spacemacs/helm-project-smart-do-search
@@ -547,9 +547,6 @@
     :init
     (setq helm-github-stars-username "czqhurricane")))
 
-
-
-
 (defun czqhurricane-misc/post-init-fcitx ()
   (fcitx-aggressive-setup))
 
@@ -558,8 +555,6 @@
     (setq clm/log-command-exceptions* (append clm/log-command-exceptions*
                                               '(evil-next-visual-line
                                                 evil-previous-visual-line)))))
-
-
 
 (defun czqhurricane-misc/init-litable ()
   (use-package litable
@@ -575,7 +570,6 @@
       (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer)
       )))
 
-
 (defun czqhurricane-misc/init-4clojure ()
   (use-package 4clojure
     :init
@@ -586,9 +580,6 @@
       (spacemacs/set-leader-keys "o4p" '4clojure-previous-question)
       (spacemacs/set-leader-keys "o4c" '4clojure-check-answers)
       )))
-
-
-
 
 (defun czqhurricane-misc/post-init-avy ()
   (progn
@@ -606,7 +597,6 @@
       (spacemacs/set-leader-keys (kbd "mhm") 'discover-my-major)
       (evilified-state-evilify makey-key-mode makey-key-mode-get-key-map)
       )))
-
 
 (defun czqhurricane-misc/post-init-elfeed ()
   (use-package elfeed
@@ -803,7 +793,7 @@
       ;; http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
       (define-prefix-command 'endless/mc-map)
       ;; C-x m is usually `compose-mail'. Bind it to something
-      ;; else if you use this command.
+      ;; Else if you use this command.
       (define-key ctl-x-map "m" 'endless/mc-map)
       ;;; Really really nice!
       (define-key endless/mc-map "i" #'mc/insert-numbers)
@@ -1132,8 +1122,8 @@
       (define-key git-messenger-map (kbd "f") 'czqhurricane/github-browse-commit))))
 
 ;; {{ Fix:markdown failed with exit code 127
-;; see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
-;; see: https://github.com/jrblevin/markdown-mode/issues/177
+;; @see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
+;; @see: https://github.com/jrblevin/markdown-mode/issues/177
 (defun czqhurricane-misc/post-init-markdown-mode ()
   (progn
     (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))

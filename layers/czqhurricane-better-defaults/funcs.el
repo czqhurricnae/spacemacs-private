@@ -13,7 +13,8 @@
         (indent-buffer)
         (message "Indent buffer.")))))
 
-;; {{http://emacsredux.com/blog/2013/03/26/smarter-open-line/
+;; {{
+;; @see: http://emacsredux.com/blog/2013/03/26/smarter-open-line/
 (defun czqhurricane/smart-open-line ()
   "Insert an empty line after the current line.
 Position the cursor at its beginning, according to the current mode."

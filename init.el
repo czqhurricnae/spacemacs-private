@@ -297,7 +297,7 @@ values."
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t
+   dotspacemacs-maximized-at-startup 100
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -388,6 +388,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
   (setq evil-want-C-w-delete t)
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
   )
 
 (defun dotspacemacs/user-config ()
@@ -398,9 +400,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (package-initialize)
-
   ;; {{fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
-  ;; see: https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
+  ;; @See: https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
   (with-eval-after-load 'python
     (defun python-shell-completion-native-try ()
       "Return non-nil if can trigger native completion."
@@ -411,7 +412,6 @@ you should place your code here."
          (get-buffer-process (current-buffer))
          nil "_"))))
   ;; }}
-
   (server-start)
   (require 'org-protocol)
   (global-company-mode 1)

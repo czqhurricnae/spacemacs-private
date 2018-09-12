@@ -125,8 +125,9 @@
       (eval-after-load 'ycmd
         '(spacemacs|hide-lighter ycmd-mode)))))
 
-;; {{ https://github.com/slime/slime
-;; https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/common-lisp
+;; {{
+;; @see: https://github.com/slime/slime
+;; @see: https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/common-lisp
 ;; This layer defaults to using sbcl.
 ;; 'brew install sbcl'
 ;; Set your lisp system and, optionally, some contribs.

@@ -9,10 +9,10 @@
     (org-protocol-capture-html :location (recipe
                                           :fetcher github
                                           :repo "alphapapa/org-protocol-capture-html"))
+    ob-ipython
     ;; (blog-admin :location (recipe
     ;;                        :fetcher github
     ;;                        :repo "codefalling/blog-admin"))
-    ob-ipython
     ;; org-tree-slide
     ;; ox-reveal
     ;; worf
@@ -27,7 +27,7 @@
     (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
     ))
 
-;; In order to export pdf to support Chinese, I should install Latex at here:
+;; In order to export pdf to support Chinese, I should install Latex in here:
 ;; https://www.tug.org/mactex/
 ;; http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
 ;; http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
@@ -88,7 +88,7 @@
       (setq org-log-done t)
 
       ;; {{ 加密文章
-      ;; see: http://coldnew.github.io/blog/2013/07/13_5b094.html
+      ;; @see: http://coldnew.github.io/blog/2013/07/13_5b094.html
       ;; org-mode 设定
       (require 'org-crypt)
       ;; 当被加密的部分要存入硬盘时, 自动加密回去
@@ -200,7 +200,7 @@
 
       (setq org-latex-listings t)
 
-      ;; reset subtask
+      ;; Reset subtask
       (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties))
 
       ;; (add-hook 'org-after-todo-state-change-hook 'org-subtask-reset)
@@ -211,7 +211,7 @@
 
       (require 'ox-md nil t)
 
-      ;; copy from chinese layer
+      ;; Copy from chinese layer
       (defadvice org-html-paragraph (before org-html-paragraph-advice
                                             (paragraph contents info) activate)
         "Join consecutive Chinese lines into a single long line without
@@ -445,7 +445,7 @@
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'ox-md)
-    (setq pow-directory "~/org-notes")))
+    (setq pow-directory "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes")))
 
 (defun czqhurricane-org/init-worf ()
   (spacemacs|use-package-add-hook org

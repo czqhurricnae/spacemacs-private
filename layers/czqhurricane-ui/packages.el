@@ -33,6 +33,7 @@
     (color-theme-solarized :location elpa)
     which-func
     pangu-spacing
+    (awesome-tab :location local)
 ;;  " list of Lisp packages required by the czqhurricane-ui layer.
 
 ;; Each entry is either:
@@ -98,4 +99,12 @@
               #'(lambda ()
                   (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
                   (pangu-spacing-space-current-buffer))))))
+
+
+(defun czqhurricane-ui/init-awesome-tab ()
+  (use-package awesome-tab
+    :load-path "~/.emacs.d/elpa/awesome-tab"
+    :config
+    (awesome-tab-mode t)
+))
 ;;; packages.el ends here

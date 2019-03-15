@@ -34,6 +34,7 @@
     slime
     (exec-path-from-shell :location elpa)
     dumb-jump
+    (color-rg :location (recipe :fetcher github :repo "manateelazycat/color-rg"))
 ;;  " list of Lisp packages required by the czqhurricane-programming layer.
 
 ;; Each entry is either:
@@ -134,5 +135,14 @@
 (defun czqhurricane-programming/post-init-slime ()
   (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
   (setq slime-contribs '(slime-fancy))
+)
+;; }}
+
+;; {{
+;; @see: https://github.com/manateelazycat/color-rg
+(defun czqhurricane-programming/init-color-rg ()
+  (use-package color-rg
+    :config
+    (add-to-list 'evil-emacs-state-modes 'color-rg-mode))
 )
 ;; }}

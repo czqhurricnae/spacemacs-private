@@ -58,6 +58,7 @@
          (emacs-lisp . t)
          (plantuml . t)
          (C . t)
+         (sql . t)
          (ditaa . t)))
 
       ;; Make Yasnippet effect when the editing org source code is JavaScript.
@@ -115,6 +116,8 @@
       (setq org-clock-out-remove-zero-time-clocks t) ;; Show the clocked-in task - if any - in the header line
 
       (setq org-tags-match-list-sublevels nil)
+
+      (setq org-image-actual-width '(500))
 
       (add-hook 'org-mode-hook '(lambda ()
                                   ;; keybinding for inserting code blocks

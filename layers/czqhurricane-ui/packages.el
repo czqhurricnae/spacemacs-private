@@ -106,5 +106,7 @@
     :load-path "~/.emacs.d/elpa/awesome-tab"
     :config
     (awesome-tab-mode t)
+    (setq awesome-tab-background-color "#002b36")
+    (setq awesome-tab-style "bar")
 ))
 ;;; packages.el ends here

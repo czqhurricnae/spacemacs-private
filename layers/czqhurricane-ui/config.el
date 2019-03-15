@@ -3,7 +3,7 @@
 (setq frame-title-format
       '("" " czq- "
         (:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name)) "%b")))) 
+                   (abbreviate-file-name (buffer-file-name)) "%b"))))
 
 ;; http://philipdaniels.com/blog/2017/02/spacemacs---configuring-the-solarized-theme/
 ;; Get color-theme-solarized working. It is specified as an additional package
@@ -37,5 +37,4 @@
 
 (set-terminal-parameter nil 'background-mode 'dark)
 (set-frame-parameter nil 'background-mode 'dark)
-
 (display-time-mode 1)

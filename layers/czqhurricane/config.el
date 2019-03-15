@@ -20,7 +20,7 @@
  org-agenda-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes"
  deft-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes"
  blog-admin-dir "~/czqhurricane.com"
- snippet-dir "~/.spacemacs.d/snippets"
+ snippet-dir "/Users/c/.spacemacs.d/snippets"
  virtualenv-dir "~/.virtualenvs"
  jupyter-dir "~/.virtualenvs/ipy3/bin/jupyter"
 )

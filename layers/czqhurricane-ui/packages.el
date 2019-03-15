@@ -100,7 +100,8 @@
                   (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
                   (pangu-spacing-space-current-buffer))))))
 
-
+;; {{
+;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
 (defun czqhurricane-ui/init-awesome-tab ()
   (use-package awesome-tab
     :load-path "~/.emacs.d/elpa/awesome-tab"
@@ -109,4 +110,5 @@
     (setq awesome-tab-background-color "#002b36")
     (setq awesome-tab-style "bar")
 ))
+;; }}
 ;;; packages.el ends here

@@ -388,8 +388,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
   (setq evil-want-C-w-delete t)
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-  (add-to-list 'default-frame-alist '(ns-appearance . dark))
   )
 
 (defun dotspacemacs/user-config ()
@@ -428,7 +426,6 @@ you should place your code here."
   (setq powerline-default-separator 'arrow)
   ;; Display the activated Python version in mode line.
   (setq-default mode-line-format (cons '(:exec venv-current-name) mode-line-format))
-  (setq ns-pop-up-frames nil)
   (setq spacemacs-show-trailing-whitespace t)
   ;; Make magit's windown display in the right side.
   (setq split-height-threshold nil)
@@ -439,7 +436,7 @@ you should place your code here."
                            (electric-indent-mode -1)))
   (add-to-list 'load-path "/path/to/dash-at-point")
   (autoload 'dash-at-point "dash-at-point"
-    "Search the word at point with Dash." t nil)
+  "Search the word at point with Dash." t nil)
   (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
   )

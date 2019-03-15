@@ -799,6 +799,7 @@
       (define-key endless/mc-map "i" #'mc/insert-numbers)
       (define-key endless/mc-map "h" #'mc-hide-unmatched-lines-mode)
       (define-key endless/mc-map "a" #'mc/mark-all-like-this)
+      (define-key endless/mc-map "t" #'set-rectangular-region-anchor)
 
       ;;; Occasionally useful
       (define-key endless/mc-map "d" #'mc/mark-all-dwim)
@@ -1083,7 +1084,8 @@
         (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
         (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
 
-    (define-key global-map (kbd "C-s") 'my-swiper-search)))
+    ;; (define-key global-map (kbd "C-s") 'my-swiper-search)))
+    (define-key global-map (kbd "C-s") 'color-rg-search-symbol)))
 
 (defun czqhurricane-misc/post-init-magit ()
   (progn

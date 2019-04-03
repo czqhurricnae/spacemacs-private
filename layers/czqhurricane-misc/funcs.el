@@ -371,7 +371,8 @@ e.g. Sunday, September 17, 2000."
   (let ((directory default-directory))
     (locate-dominating-file directory ".git")))
 
-;; "http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/"
+;; {{
+;; @see: http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/
 (defun czqhurricane/iterm-shell-command (command &optional prefix)
   "cd to `default-directory' then run COMMAND in iTerm.
 With PREFIX, cd to project root."
@@ -394,6 +395,7 @@ With PREFIX, cd to project root."
        end tell
   end tell
   " cmd))))
+;; }}
 
 (defadvice persp-switch (after my-quit-helm-perspectives activate)
   (setq hydra-deactivate t))

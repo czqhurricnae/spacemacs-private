@@ -439,6 +439,7 @@ you should place your code here."
   "Search the word at point with Dash." t nil)
   (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  (setq browse-url-browser-function 'eww-browse-url)
   )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

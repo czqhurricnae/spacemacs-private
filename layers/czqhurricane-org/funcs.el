@@ -96,7 +96,7 @@ buffer file directory and insert a link to this file."
       (let ((temp-name (select-or-enter-file-name img-dir)))
         (setq name-base (file-name-base temp-name))
         (setq file-name (concat name-base ".png"))
-        ;; (setq full-file-path (concat absolute-img-dir "/" file-name))
+        ;; (setq absolute-full-file-path (concat absolute-img-dir "/" file-name))
         (setq full-file-path (concat img-dir "/" file-name))
         (call-process-shell-command "screencapture" nil nil nil nil "-i"
                                     (concat "\"" full-file-path "\"" ))
@@ -301,10 +301,10 @@ just like '((name begin-position end-position))'"
   (save-buffer)
   (and (not (string-equal (buffer-file-name) "funcs.el<czqhurricane-org>"))
     (progn
-      (replace-in-the-entire-buffer "，" "," nil)
-      (replace-in-the-entire-buffer "。" "." nil)
-      (replace-in-the-entire-buffer "（" "(" nil)
-      (replace-in-the-entire-buffer "）" ")" nil))))
+        (replace-in-the-entire-buffer "，" "," nil)
+        (replace-in-the-entire-buffer "。" "." nil)
+        (replace-in-the-entire-buffer "（" "(" nil)
+        (replace-in-the-entire-buffer "）" ")" nil))))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.

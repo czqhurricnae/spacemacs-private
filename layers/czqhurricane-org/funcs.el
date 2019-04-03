@@ -417,3 +417,61 @@ should only be used in org-mode."
                 "-message" message
                 "-activate" "oeg.gnu.Emacs"
                 "-sound" "default"))
+
+(defun image-save-to-file (file-name)
+  "Save the image under point."
+  (let ((image (get-text-property (point) 'display)))
+    (when (or (not (consp image))
+              (not (eq (car image) 'image)))
+      (error "No image under point"))
+    (with-temp-buffer
+      (let ((file (plist-get (cdr image) :file)))
+        (if file
+            (if (not (file-exists-p file))
+                (error "File %s no longer exists" file)
+              (insert-file-contents-literally file))
+          (insert (plist-get (cdr image) :data))))
+      (write-region (point-min) (point-max)
+                    file-name))))
+
+;; {{
+;; @see: https://github.com/JamieMason/ImageOptim-CLI#installation
+;; $ brew update
+;; $ brew install imageoptim-cli
+;; @see: https://imageoptim.com/mac
+;; Download & install
+(defun org-image-save ()
+  (interactive)
+  (let* ((img-dir org-screenshot-image-dir-name))
+    (progn
+      (if (file-exists-p img-dir)
+          (print (format "Screnshot image directory: '%s' already exists." img-dir))
+        (mkdir img-dir))
+      (let ((temp-name (select-or-enter-file-name img-dir)))
+        (setq absolute-img-dir (concat default-directory img-dir))
+        (setq name-base (file-name-base temp-name))
+        (setq file-name (concat name-base ".png"))
+        (setq full-file-path (concat img-dir "/" file-name))
+        (image-save-to-file full-file-path)
+        (setq absolute-full-file-path (concat absolute-img-dir "/" file-name))
+        (defun callback-imageoptim()
+          (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
+            (do-applescript
+             (format
+              "
+  tell application \"iTerm2\"
+       activate
+       set _session to current session of current window
+       tell _session
+            set command to get the clipboard
+            write text \"%s\"
+       end tell
+  end tell
+  tell application \"emacs\"
+       activate
+  end tell
+  " cmd))))
+        (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
+        (insert (concat "[[file:" full-file-path "]]"))
+        ))))
+;; }}

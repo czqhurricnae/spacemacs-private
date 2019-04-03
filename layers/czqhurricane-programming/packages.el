@@ -130,7 +130,7 @@
 ;; @see: https://github.com/slime/slime
 ;; @see: https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/common-lisp
 ;; This layer defaults to using sbcl.
-;; 'brew install sbcl'
+;; $ brew install sbcl
 ;; Set your lisp system and, optionally, some contribs.
 (defun czqhurricane-programming/post-init-slime ()
   (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
@@ -140,6 +140,7 @@
 
 ;; {{
 ;; @see: https://github.com/manateelazycat/color-rg
+;; $ brew install rg
 (defun czqhurricane-programming/init-color-rg ()
   (use-package color-rg
     :config

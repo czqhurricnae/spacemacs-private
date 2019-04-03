@@ -33,7 +33,7 @@
     (color-theme-solarized :location elpa)
     which-func
     pangu-spacing
-    (awesome-tab :location local)
+    (awesome-tab :location (recipe :fetcher github :repo "manateelazycat/awesome-tab"))
 ;;  " list of Lisp packages required by the czqhurricane-ui layer.
 
 ;; Each entry is either:

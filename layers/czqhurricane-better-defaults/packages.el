@@ -85,7 +85,8 @@
       (setq dired-recursive-deletes 'always)
       (setq dired-recursive-copies 'always)
 
-      ;; {{https://oremacs.com/2017/03/18/dired-ediff/
+      ;; {{
+      ;; @see: https://oremacs.com/2017/03/18/dired-ediff/
       (defun ora-ediff-files ()
         (interactive)
         (let ((files (dired-get-marked-files))

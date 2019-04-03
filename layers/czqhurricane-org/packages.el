@@ -117,7 +117,7 @@
 
       (setq org-tags-match-list-sublevels nil)
 
-      (setq org-image-actual-width '(500))
+      (setq org-image-actual-width '(350))
 
       (add-hook 'org-mode-hook '(lambda ()
                                   ;; keybinding for inserting code blocks

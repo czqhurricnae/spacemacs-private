@@ -761,3 +761,18 @@ If a change in `file-attributes` happended call func."
     " set theUrl to do shell script \"pbpaste\"\n"
     " return theUrl & \"::split::\" & theName\n"
     "end tell")))
+
+(defun czqhurricane/switch-to-english-input-source ()
+  (do-applescript
+   "tell application \"System Events\"
+	click menu bar item 5 of menu bar 1 of application process \"SystemUIServer\"
+	click menu item 4 of menu 1 of menu bar item 5 of menu bar 1 of application process \"SystemUIServer\"
+end tell"))
+
+(defun evil-keyboard-quit ()
+  "Keyboard quit and force normal state."
+  (interactive)
+  (and evil-mode (evil-force-normal-state))
+  (progn
+    (czqhurricane/switch-to-english-input-source)
+    (keyboard-quit)))

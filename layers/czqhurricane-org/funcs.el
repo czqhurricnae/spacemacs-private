@@ -300,11 +300,11 @@ just like '((name begin-position end-position))'"
   (interactive)
   (save-buffer)
   (and (not (string-equal (buffer-file-name) "funcs.el<czqhurricane-org>"))
-    (progn
-        (replace-in-the-entire-buffer "，" "," nil)
-        (replace-in-the-entire-buffer "。" "." nil)
-        (replace-in-the-entire-buffer "（" "(" nil)
-        (replace-in-the-entire-buffer "）" ")" nil))))
+      (progn
+          (replace-in-the-entire-buffer "，" "," nil)
+          (replace-in-the-entire-buffer "。" "." nil)
+          (replace-in-the-entire-buffer "（" "(" nil)
+          (replace-in-the-entire-buffer "）" ")" nil))))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.

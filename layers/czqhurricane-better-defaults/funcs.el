@@ -138,3 +138,16 @@ open and unsaved."
   "Goto up directory and resue buffer"
   (interactive)
   (find-alternate-file ".."))
+
+(defun select-english-input-source ()
+  (interactive)
+  (let* ((cmd "osascript -e $ENGLISHINPUTSOURCEISSELECTED"))
+    (eshell-command cmd)))
+
+(defun evil-keyboard-quit ()
+  "Keyboard quit and force normal state."
+  (interactive)
+  (and evil-mode (evil-force-normal-state))
+  (progn
+    (select-english-input-source)
+    (keyboard-quit)))

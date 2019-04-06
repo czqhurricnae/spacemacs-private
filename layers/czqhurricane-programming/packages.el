@@ -78,7 +78,7 @@
   (progn
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize))
-    (exec-path-from-shell-copy-env "PATH")))
+    ))
 
 (defun czqhurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
@@ -147,3 +147,22 @@
     (add-to-list 'evil-emacs-state-modes 'color-rg-mode))
 )
 ;; }}
+
+(defun exec-path-from-shell-setenv (name value)
+  "Set the value of environment var NAME to VALUE.
+Additionally, if NAME is \"PATH\" then also set corresponding
+variables such as `exec-path'."
+  (setenv name value)
+  (when (string-equal "PATH" name)
+    (setq eshell-path-env value
+          exec-path (append (parse-colon-path value) (list exec-directory)))))
+
+(exec-path-from-shell-setenv "ENGLISHINPUTSOURCEISSELECTED" "
+tell application \"System Events\"
+	set englishInputSourceIsSelected to value of attribute \"AXMenuItemMarkChar\" of menu item 4 of menu 1 of menu bar item 5 of menu bar 1 of application process \"SystemUIServer\" is \"✓\"
+	if englishInputSourceIsSelected is false then
+		click menu bar item 5 of menu bar 1 of application process \"SystemUIServer\"
+		click menu item 4 of menu 1 of menu bar item 5 of menu bar 1 of application process \"SystemUIServer\"
+	end if
+end tell
+")

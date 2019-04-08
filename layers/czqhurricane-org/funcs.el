@@ -25,10 +25,10 @@
   (replace-regexp-in-string "[\t\n ]+" "" string))
 
 (defun replace-in-the-entire-buffer (query replace subexp)
-  "replace query string with the replace string in the entire buffer..
+  "Replace query string with the replace string in the entire buffer.
 query: the string will be replaced.
 replace: the string used to replace.
-subexp:
+Subexp:
   1. used in function 'replace-match'.
   2. represent 'replace' argument will be implemented in which one match group."
   (save-excursion
@@ -159,10 +159,10 @@ just like '((name begin-position end-position))'"
 
 (defun replace-symbols-dollar-and-times ()
   "Used in markdown file , replace unexpected symbols:
-           '\(' -> '$'
+           '\(' -> ' $'
            '\)' -> '$'
        '\times' -> '×'
- '![imag](...)' -> '![img][...]\r' <- '\r' : new line
+  '![img](...)' -> '![img][...]\r' <- '\r' : new line
    '```comment' -> ''
            '\`' -> ''
 "
@@ -300,10 +300,10 @@ just like '((name begin-position end-position))'"
   (save-buffer)
   (and (not (string-equal (buffer-file-name) "funcs.el<czqhurricane-org>"))
       (progn
-          (replace-in-the-entire-buffer "，" "," nil)
-          (replace-in-the-entire-buffer "。" "." nil)
-          (replace-in-the-entire-buffer "（" "(" nil)
-          (replace-in-the-entire-buffer "）" ")" nil))))
+        (replace-in-the-entire-buffer "，" "," nil)
+        (replace-in-the-entire-buffer "。" "." nil)
+        (replace-in-the-entire-buffer "（" "(" nil)
+        (replace-in-the-entire-buffer "）" ")" nil))))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.

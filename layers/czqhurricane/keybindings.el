@@ -29,3 +29,4 @@
 (define-key evil-window-map         (kbd "<escape>") #'evil-keyboard-quit)
 (define-key evil-operator-state-map (kbd "<escape>") #'evil-keyboard-quit)
 (global-set-key (kbd "<escape>") 'evil-keyboard-quit)
+(define-key dired-mode-map (kbd "e") #'ora-ediff-files)

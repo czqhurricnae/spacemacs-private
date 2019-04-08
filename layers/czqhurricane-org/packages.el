@@ -2,7 +2,8 @@
   '(
     (org :location built-in)
     (org-mac-link :location built-in)
-    (org-pomodoro :location (recipe :fetcher github :repo "lolownia/org-pomodoro"))
+    (org-pomodoro :location (recipe :fetcher github
+                                    :repo "lolownia/org-pomodoro"))
     (ox-latex :location built-in)
     (ox-md :location built-in)
     deft
@@ -10,6 +11,9 @@
                                           :fetcher github
                                           :repo "alphapapa/org-protocol-capture-html"))
     ob-ipython
+    (org-download :location (recipe
+                             :fetcher github
+                             :repo "abo-abo/org-download"))
     ;; (blog-admin :location (recipe
     ;;                        :fetcher github
     ;;                        :repo "codefalling/blog-admin"))
@@ -44,7 +48,6 @@
       (require 'org-habit)
       (require 'ob-emacs-lisp)
       (require 'ob-lisp)
-      (require 'ob-ipython)
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((perl . t)
@@ -211,8 +214,6 @@
       (setq org-plantuml-jar-path
             (expand-file-name "~/.spacemacs.d/plantuml.jar"))
       (setq org-ditaa-jar-path "~/.spacemacs.d/ditaa.jar")
-
-      (require 'ox-md nil t)
 
       ;; Copy from chinese layer
       (defadvice org-html-paragraph (before org-html-paragraph-advice
@@ -494,3 +495,13 @@
 )))
 ;; }}
 ;;; packages.el ends here
+
+(defun czqhurricane-org/post-init-org-download ()
+  (use-package org-download
+    :init
+    (progn
+      (setq org-download-timestamp "")
+      (setq org-download-heading-lvl nil)
+      ;; Drag-and-drop to `dired`
+      (add-hook 'dired-mode-hook 'org-download-enable)
+)))

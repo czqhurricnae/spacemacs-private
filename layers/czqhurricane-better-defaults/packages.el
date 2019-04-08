@@ -56,9 +56,8 @@
     (setq recentf-max-saved-items 2048)))
 
 (defun czqhurricane-better-defaults/init-dired-mode ()
-  (use-package dired-mode
-    :defer t
-    :init
+  (spacemacs|use-package-add-hook dired-mode
+    :post-config
     (progn
       (require 'dired-x)
       (require 'dired-aux)
@@ -106,8 +105,6 @@
                             (setq ediff-after-quit-hook-internal nil)
                             (set-window-configuration wnd))))
             (error "no more than 2 files should be marked"))))
-
-      (define-key dired-mode-map "e" 'ora-ediff-files)
       ;; }}
 
       (defvar dired-filelist-cmd

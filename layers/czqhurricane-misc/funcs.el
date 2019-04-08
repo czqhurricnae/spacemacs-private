@@ -646,9 +646,6 @@ If a change in `file-attributes` happended call func."
 
 (defvar image-url-pattern-list '("<img src=\"" . "\""))
 
-(setq org-download-timestamp "")
-(setq org-download-heading-lvl nil)
-
 (defun download-all-images (file)
   ;; Use `org-download-image' to download image from `html' file.
   (with-temp-buffer

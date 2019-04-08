@@ -139,16 +139,15 @@ just like '((name begin-position end-position))'"
                               (delete ".."
                                       (delete "." (directory-files img-dir)))))
          (file-full-path (concat absolute-img-dir "/" temp-name))
-         (begin-end-list (find-org-link-begin-and-end link-list file-full-path)))
+         (begin-end-list (find-org-link-begin-and-end link-list (concat img-dir "/" temp-name))))
     (progn
       (if (yes-or-no-p "Do you want to delete the image links?")
         (do-delete-link-function begin-end-list))
       (if (yes-or-no-p
-           "Do you really want to delete the image file? This can't be revert!!")
+           "Do you really want to delete the image file? This can't be revert!")
         (progn
           (delete-file file-full-path)
-          (replace-in-the-entire-buffer
-            (concat "\\[" file-full-path "\\]\.*") "" nil))))))
+          )))))
 
 (defun org-delete-screenshot-image-file-and-link ()
   (interactive)

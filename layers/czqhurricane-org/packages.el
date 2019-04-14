@@ -14,13 +14,15 @@
     (org-download :location (recipe
                              :fetcher github
                              :repo "abo-abo/org-download"))
+    (org2ctex :location (recipe
+                             :fetcher github
+                             :repo "tumashu/org2ctex"))
     ;; (blog-admin :location (recipe
     ;;                        :fetcher github
     ;;                        :repo "codefalling/blog-admin"))
-    ;; org-tree-slide
+    org-tree-slide
     ;; ox-reveal
     ;; worf
-    ;; plain-org-wiki
     ))
 
 (defun czqhurricane-org/post-init-org-pomodoro ()
@@ -32,22 +34,15 @@
     ))
 
 ;; In order to export pdf to support Chinese, I should install Latex in here:
-;; https://www.tug.org/mactex/
-;; http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
-;; http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
+;; @see: https://www.tug.org/mactex/
+;; @see: http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
+;; @see: http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
 (defun czqhurricane-org/post-init-org ()
   (add-hook 'org-mode-hook (lambda () (spacemacs/toggle-line-numbers-off)) 'append)
   (with-eval-after-load 'org
     (progn
       (spacemacs|disable-company org-mode)
-      (spacemacs/set-leader-keys-for-major-mode 'org-mode
-        "," 'org-priority)
-      (require 'org-compat)
-      (require 'org)
-      (add-to-list 'org-modules 'org-habit)
-      (require 'org-habit)
-      (require 'ob-emacs-lisp)
-      (require 'ob-lisp)
+      (spacemacs/set-leader-keys-for-major-mode 'org-mode "," 'org-priority)
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((perl . t)
@@ -144,68 +139,6 @@
       (setq org-export-backends (quote (ascii html icalendar latex md)))
       ;; Make org not to treat '_' with sub-superscript, but '_{}'.
       (setq org-export-with-sub-superscripts '{})
-      (add-to-list 'org-latex-classes '("ctexart" "\\documentclass[11pt]{ctexart}
-                                        [NO-DEFAULT-PACKAGES]
-                                        \\usepackage[utf8]{inputenc}
-                                        \\usepackage[T1]{fontenc}
-                                        \\usepackage{fixltx2e}
-                                        \\usepackage{graphicx}
-                                        \\usepackage{longtable}
-                                        \\usepackage{float}
-                                        \\usepackage{wrapfig}
-                                        \\usepackage{rotating}
-                                        \\usepackage[normalem]{ulem}
-                                        \\usepackage{amsmath}
-                                        \\usepackage{textcomp}
-                                        \\usepackage{marvosym}
-                                        \\usepackage{wasysym}
-                                        \\usepackage{amssymb}
-                                        \\usepackage{booktabs}
-                                        \\usepackage[colorlinks,linkcolor=black,anchorcolor=black,citecolor=black]{hyperref}
-                                        \\tolerance=1000
-                                        \\usepackage{listings}
-                                        \\usepackage{xcolor}
-                                        \\lstset{
-                                        %行号
-                                        numbers=left,
-                                        %背景框
-                                        framexleftmargin=10mm,
-                                        frame=none,
-                                        %背景色
-                                        %backgroundcolor=\\color[rgb]{1,1,0.76},
-                                        backgroundcolor=\\color[RGB]{245,245,244},
-                                        %样式
-                                        keywordstyle=\\bf\\color{blue},
-                                        identifierstyle=\\bf,
-                                        numberstyle=\\color[RGB]{0,192,192},
-                                        commentstyle=\\it\\color[RGB]{0,96,96},
-                                        stringstyle=\\rmfamily\\slshape\\color[RGB]{128,0,0},
-                                        %显示空格
-                                        showstringspaces=false
-                                        }
-                                        "
-                                        ("\\section{%s}" . "\\section*{%s}")
-                                        ("\\subsection{%s}" . "\\subsection*{%s}")
-                                        ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                                        ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                                        ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-      ;; {{ Export org-mode in Chinese into PDF.
-      ;; @see http://freizl.github.io/posts/tech/2012-04-06-export-orgmode-file-in-Chinese.html
-      ;; and you need install texlive-xetex on different platforms
-      ;; To install texlive-xetex:
-      ;;    'sudo USE="cjk" emerge texlive-xetex' on Gentoo Linux.
-      ;; }}
-      (setq org-latex-default-class "ctexart")
-      (setq org-latex-pdf-process
-            '(
-              "xelatex -interaction nonstopmode -output-directory %o %f"
-              "xelatex -interaction nonstopmode -output-directory %o %f"
-              "xelatex -interaction nonstopmode -output-directory %o %f"
-              "rm -fr %b.out %b.log %b.tex auto"))
-
-      (setq org-latex-listings t)
-
       ;; Reset subtask
       (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties))
 
@@ -297,7 +230,6 @@
         "<div class='nav'>
           <ul>
             <li><a href='http://czqhurricane.com'>博客</a></li>
-            <li><a href='/index.html'>Wiki目录</a></li>
           </ul>
          </div>")
       (defvar czqhurricane-website-html-blog-head
@@ -427,14 +359,13 @@
 
 (defun czqhurricane-org/init-org-mac-link ()
   (use-package org-mac-link
-    :after (org)
+    :after org
     :commands org-mac-grab-link
     :init
     (progn
       (add-hook 'org-mode-hook
                 (lambda ()
-                  (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link)
-                  )))))
+                  (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))))
 ;; FIXME:
 (defun czqhurricane-org/post-init-ox-reveal ()
   (setq org-reveal-root "file:///Users/guanghui/.emacs.d/reveal-js"))
@@ -442,19 +373,13 @@
 (defun czqhurricane-org/init-org-tree-slide ()
   (spacemacs|use-package-add-hook org
     :post-config
-    (require 'ox-md)
+    (require 'org-tree-slide)
     (spacemacs/set-leader-keys "oto" 'org-tree-slide-mode)))
-
-(defun czqhurricane-org/init-plain-org-wiki ()
-  (spacemacs|use-package-add-hook org
-    :post-config
-    (require 'ox-md)
-    (setq pow-directory "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes")))
 
 (defun czqhurricane-org/init-worf ()
   (spacemacs|use-package-add-hook org
     :post-config
-    (require 'ox-md)
+    (require 'worf)
     (add-hook 'org-mode-hook 'worf-mode)))
 
 (defun czqhurricane-org/post-init-deft ()
@@ -463,6 +388,9 @@
     (setq deft-recursive t)
     (setq deft-extension "org")
     (setq deft-directory deft-dir)))
+
+(defun czqhurricane-org/init-org-protocol ()
+  (use-package org-protocol))
 
 (defun czqhurricane-org/init-org-protocol-capture-html ()
   (spacemacs|use-package-add-hook org-protocol
@@ -474,17 +402,29 @@
 (defun czqhurricane-org/init-ox-md ()
   (spacemacs|use-package-add-hook org :post-config (require 'ox-md)))
 
+(defun czqhurricane-org/init-org-compat ()
+  (spacemacs|use-package-add-hook org :post-config (require 'org-compat)))
+
+(defun czqhurricane-org/init-org-habit ()
+  (spacemacs|use-package-add-hook org
+    :post-config
+    (require 'org-habit)
+    (add-to-list 'org-modules 'org-habit)))
+
+(defun czqhurricane-org/init-org-emacs-lisp ()
+  (spacemacs|use-package-add-hook org :post-config (require 'org-emacs-lisp)))
+
 ;; {{
 ;; @see https://github.com/gregsexton/ob-ipython
-;; set ob-ipython-command to the path of jupyter, must be be corresponding to
+;; Set ob-ipython-command to the path of jupyter, must be be corresponding to
 ;; the path of ipython virtual envirnment which is setting by
 ;; '(setq venv-location virtualenv-dir)'.
-;; Must install ipython and jupyter in ipy virtual envirnment first:
-;; 'pip install ipython'
-;; 'pip install --upgrade jupyter'.
+;; Must install ipython and jupyter in ipy virtual envirnment first.
+;; $ pip install ipython
+;; $ pip install --upgrade jupyter
 (defun czqhurricane-org/init-ob-ipython ()
   (use-package ob-ipython
-    :after (org)
+    :after org
     :init
     (progn
       (setq ob-ipython-command jupyter-dir)
@@ -494,7 +434,9 @@
       (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 )))
 ;; }}
-;;; packages.el ends here
+
+(defun czqhurricane-org/init-ob-lisp ()
+  (spacemacs|use-package-add-hook org :post-config (require 'ob-lisp)))
 
 (defun czqhurricane-org/post-init-org-download ()
   (use-package org-download
@@ -505,3 +447,73 @@
       ;; Drag-and-drop to `dired`
       (add-hook 'dired-mode-hook 'org-download-enable)
 )))
+
+;; {{
+;; @see: https://github.com/tumashu/org2ctex
+(defun czqhurricane-org/init-org2ctex ()
+  (use-package org2ctex
+    :after org
+    :config
+      (progn
+        (org2ctex-toggle t)
+        (add-to-list 'org2ctex-latex-classes '("my-article" "\\documentclass[20pt]{ctexart}
+                    [NO-DEFAULT-PACKAGES]
+                    \\usepackage[utf8]{inputenc}
+                    \\usepackage[T1]{fontenc}
+                    \\usepackage{fixltx2e}
+                    \\usepackage{graphicx}
+                    \\usepackage{longtable}
+                    \\usepackage{float}
+                    \\usepackage{wrapfig}
+                    \\usepackage{rotating}
+                    \\usepackage[normalem]{ulem}
+                    \\usepackage{amsmath}
+                    \\usepackage{textcomp}
+                    \\usepackage{marvosym}
+                    \\usepackage{wasysym}
+                    \\usepackage{amssymb}
+                    \\usepackage{booktabs}
+                    \\usepackage[colorlinks,linkcolor=black,anchorcolor=black,citecolor=black]{hyperref}
+                    \\tolerance=1000
+                    \\usepackage{listings}
+                    \\usepackage{xcolor}
+                    \\usepackage{parskip}
+                    %设置段首不缩进并且段间间隔
+                    \\setlength{\\parindent}{0pt}
+                    \\lstset{
+                    %行号
+                    numbers=left,
+                    %背景框
+                    framexleftmargin=10mm,
+                    frame=none,
+                    %背景色
+                    %backgroundcolor=\\color[rgb]{1,1,0.76},
+                    backgroundcolor=\\color[RGB]{245,245,244},
+                    %样式
+                    keywordstyle=\\bf\\color{blue},
+                    identifierstyle=\\bf,
+                    numberstyle=\\color[RGB]{0,192,192},
+                    commentstyle=\\it\\color[RGB]{0,96,96},
+                    stringstyle=\\rmfamily\\slshape\\color[RGB]{128,0,0},
+                    %显示空格
+                    showstringspaces=false
+                    }
+                    "
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org2ctex-latex-classes '("my-report"
+                   "\\documentclass[11pt]{ctexrep}
+                    %设置段首不缩进并且段间间隔
+                    \\setlength{\\parindent}{0pt}"
+                   ;; 自定义 LeTax 输出中文章节名
+                   ("\\chapter{%s}" .
+                    "{\\ctexset{chapter={numbering=false}}\\chapter{%s}}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}"))))))
+;; }}
+;;; packages.el ends here

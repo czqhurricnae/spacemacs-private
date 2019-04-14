@@ -98,13 +98,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(
-                                      virtualenvwrapper
-                                      ob-ipython
-                                      slime
-                                      nodejs-repl
-                                      dash-at-point
-                                      emmet-mode)
+   dotspacemacs-additional-packages '()
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -411,10 +405,8 @@ you should place your code here."
          nil "_"))))
   ;; }}
   (server-start)
-  (require 'org-protocol)
   (global-company-mode 1)
   (global-hl-line-highlight)
-  (require 'nodejs-repl)
   ;; Setup javascript auto-complete.
   (setq tern-command '("node" "/usr/local/bin/tern"))
   (setq js2-include-node-externs t)
@@ -434,12 +426,9 @@ you should place your code here."
   (add-hook 'prog-mode-hook 'turn-on-fci-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
-  (add-to-list 'load-path "/path/to/dash-at-point")
-  (autoload 'dash-at-point "dash-at-point"
-  "Search the word at point with Dash." t nil)
-  (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
   (setq browse-url-browser-function 'eww-browse-url)
+  (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
   )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

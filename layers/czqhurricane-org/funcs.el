@@ -438,6 +438,7 @@ should only be used in org-mode."
 ;; $ brew update
 ;; $ brew install imageoptim-cli
 ;; @see: https://imageoptim.com/mac
+;; @see: https://pngmini.com/
 ;; Download & install
 (defun org-image-save ()
   (interactive)
@@ -455,21 +456,7 @@ should only be used in org-mode."
         (setq absolute-full-file-path (concat absolute-img-dir "/" file-name))
         (defun callback-imageoptim()
           (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
-            (do-applescript
-             (format
-              "
-  tell application \"iTerm2\"
-       activate
-       set _session to current session of current window
-       tell _session
-            set command to get the clipboard
-            write text \"%s\"
-       end tell
-  end tell
-  tell application \"emacs\"
-       activate
-  end tell
-  " cmd))))
+            (eshell-command cmd)))
         (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
         (insert (concat "[[file:" full-file-path "]]"))
         ))))

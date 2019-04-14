@@ -30,6 +30,9 @@
 ;;; Code:
 (defconst czqhurricane-programming-packages
   '(
+    dash-at-point
+    nodejs-repl
+    virtualenvwrapper
     web-mode
     slime
     (exec-path-from-shell :location elpa)
@@ -133,9 +136,9 @@
 ;; $ brew install sbcl
 ;; Set your lisp system and, optionally, some contribs.
 (defun czqhurricane-programming/post-init-slime ()
-  (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
-  (setq slime-contribs '(slime-fancy))
-)
+  (progn
+    (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
+    (setq slime-contribs '(slime-fancy))))
 ;; }}
 
 ;; {{
@@ -157,7 +160,7 @@ variables such as `exec-path'."
     (setq eshell-path-env value
           exec-path (append (parse-colon-path value) (list exec-directory)))))
 
-(exec-path-from-shell-setenv "ENGLISHINPUTSOURCEISSELECTED" "
+(exec-path-from-shell-setenv "SELECTENGLISHINPUTSOURCE" "
 tell application \"System Events\"
 	set englishInputSourceIsSelected to value of attribute \"AXMenuItemMarkChar\" of menu item 4 of menu 1 of menu bar item 5 of menu bar 1 of application process \"SystemUIServer\" is \"✓\"
 	if englishInputSourceIsSelected is false then
@@ -166,3 +169,19 @@ tell application \"System Events\"
 	end if
 end tell
 ")
+
+;; {{
+;; @see: https://github.com/abicky/nodejs-repl.el
+(defun czqhurricane-programming/init-nodejs-repl ()
+  (use-package nodejs-repl)
+)
+;; }}
+
+(defun czqhurricane-programming/init-dash-at-point ()
+  (use-package dash-at-point
+    :config
+    (progn
+      (add-to-list 'load-path "/path/to/dash-at-point")
+      (autoload 'dash-at-point "dash-at-point"
+        "Search the word at point with Dash." t nil)
+      (add-to-list 'dash-at-point-mode-alist '(c-mode . "C")))))

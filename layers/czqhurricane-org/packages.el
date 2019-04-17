@@ -431,8 +431,7 @@
       (with-eval-after-load 'company
         (add-to-list 'company-backends 'company-ob-ipython))
       ;; Display/update images in the buffer after I evaluate.
-      (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-)))
+      (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append))))
 ;; }}
 
 (defun czqhurricane-org/init-ob-lisp ()
@@ -442,11 +441,11 @@
   (use-package org-download
     :init
     (progn
-      (setq org-download-timestamp "")
+      (setq org-download-screenshot-method "screencapture -o %s")
+      ;; (setq org-download-timestamp "")
       (setq org-download-heading-lvl nil)
       ;; Drag-and-drop to `dired`
-      (add-hook 'dired-mode-hook 'org-download-enable)
-)))
+      (add-hook 'dired-mode-hook 'org-download-enable))))
 
 ;; {{
 ;; @see: https://github.com/tumashu/org2ctex

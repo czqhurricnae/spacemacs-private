@@ -119,7 +119,7 @@ values."
                     helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp counsel-projectile
 		                highlight-parentheses org-pdfview doc-view org-projectile
-                                    )
+                    artist                )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -428,7 +428,7 @@ you should place your code here."
                            (electric-indent-mode -1)))
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
   (setq browse-url-browser-function 'eww-browse-url)
-  (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
+  ;; (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
   )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

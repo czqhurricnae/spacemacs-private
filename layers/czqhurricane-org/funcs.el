@@ -188,17 +188,21 @@ just like '((name begin-position end-position))'"
       (setq file-name (concat name-base ".png"))
       (setq file-full-path (concat absolute-img-dir "/" file-name))
       (setq graph-name name-base)
-      (insert (format "#+name: %s-node-table\n" graph-name))
-      (insert "| *node*     | *label*        | *shape* | *fillcolor* | *fontcolor* | *fontsize(数字必须是字符串格式)* |
-|------------+----------------+---------+-------------|-------------|------------|\n")
+      (insert (format "#+name: %s-subgraph-table\n" graph-name))
+      (insert "| *cluster(必填)* | *label* | *style(默认\"none\")* | *color(默认\"black\")* | *nodestyle(默认\"none\")* | *nodecolor(默认\"black\")* | *nodeflow(必填, 以\";\"分隔)* | *kwargs(以\";\"结尾)* |
+|-----------------+---------+---------------------+----------------------+-------------------------+--------------------------+-----------------------+---------------------|\n")
       (newline-and-indent)
-      (insert (format "#+name: %s-graph\n" graph-name))
-      (insert "| *from*       | *to*       | *label* | *fontcolor* |
-|------------+------------+-------|-------------|\n")
+      (insert (format "#+name: %s-node-table\n" graph-name))
+      (insert "| *node(必填)* | *label* | *shape(默认\"box\")* | *style(可选\"filled\")* | *fillcolor(默认\"none\")* | *fontcolor(默认\"black\")* | *fontsize(默认\"18\",数字必须是字符串格式)* | *kwargs(以\",\"结尾)* |
+|--------------+---------+--------------------+-----------------------+-------------------------+--------------------------+-------------------------------------------+---------------------------|\n")
+      (newline-and-indent)
+      (insert (format "#+name: %s-graph-table\n" graph-name))
+      (insert "| *from* | *to* | *label* | *style(默认\"bold\",可选\"dotted\") | *color(默认\"black\")* | *fontcolor* | *tailport(可选\"n\",\"ne\",\"e\",\"se\",\"sw\",\"w\",\"nw\")* | *lhead(为子图的名称即 cluster 列的值)* | *ltail(为子图的名称即 cluster 列的值)* | *kwargs(以\" \"结尾)* |
+|--------+------+---------+---------------------------------+----------------------+-------------+-------------------------------------------------+----------------------------------------+----------------------------------------+---------------------|\n")
       (newline-and-indent)
       (insert (format "#+name: create-%s-from-tables\n" graph-name))
-      (insert (format "#+HEADER: :var nodes=%s-node-table graph=%s-graph\n"
-                      graph-name graph-name))
+      (insert (format "#+HEADER: :var subgraph=%s-subgraph-table nodes=%s-node-table graph=%s-graph-table\n"
+                      graph-name graph-name graph-name))
       (insert "#+BEGIN_SRC emacs-lisp :results output :exports none\n")
       (insert "#+END_SRC\n")
       (newline-and-indent)
@@ -211,22 +215,48 @@ just like '((name begin-position end-position))'"
       (previous-line 10)
       (org-edit-src-code)
       (insert "(concat
-    \"//rankdir=LR;\\n\" ;; remove comment characters '//' for horizontal layout; add for vertical layout
+    (princ \"//rankdir=LR;\\n\") ;; remove comment characters '//' for horizontal layout; add for vertical layout
+    (princ \"compound=true;\\n\")
     (mapconcat
       (lambda (x)
-        (princ (replace-regexp-in-string \"\\\\\\\\vert\" \"|\" (format \"%s [label=\\\"%s\\\" shape=%s style=\\\"filled\\\" fillcolor=\\\"%s\\\" fontcolor=\\\"%s\\\" fontsize=\\\"%s\\\"];\\n\"
+        (princ (replace-regexp-in-string \"\\\\\\\\vert\" \"|\" (format \"subgraph %s {label=\\\"%s\\\"; style=%s; color=%s; node [style=%s, color=%s]; %s %s}\n\"
+                          (car x)
+                          (nth 1 x)
+                          (if (string= \"\" (nth 2 x)) \"none\" (nth 2 x))
+                          (if (string= \"\" (nth 3 x)) \"black\" (nth 3 x))
+                          (if (string= \"\" (nth 4 x)) \"none\" (nth 4 x))
+                          (if (string= \"\" (nth 5 x)) \"black\" (nth 5 x))
+                          (nth 6 x)
+                          (nth 7 x)
+                          )))) subgraph \"\n\")
+    \"\\n\"
+    (mapconcat
+      (lambda (x)
+        (princ (replace-regexp-in-string \"\\\\\\\\vert\" \"|\" (format \"%s[label=\\\"%s\\\", shape=%s, style=\\\"%s\\\", fillcolor=\\\"%s\\\", fontcolor=\\\"%s\\\", fontsize=\\\"%s\\\", %s];\\n\"
                           (car x)
                           (nth 1 x)
                           (if (string= \"\" (nth 2 x)) \"box\" (nth 2 x))
                           (if (string= \"\" (nth 3 x)) \"none\" (nth 3 x))
-                          (if (string= \"\" (nth 4 x)) \"black\" (nth 4 x))
-                          (if (string= \"\" (nth 5 x)) \"18\" (nth 5 x))
-                          )))) nodes \"\\n\")
+                          (if (string= \"\" (nth 4 x)) \"none\" (nth 4 x))
+                          (if (string= \"\" (nth 5 x)) \"black\" (nth 5 x))
+                          (if (string= \"\" (nth 6 x)) \"18\" (nth 6 x))
+                          (nth 7 x)
+                          )))) nodes \"\n\")
     \"\\n\"
     (mapconcat
     (lambda (x)
-      (princ (replace-regexp-in-string \"\\\\\\\\vert\" \"|\" (format \"%s -> %s [taillabel=\\\"%s\\\" fontcolor=\\\"%s\\\"];\\n\"
-              (car x) (nth 1 x) (nth 2 x) (nth 3 x))))) graph \"\\n\"))")
+      (princ (replace-regexp-in-string \"\\\\\\\\vert\" \"|\" (format \"%s -> %s [label=\\\"%s\\\" style=%s color=%s fontcolor=\\\"%s\\\" tailport=%s lhead=%s ltail=%s %s];\\n\"
+              (car x)
+              (nth 1 x)
+              (nth 2 x)
+              (if (string= \"\" (nth 3 x)) \"bold\" (nth 3 x))
+              (if (string= \"\" (nth 4 x)) \"black\" (nth 4 x))
+              (if (string= \"\" (nth 5 x)) \"black\" (nth 5 x))
+              (if (string= \"\" (nth 6 x)) \"none\" (nth 5 x))
+              (if (string= \"\" (nth 7 x)) \"none\" (nth 6 x))
+              (if (string= \"\" (nth 8 x)) \"none\" (nth 7 x))
+              (nth 9 x)
+              )))) graph \"\\n\"))")
       (org-edit-src-exit)
   )))
 
@@ -461,3 +491,56 @@ should only be used in org-mode."
         (insert (concat "[[file:" full-file-path "]]"))
         ))))
 ;; }}
+
+(defun org-table-wrap-to-width (width)
+  "Wrap current column to WIDTH."
+  (interactive (list (read-number "Enter column width: ")))
+  (org-table-check-inside-data-field)
+  (org-table-align)
+
+  (let (cline (ccol (org-table-current-column)) new-row-count (more t))
+    (org-table-goto-line 1)
+    (org-table-goto-column ccol)
+
+    (while more
+      (setq cline (org-table-current-line))
+
+      ;; Cut current field
+      (org-table-copy-region (point) (point) 'cut)
+
+      ;; Justify for width
+      (setq org-table-clip
+            (mapcar 'list (org-wrap (caar org-table-clip) width nil)))
+
+      ;; Add new lines and fill
+      (setq new-row-count (1- (length org-table-clip)))
+      (if (> new-row-count 0)
+          (org-table-insert-n-row-below new-row-count))
+      (org-table-goto-line cline)
+      (org-table-goto-column ccol)
+      (org-table-paste-rectangle)
+      (org-table-goto-line (+ cline new-row-count))
+
+      ;; Move to next line
+      (setq more (org-table-goto-line (+ cline new-row-count 1)))
+      (org-table-goto-column ccol))
+
+    (org-table-goto-line 1)
+    (org-table-goto-column ccol)))
+
+(defun org-table-insert-n-row-below (n)
+  "Insert N new lines below the current."
+  (let* ((line (buffer-substring (point-at-bol) (point-at-eol)))
+         (new (org-table-clean-line line)))
+    ;; Fix the first field if necessary
+    (if (string-match "^[ \t]*| *[#$] *|" line)
+        (setq new (replace-match (match-string 0 line) t t new)))
+    (beginning-of-line 2)
+    (setq new
+          (apply 'concat (make-list n (concat new "\n"))))
+    (let (org-table-may-need-update) (insert-before-markers new))  ;;; remove?
+    (beginning-of-line 0)
+    (re-search-forward "| ?" (point-at-eol) t)
+    (and (or org-table-may-need-update org-table-overlay-coordinates) ;;; remove?
+         (org-table-align))
+    (org-table-fix-formulas "@" nil (1- (org-table-current-dline)) n)))

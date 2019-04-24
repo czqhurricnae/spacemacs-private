@@ -3,6 +3,7 @@
         helm-github-stars
         helm
         helm-ag
+        expand-region
         projectile
         prodigy
         find-file-in-project
@@ -87,7 +88,7 @@
 
   (spacemacs/set-leader-keys "ar" 'my-ranger))
 
-;; copy from spacemacs helm layer
+;; Copy from spacemacs helm layer
 (defun czqhurricane-misc/init-helm-ag ()
   (use-package helm-ag
     :defer t
@@ -1104,7 +1105,7 @@
           "Set upstream" "--set-upstream")
         ))
 
-    ;; prefer two way ediff
+    ;; Prefer two way ediff
     (setq magit-ediff-dwim-show-on-hunks t)
 
     (setq magit-repository-directories '("~/Python/"))
@@ -1244,9 +1245,43 @@
         (setq comint-input-ring-file-name "~/.zsh_history")  ;; or bash_history
         (comint-read-input-ring t)))))
 
-(defun czqhurricane-misc/init-pandoc-mode()
+(defun czqhurricane-misc/init-pandoc-mode ()
   (use-package pandoc-mode
     :defer t
     :config
     (progn
       (add-hook 'markdown-mode-hook 'pandoc-mode))))
+
+(defun czqhurricane-misc/post-init-expand-region ()
+  (with-eval-after-load 'expand-region
+    (when (configuration-layer/package-usedp 'helm-ag)
+      (defadvice er/prepare-for-more-expansions-internal
+          (around helm-ag/prepare-for-more-expansions-internal activate)
+        ad-do-it
+        (let ((new-msg (concat (car ad-return-value)
+                               ", H to highlight in buffers"
+                               ", / to search in project, "
+                               "f to search in files, "
+                               "b to search in opened buffers"))
+              (new-bindings (cdr ad-return-value)))
+          (cl-pushnew
+           '("H" (lambda ()
+                   (call-interactively
+                    'czqhurricane/highlight-dwim)))
+           new-bindings)
+          (cl-pushnew
+           '("/" (lambda ()
+                   (call-interactively
+                    'spacemacs/helm-project-smart-do-search-region-or-symbol)))
+           new-bindings)
+          (cl-pushnew
+           '("f" (lambda ()
+                   (call-interactively
+                    'spacemacs/helm-files-smart-do-search-region-or-symbol)))
+           new-bindings)
+          (cl-pushnew
+           '("b" (lambda ()
+                   (call-interactively
+                    'spacemacs/helm-buffers-smart-do-search-region-or-symbol)))
+           new-bindings)
+          (setq ad-return-value (cons new-msg new-bindings)))))))

@@ -441,7 +441,7 @@
   (use-package org-download
     :init
     (progn
-      (setq org-download-screenshot-method "screencapture -o %s")
+      (setq org-download-screenshot-method "screencapture -i %s")
       ;; (setq org-download-timestamp "")
       (setq org-download-heading-lvl nil)
       ;; Drag-and-drop to `dired`
@@ -516,3 +516,4 @@
                    ("\\paragraph{%s}" . "\\paragraph*{%s}"))))))
 ;; }}
 ;;; packages.el ends here
+

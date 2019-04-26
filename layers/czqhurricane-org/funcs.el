@@ -188,17 +188,23 @@ just like '((name begin-position end-position))'"
       (setq file-name (concat name-base ".png"))
       (setq file-full-path (concat absolute-img-dir "/" file-name))
       (setq graph-name name-base)
+      (insert "#+LATEX: \resizebox{\textwidth}{!}{")
       (insert (format "#+name: %s-subgraph-table\n" graph-name))
       (insert "| *cluster(必填)* | *label* | *style(默认\"none\")* | *color(默认\"black\")* | *nodestyle(默认\"none\")* | *nodecolor(默认\"black\")* | *nodeflow(必填, 以\";\"分隔)* | *kwargs(以\";\"结尾)* |
 |-----------------+---------+---------------------+----------------------+-------------------------+--------------------------+-----------------------+---------------------|\n")
+      (insert "#+LATEX: }")
       (newline-and-indent)
+      (insert "#+LATEX: \resizebox{\textwidth}{!}{")
       (insert (format "#+name: %s-node-table\n" graph-name))
       (insert "| *node(必填)* | *label* | *shape(默认\"box\")* | *style(可选\"filled\")* | *fillcolor(默认\"none\")* | *fontcolor(默认\"black\")* | *fontsize(默认\"18\",数字必须是字符串格式)* | *kwargs(以\",\"结尾)* |
 |--------------+---------+--------------------+-----------------------+-------------------------+--------------------------+-------------------------------------------+---------------------------|\n")
+      (insert "#+LATEX: }")
       (newline-and-indent)
+      (insert "#+LATEX: \resizebox{\textwidth}{!}{")
       (insert (format "#+name: %s-graph-table\n" graph-name))
       (insert "| *from* | *to* | *label* | *style(默认\"bold\",可选\"dotted\") | *color(默认\"black\")* | *fontcolor* | *tailport(可选\"n\",\"ne\",\"e\",\"se\",\"sw\",\"w\",\"nw\")* | *lhead(为子图的名称即 cluster 列的值)* | *ltail(为子图的名称即 cluster 列的值)* | *kwargs(以\" \"结尾)* |
 |--------+------+---------+---------------------------------+----------------------+-------------+-------------------------------------------------+----------------------------------------+----------------------------------------+---------------------|\n")
+      (insert "#+LATEX: }")
       (newline-and-indent)
       (insert (format "#+name: create-%s-from-tables\n" graph-name))
       (insert (format "#+HEADER: :var subgraph=%s-subgraph-table nodes=%s-node-table graph=%s-graph-table\n"

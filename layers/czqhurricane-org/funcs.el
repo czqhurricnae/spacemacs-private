@@ -1,12 +1,10 @@
 (defcustom org-dot-image-dir-name "dotImg"
   "Default directory name for org dot image."
-  :type 'string
-  )
+  :type 'string)
 
 (defcustom org-screenshot-image-dir-name "screenshotImg"
   "Default directory name for org dot image."
-  :type 'string
-  )
+  :type 'string)
 
 (defun org-dot-image-dir ()
   (or org-dot-image-dir-name "."))
@@ -334,7 +332,7 @@ just like '((name begin-position end-position))'"
   "Replace the expected charaters except 'funcs.el<czqhurricane-org>' file."
   (interactive)
   (save-buffer)
-  (and (not (string-equal (buffer-file-name) "funcs.el<czqhurricane-org>"))
+  (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/czqhurricane-org/funcs.el"))
       (progn
         (replace-in-the-entire-buffer "，" "," nil)
         (replace-in-the-entire-buffer "。" "." nil)
@@ -550,3 +548,28 @@ should only be used in org-mode."
     (and (or org-table-may-need-update org-table-overlay-coordinates) ;;; remove?
          (org-table-align))
     (org-table-fix-formulas "@" nil (1- (org-table-current-dline)) n)))
+
+(defun org-screenshot-and-ocr ()
+  "Take a screenshot into a user specified file in the current
+buffer file directory and insert a link to this file."
+  (interactive)
+  (let* ((img-dir org-screenshot-image-dir-name))
+    (progn
+      (if (file-exists-p img-dir)
+          (print (format "Screnshot image directory: '%s' already exists." img-dir))
+        (mkdir img-dir))
+      ;; 统一将截图和下载图片存放的文件夹, 为以文件的同一目录下的'screenshotImg'文件夹.
+      (setq absolute-img-dir (concat default-directory img-dir))
+      ;; (let ((temp-name (select-or-enter-file-name absolute-img-dir)))
+      (let ((temp-name (select-or-enter-file-name img-dir)))
+        (setq name-base (file-name-base temp-name))
+        (setq file-name (concat name-base ".png"))
+        (setq absolute-full-file-path (concat absolute-img-dir "/" file-name))
+        (setq full-file-path (concat img-dir "/" file-name))
+        (call-process-shell-command "screencapture" nil nil nil nil "-i"
+                                    (concat "\"" full-file-path "\"" ))
+        (defun callback-BaiduOcr()
+          (let* ((cmd (format "python /Users/c/.spacemacs.d/BaiduOcr.py %s" absolute-full-file-path)))
+            (eshell-command "workon ipy3")
+            (eshell-command cmd)))
+        (install-monitor-file-exists absolute-full-file-path 1 #'callback-BaiduOcr)))))

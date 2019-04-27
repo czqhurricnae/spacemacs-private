@@ -31,3 +31,4 @@
 (global-set-key (kbd "<escape>") 'evil-keyboard-quit)
 (define-key dired-mode-map (kbd "e") #'ora-ediff-files)
 (bind-key* "C-=" 'er/expand-region)
+(global-set-key (kbd "C-c i r") 'org-screenshot-and-ocr)

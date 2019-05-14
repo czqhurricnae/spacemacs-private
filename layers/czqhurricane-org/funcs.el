@@ -6,6 +6,34 @@
   "Default directory name for org dot image."
   :type 'string)
 
+(setq buffer-replace-string-rule-lists '(("，" . ",")
+                                                 ("。" . ".")
+                                                 ("！" . "!")
+                                                 ("？" . "?")
+                                                 ("【" . "[")
+                                                 ("】" . "]")
+                                                 ("（" . "(")
+                                                 ("）" . ")")
+                                                 ("％" . "%")
+                                                 ("＃" . "#")
+                                                 ("＠" . "@")
+                                                 ("＆" . "&")
+                                                 ("１" . "1")
+                                                 ("２" . "2")
+                                                 ("３" . "3")
+                                                 ("４" . "4")
+                                                 ("５" . "5")
+                                                 ("６" . "6")
+                                                 ("７" . "7")
+                                                 ("８" . "8")
+                                                 ("９" . "9")
+                                                 ("０" . "0")
+                                                 ("、" . ",")
+                                                 ("；" . ",")
+                                                 ("“" . "\"")
+                                                 ("”" . "\"")
+                                                 ("：" . ":")))
+
 (defun org-dot-image-dir ()
   (or org-dot-image-dir-name "."))
 
@@ -334,10 +362,9 @@ just like '((name begin-position end-position))'"
   (save-buffer)
   (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/czqhurricane-org/funcs.el"))
       (progn
-        (replace-in-the-entire-buffer "，" "," nil)
-        (replace-in-the-entire-buffer "。" "." nil)
-        (replace-in-the-entire-buffer "（" "(" nil)
-        (replace-in-the-entire-buffer "）" ")" nil))))
+        (dolist (replace-string-rule buffer-replace-string-rule-lists)
+          (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
+)))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.

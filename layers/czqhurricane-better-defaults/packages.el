@@ -16,8 +16,7 @@
     (mic-paren :location elpa)
     (recentf :location elpa)
     (occur-mode :location local)
-    (dired-mode :location local)
-    ))
+    (dired-mode :location local)))
 
 (defun czqhurricane-better-defaults/init-youdao-dictionary ()
   (use-package youdao-dictionay
@@ -35,29 +34,30 @@
 (defun czqhurricane-better-defaults/post-init-recentf ()
   (progn
     (setq recentf-exclude
-          '("COMMIT_MSG"
-            "COMMIT_EDITMSG"
-            "github.*txt$"
-            "/tmp/"
-            "/ssh:"
-            "/sudo:"
-            "/TAGS$"
-            "/GTAGS$"
-            "/GRAGS$"
-            "/GPATH$"
-            "\\.mkv$"
-            "\\.mp[34]$"
-            "\\.avi$"
-            "\\.pdf$"
-            "\\.sub$"
-            "\\.srt$"
-            "\\.ass$"
-            ".*png$"))
+      '("COMMIT_MSG"
+        "COMMIT_EDITMSG"
+        "github.*txt$"
+        "/tmp/"
+        "/ssh:"
+        "/sudo:"
+        "/TAGS$"
+        "/GTAGS$"
+        "/GRAGS$"
+        "/GPATH$"
+        "\\.mkv$"
+        "\\.mp[34]$"
+        "\\.avi$"
+        "\\.pdf$"
+        "\\.sub$"
+        "\\.srt$"
+        "\\.ass$"
+        ".*png$"))
     (setq recentf-max-saved-items 2048)))
 
 (defun czqhurricane-better-defaults/init-dired-mode ()
-  (spacemacs|use-package-add-hook dired-mode
-    :post-config
+  (use-package dired-mode
+    :defer t
+    :init
     (progn
       (require 'dired-x)
       (require 'dired-aux)
@@ -80,7 +80,7 @@
       (setq dired-omit-files
             (concat dired-omit-files "\\|^.DS_Store$\\|^.projectile$\\|\\.js\\.meta$\\|\\.meta$"))
 
-      ;; Always delete and copy recursively
+      ;; Always delete and copy recursively.
       (setq dired-recursive-deletes 'always)
       (setq dired-recursive-copies 'always)
 
@@ -110,7 +110,7 @@
       (defvar dired-filelist-cmd
         '(("vlc" "-L")))
 
-      ;; FIXME: Evilify dired mode will lead to startup warnings
+      ;; FIXME: Evilify dired mode will lead to startup warnings.
       (evilified-state-evilify-map dired-mode-map
         :mode dired-mode
         :bindings
@@ -119,7 +119,7 @@
         "E" 'dired-toggle-read-only
         "C" 'dired-do-copy
         "<mouse-2>" 'my-dired-find-file
-        "`" 'dired-open-term
+        "`" 'dired-open-terminal
         "p" 'peep-dired-prev-file
         "n" 'peep-dired-next-file
         "z" 'dired-get-size

@@ -92,7 +92,7 @@ Position the cursor at its beginning, according to the current mode."
         cmd)
       (mapconcat #'expand-file-name file-list "\" \"")))))
 
-(defun dired-open-term ()
+(defun dired-open-terminal ()
   "Open an 'ansi-term' that corresponds to current directory."
   (interactive)
   (let* ((current-dir (dired-current-directory))
@@ -136,7 +136,7 @@ open and unsaved."
           (dired-get-marked-files))))
 
 (defun czqhurricane/dired-up-directory ()
-  "Goto up directory and resue buffer"
+  "Goto up directory and resue buffer."
   (interactive)
   (find-alternate-file ".."))
 

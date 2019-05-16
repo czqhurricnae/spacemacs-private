@@ -17,9 +17,6 @@
     (org2ctex :location (recipe
                              :fetcher github
                              :repo "tumashu/org2ctex"))
-    ;; (blog-admin :location (recipe
-    ;;                        :fetcher github
-    ;;                        :repo "codefalling/blog-admin"))
     org-tree-slide
     ;; ox-reveal
     ;; worf
@@ -38,7 +35,6 @@
 ;; @see: http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
 ;; @see: http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
 (defun czqhurricane-org/post-init-org ()
-  (add-hook 'org-mode-hook '(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
   (with-eval-after-load 'org
     (progn
       (spacemacs|disable-company org-mode)
@@ -117,18 +113,22 @@
 
       (setq org-image-actual-width '(350))
 
+      (add-hook 'org-mode-hook '(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
       (add-hook 'org-mode-hook '(lambda ()
-                                  ;; keybinding for inserting code blocks
+                                  ;; Keybinding for inserting code blocks
                                   (local-set-key (kbd "C-c s i")
                                                  'czqhurricane/org-insert-src-block)
-                                  ;; keybinding for editing source code blocks
+                                  ;; Keybinding for editing source code blocks
                                   (local-set-key (kbd "C-c s e")
                                                  'org-edit-special)
+                                  ;; Keybinding for executing source code blocks
                                   (local-set-key (kbd "C-c s r")
                                                  'org-src-do-at-code-block)
+                                  ;; Keybinding for export org file to markdown file
                                   (local-set-key (kbd "C-c f c")
                                                  'org-gfm-export-to-markdown-filter)
-                                  ))
+                                  (local-set-key (kbd "C-l")
+                                                 'evil-insert)))
 
       (require 'ox-publish)
       (setq org-latex-create-formula-image-program 'dvipng)
@@ -185,9 +185,6 @@
               ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
                "* %?\n  %i\n %U"
                :empty-lines 1)
-              ("b" "Blog Ideas" entry (file+headline org-agenda-file-note "Blog Ideas")
-               "* TODO [#B] %?\n  %i\n %U"
-               :empty-lines 1)
               ("s" "Code Snippet" entry
                (file org-agenda-file-code-snippet)
                "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
@@ -217,7 +214,6 @@
               ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
               ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
               ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
-              ("b" "Blog" tags-todo "BLOG")
               ("p" . "项目安排")
               ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"cocos2d-x\"")
               ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"czqhurricane\"")
@@ -225,48 +221,6 @@
                ((stuck "") ;; review stuck projects as designated by org-stuck-projects
                 (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
                 ))))
-
-      (defvar czqhurricane-website-html-preamble
-        "<div class='nav'>
-          <ul>
-            <li><a href='http://czqhurricane.com'>博客</a></li>
-          </ul>
-         </div>")
-      (defvar czqhurricane-website-html-blog-head
-        " <link rel='stylesheet' href='css/site.css' type='text/css'/> \n
-          <link rel=\"stylesheet\" type=\"text/css\" href=\"/css/worg.css\"/>")
-      (setq org-publish-project-alist
-            `(
-              ("blog-notes"
-               :base-directory "~/org-notes"
-               :base-extension "org"
-               :publishing-directory "~/org-notes/public_html/"
-
-               :recursive t
-               :html-head , czqhurricane-website-html-blog-head
-               :publishing-function org-html-publish-to-html
-               :headline-levels 4       ; Just the default for this project.
-               :auto-preamble t
-               :exclude "gtd.org"
-               :exclude-tags ("ol" "noexport")
-               :section-numbers nil
-               :html-preamble ,czqhurricane-website-html-preamble
-               :author "czqhurricane"
-               :email "guanghui8827@gmail.com"
-               :auto-sitemap t          ; Generate sitemap.org automagically...
-               :sitemap-filename "index.org" ; ... call it sitemap.org (it's the default)...
-               :sitemap-title "我的wiki"     ; ... with title 'Sitemap'.
-               :sitemap-sort-files anti-chronologically
-               :sitemap-file-entry-format "%t" ; %d to output date, we don't need date here
-               )
-              ("blog-static"
-               :base-directory "~/org-notes"
-               :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-               :publishing-directory "~/org-notes/public_html/"
-               :recursive t
-               :publishing-function org-publish-attachment
-               )
-              ("blog" :components ("blog-notes" "blog-static"))))
 
       ;; Used by czqhurricane/org-clock-sum-today-by-tags
       (add-hook 'org-after-todo-statistics-hook 'czqhurricane/org-summary-todo)

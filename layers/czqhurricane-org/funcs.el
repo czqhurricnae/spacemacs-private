@@ -215,6 +215,7 @@ just like '((name begin-position end-position))'"
       (setq file-full-path (concat absolute-img-dir "/" file-name))
       (setq graph-name name-base)
       (insert "#+LATEX: \resizebox{\textwidth}{!}{")
+      (newline-and-indent)
       (insert (format "#+name: %s-subgraph-table\n" graph-name))
       (insert "| *cluster(必填)* | *label* | *style(默认\"none\")* | *color(默认\"black\")* | *nodestyle(默认\"none\")* | *nodecolor(默认\"black\")* | *nodeflow(必填, 以\";\"分隔)* | *kwargs(以\";\"结尾)* |
 |-----------------+---------+---------------------+----------------------+-------------------------+--------------------------+-----------------------+---------------------|\n")

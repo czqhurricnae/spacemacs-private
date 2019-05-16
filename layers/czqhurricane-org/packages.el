@@ -38,7 +38,7 @@
 ;; @see: http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
 ;; @see: http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
 (defun czqhurricane-org/post-init-org ()
-  (add-hook 'org-mode-hook (lambda () (spacemacs/toggle-line-numbers-off)) 'append)
+  (add-hook 'org-mode-hook '(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
   (with-eval-after-load 'org
     (progn
       (spacemacs|disable-company org-mode)
@@ -537,4 +537,3 @@
                    ("\\paragraph{%s}" . "\\paragraph*{%s}"))))))
 ;; }}
 ;;; packages.el ends here
-

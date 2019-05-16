@@ -54,6 +54,7 @@ Position the cursor at its beginning, according to the current mode."
         regexp-history)
   (deactivate-mark)
   (call-interactively 'occur))
+
 (defun occur-non-ascii ()
   "Find any non-ascii characters in the current buffer."
   (interactive)
@@ -151,3 +152,14 @@ open and unsaved."
   (progn
     (select-english-input-source)
     (keyboard-quit)))
+
+(defadvice find-file (after insert-header-to-org-buffer
+                            activate compile)
+  "When a new 'org' buffer is created, then insert a header to it."
+  (if (equal "org" (file-name-extension buffer-file-name))
+      (progn
+        (save-excursion
+        (goto-char (point-min))
+        (when (not (re-search-forward "# -\\*- eval: (setq org-download-image-dir (concat default-directory \\\"/screenshotImg\\\")); -\\*-" nil t))
+          (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n"))
+        (save-buffer)))))

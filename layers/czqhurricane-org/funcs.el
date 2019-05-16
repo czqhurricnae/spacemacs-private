@@ -55,8 +55,8 @@
 query: the string will be replaced.
 replace: the string used to replace.
 Subexp:
-  1. used in function 'replace-match'.
-  2. represent 'replace' argument will be implemented in which one match group."
+1. used in function 'replace-match'.
+2. represent 'replace' argument will be implemented in which one match group."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward query nil t)
@@ -143,7 +143,7 @@ list just like '((name begin-position end-position))'"
       return-list)))
 
 (defun do-delete-link-function (be-list)
-  "goto the begining of link and delete it, be-list is a list
+  "Goto the begining of link and delete it, be-list is a list
 just like '((name begin-position end-position))'"
   (while be-list
     (progn
@@ -297,7 +297,7 @@ just like '((name begin-position end-position))'"
   "Insert a 'SRC-CODE-TYPE' type source code block in org-mode."
   (interactive
     (let ((src-code-types
-          '("ipython" "example" "value" "org-download" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
+          '("ipython" "example" "value" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
             "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
             "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
             "haskell" "latex" "lisp" "matlab" "ocaml" "perl" "ruby"
@@ -326,14 +326,6 @@ just like '((name begin-position end-position))'"
               (insert (format "#+BEGIN_SRC %s :results value table :exports both\n" src-code-type)))
             ((equal src-code-type "dot")
               (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
-            ((equal src-code-type "org-download")
-             (progn
-               (goto-char (point-min))
-               (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n")
-               (save-buffer)
-               (spacemacs/kill-this-buffer)
-               (reopen-killed-file))
-             (throw 'return-catch "I will not going any where else."))
             ((equal src-code-type "graphviz")
               (create-graphviz)
             (throw 'return-catch "I will not going any where else."))
@@ -354,8 +346,7 @@ just like '((name begin-position end-position))'"
     (kill-line)
     (replace-symbols-dollar-and-times)
     (save-buffer)
-    (kill-buffer-and-window))
-)
+    (kill-buffer-and-window)))
 
 (defun save-buffer-filter ()
   "Replace the expected charaters except 'funcs.el<czqhurricane-org>' file."
@@ -364,8 +355,7 @@ just like '((name begin-position end-position))'"
   (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/czqhurricane-org/funcs.el"))
       (progn
         (dolist (replace-string-rule buffer-replace-string-rule-lists)
-          (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
-)))
+          (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil)))))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.
@@ -501,7 +491,7 @@ should only be used in org-mode."
 ;; $ brew install imageoptim-cli
 ;; @see: https://imageoptim.com/mac
 ;; @see: https://pngmini.com/
-;; Download & install
+;; Download & install.
 (defun org-image-save ()
   (interactive)
   (let* ((img-dir org-screenshot-image-dir-name))
@@ -523,59 +513,6 @@ should only be used in org-mode."
         (insert (concat "[[file:" full-file-path "]]"))
         ))))
 ;; }}
-
-(defun org-table-wrap-to-width (width)
-  "Wrap current column to WIDTH."
-  (interactive (list (read-number "Enter column width: ")))
-  (org-table-check-inside-data-field)
-  (org-table-align)
-
-  (let (cline (ccol (org-table-current-column)) new-row-count (more t))
-    (org-table-goto-line 1)
-    (org-table-goto-column ccol)
-
-    (while more
-      (setq cline (org-table-current-line))
-
-      ;; Cut current field
-      (org-table-copy-region (point) (point) 'cut)
-
-      ;; Justify for width
-      (setq org-table-clip
-            (mapcar 'list (org-wrap (caar org-table-clip) width nil)))
-
-      ;; Add new lines and fill
-      (setq new-row-count (1- (length org-table-clip)))
-      (if (> new-row-count 0)
-          (org-table-insert-n-row-below new-row-count))
-      (org-table-goto-line cline)
-      (org-table-goto-column ccol)
-      (org-table-paste-rectangle)
-      (org-table-goto-line (+ cline new-row-count))
-
-      ;; Move to next line
-      (setq more (org-table-goto-line (+ cline new-row-count 1)))
-      (org-table-goto-column ccol))
-
-    (org-table-goto-line 1)
-    (org-table-goto-column ccol)))
-
-(defun org-table-insert-n-row-below (n)
-  "Insert N new lines below the current."
-  (let* ((line (buffer-substring (point-at-bol) (point-at-eol)))
-         (new (org-table-clean-line line)))
-    ;; Fix the first field if necessary
-    (if (string-match "^[ \t]*| *[#$] *|" line)
-        (setq new (replace-match (match-string 0 line) t t new)))
-    (beginning-of-line 2)
-    (setq new
-          (apply 'concat (make-list n (concat new "\n"))))
-    (let (org-table-may-need-update) (insert-before-markers new))  ;;; remove?
-    (beginning-of-line 0)
-    (re-search-forward "| ?" (point-at-eol) t)
-    (and (or org-table-may-need-update org-table-overlay-coordinates) ;;; remove?
-         (org-table-align))
-    (org-table-fix-formulas "@" nil (1- (org-table-current-dline)) n)))
 
 (defun org-screenshot-and-ocr ()
   "Take a screenshot into a user specified file in the current

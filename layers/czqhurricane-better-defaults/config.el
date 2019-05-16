@@ -1,8 +1,8 @@
 (setq auto-coding-regexp-alist
-      (delete (rassoc 'utf-16be-with-signature auto-coding-regexp-alist)
-              (delete (rassoc 'utf-16le-with-signature auto-coding-regexp-alist)
-                      (delete (rassoc 'utf-8-with-signature auto-coding-regexp-alist)
-                              auto-coding-regexp-alist))))
+(delete (rassoc 'utf-16be-with-signature auto-coding-regexp-alist)
+  (delete (rassoc 'utf-16le-with-signature auto-coding-regexp-alist)
+    (delete (rassoc 'utf-8-with-signature auto-coding-regexp-alist)
+      auto-coding-regexp-alist))))
 
 (defun ffap-hexl-mode ()
   (interactive)
@@ -25,28 +25,28 @@
   (eval
    `(defadvice ,command (after indent-region activate)
       (and (not current-prefix-arg)
-           (member major-mode
-                   '(emacs-lisp-mode
-                     lisp-mode
-                     clojure-mode
-                     scheme-mode
-                     haskell-mode
-                     ruby-mode
-                     rspec-mode
-                     python-mode
-                     c-mode
-                     c++-mode
-                     objc-mode
-                     latex-mode
-                     js-mode
-                     plain-tex-mode))
-           (let ((mark-even-if-inactive transient-mark-mode))
-             (indent-region (region-beginning) (region-end) nil))))))
+        (member major-mode
+               '(emacs-lisp-mode
+                 lisp-mode
+                 clojure-mode
+                 scheme-mode
+                 haskell-mode
+                 ruby-mode
+                 rspec-mode
+                 python-mode
+                 c-mode
+                 c++-mode
+                 objc-mode
+                 latex-mode
+                 js-mode
+                 plain-tex-mode))
+        (let ((mark-even-if-inactive transient-mark-mode))
+         (indent-region (region-beginning) (region-end) nil))))))
 
 ;; {{
 ;; @see: https://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 ;; @see: https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
-;; this settings will cause command 'vc-annotate' failed.
+;; This settings will cause command 'vc-annotate' failed.
 ;; 如果把 vc-handled-backends去掉,那么 vc-follow-symlinks 这个选项就会失效.
 ;; 进而, 如果你访问一个在版本控制里面的alias的话,它不会自动去访问原文件,这个是非常不爽的.
 ;; (setq vc-handled-backends ())
@@ -87,12 +87,12 @@
 (menu-bar-mode t)
 
 (add-hook 'before-save-hook
-          (lambda ()
-            (when buffer-file-name
-              (let ((dir (file-name-directory buffer-file-name)))
-                (when (and (not (file-exists-p dir))
-                           (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
-                  (make-directory dir t))))))
+  (lambda ()
+    (when buffer-file-name
+      (let ((dir (file-name-directory buffer-file-name)))
+        (when (and (not (file-exists-p dir))
+           (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+          (make-directory dir t))))))
 
 ;; {{
 ;; @see: http://emacs.stackexchange.com/questions/13970/fixing-double-capitals-as-i-type
@@ -100,13 +100,13 @@
   "Convert word in DOuble CApitals to Single Capitals."
   (interactive)
   (and (= ?w (char-syntax (char-before)))
-       (save-excursion
-         (and (if (called-interactively-p)
-                  (skip-syntax-backward "w")
-                (= -3 (skip-syntax-backward "w")))
-              (let (case-fold-search)
-                (looking-at "\\b[[:upper:]]\\{2\\}[[:lower:]]"))
-              (capitalize-word 1)))))
+    (save-excursion
+     (and (if (called-interactively-p)
+              (skip-syntax-backward "w")
+              (= -3 (skip-syntax-backward "w")))
+            (let (case-fold-search)
+      (looking-at "\\b[[:upper:]]\\{2\\}[[:lower:]]"))
+    (capitalize-word 1)))))
 ;; }}
 
 (define-minor-mode dubcaps-mode

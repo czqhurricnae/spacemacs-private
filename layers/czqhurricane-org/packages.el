@@ -17,18 +17,14 @@
     (org2ctex :location (recipe
                              :fetcher github
                              :repo "tumashu/org2ctex"))
-    org-tree-slide
-    ;; ox-reveal
-    ;; worf
-    ))
+    org-tree-slide))
 
 (defun czqhurricane-org/post-init-org-pomodoro ()
   (progn
     (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "Have a break!")))
     (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "Ready to Go?")))
     (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
-    ))
+    (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
 
 ;; In order to export pdf to support Chinese, I should install Latex in here:
 ;; @see: https://www.tug.org/mactex/
@@ -72,7 +68,7 @@
             '((nil :maxlevel . 4)
               (org-agenda-files :maxlevel . 4)))
 
-      ;; Config stuck project
+      ;; Config stuck project.
       (setq org-stuck-projects
             '("TODO={.+}/-DONE" nil nil "SCHEDULED:\\|DEADLINE:"))
 
@@ -82,73 +78,56 @@
       (setq org-agenda-window-setup 'current-window)
       (setq org-log-done t)
 
-      ;; {{ 加密文章
-      ;; @see: http://coldnew.github.io/blog/2013/07/13_5b094.html
-      ;; org-mode 设定
-      (require 'org-crypt)
-      ;; 当被加密的部分要存入硬盘时, 自动加密回去
-      (org-crypt-use-before-save-magic)
-      ;; 设定要加密的tag标签为secret
-      (setq org-crypt-tag-matcher "secret")
-      ;; 避免secret这个标签被子项目继承, 造成重复加密
-      ;; 但是子项目还是会被加密
-      (setq org-tags-exclude-from-inheritance (quote ("secret")))
-      ;; 用于加密的 GPG 钥匙
-      ;; 可以设定成任何值或者nil 来进行加密 (symmetric encryption)
-      (setq org-crypt-key nil)
-      ;; }}
-
       (setq org-todo-keywords
             (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
                     (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
 
-      ;; Change task state to STARTED when clocking in
+      ;; Change task state to STARTED when clocking in.
       (setq org-clock-in-switch-to-state "NEXT")
-      ;; Save clock data and notes in the LOGBOOK drawer
+      ;; Save clock data and notes in the LOGBOOK drawe.
       (setq org-clock-into-drawer t)
-      ;; Removes clocked tasks with 0:00 duration
-      (setq org-clock-out-remove-zero-time-clocks t) ;; Show the clocked-in task - if any - in the header line
-
+      ;; Removes clocked tasks with 0:00 duration.
+      (setq org-clock-out-remove-zero-time-clocks t)
+      ;; Show the clocked-in task if any in the header line.
       (setq org-tags-match-list-sublevels nil)
 
       (setq org-image-actual-width '(350))
 
       (add-hook 'org-mode-hook '(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
       (add-hook 'org-mode-hook '(lambda ()
-                                  ;; Keybinding for inserting code blocks
+                                  ;; Keybinding for inserting code blocks.
                                   (local-set-key (kbd "C-c s i")
                                                  'czqhurricane/org-insert-src-block)
-                                  ;; Keybinding for editing source code blocks
+                                  ;; Keybinding for editing source code blocks.
                                   (local-set-key (kbd "C-c s e")
                                                  'org-edit-special)
-                                  ;; Keybinding for executing source code blocks
+                                  ;; Keybinding for executing source code blocks.
                                   (local-set-key (kbd "C-c s r")
                                                  'org-src-do-at-code-block)
-                                  ;; Keybinding for export org file to markdown file
+                                  ;; Keybinding for export org file to markdown file.
                                   (local-set-key (kbd "C-c f c")
                                                  'org-gfm-export-to-markdown-filter)
                                   (local-set-key (kbd "C-l")
                                                  'evil-insert)))
 
-      (require 'ox-publish)
       (setq org-latex-create-formula-image-program 'dvipng)
       (setq org-latex-listings 'minted)
       (add-to-list 'org-latex-packages-alist '("" "minted"))
+
       (add-to-list 'org-entities-user
                    '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
       (setq org-export-backends (quote (ascii html icalendar latex md)))
       ;; Make org not to treat '_' with sub-superscript, but '_{}'.
       (setq org-export-with-sub-superscripts '{})
-      ;; Reset subtask
-      (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties))
 
-      ;; (add-hook 'org-after-todo-state-change-hook 'org-subtask-reset)
+      ;; Reset subtask.
+      (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties))
 
       (setq org-plantuml-jar-path
             (expand-file-name "~/.spacemacs.d/plantuml.jar"))
       (setq org-ditaa-jar-path "~/.spacemacs.d/ditaa.jar")
 
-      ;; Copy from chinese layer
+      ;; Copy from chinese layer.
       (defadvice org-html-paragraph (before org-html-paragraph-advice
                                             (paragraph contents info) activate)
         "Join consecutive Chinese lines into a single long line without
@@ -161,7 +140,7 @@
                   "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
           (ad-set-arg 1 fixed-contents)))
 
-      ;; Define the refile targets
+      ;; Define the refile targets.
       (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
       (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
       (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
@@ -174,9 +153,10 @@
         (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
           "." 'spacemacs/org-agenda-transient-state/body)
         )
-      ;; {{The %i would copy the selected text into the template.
-      ;; @see http://www.howardism.org/Technical/Emacs/journaling-org.html
-      ;; add multi-file journal.
+      ;; {{
+      ;; The %i would copy the selected text into the template.
+      ;; @see: http://www.howardism.org/Technical/Emacs/journaling-org.html
+      ;; Add multi-file journal.
       ;; }}
       (setq org-capture-templates
             '(("t" "Todo" entry (file+headline org-agenda-file-gtd "Workspace")
@@ -206,8 +186,8 @@
                "* %^{Title}\n %:initial")
               ))
 
-      ;; An entry without a cookie is treated just like priority ' B '.
-      ;; So when create new task, they are default 重要且紧急
+      ;; An entry without a cookie is treated just like priority 'B'.
+      ;; So when create new task, they are default '重要且紧急'.
       (setq org-agenda-custom-commands
             '(
               ("w" . "任务安排")
@@ -218,11 +198,11 @@
               ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"cocos2d-x\"")
               ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"czqhurricane\"")
               ("W" "Weekly Review"
-               ((stuck "") ;; review stuck projects as designated by org-stuck-projects
-                (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
+               ((stuck "") ;; Review stuck projects as designated by org-stuck-projects.
+                (tags-todo "PROJECT") ;; Review all projects (assuming you use todo keywords to designate projects).
                 ))))
 
-      ;; Used by czqhurricane/org-clock-sum-today-by-tags
+      ;; Used by czqhurricane/org-clock-sum-today-by-tags.
       (add-hook 'org-after-todo-statistics-hook 'czqhurricane/org-summary-todo)
 
       (define-key org-mode-map (kbd "s-p") 'org-priority)
@@ -230,11 +210,11 @@
         "tl" 'org-toggle-link-display)
       (define-key evil-normal-state-map (kbd "C-c C-w") 'org-refile)
 
-      ;; Hack for org headline toc
+      ;; Hack for org headline toc.
       (defun org-html-headline (headline contents info)
         "Transcode a HEADLINE element from Org to HTML.
-        CONTENTS holds the contents of the headline.  INFO is a plist
-        holding contextual information."
+        CONTENTS holds the contents of the headline.
+        INFO is a plist holding contextual information."
         (unless (org-element-property :footnote-section-p headline)
           (let* ((numberedp (org-export-numbered-headline-p headline info))
                  (numbers (org-export-get-headline-number headline info))
@@ -282,7 +262,8 @@
                                (org-html-end-plain-list type))))
               (let ((extra-class (org-element-property :HTML_CONTAINER_CLASS headline))
                     (first-content (car (org-element-contents headline))))
-                ;; Standard headline.  Export it as a section.
+                ;; Standard headline.
+                ;; Export it as a section.
                 (format "<%s id=\"%s\" class=\"%s\">%s%s</%s>\n"
                         (org-html--container headline info)
                         (org-export-get-reference headline info)
@@ -396,9 +377,8 @@
     :init
     (progn
       (setq org-download-screenshot-method "screencapture -i %s")
-      ;; (setq org-download-timestamp "")
       (setq org-download-heading-lvl nil)
-      ;; Drag-and-drop to `dired`
+      ;; Drag-and-drop to `dired`.
       (add-hook 'dired-mode-hook 'org-download-enable))))
 
 ;; {{

@@ -477,27 +477,48 @@
                     \\usepackage{listings}
                     \\usepackage{xcolor}
                     \\usepackage{parskip}
-                    %设置段首不缩进并且段间间隔
+                    % 设置段首不缩进并且段间间隔
                     \\setlength{\\parindent}{0pt}
                     \\lstset{
-                    %行号
+                    % 行号
                     numbers=left,
-                    %背景框
+                    % 背景框
                     framexleftmargin=10mm,
                     frame=none,
-                    %背景色
-                    %backgroundcolor=\\color[rgb]{1,1,0.76},
+                    % 背景色
+                    % backgroundcolor=\\color[rgb]{1,1,0.76},
                     backgroundcolor=\\color[RGB]{245,245,244},
-                    %样式
+                    % 样式
                     keywordstyle=\\bf\\color{blue},
                     identifierstyle=\\bf,
                     numberstyle=\\color[RGB]{0,192,192},
                     commentstyle=\\it\\color[RGB]{0,96,96},
                     stringstyle=\\rmfamily\\slshape\\color[RGB]{128,0,0},
-                    %显示空格
+                    % 显示空格
                     showstringspaces=false
                     }
-                    "
+                    % 设置章节标题格式
+                    \\ctexset{
+                       section={
+                         titleformat=\\raggedright,
+                         name={,. },
+                         number=\\chinese{section},
+                       }
+                   }
+                   \\ctexset{
+                      subsection={
+                        titleformat=\\raggedright,
+                        name={,. },
+                        number=\\arabic{subsection},
+                      }
+                   }
+                   \\ctexset{
+                      subsubsection={
+                        titleformat=\\raggedright,
+                        name={,. },
+                        number=\\alph{subsubsection},
+                      }
+                   }"
                    ("\\section{%s}" . "\\section*{%s}")
                    ("\\subsection{%s}" . "\\subsection*{%s}")
                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
@@ -507,7 +528,7 @@
                    "\\documentclass[11pt]{ctexrep}
                     %设置段首不缩进并且段间间隔
                     \\setlength{\\parindent}{0pt}"
-                   ;; 自定义 LeTax 输出中文章节名
+                   ;; 自定义 LaTex 输出中文章节名
                    ("\\chapter{%s}" .
                     "{\\ctexset{chapter={numbering=false}}\\chapter{%s}}")
                    ("\\section{%s}" . "\\section*{%s}")

@@ -89,9 +89,8 @@
   :init
   (progn
     (setq pangu-spacing-chinese-after-english-regexp
-          (rx (group-n 1 (in "a-zA-Z0-9,.!?[]()%#@&1234567890,;\":"))
+          (rx (group-n 1 (in "a-zA-Z0-9,.!?])%#@&1234567890,;\":"))
           (group-n 2 (category chinse-two-byte))))
-
     ;; Add toggle options
     (spacemacs|add-toggle toggle-pangu-spaceing
       :status pangu-spacing-mode

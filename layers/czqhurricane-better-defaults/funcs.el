@@ -153,6 +153,31 @@ open and unsaved."
     (select-english-input-source)
     (keyboard-quit)))
 
+(defun czqhurricane//dired-store-link (orig-fun &rest args)
+  (if (derived-mode-p 'dired-mode)
+      (let ((file (dired-get-filename nil t)))
+        (setf file (if file
+                       (abbreviate-file-name (expand-file-name file))
+                     default-directory))
+          (let ((link (concat "file:" file))
+                (desc (file-name-nondirectory file)))
+            (if (string-match ".*?\\.\\(?:png\\|jpg\\)\\(.*\\)$" file)
+                (push (list link nil) org-stored-links)
+              (push (list link desc) org-stored-links))
+          (car org-stored-links)))
+    (apply orig-fun args))
+  (if (derived-mode-p 'org-mode)
+      (when (org-at-target-p)
+        (let ((target nil))
+        (setf target (string-trim (match-string 0) "<<" ">>"))
+        (let ((link target)
+              (desc (concat "See " target)))
+            (push (list link desc) org-stored-links)
+            (car org-stored-links)
+            (message "Stored: %s" (or link desc)))))
+    (apply orig-fun args)))
+(advice-add 'org-store-link :around #'czqhurricane//dired-store-link)
+
 (defadvice find-file (after insert-header-to-org-buffer
                             activate compile)
   "When a new 'org' buffer is created, then insert a header to it."

@@ -32,3 +32,4 @@
 (define-key dired-mode-map (kbd "e") #'ora-ediff-files)
 (bind-key* "C-=" 'er/expand-region)
 (global-set-key (kbd "C-c i r") 'org-screenshot-and-ocr)
+(global-set-key (kbd "C-c i c") 'org-insert-caption-and-target)

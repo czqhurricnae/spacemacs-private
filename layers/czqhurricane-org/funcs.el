@@ -538,3 +538,18 @@ buffer file directory and insert a link to this file."
             (eshell-command "workon ipy3")
             (eshell-command cmd)))
         (install-monitor-file-exists absolute-full-file-path 1 #'callback-BaiduOcr)))))
+
+(defun org-insert-caption-and-target ()
+  (interactive)
+  (let* ((current-symbol (color-rg-pointer-string))
+         (input-string
+          (string-trim
+           (read-string
+            (format "COLOR-RG Search (%s): " current-symbol)
+            nil
+            ))))
+    (when (string-blank-p input-string)
+      (setq input-string current-symbol))
+    (insert (concat "#+CAPTION: " input-string))
+    (newline-and-indent)
+    (insert (format "<<%s>>" input-string))))

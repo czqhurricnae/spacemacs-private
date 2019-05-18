@@ -391,7 +391,7 @@
         (org2ctex-toggle t)
         (add-to-list 'org2ctex-latex-classes '("my-article" "\\documentclass[20pt]{ctexart}
                     [NO-DEFAULT-PACKAGES]
-                    \\usepackage[utf8]{inputenc}
+                    \\usepackage{xeCJK}
                     \\usepackage[T1]{fontenc}
                     \\usepackage{fixltx2e}
                     \\usepackage{graphicx}
@@ -411,6 +411,8 @@
                     \\usepackage{listings}
                     \\usepackage{xcolor}
                     \\usepackage{parskip}
+                    \\usepackage{minted}
+                    \\usepackage{color}
                     % 设置段首不缩进并且段间间隔
                     \\setlength{\\parindent}{0pt}
                     \\lstset{

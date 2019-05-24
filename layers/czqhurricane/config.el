@@ -13,7 +13,7 @@
 (defvar virtualenv-dir ""
   "Virtualenvs location.")
 
-(defvar jupyter-dir ""
+(defvar jupyter-bin ""
   "Jupyter location.")
 
 (setq-default
@@ -22,5 +22,5 @@
  blog-admin-dir "~/czqhurricane.com"
  snippet-dir "/Users/c/.spacemacs.d/snippets/"
  virtualenv-dir "~/.virtualenvs/"
- jupyter-dir "~/.virtualenvs/ipy3/bin/jupyter/"
+ jupyter-bin "~/.virtualenvs/ipy3/bin/jupyter"
 )

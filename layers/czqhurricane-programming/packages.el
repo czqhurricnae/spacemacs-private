@@ -108,12 +108,13 @@
                                      company-dabbrev)))
 
 (defun czqhurricane-programming/post-init-dumb-jump ()
-  (setq dumb-jump-selector 'ivy)
-  (defun my-dumb-jump ()
-    (interactive)
-    (evil-set-jump)
-    (dumb-jump-go-other-window))
-  (global-set-key (kbd "C-x g") 'my-dumb-jump))
+  (progn
+    (setq dumb-jump-selector 'ivy)))
+
+(defun my-dumb-jump ()
+  (interactive)
+  (evil-set-jump)
+  (dumb-jump-go-other-window))
 
 (defun czqhurricane-programming/init-ycmd ()
   (use-package ycmd

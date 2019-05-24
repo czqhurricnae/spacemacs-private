@@ -545,7 +545,7 @@ buffer file directory and insert a link to this file."
          (input-string
           (string-trim
            (read-string
-            (format "COLOR-RG Search (%s): " current-symbol)
+            (format "Org-insert-caption-and-target Search (%s): " current-symbol)
             nil
             ))))
     (when (string-blank-p input-string)

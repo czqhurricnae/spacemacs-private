@@ -112,6 +112,8 @@
 
       (setq org-latex-create-formula-image-program 'dvipng)
       (setq org-latex-listings 'minted)
+      (setq org-latex-minted-options
+            '(("frame" "lines") ("linenos" "true") ("escapeinside" "||")))
       (add-to-list 'org-latex-packages-alist '("" "minted"))
 
       (add-to-list 'org-entities-user
@@ -362,7 +364,7 @@
     :after org
     :init
     (progn
-      (setq ob-ipython-command jupyter-dir)
+      (setq ob-ipython-command jupyter-bin)
       (with-eval-after-load 'company
         (add-to-list 'company-backends 'company-ob-ipython))
       ;; Display/update images in the buffer after I evaluate.

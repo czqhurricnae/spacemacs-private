@@ -72,9 +72,11 @@
       (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
       (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
                                                                         org-mode-hook
+                                                                        web-mode-hook
                                                                         markdown-mode-hook))
       (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
                                                              org-mode-hook
+                                                             web-mode-hook
                                                              markdown-mode-hook))))
 
 (defun czqhurricane-programming/post-init-exec-path-from-shell ()
@@ -94,11 +96,16 @@
 (defun czqhurricane-programming/post-init-web-mode ()
   (with-eval-after-load "web-mode"
     (web-mode-toggle-current-element-highlight)
-    (web-mode-dom-errors-show))
+    (web-mode-dom-errors-show)
+    (add-hook 'web-mode-hook (lambda ()
+      (when (equal "js" (file-name-extension (or (buffer-file-name) "")))
+      (add-to-list (make-local-variable 'yas-snippet-dirs)
+      (concat (expand-file-name snippet-dir) "/react-mode"))))))
   (setq company-backends-web-mode '((company-dabbrev-code
                                      company-keywords
                                      company-etags)
-                                    company-files company-dabbrev)))
+                                     company-files
+                                     company-dabbrev)))
 
 (defun czqhurricane-programming/post-init-dumb-jump ()
   (setq dumb-jump-selector 'ivy)

@@ -115,7 +115,6 @@
         :mode dired-mode
         :bindings
         (kbd "C-k") 'czqhurricane/dired-up-directory
-        "<RET>" 'dired-find-alternate-file
         "E" 'dired-toggle-read-only
         "C" 'dired-do-copy
         "<mouse-2>" 'my-dired-find-file

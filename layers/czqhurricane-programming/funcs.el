@@ -37,12 +37,6 @@
   "Return the full path of tags file."
   )
 
-(with-eval-after-load 'web-mode
-  (add-hook 'web-mode-hook (lambda ()
-    (when (equal "js" (file-name-extension (buffer-file-name)))
-      (add-to-list (make-local-variable 'yas-snippet-dirs)
-                     (concat (expand-file-name snippet-dir) "/react-mode"))))))
-
 ;; {{
 ;; @see https://www.youtube.com/watch?v=sBhQ2NIcrLQ&list=PLVfFIUHWy-aNaF08m34sO81dsVr4L7uI-&index=13
 (defadvice sgml-delete-tag (after reindent-buffer activate)

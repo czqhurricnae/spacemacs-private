@@ -17,10 +17,10 @@
   "Jupyter location.")
 
 (setq-default
- org-agenda-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes"
- deft-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes"
+ org-agenda-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
+ deft-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
  blog-admin-dir "~/czqhurricane.com"
- snippet-dir "/Users/c/.spacemacs.d/snippets"
- virtualenv-dir "~/.virtualenvs"
- jupyter-dir "~/.virtualenvs/ipy3/bin/jupyter"
+ snippet-dir "/Users/c/.spacemacs.d/snippets/"
+ virtualenv-dir "~/.virtualenvs/"
+ jupyter-dir "~/.virtualenvs/ipy3/bin/jupyter/"
 )

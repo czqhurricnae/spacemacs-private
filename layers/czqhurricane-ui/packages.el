@@ -101,7 +101,7 @@
     (add-hook 'org-mode-hook
               '(lambda ()
                   (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
-                  (pangu-spacing-space-current-buffer))))))
+                  (spacemacs/toggle-toggle-pangu-spaceing-on))))))
 
 ;; {{
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md

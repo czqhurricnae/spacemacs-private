@@ -1,3 +1,4 @@
+
 (defun indent-buffer()
   (interactive)
   (indent-region (point-min) (point-max)))
@@ -183,10 +184,11 @@ open and unsaved."
 (defadvice find-file (after insert-header-to-org-buffer
                             activate compile)
   "When a new 'org' buffer is created, then insert a header to it."
-  (if (equal "org" (file-name-extension buffer-file-name))
+  (when (buffer-file-name)
+    (if (equal "org" (file-name-extension buffer-file-name))
       (progn
         (save-excursion
         (goto-char (point-min))
         (when (not (re-search-forward "# -\\*- eval: (setq org-download-image-dir (concat default-directory \\\"/screenshotImg\\\")); -\\*-" nil t))
           (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n"))
-        (save-buffer)))))
+        (save-buffer))))))

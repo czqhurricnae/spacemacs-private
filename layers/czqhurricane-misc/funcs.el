@@ -308,8 +308,9 @@ e.g. Sunday, September 17, 2000."
 
 (defalias 'tt 'czqhurricane/terminal)
 
-;;add count for chinese, mainly used for writing chinese blog post
-;; http://kuanyui.github.io/2014/01/18/count-chinese-japanese-and-english-words-in-emacs/
+;; {{
+;; @see: http://kuanyui.github.io/2014/01/18/count-chinese-japanese-and-english-words-in-emacs/
+;; Add count for chinese, mainly used for writing chinese blog post
 (defvar wc-regexp-chinese-char-and-punc
   (rx (category chinese)))
 (defvar wc-regexp-chinese-punc
@@ -324,7 +325,7 @@ e.g. Sunday, September 17, 2000."
 - 英文只計算「單字數」,不含標點.
 - 韓文不包含在內.
 
-※計算標準太多種了,例如英文標點是否算入、以及可能有不太常用的標點符號沒算入等
+※計算標準太多種了,例如英文標點是否算入,以及可能有不太常用的標點符號沒算入等
 .且中日文標點的計算標準要看 Emacs 如何定義特殊標點符號如ヴァランタン・アルカン
 中間的點也被 Emacs 算為一個字而不是標點符號."
   (interactive)
@@ -343,7 +344,7 @@ e.g. Sunday, September 17, 2000."
     (with-temp-buffer
       (insert v-buffer-string)
       (goto-char (point-min))
-      ;; 中文(含標點、片假名)
+      ;; 中文(含標點,片假名)
       (while (re-search-forward wc-regexp-chinese-char-and-punc nil :no-error)
         (setq chinese-char-and-punc (1+ chinese-char-and-punc)))
       ;; 中文標點符號
@@ -356,13 +357,14 @@ e.g. Sunday, September 17, 2000."
         (setq english-word (1+ english-word))))
     (setq chinese-char (- chinese-char-and-punc chinese-punc))
     (message
-     (format "中日文字數(不含標點)：%s
-中日文字數(包含標點)：%s
-英文字數(不含標點)：%s
+     (format "中日文字數(不含標點):%s
+中日文字數(包含標點):%s
+英文字數(不含標點):%s
 =======================
-中英文合計(不含標點)：%s"
+中英文合計(不含標點):%s"
              chinese-char chinese-char-and-punc english-word
              (+ chinese-char english-word)))))
+;; }}
 
 (defun czqhurricane/evil-quick-replace (beg end )
   (interactive "r")

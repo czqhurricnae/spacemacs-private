@@ -168,21 +168,7 @@ variables such as `exec-path'."
     (setq eshell-path-env value
           exec-path (append (parse-colon-path value) (list exec-directory)))))
 
-(exec-path-from-shell-setenv "SELECTENGLISHINPUTSOURCE" "
-tell application \"System Events\"
-	set englishInputSourceIsSelected to value of attribute \"AXMenuItemMarkChar\" of menu item 4 of menu 1 of menu bar item 5 of menu bar 1 of application process \"SystemUIServer\" is \"✓\"
-	set {originX, originY} to paragraphs of (do shell script \"/Users/c/.spacemacs.d/MouseTools -location\")
-	if englishInputSourceIsSelected is false then
-		tell process \"Sogou\"
-			set {positionX, positionY} to position of menu bar item 1 of menu bar 1
-			set {sizeX, sizeY} to size of menu bar item 1 of menu bar 1
-			set {buttonX, buttonY} to {positionX + (sizeX div 2), positionY + (sizeY div 2)}
-			do shell script \"/Users/c/.spacemacs.d/MouseTools\" & \" -x \" & (buttonX as text) & \" -y \" & (buttonY as text) & \" -leftClick\"
-			do shell script \"/Users/c/.spacemacs.d/MouseTools\" & \" -x \" & (originX as text) & \" -y \" & (originY as text)
-		end tell
-	end if
-end tell
-")
+(exec-path-from-shell-setenv "SELECTENGLISHINPUTSOURCE" "/Users/c/.spacemacs.d/selectEnglishInputSource.scpt")
 
 ;; {{
 ;; @see: https://github.com/abicky/nodejs-repl.el

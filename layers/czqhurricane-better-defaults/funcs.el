@@ -143,7 +143,7 @@ open and unsaved."
 
 (defun select-english-input-source ()
   (interactive)
-  (let* ((cmd "osascript -e $SELECTENGLISHINPUTSOURCE"))
+  (let* ((cmd (format "osascript %s" (getenv "SELECTENGLISHINPUTSOURCE"))))
     (eshell-command cmd)))
 
 (defun evil-keyboard-quit ()

@@ -381,8 +381,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq purpose-mode nil)
   ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
-  (setq evil-want-C-w-delete t)
-  )
+  (setq evil-want-C-w-delete t))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -392,7 +391,7 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (package-initialize)
-  ;; {{fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
+  ;; {{Fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
   ;; @See: https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
   (with-eval-after-load 'python
     (defun python-shell-completion-native-try ()
@@ -426,10 +425,9 @@ you should place your code here."
   (add-hook 'prog-mode-hook 'turn-on-fci-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
-  (define-key evil-insert-state-map [escape] 'evil-normal-state)
   (setq browse-url-browser-function 'eww-browse-url)
   ;; (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
-  )
+ )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()

@@ -16,6 +16,9 @@
 (defvar jupyter-bin ""
   "Jupyter location.")
 
+(defvar auto-insert-dir ""
+  "Auto insert templates location.")
+
 (setq-default
  org-agenda-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
  deft-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
@@ -23,4 +26,5 @@
  snippet-dir "/Users/c/.spacemacs.d/snippets/"
  virtualenv-dir "~/.virtualenvs/"
  jupyter-bin "~/.virtualenvs/ipy3/bin/jupyter"
+ auto-insert-dir "/Users/c/.spacemacs.d/templates/"
 )

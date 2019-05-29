@@ -67,7 +67,6 @@
         (propertize (concat "★ " caption) 'face 'warning)
       caption)))
 
-
 (defun czqhurricane/layouts-for-title-bar ()
   "Return a one liner string containing all the layout names."
   (let* ((persp-list (or (persp-names-current-frame-fast-ordered)

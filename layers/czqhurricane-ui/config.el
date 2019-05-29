@@ -1,11 +1,5 @@
-;; More useful frame title, that show either a file or a
-;; buffer name (if the buffer isn't visiting a file)
-(setq frame-title-format
-      '("" " czq- "
-        (:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name)) "%b"))))
-
-;; http://philipdaniels.com/blog/2017/02/spacemacs---configuring-the-solarized-theme/
+;; {{
+;; @see: http://philipdaniels.com/blog/2017/02/spacemacs---configuring-the-solarized-theme/
 ;; Get color-theme-solarized working. It is specified as an additional package
 ;; above. First we setup some theme modifications - we must do this *before*
 ;; we load the theme. Note that the color-theme-solarized package appears in
@@ -34,7 +28,7 @@
         (set-face-attribute 'sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified)
         (set-face-attribute 'sp-show-pair-mismatch-face nil :foreground 'unspecified :background 'unspecified)
         )))
-
+;; }}
 (set-terminal-parameter nil 'background-mode 'dark)
 (set-frame-parameter nil 'background-mode 'dark)
 (display-time-mode 1)

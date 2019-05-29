@@ -35,6 +35,7 @@
         browse-at-remote
         (shell-mode :location local)
         pandoc-mode
+        (autoinsert :location built-in)
         ))
 
 (defun czqhurricane-misc/init-browse-at-remote ()
@@ -60,9 +61,9 @@
       (add-to-list 'golden-ratio-exclude-modes mode))
     (dolist (n '("COMMIT_EDITMSG"))
       (add-to-list 'golden-ratio-exclude-buffer-names n))))
-
+;; {{
+;; @see: https://emacs-china.org/t/ranger-golden-ratio/964/2
 (defun czqhurricane-misc/post-init-ranger ()
-  ;; https://emacs-china.org/t/ranger-golden-ratio/964/2
   (defun my-ranger ()
     (interactive)
     (if golden-ratio-mode
@@ -73,20 +74,21 @@
       (progn
         (ranger)
         (setq golden-ratio-previous-enable nil))))
+;; }}
 
-  (defun my-quit-ranger ()
-    (interactive)
-    (if golden-ratio-previous-enable
-        (progn
-          (ranger-close)
-          (golden-ratio-mode 1))
-      (ranger-close)))
+(defun my-quit-ranger ()
+  (interactive)
+  (if golden-ratio-previous-enable
+      (progn
+        (ranger-close)
+        (golden-ratio-mode 1))
+    (ranger-close)))
 
-  (with-eval-after-load 'ranger
-    (progn
-      (define-key ranger-normal-mode-map (kbd "q") 'my-quit-ranger)))
+(with-eval-after-load 'ranger
+  (progn
+    (define-key ranger-normal-mode-map (kbd "q") 'my-quit-ranger)))
 
-  (spacemacs/set-leader-keys "ar" 'my-ranger))
+(spacemacs/set-leader-keys "ar" 'my-ranger))
 
 ;; Copy from spacemacs helm layer
 (defun czqhurricane-misc/init-helm-ag ()
@@ -493,7 +495,7 @@
     ))
 
 (defun czqhurricane-misc/init-peep-dired ()
-  ;;preview files in dired
+  ;;Preview files in dired
   (use-package peep-dired
     :defer t
     :commands (peep-dired-next-file
@@ -1285,3 +1287,15 @@
                     'spacemacs/helm-buffers-smart-do-search-region-or-symbol)))
            new-bindings)
           (setq ad-return-value (cons new-msg new-bindings)))))))
+
+(defun czqhurricane-misc/init-autoinsert ()
+  (use-package autoinsert
+    :config
+    (progn
+    ;; Don't want to be prompted before insertion.
+    (auto-insert-mode 1)
+    (setq auto-insert-query nil)
+    (add-hook 'find-file-hook 'auto-insert)
+    (setq auto-insert-directory auto-insert-dir)
+    (message "autoinsert post config")
+    (define-auto-insert "\\.html?$" "default-html.html"))))

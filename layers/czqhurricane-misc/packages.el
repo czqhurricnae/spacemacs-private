@@ -17,7 +17,6 @@
         ace-window
         avy
         4clojure
-        persp-mode
         tiny
         ;; smartparens
         flyspell-correct
@@ -32,6 +31,7 @@
         ranger
         golden-ratio
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
+        symbol-overlay
         browse-at-remote
         (shell-mode :location local)
         pandoc-mode
@@ -55,12 +55,44 @@
           ('hi-pink . 0)
           ('hi-blue-b . 0))))))
 
+(defun czqhurricane-misc/init-symbol-overlay ()
+  (use-package symbol-overlay
+    :init
+    (progn
+      (defun symbol-overlay-switch-first ()
+        (interactive)
+        (let* ((symbol (symbol-overlay-get-symbol))
+               (keyword (symbol-overlay-assoc symbol))
+               (a-symbol (car keyword))
+               (before (symbol-overlay-get-list a-symbol 'car))
+               (count (length before)))
+          (symbol-overlay-jump-call 'symbol-overlay-basic-jump (- count))))
+
+      (defun symbol-overlay-switch-last ()
+        (interactive)
+        (let* ((symbol (symbol-overlay-get-symbol))
+               (keyword (symbol-overlay-assoc symbol))
+               (a-symbol (car keyword))
+               (after (symbol-overlay-get-list a-symbol 'cdr))
+               (count (length after)))
+          (symbol-overlay-jump-call 'symbol-overlay-basic-jump (- count 1))))
+      ;; (spacemacs/set-leader-keys "hh" 'symbol-overlay-put)
+      ;; (spacemacs/set-leader-keys "hc" 'symbol-overlay-remove-all)
+      (global-set-key (kbd "M-h") 'symbol-overlay-put)
+      (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
+      (global-set-key (kbd "M-p") 'symbol-overlay-switch-backward))
+    :config
+    (progn
+      (define-key symbol-overlay-map (kbd "<") 'symbol-overlay-switch-first)
+      (define-key symbol-overlay-map (kbd ">") 'symbol-overlay-switch-last))))
+
 (defun czqhurricane-misc/post-init-golden-ratio ()
   (with-eval-after-load 'golden-ratio
     (dolist (mode '("dired-mode" "occur-mode"))
       (add-to-list 'golden-ratio-exclude-modes mode))
     (dolist (n '("COMMIT_EDITMSG"))
       (add-to-list 'golden-ratio-exclude-buffer-names n))))
+
 ;; {{
 ;; @see: https://emacs-china.org/t/ranger-golden-ratio/964/2
 (defun czqhurricane-misc/post-init-ranger ()
@@ -494,8 +526,8 @@
         "." 'spacemacs/gist-list-mode-transient-state/body))
     ))
 
+;; Preview files in dired
 (defun czqhurricane-misc/init-peep-dired ()
-  ;;Preview files in dired
   (use-package peep-dired
     :defer t
     :commands (peep-dired-next-file
@@ -518,7 +550,6 @@
     :config
     (progn
       (setq sp-highlight-pair-overlay nil)
-
       (evil-define-key 'normal sp-keymap
         (kbd ")>") 'sp-forward-slurp-sexp
         (kbd ")<") 'sp-forward-barf-sexp
@@ -534,15 +565,13 @@
 (defun czqhurricane-misc/post-init-helm ()
   (with-eval-after-load 'helm
     (progn
-      ;; limit max number of matches displayed for speed
+      ;; Limit max number of matches displayed for speed
       (setq helm-candidate-number-limit 100)
-      ;; ignore boring files like .o and .a
+      ;; Ignore boring files like .o and .a
       (setq helm-ff-skip-boring-files t)
-      ;; replace locate with spotlight on Mac
+      ;; Replace locate with spotlight on Mac
       (setq helm-locate-command "mdfind -name %s %s")
-      (push "\\.emlx$" helm-boring-file-regexp-list)
-      )
-    ))
+      (push "\\.emlx$" helm-boring-file-regexp-list))))
 
 (defun czqhurricane-misc/init-helm-github-stars ()
   (use-package helm-github-stars
@@ -570,8 +599,7 @@
     (progn
       (evilified-state-evilify osx-dictionary-mode osx-dictionary-mode-map)
       (setq osx-dictionary-use-chinese-text-segmentation t)
-      (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer)
-      )))
+      (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer))))
 
 (defun czqhurricane-misc/init-4clojure ()
   (use-package 4clojure
@@ -581,8 +609,7 @@
       (spacemacs/set-leader-keys "o4q" '4clojure-open-question)
       (spacemacs/set-leader-keys "o4n" '4clojure-next-question)
       (spacemacs/set-leader-keys "o4p" '4clojure-previous-question)
-      (spacemacs/set-leader-keys "o4c" '4clojure-check-answers)
-      )))
+      (spacemacs/set-leader-keys "o4c" '4clojure-check-answers))))
 
 (defun czqhurricane-misc/post-init-avy ()
   (progn
@@ -598,8 +625,7 @@
     :init
     (progn
       (spacemacs/set-leader-keys (kbd "mhm") 'discover-my-major)
-      (evilified-state-evilify makey-key-mode makey-key-mode-get-key-map)
-      )))
+      (evilified-state-evilify makey-key-mode makey-key-mode-get-key-map))))
 
 (defun czqhurricane-misc/post-init-elfeed ()
   (use-package elfeed
@@ -629,7 +655,7 @@
               "http://puntoblogspot.blogspot.com/feeds/2507074905876002529/comments/default"
               "http://angelic-sedition.github.io/atom.xml"))
 
-      ;; (evilify elfeed-search-mode elfeed-search-mode-map)
+      ;; (Evilify elfeed-search-mode elfeed-search-mode-map)
       (evilified-state-evilify-map elfeed-search-mode-map
         :mode elfeed-search-mode
         :bindings
@@ -654,7 +680,7 @@
     (setcdr evil-insert-state-map nil)
     (define-key evil-insert-state-map [escape] 'evil-normal-state)
 
-    ;; disable highlight when use swiper or evil ex search, this option won't effect evil-ex-search-next command
+    ;; Disable highlight when use swiper or evil ex search, this option won't effect evil-ex-search-next command
     (setq-default evil-ex-search-persistent-highlight nil)
 
     (push "TAGS" spacemacs-useless-buffers-regexp)
@@ -665,12 +691,12 @@
     (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
     (define-key evil-insert-state-map (kbd "C-r") 'evil-paste-from-register)
 
-    ;; change evil initial mode state
+    ;; Change evil initial mode state
     (loop for (mode . state) in
           '((shell-mode . normal))
           do (evil-set-initial-state mode state))
 
-    ;; mimic "nzz" behaviou in vim
+    ;; Mimic "nzz" behaviou in vim
     (defadvice evil-search-next (after advice-for-evil-search-next activate)
       (evil-scroll-line-to-center (line-number-at-pos)))
 
@@ -698,7 +724,7 @@
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
 
     ;; {{ Unbinding Evil's mappings
-    ;; see https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
+    ;; @see: https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
     (eval-after-load "evil-maps"
       (dolist (map '(evil-motion-state-map
                      evil-insert-state-map
@@ -793,18 +819,19 @@
       (bind-key* "s--" 'mc/skip-to-previous-like-this)
       (bind-key* "s-`" 'mc/mark-all-like-this)
 
-      ;; http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
+      ;; @see: http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
       (define-prefix-command 'endless/mc-map)
       ;; C-x m is usually `compose-mail'. Bind it to something
       ;; Else if you use this command.
       (define-key ctl-x-map "m" 'endless/mc-map)
-      ;;; Really really nice!
+
+      ;; Really really nice!
       (define-key endless/mc-map "i" #'mc/insert-numbers)
       (define-key endless/mc-map "h" #'mc-hide-unmatched-lines-mode)
       (define-key endless/mc-map "a" #'mc/mark-all-like-this)
       (define-key endless/mc-map "t" #'set-rectangular-region-anchor)
 
-      ;;; Occasionally useful
+      ;; Occasionally useful
       (define-key endless/mc-map "d" #'mc/mark-all-dwim)
       (define-key endless/mc-map "f" #'mc/mark-all-symbols-like-this-in-defun)
       (define-key endless/mc-map "r" #'mc/reverse-regions)
@@ -855,17 +882,6 @@
             orgtbl-hijacker-command-109))
     ))
 
-(defun czqhurricane-misc/post-init-persp-mode ()
-  (setq persp-kill-foreign-buffer-action 'kill)
-  (setq persp-lighter nil)
-  (when (fboundp 'spacemacs|define-custom-layout)
-    (spacemacs|define-custom-layout "@Cocos2D-X"
-      :binding "c"
-      :body
-      (find-file "~/cocos2d-x/cocos/ui/UIWidget.cpp")
-      (split-window-right)
-      (find-file "~/cocos2d-x/cocos/cocos2d.cpp"))))
-
 (defun czqhurricane-misc/post-init-chinese-wbim ()
   (progn
     (bind-key* ";" 'chinese-wbim-insert-ascii)
@@ -878,8 +894,7 @@
               (lambda ()
                 (let ((map (chinese-wbim-mode-map)))
                   (define-key map "-" 'chinese-wbim-previous-page)
-                  (define-key map "=" 'chinese-wbim-next-page))))
-    ))
+                  (define-key map "=" 'chinese-wbim-next-page))))))
 
 
 (defun czqhurricane-misc/post-init-evil-escape ()
@@ -890,28 +905,28 @@
     :defer t
     :config
     (progn
-      ;; If you use other VCS (subversion, for example), enable the following option
-      ;;(setq ffip-project-file ".svn")
-      ;; in MacOS X, the search file command is CMD+p
-      ;; for this project, I'm only interested certain types of files
+      ;; If you use other VCS (subversion, for example), enable the following option.
+      ;; (setq ffip-project-file ".svn")
+      ;; In MacOS X, the search file command is CMD+p.
+      ;; For this project, I'm only interested certain types of files.
       (setq-default ffip-patterns '("*.html" "*.js" "*.css" "*.java" "*.xml" "*.cpp" "*.h" "*.c" "*.mm" "*.m" "*.el"))
-      ;; if the full path of current file is under SUBPROJECT1 or SUBPROJECT2
-      ;; OR if I'm reading my personal issue track document,
+      ;; If the full path of current file is under SUBPROJECT1 or SUBPROJECT2.
+      ;; OR if I'm reading my personal issue track document.
       (defadvice find-file-in-project (before my-find-file-in-project activate compile)
         (when (ffip-current-full-filename-match-pattern-p "\\(/fireball\\)")
           ;; set the root directory into "~/projs/PROJECT_DIR"
           (setq-local ffip-project-root "~/Github/fireball")
-          ;; well, I'm not interested in concatenated BIG js file or file in dist/
+          ;; Well, I'm not interested in concatenated BIG js file or file in dist.
           (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'")
-          ;; do NOT search files in below directories, the default value is better.
+          ;; Do not search files in below directories, the default value is better.
           (dolist (item '("*/docs/html/*" "*.meta" "*/cocos2d-x/*" "*.asset" "*/visual-tests/res/*"))
             (push item  ffip-prune-patterns)))
         (when (ffip-current-full-filename-match-pattern-p "\\(/cocos2d-x\\)")
-          ;; set the root directory into "~/projs/PROJECT_DIR"
+          ;; Set the root directory into "~/projs/PROJECT_DIR"
           (setq-local ffip-project-root "~/cocos2d-x")
-          ;; well, I'm not interested in concatenated BIG js file or file in dist/
+          ;; Well, I'm not interested in concatenated BIG js file or file in dist.
           (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'")
-          ;; do NOT search files in below directories, the default value is better.
+          ;; Do not search files in below directories, the default value is better.
           ;; (setq-default ffip-prune-patterns '(".git" ".hg" "*.svn" "node_modules" "bower_components" "obj"))
           ))
       (ad-activate 'find-file-in-project))))
@@ -942,7 +957,7 @@
       :name 'jekyll
       :env '(("LANG" "en_US.UTF-8")
              ("LC_ALL" "en_US.UTF-8")))
-    ;; define service
+    ;; Define service.
     (prodigy-define-service
       :name "Preview cocos2d-x web"
       :command "python"
@@ -1000,11 +1015,9 @@
 
     (defun refresh-chrome-current-tab (beg end length-before)
       (call-interactively 'czqhurricane/browser-refresh--chrome-applescript))
-    ;; add watch for prodigy-view-mode buffer change event
-    (add-hook 'prodigy-view-mode-hook
-              #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))
-
-    ))
+      ;; add watch for prodigy-view-mode buffer change event
+      (add-hook 'prodigy-view-mode-hook
+                #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))))
 
 (defun czqhurricane-misc/init-moz-controller ()
   (use-package moz-controller
@@ -1094,7 +1107,6 @@
   (progn
     (with-eval-after-load 'magit
       (progn
-
         (add-to-list 'magit-no-confirm 'stage-all-changes)
         (define-key magit-log-mode-map (kbd "W") 'magit-copy-section-value)
         (define-key magit-status-mode-map (kbd "s-1") 'magit-jump-to-unstaged)
@@ -1126,7 +1138,8 @@
     (progn
       (define-key git-messenger-map (kbd "f") 'czqhurricane/github-browse-commit))))
 
-;; {{ Fix:markdown failed with exit code 127
+;; {{
+;; Fix:markdown failed with exit code 127
 ;; @see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
 ;; @see: https://github.com/jrblevin/markdown-mode/issues/177
 (defun czqhurricane-misc/post-init-markdown-mode ()
@@ -1143,7 +1156,8 @@
         ))))
 ;; }}
 
-;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
+;; {{
+;; @see: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun czqhurricane-misc/post-init-shell-mode ()
   (spacemacs|use-package-add-hook shell-mode
     :post-config
@@ -1168,7 +1182,7 @@
       (add-hook 'shell-mode-hook #'company-mode)
       (define-key shell-mode-map (kbd "TAB" #'company-manual-begin))
 
-      ;; https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
+      ;; @see: https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
       ;; Change directory with ido.
       ;; Ido will keep asking for subdirectory after selecting directory with RET, to finish selection press C-RET.
       (require 'ido)
@@ -1246,6 +1260,7 @@
       (defun my-shell-mode-hook ()
         (setq comint-input-ring-file-name "~/.zsh_history")  ;; or bash_history
         (comint-read-input-ring t)))))
+;; }}
 
 (defun czqhurricane-misc/init-pandoc-mode ()
   (use-package pandoc-mode
@@ -1291,11 +1306,10 @@
 (defun czqhurricane-misc/init-autoinsert ()
   (use-package autoinsert
     :config
-    (progn
     ;; Don't want to be prompted before insertion.
     (auto-insert-mode 1)
     (setq auto-insert-query nil)
     (add-hook 'find-file-hook 'auto-insert)
     (setq auto-insert-directory auto-insert-dir)
-    (message "autoinsert post config")
-    (define-auto-insert "\\.html?$" "default-html.html"))))
+    (define-auto-insert "\\.html?$" ["default-html.html" czqhurricane/autoinsert-yas-expand])
+    (define-auto-insert "\\.el?$" ["default-lisp.el" czqhurricane/autoinsert-yas-expand])))

@@ -313,30 +313,28 @@ e.g. Sunday, September 17, 2000."
 ;; Add count for chinese, mainly used for writing chinese blog post
 (defvar wc-regexp-chinese-char-and-punc
   (rx (category chinese)))
+
 (defvar wc-regexp-chinese-punc
   "[.,！？；：「」『』()、【】《》〈〉※—]")
+
 (defvar wc-regexp-english-word
   "[a-zA-Z0-9-]+")
 
 (defun czqhurricane/word-count-for-chinese ()
-  "「較精確地」統計中/日/英文字數.
-- 文章中的註解不算在字數內.
-- 平假名與片假名亦包含在「中日文字數」內,每個平/片假名都算單獨一個字(但片假名不含連音「ー」).
-- 英文只計算「單字數」,不含標點.
-- 韓文不包含在內.
-
-※計算標準太多種了,例如英文標點是否算入,以及可能有不太常用的標點符號沒算入等
-.且中日文標點的計算標準要看 Emacs 如何定義特殊標點符號如ヴァランタン・アルカン
-中間的點也被 Emacs 算為一個字而不是標點符號."
+  "`比较精确地' 统计中/日/英文字数.
+- 文章中的注解不算在字数内.
+- 平假名与片假名亦包含在`中日字数' 内, 每个平/片假名都算单独一个字 (但片假名不含连音 `-').
+- 英文只计算`单子数', 不含标点.
+- 韩文不包含在内."
   (interactive)
   (let* ((v-buffer-string
           (progn
-            (if (eq major-mode 'org-mode) ;; 去掉 org 文件的 OPTIONS(以#+開頭)
+            (if (eq major-mode 'org-mode) ;; 去掉 org 文件的 OPTIONS(以#+开头)
                 (setq v-buffer-string (replace-regexp-in-string "^#\\+.+" ""
                                                                 (buffer-substring-no-properties (point-min) (point-max))))
               (setq v-buffer-string (buffer-substring-no-properties (point-min) (point-max))))
             (replace-regexp-in-string (format "^ *%s *.+" comment-start) "" v-buffer-string)))
-                                          ;; 把註解行刪掉(不把註解算進字數).
+                                          ;; 把注释行删掉(不把注释算进字数内).
          (chinese-char-and-punc 0)
          (chinese-punc 0)
          (english-word 0)
@@ -344,24 +342,24 @@ e.g. Sunday, September 17, 2000."
     (with-temp-buffer
       (insert v-buffer-string)
       (goto-char (point-min))
-      ;; 中文(含標點,片假名)
+      ;; 中文(含标点, 片假名).
       (while (re-search-forward wc-regexp-chinese-char-and-punc nil :no-error)
         (setq chinese-char-and-punc (1+ chinese-char-and-punc)))
-      ;; 中文標點符號
+      ;; 中文标点符号.
       (goto-char (point-min))
       (while (re-search-forward wc-regexp-chinese-punc nil :no-error)
         (setq chinese-punc (1+ chinese-punc)))
-      ;; 英文字數(不含標點)
+      ;; 英文字数(不含标点).
       (goto-char (point-min))
       (while (re-search-forward wc-regexp-english-word nil :no-error)
         (setq english-word (1+ english-word))))
     (setq chinese-char (- chinese-char-and-punc chinese-punc))
     (message
-     (format "中日文字數(不含標點):%s
-中日文字數(包含標點):%s
-英文字數(不含標點):%s
+     (format "中日文字数(不含标点):%s
+中日文字数(包含标点):%s
+英文字数(不含标点):%s
 =======================
-中英文合計(不含標點):%s"
+中英文合计(不含标点):%s"
              chinese-char chinese-char-and-punc english-word
              (+ chinese-char english-word)))))
 ;; }}
@@ -384,26 +382,26 @@ e.g. Sunday, September 17, 2000."
 ;; {{
 ;; @see: http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/
 (defun czqhurricane/iterm-shell-command (command &optional prefix)
-  "cd to `default-directory' then run COMMAND in iTerm.
-With PREFIX, cd to project root."
+  "Cd to `default-directory' then run COMMAND in iTerm.
+with PREFIX, cd to project root."
   (interactive (list (read-shell-command
                       "iTerm Shell Command: ")
                      current-prefix-arg))
   (let* ((dir (if prefix (czqhurricane/git-project-root)
                 default-directory))
-         ;; if COMMAND is empty, just change directory
+         ;; If COMMAND is empty, just change directory.
          (cmd (format "cd %s ;%s" dir command)))
     (do-applescript
      (format
       "
-  tell application \"iTerm2\"
-       activate
-       set _session to current session of current window
-       tell _session
-            set command to get the clipboard
-            write text \"%s\"
-       end tell
-  end tell
+tell application \"iTerm2\"
+     activate
+     set _session to current session of current window
+     tell _session
+          set command to get the clipboard
+          write text \"%s\"
+     end tell
+end tell
   " cmd))))
 ;; }}
 
@@ -768,3 +766,7 @@ If a change in `file-attributes` happended call func."
     " set theUrl to do shell script \"pbpaste\"\n"
     " return theUrl & \"::split::\" & theName\n"
     "end tell")))
+
+(defun czqhurricane/autoinsert-yas-expand ()
+  "Replace text in yasnippet template."
+  (yas-expand-snippet (buffer-string) (point-min) (point-max)))

@@ -135,7 +135,7 @@
     (evilified-state-evilify profiler-report-mode profiler-report-mode-map)))
 
 (defun czqhurricane-better-defaults/post-init-occur-mode ()
-  "Auto switch to 'occur buffer'"
+  "Auto switch to `occur buffer'"
     (add-hook 'occur-hook
               '(lambda ()
                  (switch-to-buffer-other-window "*Occur*"))))

@@ -23,7 +23,7 @@
       (setq yas-wrap-around-region t)
       (setq yas-indent-line 'fixed)
       (setq yas-verbosity 0)
-      (yas-minor-mode 1))))
+      (yas-minor-mode))))
 
 (defun my-project-name-contains-substring (regex)
   (let ((dir (if (buffer-file-name)

@@ -1,4 +1,3 @@
-
 (defun indent-buffer()
   (interactive)
   (indent-region (point-min) (point-max)))
@@ -94,7 +93,7 @@ Position the cursor at its beginning, according to the current mode."
       (mapconcat #'expand-file-name file-list "\" \"")))))
 
 (defun dired-open-terminal ()
-  "Open an 'ansi-term' that corresponds to current directory."
+  "Open an `ansi-term' that corresponds to current directory."
   (interactive)
   (let* ((current-dir (dired-current-directory))
          (buffer (if (get-buffer "*zshell*")
@@ -141,6 +140,28 @@ open and unsaved."
   (interactive)
   (find-alternate-file ".."))
 
+(defun czqhurricane/insert-space-after-point ()
+  (interactive)
+  (save-excursion (insert " ")))
+
+(defmacro dakra-define-up/downcase-dwim (case)
+  (let ((func (intern (concat "dakra-" case "-dwim")))
+        (doc (format "Like `%s-dwim' but %s from beginning when no region is active." case case))
+        (case-region (intern (concat case "-region")))
+        (case-word (intern (concat case "-word"))))
+    `(defun ,func (arg)
+       ,doc
+       (interactive "*p")
+       (save-excursion
+         (if (use-region-p)
+             (,case-region (region-beginning) (region-end))
+           (beginning-of-thing 'symbol)
+           (,case-word arg))))))
+
+(dakra-define-up/downcase-dwim "upcase")
+(dakra-define-up/downcase-dwim "downcase")
+(dakra-define-up/downcase-dwim "capitalize")
+
 (defun select-english-input-source ()
   (interactive)
   (let* ((cmd (format "osascript %s" (getenv "SELECTENGLISHINPUTSOURCE"))))
@@ -183,7 +204,7 @@ open and unsaved."
 
 (defadvice find-file (after insert-header-to-org-buffer
                             activate compile)
-  "When a new 'org' buffer is created, then insert a header to it."
+  "When a new `org' buffer is created, then insert a header to it."
   (when (buffer-file-name)
     (if (equal "org" (file-name-extension buffer-file-name))
       (progn

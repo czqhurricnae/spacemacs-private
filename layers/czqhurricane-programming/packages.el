@@ -12,17 +12,15 @@
 ))
 
 (defun czqhurricane-programming/post-init-yasnippet ()
-  (use-package yasnippet
-    :init
-    (progn
-      (set-face-background 'secondary-selection "gray")
-      (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
-      (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
-                                                                        org-mode-hook
-                                                                        markdown-mode-hook))
-      (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
-                                                             org-mode-hook
-                                                             markdown-mode-hook)))))
+  (progn
+    (set-face-background 'secondary-selection "gray")
+    (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
+    (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
+                                                                      org-mode-hook
+                                                                      markdown-mode-hook))
+    (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
+                                                           org-mode-hook
+                                                           markdown-mode-hook))))
 
 (defun czqhurricane-programming/post-init-exec-path-from-shell ()
   (use-package exec-path-from-shell

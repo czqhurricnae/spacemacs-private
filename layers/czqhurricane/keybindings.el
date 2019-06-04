@@ -32,6 +32,4 @@
 (bind-key* "C-=" 'er/expand-region)
 (global-set-key (kbd "C-c i r") 'org-screenshot-and-ocr)
 (global-set-key (kbd "C-c i c") 'org-insert-caption-and-target)
-(define-key yas-minor-mode-map (kbd "<tab>") nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
-(define-key yas-minor-mode-map (kbd "C-c TAB") 'yas-expand)
+(global-set-key (kbd "C-c i e") 'yas-expand)

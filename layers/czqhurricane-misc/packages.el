@@ -41,19 +41,19 @@
 (defun czqhurricane-misc/init-browse-at-remote ()
   (use-package browse-at-remote
     :defer t
-    :init (spacemacs/set-leader-keys "gho" 'browse-at-remote)))
+    :init
+    (spacemacs/set-leader-keys "gho" 'browse-at-remote)))
 
 (defun czqhurricane-misc/init-highlight-global ()
   (use-package highlight-global
     :init
-    (progn
       (spacemacs/set-leader-keys "hh" 'highlight-frame-toggle)
       (spacemacs/set-leader-keys "hc" 'clear-highlight-frame)
       (setq-default highlight-faces
         '(('hi-red-b . 0)
           ('hi-yellow . 0)
           ('hi-pink . 0)
-          ('hi-blue-b . 0))))))
+          ('hi-blue-b . 0)))))
 
 (defun czqhurricane-misc/init-symbol-overlay ()
   (use-package symbol-overlay
@@ -1068,37 +1068,37 @@
 
     (evilified-state-evilify ivy-occur-mode ivy-occur-mode-map)
 
-    (use-package ivy
-      :defer t
-      :config
-      (progn
-        (spacemacs|hide-lighter ivy-mode)
+    ;; (use-package ivy
+    ;;   :defer t
+    ;;   :config
+    ;;   (progn
+    ;;     (spacemacs|hide-lighter ivy-mode)
 
-        (ivy-set-actions
-         t
-         '(("f" my-find-file-in-git-repo "find files")
-           ("!" my-open-file-in-external-app "Open file in external app")
-           ("I" ivy-insert-action "insert")
-           ("C" ivy-kill-new-action "copy")
-           ("S" ivy-ff-checksum-action "Checksum")))
+    ;;     (ivy-set-actions
+    ;;      t
+    ;;      '(("f" my-find-file-in-git-repo "find files")
+    ;;        ("!" my-open-file-in-external-app "Open file in external app")
+    ;;        ("I" ivy-insert-action "insert")
+    ;;        ("C" ivy-kill-new-action "copy")
+    ;;        ("S" ivy-ff-checksum-action "Checksum")))
 
-        (spacemacs/set-leader-keys "fad" 'counsel-goto-recent-directory)
-        (spacemacs/set-leader-keys "faf" 'counsel-find-file-recent-directory)
+    ;;     (spacemacs/set-leader-keys "fad" 'counsel-goto-recent-directory)
+    ;;     (spacemacs/set-leader-keys "faf" 'counsel-find-file-recent-directory)
 
-        (setq ivy-initial-inputs-alist nil)
-        (setq ivy-wrap t)
-        (setq confirm-nonexistent-file-or-buffer t)
+    ;;     (setq ivy-initial-inputs-alist nil)
+    ;;     (setq ivy-wrap t)
+    ;;     (setq confirm-nonexistent-file-or-buffer t)
 
-        (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
-        (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-call)
-        (define-key ivy-minibuffer-map (kbd "C-s-m") 'ivy-partial-or-done)
-        (define-key ivy-minibuffer-map (kbd "C-c s") 'ivy-ff-checksum)
-        (define-key ivy-minibuffer-map (kbd "s-o") 'ivy-dispatching-done-hydra)
-        (define-key ivy-minibuffer-map (kbd "C-c C-e") 'spacemacs//counsel-edit)
-        (define-key ivy-minibuffer-map (kbd "<f3>") 'ivy-occur)
-        (define-key ivy-minibuffer-map (kbd "C-s-j") 'ivy-immediate-done)
-        (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-        (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
+    ;;     (define-key ivy-minibuffer-map (kbd "C-c o") 'ivy-occur)
+    ;;     (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-call)
+    ;;     (define-key ivy-minibuffer-map (kbd "C-s-m") 'ivy-partial-or-done)
+    ;;     (define-key ivy-minibuffer-map (kbd "C-c s") 'ivy-ff-checksum)
+    ;;     (define-key ivy-minibuffer-map (kbd "s-o") 'ivy-dispatching-done-hydra)
+    ;;     (define-key ivy-minibuffer-map (kbd "C-c C-e") 'spacemacs//counsel-edit)
+    ;;     (define-key ivy-minibuffer-map (kbd "<f3>") 'ivy-occur)
+    ;;     (define-key ivy-minibuffer-map (kbd "C-s-j") 'ivy-immediate-done)
+    ;;     (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+    ;;     (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
 
     ;; (define-key global-map (kbd "C-s") 'my-swiper-search)))
     (define-key global-map (kbd "C-s") 'color-rg-search-symbol)))

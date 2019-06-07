@@ -13,6 +13,7 @@
 
 (defun czqhurricane-programming/post-init-yasnippet ()
   (progn
+    (yas-global-mode 1)
     (set-face-background 'secondary-selection "gray")
     (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
     (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook

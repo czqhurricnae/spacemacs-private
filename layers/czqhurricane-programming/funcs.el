@@ -13,17 +13,14 @@
       (ido-find-file))))
 
 (defun czqhurricane/load-yasnippet ()
-  (interactive)
-  (unless yas-global-mode
-    (progn
-      (yas-global-mode 1)
-      (setq my-snippet-dir (expand-file-name snippet-dir))
-      (setq yas-snippet-dirs  my-snippet-dir)
-      (yas-load-directory my-snippet-dir)
-      (setq yas-wrap-around-region t)
-      (setq yas-indent-line 'fixed)
-      (setq yas-verbosity 0)
-      (yas-minor-mode))))
+  (progn
+    (setq my-snippet-dir (expand-file-name snippet-dir))
+    (setq yas-snippet-dirs  my-snippet-dir)
+    (yas-load-directory my-snippet-dir)
+    (setq yas-wrap-around-region t)
+    (setq yas-indent-line 'fixed)
+    (setq yas-verbosity 0)
+    (yas-minor-mode)))
 
 (defun my-project-name-contains-substring (regex)
   (let ((dir (if (buffer-file-name)

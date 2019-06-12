@@ -45,10 +45,13 @@
       (web-mode-toggle-current-element-highlight)
       (web-mode-dom-errors-show)
       (add-hook 'web-mode-hook (lambda ()
+        ;; (when (equal "js" (file-name-extension (or (buffer-file-name) "")))
+        ;;  (setq yas-snippet-dirs
+        ;;    (append (list (concat (expand-file-name snippet-dir) "react-mode/"))
+        ;;    yas-snippet-dirs)))))
         (when (equal "js" (file-name-extension (or (buffer-file-name) "")))
           (setq yas-snippet-dirs
-            (append (list (concat (expand-file-name snippet-dir) "react-mode/"))
-            yas-snippet-dirs)))))
+                (append (list snippet-dir) yas-snippet-dirs)))))
       (setq company-backends-web-mode '((company-dabbrev-code
                                          company-keywords
                                          company-etags)

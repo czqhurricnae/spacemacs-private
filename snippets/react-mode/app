@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: app
+# key: app
+# --
+export default class $1 extends Component {
+    constructor (props) {
+        super(props);
+        $2
+    }
+
+    render () {
+        $0
+    }
+}

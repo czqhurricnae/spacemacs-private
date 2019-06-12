@@ -213,3 +213,7 @@ open and unsaved."
         (when (not (re-search-forward "# -\\*- eval: (setq org-download-image-dir (concat default-directory \\\"/screenshotImg\\\")); -\\*-" nil t))
           (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n"))
         (save-buffer))))))
+
+(defadvice org-insert-link (after display-inline-images
+                                  activate compile)
+  (org-display-inline-images))

@@ -214,6 +214,6 @@ open and unsaved."
           (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n"))
         (save-buffer))))))
 
-(defadvice org-insert-link (after display-inline-images
+(defadvice org-insert-link (after display-inline-images-after-org-insert-link
                                   activate compile)
   (org-display-inline-images))

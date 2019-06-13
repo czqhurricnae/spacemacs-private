@@ -35,7 +35,18 @@
   )
 
 ;; {{
-;; @see https://www.youtube.com/watch?v=sBhQ2NIcrLQ&list=PLVfFIUHWy-aNaF08m34sO81dsVr4L7uI-&index=13
+;; @see: https://www.youtube.com/watch?v=sBhQ2NIcrLQ&list=PLVfFIUHWy-aNaF08m34sO81dsVr4L7uI-&index=13
 (defadvice sgml-delete-tag (after reindent-buffer activate)
   (cleanup-buffer))
+;; }}
+
+;; {{
+;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
+;; @see: https://github.com/flycheck/flycheck/issues/997
+(defun web-mode-init-hook ()
+  (add-node-modules-path)
+  ;; (js2-minor-mode)
+  (when (equal "js" (file-name-extension (or (buffer-file-name) "")))
+      (js2-mode))
+  (emmet-mode))
 ;; }}

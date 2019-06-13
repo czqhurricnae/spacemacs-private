@@ -1,5 +1,6 @@
 (defconst czqhurricane-programming-packages
   '(
+    flycheck
     dash-at-point
     nodejs-repl
     virtualenvwrapper
@@ -9,6 +10,9 @@
     dumb-jump
     (color-rg :location (recipe :fetcher github :repo "manateelazycat/color-rg"))
     yasnippet
+    (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
+    add-node-modules-path
+    ;; prettier-js
 ))
 
 (defun czqhurricane-programming/post-init-yasnippet ()
@@ -26,41 +30,35 @@
 (defun czqhurricane-programming/post-init-exec-path-from-shell ()
   (use-package exec-path-from-shell
     :init
-    (progn
       (when (memq window-system '(mac ns x))
-        (exec-path-from-shell-initialize)))))
+        (exec-path-from-shell-initialize))))
 
 (defun czqhurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
     :config
-    (progn
       (venv-initialize-interactive-shells)
       (venv-initialize-eshell)
-      (setq venv-location virtualenv-dir))))
+      (setq venv-location virtualenv-dir)))
 
 (defun czqhurricane-programming/post-init-web-mode ()
   (use-package web-mode
     :config
-    (progn
+      (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
+      (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+      (add-to-list 'auto-mode-alist '("\\.jsx$" . react-mode))
+      (add-hook 'web-mode-hook  'web-mode-init-hook)
+      ;; Remove the annoying underline in flycheck.
+      (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
       (web-mode-toggle-current-element-highlight)
-      (web-mode-dom-errors-show)
-      (add-hook 'web-mode-hook (lambda ()
-        ;; (when (equal "js" (file-name-extension (or (buffer-file-name) "")))
-        ;;  (setq yas-snippet-dirs
-        ;;    (append (list (concat (expand-file-name snippet-dir) "react-mode/"))
-        ;;    yas-snippet-dirs)))))
-        (when (equal "js" (file-name-extension (or (buffer-file-name) "")))
-          (setq yas-snippet-dirs
-                (append (list snippet-dir) yas-snippet-dirs)))))
+      (web-mode-dom-errors-show)))
       (setq company-backends-web-mode '((company-dabbrev-code
                                          company-keywords
                                          company-etags)
                                          company-files
-                                         company-dabbrev)))))
+                                         company-dabbrev))
 
 (defun czqhurricane-programming/post-init-dumb-jump ()
-  (progn
-    (setq dumb-jump-selector 'ivy)))
+  (setq dumb-jump-selector 'ivy))
 
 (defun my-dumb-jump ()
   (interactive)
@@ -70,7 +68,6 @@
 (defun czqhurricane-programming/init-ycmd ()
   (use-package ycmd
     :init
-    (progn
       (set-variable 'ycmd-global-config "/Users/c/.ycm_extra_conf.py")
       (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
       (setq ycmd-tag-files 'auto)
@@ -86,7 +83,7 @@
       (czqhurricane|toggle-company-backends company-ycmd)
       :config
       (eval-after-load 'ycmd
-        '(spacemacs|hide-lighter ycmd-mode)))))
+        '(spacemacs|hide-lighter ycmd-mode))))
 
 ;; {{
 ;; @see: https://github.com/slime/slime
@@ -106,8 +103,7 @@
 (defun czqhurricane-programming/init-color-rg ()
   (use-package color-rg
     :config
-    (add-to-list 'evil-emacs-state-modes 'color-rg-mode))
-)
+    (add-to-list 'evil-emacs-state-modes 'color-rg-mode)))
 ;; }}
 
 (defun exec-path-from-shell-setenv (name value)
@@ -124,15 +120,77 @@ variables such as `exec-path'."
 ;; {{
 ;; @see: https://github.com/abicky/nodejs-repl.el
 (defun czqhurricane-programming/init-nodejs-repl ()
-  (use-package nodejs-repl)
-)
+  (use-package nodejs-repl))
 ;; }}
 
 (defun czqhurricane-programming/init-dash-at-point ()
   (use-package dash-at-point
     :config
-    (progn
       (add-to-list 'load-path "/Users/c/.emacs.d/elpa/dash-at-point-20180710.1356")
       (autoload 'dash-at-point "dash-at-point"
         "Search the word at point with Dash." t nil)
-      (add-to-list 'dash-at-point-mode-alist '(c-mode . "C")))))
+      (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))))
+
+;; {{
+;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
+;; @see: https://github.com/flycheck/flycheck/issues/997
+;; $ npm install -g eslint
+;; $ npm install -g eslint-plugin-react
+;; $ cd XXX
+;; $ eslint --init
+(defun czqhurricane-programming/post-init-flycheck ()
+  (with-eval-after-load 'flycheck
+    (progn
+      (setq flycheck-display-errors-delay 0.9)
+      (setq flycheck-idle-change-delay 2.0)
+      (add-hook 'js2-mode-hook (lambda ()
+                                 (flycheck-mode)
+                                 (flycheck-add-mode 'javascript-eslint 'js2-mode)
+                                 (flycheck-select-checker 'javascript-eslint)))
+      (add-hook 'react-mode-hook (lambda ()
+                                   (flycheck-mode)
+                                   (flycheck-add-mode 'javascript-standard 'react-mode)
+                                   (flycheck-select-checker 'javascript-standard))))))
+;; }}
+
+(defun czqhurricane-programming/init-flycheck-package ()
+  (use-package flycheck-package))
+
+;; {{
+;; $ npm install -g prettier
+;; (defun czqhurricane-programming/init-prettier-js ()
+;;   (use-package prettier-js
+;;     :after web-mode
+;;     :init
+;;     (add-hook 'js2-mode-hook 'prettier-js-mode)
+;;     (add-hook 'web-mode-hook 'prettier-js-mode)
+;;     (add-hook 'react-mode-hook 'prettier-js-mode)
+;;     :config
+;;     (setq prettier-js-args '("--trailing-comma" "none"
+;;                              "--bracket-spacing" "true"
+;;                              "--no-semi" "false"
+;;                              "--single-quote" "true"
+;;                              "--jsx-single-quote" "true"
+;;                              "--jsx-bracket-same-line" "true"
+;;                              "--arrow-parens" "always"
+;;                              "--insert-pragma true"))
+;;     (defun enable-minor-mode (my-pair)
+;;       "Enable minor mode if filename match the regexp.  `MY-PAIR' is a cons cell (regexp . minor-mode)."
+;;       (if (buffer-file-name)
+;;           (if (string-match (car my-pair) buffer-file-name)
+;;               (funcall (cdr my-pair)))))
+;;     (add-hook 'web-mode-hook #'(lambda ()
+;;                                  (enable-minor-mode
+;;                                   '("\\.js?\\'" . prettier-js-mode))))
+;;     (add-hook 'web-mode-hook #'(lambda ()
+;;                                  (enable-minor-mode
+;;                                   '("\\.jsx?\\'" . prettier-js-mode))))))
+;; }}
+
+(defun czqhurricane-programming/init-add-node-modules-path ()
+  (use-package add-node-modules-path))
+
+(defun czqhurricane-programming/init-standardfmt ()
+  (use-package standardfmt
+    :config
+    (add-hook 'react-mode-hook #'standardfmt-mode)))

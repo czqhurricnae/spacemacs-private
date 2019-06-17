@@ -29,9 +29,8 @@
   :defer t))
 ;; }}
 
-(defun czqhurricane-ui/init-pangu-spacing ()
-  (use-package pangu-spacing
-  :init
+(defun czqhurricane-ui/post-init-pangu-spacing ()
+  (with-eval-after-load 'pangu-spacing
   (progn
     (setq pangu-spacing-chinese-after-english-regexp
           (rx (group-n 1 (in "a-zA-Z0-9,.!?])%#@&1234567890,;\":"))

@@ -18,10 +18,8 @@
     (occur-mode :location local)
     (dired-mode :location local)))
 
-(defun czqhurricane-better-defaults/init-youdao-dictionary ()
-  (use-package youdao-dictionay
-    :defer
-    :init
+(defun czqhurricane-better-defaults/post-init-youdao-dictionary ()
+  (with-eval-after-load 'youdao-dictionay
     (spacemacs/set-leader-keys "hy" 'youdao-dictionary-search-at-point+)))
 
 (defun czqhurricane-better-defaults/init-mic-paren ()

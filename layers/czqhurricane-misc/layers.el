@@ -1,1 +1,1 @@
-(configuration-layer/remove-layer 'chinese)
+;; (configuration-layer/remove-layer 'chinese)

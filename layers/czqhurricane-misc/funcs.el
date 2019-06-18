@@ -310,7 +310,7 @@ e.g. Sunday, September 17, 2000."
 
 ;; {{
 ;; @see: http://kuanyui.github.io/2014/01/18/count-chinese-japanese-and-english-words-in-emacs/
-;; Add count for chinese, mainly used for writing chinese blog post
+;; Add count for chinese, mainly used for writing chinese blog post.
 (defvar wc-regexp-chinese-char-and-punc
   (rx (category chinese)))
 

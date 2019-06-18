@@ -1,15 +1,3 @@
-;;; -*- lexical-binding: t -*-
-;;; packages.el --- czqhurricane Layer packages File for Spacemacs
-;;
-;; Copyright (c) 2012-2017 Sylvain Benner & Contributors
-;;
-;; Author: c <c@ubuntu>
-;; URL: https://github.com/syl20bnr/spacemacs
-;;
-;; This file is not part of GNU Emacs.
-;;
-;;; License: GPLv3
-
 (defconst czqhurricane-better-defaults-packages
   '(
     (youdao-dictionary :location elpa)
@@ -18,8 +6,10 @@
     (occur-mode :location local)
     (dired-mode :location local)))
 
-(defun czqhurricane-better-defaults/post-init-youdao-dictionary ()
-  (with-eval-after-load 'youdao-dictionay
+(defun czqhurricane-better-defaults/init-youdao-dictionary ()
+  (use-package youdao-dictionay
+    :defer
+    :init
     (spacemacs/set-leader-keys "hy" 'youdao-dictionary-search-at-point+)))
 
 (defun czqhurricane-better-defaults/init-mic-paren ()

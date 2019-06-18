@@ -11,6 +11,7 @@
     (color-rg :location (recipe :fetcher github :repo "manateelazycat/color-rg"))
     yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
+    (eslint-fix :location (recipe :fetcher github :repo "codesuki/eslint-fix"))
     add-node-modules-path
     ;; prettier-js
 ))

@@ -579,9 +579,6 @@
     :init
     (setq helm-github-stars-username "czqhurricane")))
 
-(defun czqhurricane-misc/post-init-fcitx ()
-  (fcitx-aggressive-setup))
-
 (defun czqhurricane-misc/post-init-command-log ()
   (with-eval-after-load 'global-command-log-mode
     (setq clm/log-command-exceptions* (append clm/log-command-exceptions*

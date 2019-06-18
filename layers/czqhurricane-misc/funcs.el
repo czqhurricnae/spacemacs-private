@@ -771,3 +771,23 @@ If a change in `file-attributes` happended call func."
   "Replace text in yasnippet template."
   (yas-expand-snippet (buffer-string) (point-min) (point-max)))
 
+;; {{
+;; @see: https://emacs-china.org/t/ann-fcitx-remote-for-windows/474/13
+(defun evil-toggle-english-input-source ()
+  (shell-command "fcitx-remote -s com.apple.keylayout.US"))
+
+(defun evil-toggle-chinese-input-source ()
+  (shell-command "fcitx-remote -s com.sogou.inputmethod.sogou.pinyin"))
+
+(defun czqhurricane/toggle-fcitx (&optional arg)
+  (interactive "P")
+  (cond
+   ((equal arg '(4))
+    (remove-hook 'evil-insert-state-exit-hook 'evil-toggle-english-input-source)
+    (remove-hook 'evil-insert-state-entry-hook 'evil-toggle-chinese-input-source)
+   (t
+    (add-hook 'evil-insert-state-exit-hook 'evil-toggle-english-input-source)
+    (add-hook 'evil-insert-state-entry-hook 'evil-toggle-chinese-input-source)))))
+
+(spacemacs/set-leader-keys "oti" 'czqhurricane/toggle-fcitx)
+;; }}

@@ -93,8 +93,6 @@ values."
                         layouts-enable-autosave nil
                         layouts-autosave-delay 300)
      theming
-     (chinese :variables chinese-enable-fcitx t
-                         chinese-enable-youdao-dict t)
      czqhurricane)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -429,9 +427,6 @@ you should place your code here."
                            (electric-indent-mode -1)))
   (setq browse-url-browser-function 'eww-browse-url)
   ;; (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
-  (setq fcitx-active-evil-states '(insert emacs hybrid))
-  (fcitx-default-setup)
-  (fcitx-prefix-keys-add "M-m")
  )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

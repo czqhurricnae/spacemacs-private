@@ -162,17 +162,11 @@ open and unsaved."
 (dakra-define-up/downcase-dwim "downcase")
 (dakra-define-up/downcase-dwim "capitalize")
 
-(defun select-english-input-source ()
-  (interactive)
-  (let* ((cmd (format "osascript %s" (getenv "SELECTENGLISHINPUTSOURCE"))))
-    (eshell-command cmd)))
-
 (defun evil-keyboard-quit ()
   "Keyboard quit and force normal state."
   (interactive)
   (and evil-mode (evil-force-normal-state))
   (progn
-    (select-english-input-source)
     (keyboard-quit)))
 
 (defun czqhurricane//dired-store-link (orig-fun &rest args)

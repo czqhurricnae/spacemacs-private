@@ -142,6 +142,9 @@ variables such as `exec-path'."
     (progn
       (setq flycheck-display-errors-delay 0.9)
       (setq flycheck-idle-change-delay 2.0)
+      (setq-default flycheck-disabled-checkers
+        (append flycheck-disabled-checkers
+          '(javascript-jshint json-jsonlint)))
       (add-hook 'js2-mode-hook (lambda ()
                                  (setq exec-path (cons "/usr/local/bin/node" exec-path))
                                  (setq exec-path (cons "/usr/local/bin/eslint" exec-path))

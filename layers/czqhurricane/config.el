@@ -19,12 +19,16 @@
 (defvar auto-insert-dir ""
   "Auto insert templates location.")
 
+(defvar eslintfmt-configuration-file ""
+  "Eslintfmt global configuration.")
+
 (setq-default
- org-agenda-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
- deft-dir "/Users/c/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
+ org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
+ deft-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
  blog-admin-dir "~/czqhurricane.com"
- snippet-dir "/Users/c/.spacemacs.d/snippets/"
+ snippet-dir "~/.spacemacs.d/snippets/"
  virtualenv-dir "~/.virtualenvs/"
  jupyter-bin "~/.virtualenvs/ipy3/bin/jupyter"
- auto-insert-dir "/Users/c/.spacemacs.d/templates/"
+ auto-insert-dir "~/.spacemacs.d/templates/"
+ eslintfmt-configuration-file "~/.spacemacs.d/.eslintrc.js"
 )

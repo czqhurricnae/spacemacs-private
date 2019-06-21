@@ -11,7 +11,7 @@
     (color-rg :location (recipe :fetcher github :repo "manateelazycat/color-rg"))
     yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
-    (eslint-fix :location (recipe :fetcher github :repo "codesuki/eslint-fix"))
+    (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
     add-node-modules-path
     ;; prettier-js
 ))
@@ -116,8 +116,6 @@ variables such as `exec-path'."
     (setq eshell-path-env value
           exec-path (append (parse-colon-path value) (list exec-directory)))))
 
-(exec-path-from-shell-setenv "SELECTENGLISHINPUTSOURCE" "/Users/c/.spacemacs.d/selectEnglishInputSource.scpt")
-
 ;; {{
 ;; @see: https://github.com/abicky/nodejs-repl.el
 (defun czqhurricane-programming/init-nodejs-repl ()
@@ -145,6 +143,8 @@ variables such as `exec-path'."
       (setq flycheck-display-errors-delay 0.9)
       (setq flycheck-idle-change-delay 2.0)
       (add-hook 'js2-mode-hook (lambda ()
+                                 (setq exec-path (cons "/usr/local/bin/node" exec-path))
+                                 (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
                                  (flycheck-mode)
                                  (flycheck-add-mode 'javascript-eslint 'js2-mode)
                                  (flycheck-select-checker 'javascript-eslint)))
@@ -195,3 +195,10 @@ variables such as `exec-path'."
   (use-package standardfmt
     :config
     (add-hook 'react-mode-hook #'standardfmt-mode)))
+
+(defun czqhurricane-programming/init-eslintfmt ()
+  (use-package eslintfmt
+    :config
+    (setq eslintfmt-command-args (list "--config" eslintfmt-configuration-file))
+    (add-hook 'js-mode-hook #'eslintfmt-mode)
+    (add-hook 'js2-mode-hook #'eslintfmt-mode)))

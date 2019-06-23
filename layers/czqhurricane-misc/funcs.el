@@ -781,19 +781,106 @@ If a change in `file-attributes` happended call func."
 (setq fcitx-remote-chinese-ID-map '("2" . "搜狗拼音"))
 
 (defun czqhurricane/switch-input-source (ID-map)
-  (interactive)
-  (do-applescript
-   (format "tell application \"System Events\"
-     set result to do shell script \"/usr/local/bin/fcitx-remote\"
-     set englishInputSourceIsSelected to result is \"%s\"
-     if englishInputSourceIsSelected is false then
-       tell process \"SystemUIServer\"
-         click menu bar item 5 of menu bar 1
-         click menu item \"%s\" of menu 1 of menu bar item 5 of menu bar 1
-       end tell
-     end if
-   end tell" (car ID-map) (cdr ID-map))))
+  (let ((script
+         (format
+           (mapconcat
+             #'identity
+             '("tell application \"System Events\""
+               "set result to do shell script \"/usr/local/bin/fcitx-remote\""
+               "set englishInputSourceIsSelected to result is \"%s\""
+               "  if englishInputSourceIsSelected is false then"
+               "    tell process \"SystemUIServer\""
+               "      click menu bar item 5 of menu bar 1"
+               "      click menu item \"%s\" of menu 1 of menu bar item 5 of menu bar 1"
+               "    end tell"
+               "  end if"
+               "end tell")
+             "\n")
+           (car ID-map)
+           (cdr ID-map))))
+    (thread-first script
+      (do-applescript)
+      (string-trim "\"\n" "\n\"")
+      (split-string "\n"))))
 
 (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-chinese-ID-map)))
 (add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-english-ID-map)))
 ;;}}
+
+;; {{
+;; @see: https://emacs-china.org/t/topic/5518
+(defun czqhurricane/chrome-tabs ()
+  "返回 Chrome 标签."
+  (let ((script
+         (mapconcat
+          #'identity
+          '("set titleString to return"
+            ""
+            "tell application \"Google Chrome\""
+            "  set window_list to every window"
+            "  set window_counter to 0"
+            ""
+            "  repeat with the_window in window_list"
+            "    set window_counter to window_counter + 1"
+            "    set tab_list to every tab in the_window"
+            "    set tab_counter to 0"
+            ""
+            "    repeat with the_tab in tab_list"
+            "      set tab_counter to tab_counter + 1"
+            "      set coordinate to window_counter & \" \" & tab_counter"
+            "      set the_title to the title of the_tab"
+            "      set titleString to titleString & coordinate & \" \" & the_title & return"
+            "    end repeat"
+            "  end repeat"
+            "end tell")
+          "\n")))
+    (thread-first script
+      (do-applescript)
+      (string-trim "\"\n" "\n\"")
+      (split-string "\n"))))
+
+;; (czqhurricane/chrome-tabs)
+;; => ("1 1 Google" "1 2 Home - BBC News")
+;; 1 - 第一个窗口
+;; 1 - 第一个标签
+;; Google - 标题
+
+(defun czqhurricane/chrome-switch-tab-1 (window-id tab-id)
+  ;; FIXME 不知道如何处理多余一个窗口的情况
+  (do-applescript
+   (concat "tell application \"Google Chrome\"\n"
+           (format "  set active tab index of first window to %s\n" tab-id)
+           "  activate\n"
+           "end tell\n")))
+
+(defun czqhurricane/chrome-switch-tab (window-id tab-id)
+  (interactive
+   (let* ((tabs (czqhurricane/chrome-tabs))
+          (input
+           (completing-read
+            "Open Chrome Tab: "
+            (mapcar
+             (lambda (s)
+               (and (string-match
+                     (rx string-start
+                         (1+ num) " " (1+ num) " "
+                         (group (1+ not-newline))
+                         string-end)
+                     s)
+                    (match-string 1 s)))
+             tabs)
+            nil t)))
+     (seq-some (lambda (s)
+                 (and (string-match
+                       (rx-to-string
+                        `(and
+                          string-start
+                          (group (1+ num)) " " (group (1+ num)) " "
+                          ,input
+                          string-end))
+                       s)
+                      (list (match-string 1 s)
+                            (match-string 2 s))))
+               tabs)))
+  (czqhurricane/chrome-switch-tab-1 window-id tab-id))
+;; }}

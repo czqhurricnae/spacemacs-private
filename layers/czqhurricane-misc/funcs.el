@@ -772,22 +772,28 @@ If a change in `file-attributes` happended call func."
   (yas-expand-snippet (buffer-string) (point-min) (point-max)))
 
 ;; {{
-;; @see: https://emacs-china.org/t/ann-fcitx-remote-for-windows/474/13
-(defun evil-toggle-english-input-source ()
-  (shell-command "fcitx-remote -s com.apple.keylayout.US"))
+;; @see: https://emacs-china.org/t/topic/4337/13
+;; $ brew tap xcodebuild/fcitx-remote-for-osx
+;; $ brew install xcodebuild/fcitx-remote-for-osx/fcitx-remote-for-osx --with-sogou-pinyin
+;; $ brew info xcodebuild/fcitx-remote-for-osx/fcitx-remote-for-osx # 查看支持其他输入法的选项
+;; $ brew untap xcodebuild/fcitx-remote-for-osx
+(setq fcitx-remote-english-ID-map '("1" . "美国"))
+(setq fcitx-remote-chinese-ID-map '("2" . "搜狗拼音"))
 
-(defun evil-toggle-chinese-input-source ()
-  (shell-command "fcitx-remote -s com.sogou.inputmethod.sogou.pinyin"))
+(defun czqhurricane/switch-input-source (ID-map)
+  (interactive)
+  (do-applescript
+   (format "tell application \"System Events\"
+     set result to do shell script \"/usr/local/bin/fcitx-remote\"
+     set englishInputSourceIsSelected to result is \"%s\"
+     if englishInputSourceIsSelected is false then
+       tell process \"SystemUIServer\"
+         click menu bar item 5 of menu bar 1
+         click menu item \"%s\" of menu 1 of menu bar item 5 of menu bar 1
+       end tell
+     end if
+   end tell" (car ID-map) (cdr ID-map))))
 
-(defun czqhurricane/toggle-fcitx (&optional arg)
-  (interactive "P")
-  (cond
-   ((equal arg '(4))
-    (remove-hook 'evil-insert-state-exit-hook 'evil-toggle-english-input-source)
-    (remove-hook 'evil-insert-state-entry-hook 'evil-toggle-chinese-input-source)
-   (t
-    (add-hook 'evil-insert-state-exit-hook 'evil-toggle-english-input-source)
-    (add-hook 'evil-insert-state-entry-hook 'evil-toggle-chinese-input-source)))))
-
-(spacemacs/set-leader-keys "oti" 'czqhurricane/toggle-fcitx)
-;; }}
+(add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-chinese-ID-map)))
+(add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-english-ID-map)))
+;;}}

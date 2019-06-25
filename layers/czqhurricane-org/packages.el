@@ -53,6 +53,7 @@
 
       ;; Make Yasnippet effect when the editing org source code is JavaScript.
       (add-to-list 'org-src-lang-modes '("js" . js2))
+      (add-to-list 'org-src-lang-modes '("javascript" . react))
 
       ;; When editing org-files with source-blocks, we want the
       ;; source blocks to be themed as they would in their native mode.

@@ -511,7 +511,7 @@ should only be used in org-mode."
             (eshell-command cmd)))
         (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
         (insert (concat "[[file:" full-file-path "]]"))
-        ))))
+        (evil-normal-state)))))
 ;; }}
 
 (defun org-screenshot-and-ocr ()

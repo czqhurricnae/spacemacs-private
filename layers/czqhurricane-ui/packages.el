@@ -52,11 +52,10 @@
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
 (defun czqhurricane-ui/init-awesome-tab ()
   (use-package awesome-tab
+    :ensure nil
     :load-path "~/.emacs.d/elpa/awesome-tab"
     :config
     (awesome-tab-mode t)
-    (setq awesome-tab-background-color "#002b36")
-    (setq awesome-tab-style "bar")
-))
+    (setq awesome-tab-style "bar")))
 ;; }}
 ;;; packages.el ends here

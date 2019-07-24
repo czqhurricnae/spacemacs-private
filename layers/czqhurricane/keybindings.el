@@ -34,5 +34,6 @@
 (global-set-key (kbd "C-c i r") 'org-screenshot-and-ocr)
 (global-set-key (kbd "C-c i c") 'org-insert-caption-and-target)
 (global-set-key (kbd "C-c i e") 'yas-expand)
+(global-set-key (kbd "C-c i s") 'czqhurricane/org-insert-src-block)
 (global-set-key (kbd "C-x c y") 'czqhurricane/copy-chrome-current-tab-url)
 (global-set-key (kbd "C-x c s") 'czqhurricane/chrome-switch-tab)

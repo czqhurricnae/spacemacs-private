@@ -4,7 +4,9 @@
     which-func
     pangu-spacing
     (awesome-tab :location (recipe :fetcher
-                            github :repo "manateelazycat/awesome-tab"))))
+                                   github :repo "manateelazycat/awesome-tab"))
+    (cnfonts :location (recipe :fetcher
+                                github :repo "tumashu/cnfonts"))))
 
 ;; {{
 ;; @see: http://emacsredux.com/blog/2014/04/05/which-function-mode/
@@ -59,3 +61,12 @@
     (setq awesome-tab-style "bar")))
 ;; }}
 ;;; packages.el ends here
+
+;; {{
+;; @see: https://github.com/tumashu/cnfonts
+(defun czqhurricane-ui/init-cnfonts()
+  (use-package cnfonts
+    :config
+    (cnfonts-enable)
+    (cnfonts-set-spacemacs-fallback-fonts)))
+;; }}

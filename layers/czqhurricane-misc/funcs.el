@@ -803,7 +803,7 @@ If a change in `file-attributes` happended call func."
       (string-trim "\"\n" "\n\"")
       (split-string "\n"))))
 
-(add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-chinese-ID-map)))
+;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-chinese-ID-map)))
 (add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-english-ID-map)))
 ;;}}
 

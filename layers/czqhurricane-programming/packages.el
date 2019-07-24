@@ -12,6 +12,7 @@
     yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
     (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
+    (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
     add-node-modules-path
     ;; prettier-js
 ))
@@ -142,15 +143,15 @@ variables such as `exec-path'."
     (progn
       (setq flycheck-display-errors-delay 0.9)
       (setq flycheck-idle-change-delay 2.0)
-      (setq-default flycheck-disabled-checkers
-        (append flycheck-disabled-checkers
-          '(javascript-jshint json-jsonlint)))
-      (add-hook 'js2-mode-hook (lambda ()
-                                 (setq exec-path (cons "/usr/local/bin/node" exec-path))
-                                 (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
-                                 (flycheck-mode)
-                                 (flycheck-add-mode 'javascript-eslint 'js2-mode)
-                                 (flycheck-select-checker 'javascript-eslint)))
+      ;; (setq-default flycheck-disabled-checkers
+      ;;   (append flycheck-disabled-checkers
+      ;;     '(javascript-jshint json-jsonlint)))
+      ;; (add-hook 'js2-mode-hook (lambda ()
+      ;;                            (setq exec-path (cons "/usr/local/bin/node" exec-path))
+      ;;                            (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
+      ;;                            (flycheck-mode)
+      ;;                            (flycheck-add-mode 'javascript-eslint 'js2-mode)
+      ;;                            (flycheck-select-checker 'javascript-eslint)))
       (add-hook 'react-mode-hook (lambda ()
                                    (flycheck-mode)
                                    (flycheck-add-mode 'javascript-standard 'react-mode)
@@ -205,3 +206,10 @@ variables such as `exec-path'."
     (setq eslintfmt-command-args (list "--config" eslintfmt-configuration-file))
     (add-hook 'js-mode-hook #'eslintfmt-mode)
     (add-hook 'js2-mode-hook #'eslintfmt-mode)))
+
+(defun czqhurricane-programming/init-pythonfmt ()
+  (use-package pythonfmt
+    :config
+    (setq pythonfmt-command "yapf")
+    (setq pythonfmt-command-args "-i")
+    (add-hook 'python-mode-hook #'pythonfmt-mode)))

@@ -1,6 +1,13 @@
 (defconst czqhurricane-ui-packages
   '(
-    (color-theme-solarized :location elpa)
+    (doom-themes :location (recipe :fetcher
+                                    github :repo "hlissner/emacs-doom-themes"))
+    (all-the-icons :location (recipe :fetcher
+                                     github :repo "domtronn/all-the-icons.el"))
+    (doom-modeline :location (recipe :fetcher
+                                     github :repo "seagle0128/doom-modeline"))
+    (hide-mode-line :location (recipe :fetcher
+                                      github :repo "hlissner/emacs-hide-mode-line"))
     which-func
     pangu-spacing
     (awesome-tab :location (recipe :fetcher
@@ -9,8 +16,8 @@
                                 github :repo "tumashu/cnfonts"))))
 
 ;; {{
-;; @see: http://emacsredux.com/blog/2014/04/05/which-function-mode/
 ;; Show the current function name in the Power line.
+;; @see: http://emacsredux.com/blog/2014/04/05/which-function-mode/
 (defun czqhurricane-ui/init-which-func ()
   (use-package which-func
   :init
@@ -24,11 +31,44 @@
   :config
     (setq mode-line-format (remove '(which-func-mode ("" which-func-format " ")) mode-line-format))))
 
-(defun czqhurricane-ui/init-color-theme-solarized ()
-  (use-package color-theme-solarized
-  :init
-  (spacemacs/load-theme 'solarized)
-  :defer t))
+;; {{
+;; @see: https://github.com/hlissner/emacs-doom-themes
+(defun czqhurricane-ui/init-doom-themes ()
+  (use-package doom-themes
+    :init
+    (load-theme 'doom-nord t)
+    :custom
+    (doom-themes-enable-italic t)
+    (doom-themes-enable-bold t)
+    :config
+    (doom-themes-neotree-config)
+    (doom-themes-org-config)))
+;; }}
+
+(defun czqhurricane-ui/init-all-the-icons ()
+  (use-package all-the-icons))
+
+(defun czqhurricane-ui/init-doom-modeline ()
+  (use-package doom-modeline
+    :ensure t
+    :defer t
+    :hook
+    (after-init . doom-modeline-mode)
+    :custom
+    (doom-modeline-icon t)
+    (doom-modeline-major-mode-icon nil)
+    (doom-modeline-minor-modes nil)
+    :config
+    (line-number-mode 0)
+    (column-number-mode 0)))
+
+;; {{
+;; @see: https://github.com/hlissner/emacs-hide-mode-line
+(defun czqhurricane-ui/init-hide-mode-line ()
+  (use-package hide-mode-line
+    :hook
+    ((neotree-mode imenu-list-minor-mode minimap-mode
+      spacemacs-buffer-mode ibuffer-mode help-mode deft-text-mode) . hide-mode-line-mode)))
 ;; }}
 
 (defun czqhurricane-ui/init-pangu-spacing ()
@@ -54,19 +94,12 @@
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
 (defun czqhurricane-ui/init-awesome-tab ()
   (use-package awesome-tab
+    :hook
+    (after-init . awesome-tab-mode)
     :ensure nil
     :load-path "~/.emacs.d/elpa/awesome-tab"
     :config
-    (awesome-tab-mode t)
     (setq awesome-tab-style "bar")))
 ;; }}
-;;; packages.el ends here
 
-;; {{
-;; @see: https://github.com/tumashu/cnfonts
-(defun czqhurricane-ui/init-cnfonts()
-  (use-package cnfonts
-    :config
-    (cnfonts-enable)
-    (cnfonts-set-spacemacs-fallback-fonts)))
-;; }}
+;;; packages.el ends here

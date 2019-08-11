@@ -193,14 +193,11 @@ values."
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro" :size
-                                                 16
-                                                 :weight
-                                                 normal
-                                                 :width
-                                                 normal
-                                                 :powerline-scale
-                                                 1.1)
+   dotspacemacs-default-font '("Inconsolata"
+                               :size 20
+                               :weight normal
+                               :width normal
+                               :powerline-scale 1.1)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The key used for Emacs commands (M-x) (after pressing on the leader key).
@@ -414,7 +411,6 @@ you should place your code here."
   (setq c-default-style "k&r")
   (setq c-basic-offset 4)
   (setq ns-use-srgb-colorspace nil)
-  (setq powerline-default-separator 'arrow)
   ;; Display the activated Python version in mode line.
   (setq-default mode-line-format (cons '(:exec venv-current-name) mode-line-format))
   (setq spacemacs-show-trailing-whitespace t)
@@ -427,6 +423,8 @@ you should place your code here."
                            (electric-indent-mode -1)))
   (setq browse-url-browser-function 'eww-browse-url)
   ;; (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
+  (set-face-attribute 'default nil :family "Source Code Pro")
+  (set-face-attribute 'default nil :height 165)
  )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

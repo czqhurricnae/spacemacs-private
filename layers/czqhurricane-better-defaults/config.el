@@ -244,7 +244,6 @@ with options to run in the shell.")
 ;; 使用 counsel-git 查找文件的时候，忽略指定后缀的文件
 (when (spacemacs/system-is-mswindows)
   (setq counsel-git-cmd "git ls-files --full-name -- \":!:*.js.meta\" \":!:*.meta\""))
-(global-linum-mode t)
 
 ;; Auto switch to `occur buffer`
 (add-hook 'occur-hook

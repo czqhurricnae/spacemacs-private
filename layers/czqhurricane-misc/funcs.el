@@ -772,27 +772,21 @@ If a change in `file-attributes` happended call func."
   (yas-expand-snippet (buffer-string) (point-min) (point-max)))
 
 ;; {{
-;; @see: https://emacs-china.org/t/topic/4337/13
-;; $ brew tap xcodebuild/fcitx-remote-for-osx
-;; $ brew install xcodebuild/fcitx-remote-for-osx/fcitx-remote-for-osx --with-sogou-pinyin
-;; $ brew info xcodebuild/fcitx-remote-for-osx/fcitx-remote-for-osx # 查看支持其他输入法的选项
-;; $ brew untap xcodebuild/fcitx-remote-for-osx
-(setq fcitx-remote-english-ID-map '("1" . "美国"))
-(setq fcitx-remote-chinese-ID-map '("2" . "搜狗拼音"))
+;; @see: https://emacs-china.org/t/macos/10219
+(setq english-ID-map '("1" . "美国"))
+(setq chinese-ID-map '("2" . "搜狗拼音"))
 
 (defun czqhurricane/switch-input-source (ID-map)
   (let ((script
          (format
            (mapconcat
              #'identity
-             '("tell application \"System Events\""
-               "set result to do shell script \"/usr/local/bin/fcitx-remote\""
+             '("tell application \"System Events\" to tell process \"SystemUIServer\""
+               "set result to get the value of the first menu bar item of menu bar 1 whose description is \"text input\""
                "set englishInputSourceIsSelected to result is \"%s\""
                "  if englishInputSourceIsSelected is false then"
-               "    tell process \"SystemUIServer\""
                "      click menu bar item 5 of menu bar 1"
                "      click menu item \"%s\" of menu 1 of menu bar item 5 of menu bar 1"
-               "    end tell"
                "  end if"
                "end tell")
              "\n")
@@ -803,8 +797,8 @@ If a change in `file-attributes` happended call func."
       (string-trim "\"\n" "\n\"")
       (split-string "\n"))))
 
-;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-chinese-ID-map)))
-(add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source fcitx-remote-english-ID-map)))
+;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source chinese-ID-map)))
+(add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source english-ID-map)))
 ;;}}
 
 ;; {{

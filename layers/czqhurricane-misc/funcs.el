@@ -773,33 +773,43 @@ If a change in `file-attributes` happended call func."
 
 ;; {{
 ;; @see: https://emacs-china.org/t/macos/10219
-(setq english-ID-map '("1" . "美国"))
-(setq chinese-ID-map '("2" . "搜狗拼音"))
+;; (setq english-ID-map '("1" . "美国"))
+;; (setq chinese-ID-map '("2" . "搜狗拼音"))
+
+;; (defun czqhurricane/switch-input-source (ID-map)
+;;   (let ((script
+;;          (format
+;;            (mapconcat
+;;              #'identity
+;;              '("tell application \"System Events\" to tell process \"SystemUIServer\""
+;;                "set result to get the value of the first menu bar item of menu bar 1 whose description is \"text input\""
+;;                "set englishInputSourceIsSelected to result is \"%s\""
+;;                "  if englishInputSourceIsSelected is false then"
+;;                "      click menu bar item 5 of menu bar 1"
+;;                "      click menu item \"%s\" of menu 1 of menu bar item 5 of menu bar 1"
+;;                "  end if"
+;;                "end tell")
+;;              "\n")
+;;            (car ID-map)
+;;            (cdr ID-map))))
+;;     (thread-first script
+;;       (do-applescript)
+;;       (string-trim "\"\n" "\n\"")
+;;       (split-string "\n"))))
+
+;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source chinese-ID-map)))
+;; (add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source english-ID-map)))
+;;}}
+
+(setq english-ID-map '("com.apple.keylayout.US" . "美国"))
+(setq chinese-ID-map '("com.sogou.inputmethod.sogou.pinyin" . "搜狗拼音"))
 
 (defun czqhurricane/switch-input-source (ID-map)
-  (let ((script
-         (format
-           (mapconcat
-             #'identity
-             '("tell application \"System Events\" to tell process \"SystemUIServer\""
-               "set result to get the value of the first menu bar item of menu bar 1 whose description is \"text input\""
-               "set englishInputSourceIsSelected to result is \"%s\""
-               "  if englishInputSourceIsSelected is false then"
-               "      click menu bar item 5 of menu bar 1"
-               "      click menu item \"%s\" of menu 1 of menu bar item 5 of menu bar 1"
-               "  end if"
-               "end tell")
-             "\n")
-           (car ID-map)
-           (cdr ID-map))))
-    (thread-first script
-      (do-applescript)
-      (string-trim "\"\n" "\n\"")
-      (split-string "\n"))))
+  (if (not (string-equal (mac-input-source) (car ID-map)))
+      (mac-select-input-source (car ID-map))))
 
 ;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source chinese-ID-map)))
 (add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source english-ID-map)))
-;;}}
 
 ;; {{
 ;; @see: https://emacs-china.org/t/topic/5518

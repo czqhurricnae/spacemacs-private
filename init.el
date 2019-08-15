@@ -411,8 +411,6 @@ you should place your code here."
   (setq c-default-style "k&r")
   (setq c-basic-offset 4)
   (setq ns-use-srgb-colorspace nil)
-  ;; Display the activated Python version in mode line.
-  (setq-default mode-line-format (cons '(:exec venv-current-name) mode-line-format))
   (setq spacemacs-show-trailing-whitespace t)
   ;; Make magit's windown display in the right side.
   (setq split-height-threshold nil)

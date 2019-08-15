@@ -12,8 +12,7 @@
     pangu-spacing
     (awesome-tab :location (recipe :fetcher
                                    github :repo "manateelazycat/awesome-tab"))
-    (cnfonts :location (recipe :fetcher
-                                github :repo "tumashu/cnfonts"))))
+    ))
 
 ;; {{
 ;; Show the current function name in the Power line.

@@ -377,12 +377,15 @@
 
 (defun czqhurricane-org/post-init-org-download ()
   (use-package org-download
-    :init
-    (progn
-      (setq org-download-screenshot-method "screencapture -i %s")
-      (setq org-download-heading-lvl nil)
-      ;; Drag-and-drop to `dired`.
-      (add-hook 'dired-mode-hook 'org-download-enable))))
+  ;; :ensure-system-package (pngpaste . "brew install pngpaste")
+  :init
+  (progn
+    ;; (setq org-download-screenshot-method "screencapture -i %s")
+    (setq org-download-screenshot-method "pngpaste %s")
+    (setq org-download-heading-lvl nil)
+    (setq org-download-screenshot-file (expand-file-name "screenshot.jpg" temporary-file-directory))
+    ;; Drag-and-drop to `dired`.
+    (add-hook 'dired-mode-hook 'org-download-enable))))
 
 ;; {{
 ;; @see: https://github.com/tumashu/org2ctex

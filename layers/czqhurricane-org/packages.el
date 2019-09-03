@@ -476,6 +476,46 @@
                    ("\\section{%s}" . "\\section*{%s}")
                    ("\\subsection{%s}" . "\\subsection*{%s}")
                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}"))))))
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+    (add-to-list 'org2ctex-latex-classes '("my-exam"
+                   "\\documentclass[addpoints, answers]{exam}
+                    [NO-DEFAULT-PACKAGES]
+                    % 写中文要用到
+                    \\usepackage{xeCJK}
+                    % 可以把题号变为中文
+                    \\usepackage{zhnumber}
+                    % 插入图片
+                    \\usepackage{graphicx}
+                    % 插入链接
+                    \\usepackage{hyperref}
+                    % 数学符号
+                    \\usepackage{amsmath}
+                    % 表格样式
+                    \\usepackage{booktabs}
+                    % 定义页眉和页脚
+                    \\pagestyle{headandfoot}
+                    \\firstpageheadrule
+                    \\firstpageheader{航线D组}{蒋勇明组}{7月份内测}
+                    \\runningheader{航线D组}
+                    {蒋勇明组}
+                    {7月份内测}
+                    \\runningheaderrule
+                    \\firstpagefooter{}{第\\thepage\\ 页 (共\\numpages 页) }{}
+                    \\runningfooter{}{第\\thepage\\ 页 (共\\numpages 页) }{}
+                    % no box for solutions
+                    % \\unframedsolutions
+                    % 定义分数样式
+                    \\pointname{ 分}
+                    \\pointformat{ (\\thepoints) }
+                    \\totalformat{共\\totalpoints 分}
+                    \\setlength\\linefillheight{.5in}
+                    \\renewcommand{\\solutiontitle}{\\noindent\\textbf{答:}}
+                    \\renewcommand{\\thequestion}{\\zhnum{question}}
+                    \\renewcommand{\\questionlabel}{\\thequestion .}
+                    \\renewcommand{\\thepartno}{\\arabic{partno}}
+                    \\renewcommand{\\partlabel}{\\thepartno .}"
+                    ("\\section{%s}" . "\\section*{%s}")
+                    ("\\question{%s}" . "\\subsection*{%s}")
+                    ("\\begin{solution}{%s}\\end{solution}" . "\\subsubsection*{%s}"))))))
 ;; }}
 ;;; packages.el ends here

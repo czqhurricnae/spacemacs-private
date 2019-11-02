@@ -1,4 +1,4 @@
-(defun czqhurricane/highlight-dwim ()
+(defun hurricane/highlight-dwim ()
   (interactive)
   (if (use-region-p)
       (progn
@@ -14,14 +14,14 @@
         ;; force update evil keymaps after git-timemachine-mode loaded
         (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
 
-(defun czqhurricane/insert-semicolon-at-the-end-of-this-line ()
+(defun hurricane/insert-semicolon-at-the-end-of-this-line ()
   "insert`;'at the end of current line"
   (interactive)
   (save-excursion
     (end-of-line)
     (insert ";")))
 
-(defun czqhurricane/delete-semicolon-at-the-end-of-this-line ()
+(defun hurricane/delete-semicolon-at-the-end-of-this-line ()
   (interactive)
   (save-excursion
     (end-of-line)
@@ -30,13 +30,13 @@
           (backward-char)
           (delete-char 1)))))
 
-(defun czqhurricane/insert-comma-at-the-end-of-this-line ()
+(defun hurricane/insert-comma-at-the-end-of-this-line ()
   (interactive)
   (save-excursion
     (end-of-line)
     (insert ",")))
 
-(defun czqhurricane/delete-comma-at-the-end-of-this-line ()
+(defun hurricane/delete-comma-at-the-end-of-this-line ()
   (interactive)
   (save-excursion
     (end-of-line)
@@ -45,13 +45,13 @@
           (backward-char)
           (delete-char 1)))))
 
-(defun czqhurricane/load-my-layout ()
+(defun hurricane/load-my-layout ()
   (interactive)
-  (persp-load-state-from-file (concat persp-save-dir "czqhurricane")))
+  (persp-load-state-from-file (concat persp-save-dir "hurricane")))
 
-(defun czqhurricane/save-my-layout ()
+(defun hurricane/save-my-layout ()
   (interactive)
-  (persp-save-state-to-file (concat persp-save-dir "czqhurricane")))
+  (persp-save-state-to-file (concat persp-save-dir "hurricane")))
 
 ;; http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
 ;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
@@ -75,7 +75,7 @@
       (kill-new val)
       (message "%s => kill-ring" val))))
 
-(defun czqhurricane/indent-region(numSpaces)
+(defun hurricane/indent-region(numSpaces)
   (progn
     ;; default to start and end of current line
     (setq regionStart (line-beginning-position))
@@ -97,25 +97,25 @@
       (setq deactivate-mark nil)             ;; restore the selected region
       )))
 
-(defun czqhurricane/tab-region (N)
+(defun hurricane/tab-region (N)
   (interactive "p")
   (if (use-region-p)
-      (czqhurricane/indent-region 4)         ;; region was selected, call indent-region
+      (hurricane/indent-region 4)         ;; region was selected, call indent-region
     (insert "    ")                          ;; else insert four spaces as expected
     ))
 
-(defun czqhurricane/untab-region (N)
+(defun hurricane/untab-region (N)
   (interactive "p")
-  (czqhurricane/indent-region -4))
+  (hurricane/indent-region -4))
 
-(defun czqhurricane/hack-tab-key ()
+(defun hurricane/hack-tab-key ()
   (interactive)
-  (local-set-key (kbd "<tab>") 'czqhurricane/tab-region)
-  (local-set-key (kbd "<S-tab>") 'czqhurricane/untab-region)
+  (local-set-key (kbd "<tab>") 'hurricane/tab-region)
+  (local-set-key (kbd "<S-tab>") 'hurricane/untab-region)
   )
 
 ;; I'm don't like this settings too much.
-;; (add-hook 'prog-mode-hook 'czqhurricane/hack-tab-key)
+;; (add-hook 'prog-mode-hook 'hurricane/hack-tab-key)
 (defun endless/fill-or-unfill ()
   "Like `fill-paragraph', but unfill if used twice."
   (interactive)
@@ -153,14 +153,14 @@
     (require 'git-timemachine))
   (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 
-(defun czqhurricane/helm-hotspots ()
+(defun hurricane/helm-hotspots ()
   "Helm interface to my hotspots, which includes my locations,
 org-files and bookmarks"
   (interactive)
   (helm :buffer "*helm: utities*"
-        :sources `(,(czqhurricane//hotspots-sources))))
+        :sources `(,(hurricane//hotspots-sources))))
 
-(defun czqhurricane//hotspots-sources ()
+(defun hurricane//hotspots-sources ()
   "Construct the helm sources for my hotspots"
   `((name . "Mail and News")
     (candidates . (("Calendar" . (lambda ()  (browse-url "https://www.google.com/calendar/render")))
@@ -168,25 +168,25 @@ org-files and bookmarks"
                    ("Blog" . blog-admin-start)
                    ("Github" . (lambda() (helm-github-stars)))
                    ("Calculator" . (lambda () (helm-calcul-expression)))
-                   ("Run current flie" . (lambda () (czqhurricane/run-current-file)))
+                   ("Run current flie" . (lambda () (hurricane/run-current-file)))
                    ("Agenda" . (lambda () (org-agenda "" "a")))
                    ("sicp" . (lambda() (browse-url "http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-4.html#%_toc_start")))))
     (candidate-number-limit)
     (action . (("Open" . (lambda (x) (funcall x)))))))
 
-(defun czqhurricane/now ()
+(defun hurricane/now ()
   "Insert string for the current time formatted like '2:34 PM'."
   (interactive)                 ; permit invocation in minibuffer
   (insert (format-time-string "%D %-I:%M %p")))
 
-(defun czqhurricane/today ()
+(defun hurricane/today ()
   "Insert string for today's date nicely formatted in American style,
 e.g. Sunday, September 17, 2000."
   (interactive)                 ; permit invocation in minibuffer
   (insert (format-time-string "%A, %B %e, %Y")))
 
 ;; https://github.com/syohex/emacs-browser-refresh/blob/master/browser-refresh.el
-(defun czqhurricane/browser-refresh--chrome-applescript ()
+(defun hurricane/browser-refresh--chrome-applescript ()
   (interactive)
   (do-applescript
    (format
@@ -211,15 +211,15 @@ e.g. Sunday, September 17, 2000."
   global-shadowsocks-proxy-mode shadowsocks-proxy-mode shadowsocks-proxy-mode
   :group 'shadowsocks-proxy)
 
-(defun czqhurricane/open-file-with-projectile-or-counsel-git ()
+(defun hurricane/open-file-with-projectile-or-counsel-git ()
   (interactive)
-  (if (czqhurricane/git-project-root)
+  (if (hurricane/git-project-root)
       (counsel-git)
     (if (projectile-project-p)
         (projectile-find-file)
       (counsel-file-jump))))
 
-(defun czqhurricane/goto-match-paren (arg)
+(defun hurricane/goto-match-paren (arg)
   "Go to the matching  if on (){}[], similar to vi style of % "
   (interactive "p")
   ;; first, check for "outside of bracket" positions expected by forward-sexp, etc
@@ -230,19 +230,19 @@ e.g. Sunday, September 17, 2000."
         ((looking-back "[\[\(\{]" 1) (backward-char) (evil-jump-item))
         (t nil)))
 
-(defun czqhurricane/hidden-dos-eol ()
+(defun hurricane/hidden-dos-eol ()
   "Do not show ^M in files containing mixed UNIX and DOS line endings."
   (interactive)
   (setq buffer-display-table (make-display-table))
   (aset buffer-display-table ?\^M []))
 
-(defun czqhurricane/remove-dos-eol ()
+(defun hurricane/remove-dos-eol ()
   "Replace DOS eolns CR LF with Unix eolns CR"
   (interactive)
   (goto-char (point-min))
   (while (search-forward "\r" nil t) (replace-match "")))
 
-(defun czqhurricane/retrieve-chrome-current-tab-url ()
+(defun hurricane/retrieve-chrome-current-tab-url ()
   "Get the URL of the active tab of the first window"
   (interactive)
   (let ((result (do-applescript
@@ -258,17 +258,17 @@ e.g. Sunday, September 17, 2000."
                   "return links as string\n"))))
     (format "%s" (s-chop-suffix "\"" (s-chop-prefix "\"" result)))))
 
-(defun czqhurricane/insert-chrome-current-tab-url ()
+(defun hurricane/insert-chrome-current-tab-url ()
   "Get the URL of the active tab of the first window"
   (interactive)
-  (insert (czqhurricane/retrieve-chrome-current-tab-url)))
+  (insert (hurricane/retrieve-chrome-current-tab-url)))
 
-(defun czqhurricane/copy-chrome-current-tab-url ()
+(defun hurricane/copy-chrome-current-tab-url ()
   (interactive)
-  (kill-new (czqhurricane/retrieve-chrome-current-tab-url)))
+  (kill-new (hurricane/retrieve-chrome-current-tab-url)))
 
 ;; Remove all the duplicated emplies in current buffer
-(defun czqhurricane/single-lines-only ()
+(defun hurricane/single-lines-only ()
   "Replace multiple blank lines with a single one"
   (interactive)
   (goto-char (point-min))
@@ -277,11 +277,11 @@ e.g. Sunday, September 17, 2000."
     (forward-char 1)))
 
 ;; For running long run ansi-term
-(defun czqhurricane/named-term (name)
+(defun hurricane/named-term (name)
   (interactive "sName: ")
   (ansi-term "/bin/zsh" name))
 
-(defun czqhurricane/ash-term-hooks ()
+(defun hurricane/ash-term-hooks ()
   ;; Dabbrev-expand in term
   (define-key term-raw-escape-map "/"
     (lambda ()
@@ -296,7 +296,7 @@ e.g. Sunday, September 17, 2000."
       (interactive)
       (term-send-raw-string (current-kill 0)))))
 
-(defun czqhurricane/terminal ()
+(defun hurricane/terminal ()
   "Switch to terminal. Launch if nonexistent."
   (interactive)
   (if (get-buffer "*ansi-term*")
@@ -306,7 +306,7 @@ e.g. Sunday, September 17, 2000."
       (ansi-term "/bin/zsh")))
   (get-buffer-process "*ansi-term*"))
 
-(defalias 'tt 'czqhurricane/terminal)
+(defalias 'tt 'hurricane/terminal)
 
 ;; {{
 ;; @see: http://kuanyui.github.io/2014/01/18/count-chinese-japanese-and-english-words-in-emacs/
@@ -320,7 +320,7 @@ e.g. Sunday, September 17, 2000."
 (defvar wc-regexp-english-word
   "[a-zA-Z0-9-]+")
 
-(defun czqhurricane/word-count-for-chinese ()
+(defun hurricane/word-count-for-chinese ()
   "`比较精确地' 统计中/日/英文字数.
 - 文章中的注解不算在字数内.
 - 平假名与片假名亦包含在`中日字数' 内, 每个平/片假名都算单独一个字 (但片假名不含连音 `-').
@@ -364,7 +364,7 @@ e.g. Sunday, September 17, 2000."
              (+ chinese-char english-word)))))
 ;; }}
 
-(defun czqhurricane/evil-quick-replace (beg end )
+(defun hurricane/evil-quick-replace (beg end)
   (interactive "r")
   (when (evil-visual-state-p)
     (evil-exit-visual-state)
@@ -374,20 +374,20 @@ e.g. Sunday, September 17, 2000."
           (lambda () (backward-char 2))
         (evil-ex command-string)))))
 
-(defun czqhurricane/git-project-root ()
+(defun hurricane/git-project-root ()
   "Return the project root for current buffer."
   (let ((directory default-directory))
     (locate-dominating-file directory ".git")))
 
 ;; {{
 ;; @see: http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/
-(defun czqhurricane/iterm-shell-command (command &optional prefix)
+(defun hurricane/iterm-shell-command (command &optional prefix)
   "Cd to `default-directory' then run COMMAND in iTerm.
 with PREFIX, cd to project root."
   (interactive (list (read-shell-command
                       "iTerm Shell Command: ")
                      current-prefix-arg))
-  (let* ((dir (if prefix (czqhurricane/git-project-root)
+  (let* ((dir (if prefix (hurricane/git-project-root)
                 default-directory))
          ;; If COMMAND is empty, just change directory.
          (cmd (format "cd %s ;%s" dir command)))
@@ -408,7 +408,7 @@ end tell
 (defadvice persp-switch (after my-quit-helm-perspectives activate)
   (setq hydra-deactivate t))
 
-(defun czqhurricane/my-mc-mark-next-like-this ()
+(defun hurricane/my-mc-mark-next-like-this ()
   (interactive)
   (if (region-active-p)
       (mc/mark-next-like-this 1)
@@ -429,7 +429,7 @@ end tell
   "Shows a terminal notification, when user's nick was mentioned.
 If the buffer is currently not visible, makes it sticky."
   (unless (posix-string-match "^\\** *Users on #" message)
-    (czqhurricane/notify-osx
+    (hurricane/notify-osx
      (concat "ERC: : " (buffer-name (current-buffer)))
      message
      t
@@ -469,7 +469,7 @@ If the buffer is currently not visible, makes it sticky."
 (defun my-open-file-in-external-app (file)
   "Open file in external application."
   (interactive)
-  (let ((default-directory (czqhurricane/git-project-root))
+  (let ((default-directory (hurricane/git-project-root))
         (file-path file))
     (if file-path
         (cond
@@ -515,7 +515,7 @@ If the buffer is currently not visible, makes it sticky."
               :action 'my-find-file-in-git-repo
               :caller 'counsel-find-file-recent-directory)))
 
-(defun czqhurricane/magit-visit-pull-request ()
+(defun hurricane/magit-visit-pull-request ()
   "Visit the current branch's PR on GitHub."
   (interactive)
   (let ((remote-branch (magit-get-current-branch)))
@@ -532,7 +532,7 @@ If the buffer is currently not visible, makes it sticky."
                            "url"))
                remote-branch))))))
 
-(defun czqhurricane/markdown-to-html ()
+(defun hurricane/markdown-to-html ()
   (interactive)
   (start-process "grip" "*gfm-to-html*" "grip" (buffer-file-name) "5000")
   (browse-url (format "http://localhost:5000/%s.%s" (file-name-base) (file-name-extension (buffer-file-name)))))
@@ -546,7 +546,7 @@ If the buffer is currently not visible, makes it sticky."
     (when (and url (string-match "github.com:?/?\\(.*\\)" url))
       (replace-regexp-in-string "\\.git$" "" (match-string 1 url)))))
 
-(defun czqhurricane/github-browse-commit ()
+(defun hurricane/github-browse-commit ()
   "Show the GitHub page for the current commit."
   (interactive)
   (let* ((commit git-messenger:last-commit-id)
@@ -557,15 +557,15 @@ If the buffer is currently not visible, makes it sticky."
     (browse-url url)
     (git-messenger:popup-close)))
 
-(defun czqhurricane/search-in-fireball ()
+(defun hurricane/search-in-fireball ()
   (interactive)
   (helm-do-ag (expand-file-name "~/Github/fireball/")))
 
-(defun czqhurricane/show-current-buffer-major-mode ()
+(defun hurricane/show-current-buffer-major-mode ()
   (interactive)
   (describe-variable 'major-mode))
 
-(defun czqhurricane/counsel-imenu ()
+(defun hurricane/counsel-imenu ()
   (interactive)
   (counsel-imenu)
   (evil-set-jump))
@@ -757,7 +757,7 @@ If a change in `file-attributes` happended call func."
     (download-all-images html-file-name)
 )
 
-(defun czqhurricane/org-as-mac-iTerm2-get-link ()
+(defun hurricane/org-as-mac-iTerm2-get-link ()
   (do-applescript
    (concat
     "tell application \"iTerm2\"\n"
@@ -767,7 +767,7 @@ If a change in `file-attributes` happended call func."
     " return theUrl & \"::split::\" & theName\n"
     "end tell")))
 
-(defun czqhurricane/autoinsert-yas-expand ()
+(defun hurricane/autoinsert-yas-expand ()
   "Replace text in yasnippet template."
   (yas-expand-snippet (buffer-string) (point-min) (point-max)))
 
@@ -776,7 +776,7 @@ If a change in `file-attributes` happended call func."
 ;; (setq english-ID-map '("1" . "美国"))
 ;; (setq chinese-ID-map '("2" . "搜狗拼音"))
 
-;; (defun czqhurricane/switch-input-source (ID-map)
+;; (defun hurricane/switch-input-source (ID-map)
 ;;   (let ((script
 ;;          (format
 ;;            (mapconcat
@@ -797,23 +797,23 @@ If a change in `file-attributes` happended call func."
 ;;       (string-trim "\"\n" "\n\"")
 ;;       (split-string "\n"))))
 
-;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source chinese-ID-map)))
-;; (add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source english-ID-map)))
+;; (add-hook 'evil-insert-state-entry-hook (lambda () (hurricane/switch-input-source chinese-ID-map)))
+;; (add-hook 'evil-insert-state-exit-hook (lambda () (hurricane/switch-input-source english-ID-map)))
 ;;}}
 
 (setq english-ID-map '("com.apple.keylayout.US" . "美国"))
 (setq chinese-ID-map '("com.sogou.inputmethod.sogou.pinyin" . "搜狗拼音"))
 
-(defun czqhurricane/switch-input-source (ID-map)
+(defun hurricane/switch-input-source (ID-map)
   (if (not (string-equal (mac-input-source) (car ID-map)))
       (mac-select-input-source (car ID-map))))
 
-;; (add-hook 'evil-insert-state-entry-hook (lambda () (czqhurricane/switch-input-source chinese-ID-map)))
-(add-hook 'evil-insert-state-exit-hook (lambda () (czqhurricane/switch-input-source english-ID-map)))
+;; (add-hook 'evil-insert-state-entry-hook (lambda () (hurricane/switch-input-source chinese-ID-map)))
+(add-hook 'evil-insert-state-exit-hook (lambda () (hurricane/switch-input-source english-ID-map)))
 
 ;; {{
 ;; @see: https://emacs-china.org/t/topic/5518
-(defun czqhurricane/chrome-tabs ()
+(defun hurricane/chrome-tabs ()
   "返回 Chrome 标签."
   (let ((script
          (mapconcat
@@ -843,23 +843,23 @@ If a change in `file-attributes` happended call func."
       (string-trim "\"\n" "\n\"")
       (split-string "\n"))))
 
-;; (czqhurricane/chrome-tabs)
+;; (hurricane/chrome-tabs)
 ;; => ("1 1 Google" "1 2 Home - BBC News")
 ;; 1 - 第一个窗口
 ;; 1 - 第一个标签
 ;; Google - 标题
 
-(defun czqhurricane/chrome-switch-tab-1 (window-id tab-id)
-  ;; FIXME 不知道如何处理多余一个窗口的情况
+(defun hurricane/chrome-switch-tab-1 (window-id tab-id)
+  ;; FIXME: 不知道如何处理多余一个窗口的情况
   (do-applescript
    (concat "tell application \"Google Chrome\"\n"
            (format "  set active tab index of first window to %s\n" tab-id)
            "  activate\n"
            "end tell\n")))
 
-(defun czqhurricane/chrome-switch-tab (window-id tab-id)
+(defun hurricane/chrome-switch-tab (window-id tab-id)
   (interactive
-   (let* ((tabs (czqhurricane/chrome-tabs))
+   (let* ((tabs (hurricane/chrome-tabs))
           (input
            (completing-read
             "Open Chrome Tab: "
@@ -886,5 +886,28 @@ If a change in `file-attributes` happended call func."
                       (list (match-string 1 s)
                             (match-string 2 s))))
                tabs)))
-  (czqhurricane/chrome-switch-tab-1 window-id tab-id))
+  (hurricane/chrome-switch-tab-1 window-id tab-id))
 ;; }}
+
+(defun hurricane/open-link-in-chrome ()
+  "Open URL under cursor in Chrome.Work in macOS only."
+  (interactive)
+  (let* (($inputStr (if (use-region-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end))
+                      (let ($p0 $p1 $p2
+                                ($pathStops "^  \t\n\"`'‘’“”|[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭〘〙·。\\"))
+                        (setq $p0 (point))
+                        (skip-chars-backward $pathStops)
+                        (setq $p1 (point))
+                        (goto-char $p0)
+                        (skip-chars-forward $pathStops)
+                        (setq $p2 (point))
+                        (goto-char $p0)
+                        (buffer-substring-no-properties $p1 $p2))))
+         ($path
+          (replace-regexp-in-string
+           "^file:///" "/"
+           (replace-regexp-in-string
+            ":\\'" "" $inputStr))))
+  (shell-command
+   (format "open -a Google\\ Chrome.app \"%s\"" $path))))

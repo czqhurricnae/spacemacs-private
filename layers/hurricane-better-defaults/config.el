@@ -232,14 +232,14 @@ with options to run in the shell.")
 (advice-add 'describe-function-1 :after #'advice-remove-button)
 ;; }}
 
-(defun czqhurricane-edit-ag (function)
+(defun hurricane-edit-ag (function)
   (when (get-buffer "*helm-ag-edit*")
     (kill-buffer "*helm-ag-edit*"))
   (if (not (= (count-windows) 2))
       (progn
         (split-window-right))))
 
-(advice-add 'helm-ag--edit :before #'czqhurricane-edit-ag)
+(advice-add 'helm-ag--edit :before #'hurricane-edit-ag)
 
 ;; 使用 counsel-git 查找文件的时候，忽略指定后缀的文件
 (when (spacemacs/system-is-mswindows)

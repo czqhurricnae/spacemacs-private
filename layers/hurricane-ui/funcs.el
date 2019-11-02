@@ -1,4 +1,4 @@
-(defun czqhurricane/layout-format-name (name pos)
+(defun hurricane/layout-format-name (name pos)
   "Format the layout name given by NAME for display in mode-line."
   (let* ((layout-name (if (file-directory-p name)
                           (file-name-nondirectory (directory-file-name name))
@@ -12,7 +12,7 @@
         (propertize (concat "★ " caption) 'face 'warning)
       caption)))
 
-(defun czqhurricane/layouts-for-title-bar ()
+(defun hurricane/layouts-for-title-bar ()
   "Return a one liner string containing all the layout names."
   (let* ((persp-list (or (persp-names-current-frame-fast-ordered)
                          (list persp-nil-name)))
@@ -22,7 +22,7 @@
          (formatted-persp-list
           (concat " "
                   (mapconcat (lambda (persp)
-                               (czqhurricane/layout-format-name
+                               (hurricane/layout-format-name
                                 persp (position persp persp-list)))
                              persp-list spaces)))
          (file (if (projectile-project-p)
@@ -35,7 +35,7 @@
                        (buffer-file-name)) (buffer-name)))))
     (concat file "     -     " formatted-persp-list)))
 
-(defun czqhurricane/default-title-bar ()
+(defun hurricane/default-title-bar ()
   (if (projectile-project-p)
       (concat
        (projectile-project-name)
@@ -47,12 +47,12 @@
             (concat "~" (substring (buffer-file-name) (length (getenv "HOME"))))
           (buffer-file-name)) (buffer-name))))
 
-(defun czqhurricane/toggle-title-format()
+(defun hurricane/toggle-title-format()
   (interactive)
-  (if (equal frame-title-format '(:eval (czqhurricane/layouts-for-title-bar)))
-      (setq frame-title-format '(:eval (czqhurricane/default-title-bar)))
-    (setq frame-title-format '(:eval (czqhurricane/layouts-for-title-bar))))
-  (redraw-frame))(defun czqhurricane/layout-format-name (name pos)
+  (if (equal frame-title-format '(:eval (hurricane/layouts-for-title-bar)))
+      (setq frame-title-format '(:eval (hurricane/default-title-bar)))
+    (setq frame-title-format '(:eval (hurricane/layouts-for-title-bar))))
+  (redraw-frame))(defun hurricane/layout-format-name (name pos)
   "Format the layout name given by NAME for display in mode-line."
   (let* ((layout-name (if (file-directory-p name)
                           (file-name-nondirectory (directory-file-name name))
@@ -66,7 +66,7 @@
         (propertize (concat "★ " caption) 'face 'warning)
       caption)))
 
-(defun czqhurricane/layouts-for-title-bar ()
+(defun hurricane/layouts-for-title-bar ()
   "Return a one liner string containing all the layout names."
   (let* ((persp-list (or (persp-names-current-frame-fast-ordered)
                          (list persp-nil-name)))
@@ -76,7 +76,7 @@
          (formatted-persp-list
           (concat " "
                   (mapconcat (lambda (persp)
-                               (czqhurricane/layout-format-name
+                               (hurricane/layout-format-name
                                 persp (position persp persp-list)))
                              persp-list spaces)))
          (file (if (projectile-project-p)
@@ -89,7 +89,7 @@
                        (buffer-file-name)) (buffer-name)))))
     (concat file "     -     " formatted-persp-list)))
 
-(defun czqhurricane/default-title-bar ()
+(defun hurricane/default-title-bar ()
   (if (projectile-project-p)
       (concat
        (projectile-project-name)
@@ -101,17 +101,17 @@
             (concat "~" (substring (buffer-file-name) (length (getenv "HOME"))))
           (buffer-file-name)) (buffer-name))))
 
-(defun czqhurricane/toggle-title-format()
+(defun hurricane/toggle-title-format()
   (interactive)
-  (if (equal frame-title-format '(:eval (czqhurricane/layouts-for-title-bar)))
-      (setq frame-title-format '(:eval (czqhurricane/default-title-bar)))
-    (setq frame-title-format '(:eval (czqhurricane/layouts-for-title-bar))))
+  (if (equal frame-title-format '(:eval (hurricane/layouts-for-title-bar)))
+      (setq frame-title-format '(:eval (hurricane/default-title-bar)))
+    (setq frame-title-format '(:eval (hurricane/layouts-for-title-bar))))
   (redraw-frame))
 
 ;; {{
 ;; @see: https://emacs-china.org/t/inconsolata/7997/11
 ;; @see: https://blog.csdn.net/xh_acmagic/article/details/78939246
-(defun czqhurricane/better-font()
+(defun hurricane/better-font()
   (interactive)
   ;; english font
   (if (display-graphic-p)
@@ -124,11 +124,11 @@
                             (font-spec :family "Sarasa Mono SC")))) ;; 14 16 20 22 28
     ))
 
-(defun czqhurricane/init-font(frame)
+(defun hurricane/init-font(frame)
   (with-selected-frame frame
     (if (display-graphic-p)
-        (czqhurricane/better-font))))
+        (hurricane/better-font))))
 
 (if (and (fboundp 'daemonp) (daemonp))
-    (add-hook 'after-make-frame-functions #'czqhurricane/init-font)
-  (czqhurricane/better-font))
+    (add-hook 'after-make-frame-functions #'hurricane/init-font)
+  (hurricane/better-font))

@@ -1,6 +1,6 @@
-(defmacro czqhurricane|toggle-company-backends (backend)
+(defmacro hurricane|toggle-company-backends (backend)
   "Push or delete the backend to company-backends"
-  (let ((funsymbol (intern (format "czqhurricane/company-toggle-%S" backend))))
+  (let ((funsymbol (intern (format "hurricane/company-toggle-%S" backend))))
     `(defun ,funsymbol ()
        (interactive)
        (if (eq (car company-backends) ',backend)

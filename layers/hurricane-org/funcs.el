@@ -293,11 +293,11 @@ just like '((name begin-position end-position))'"
       (org-edit-src-exit)
   )))
 
-(defun czqhurricane/org-insert-src-block (src-code-type)
+(defun hurricane/org-insert-src-block (src-code-type)
   "Insert a 'SRC-CODE-TYPE' type source code block in org-mode."
   (interactive
     (let ((src-code-types
-          '("ipython" "example" "value" "emacs-lisp" "python" "comment" "C" "sh" "java" "javascript" "clojure" "C++" "css"
+          '("ipython" "example" "value" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
             "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
             "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
             "haskell" "latex" "lisp" "matlab" "ocaml" "perl" "ruby"
@@ -349,10 +349,10 @@ just like '((name begin-position end-position))'"
     (kill-buffer-and-window)))
 
 (defun save-buffer-filter ()
-  "Replace the expected charaters except 'funcs.el<czqhurricane-org>' file."
+  "Replace the expected charaters except 'funcs.el<hurricane-org>' file."
   (interactive)
   (save-buffer)
-  (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/czqhurricane-org/funcs.el"))
+  (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/hurricane-org/funcs.el"))
       (progn
         (dolist (replace-string-rule buffer-replace-string-rule-lists)
           (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil)))))
@@ -418,11 +418,11 @@ should only be used in org-mode."
   (when killed-file-list
     (find-file (pop killed-file-list))))
 
-(defun czqhurricane/filter-by-tags ()
+(defun hurricane/filter-by-tags ()
   (let ((head-tags (org-get-tags-at)))
     (member current-tag head-tags)))
 
-(defun czqhurricane/org-clock-sum-today-by-tags (timerange &optional tstart tend noinsert)
+(defun hurricane/org-clock-sum-today-by-tags (timerange &optional tstart tend noinsert)
   (interactive "P")
   (let* ((timerange-numeric-value (prefix-numeric-value timerange))
          (files (org-add-archive-files (org-agenda-files)))
@@ -444,7 +444,7 @@ should only be used in org-mode."
                                 (error "No such file %s" file)))
       (with-current-buffer org-agenda-buffer
         (dolist (current-tag include-tags)
-          (org-clock-sum tstart tend 'czqhurricane/filter-by-tags)
+          (org-clock-sum tstart tend 'hurricane/filter-by-tags)
           (setcdr (assoc current-tag tags-time-alist)
                   (+ org-clock-file-total-minutes (cdr (assoc current-tag tags-time-alist)))))))
     (while (setq item (pop tags-time-alist))
@@ -459,7 +459,7 @@ should only be used in org-mode."
       (insert output-string))
     output-string))
 
-(defun czqhurricane/notify-osx (title message)
+(defun hurricane/notify-osx (title message)
   (call-process "terminal-notifier"
                 nil 0 nil
                 "-group" "Emacs"
@@ -515,8 +515,8 @@ should only be used in org-mode."
 ;; }}
 
 (defun org-screenshot-and-ocr ()
-  "Take a screenshot into a user specified file in the current
-buffer file directory and insert a link to this file."
+  "Take a screenshot into a user specified file in the current buffer file directory
+and insert a link to this file."
   (interactive)
   (let* ((img-dir org-screenshot-image-dir-name))
     (progn
@@ -534,7 +534,7 @@ buffer file directory and insert a link to this file."
         (call-process-shell-command "screencapture" nil nil nil nil "-i"
                                     (concat "\"" full-file-path "\"" ))
         (defun callback-BaiduOcr()
-          (let* ((cmd (format "python /Users/c/.spacemacs.d/BaiduOcr.py \"%s\"" absolute-full-file-path)))
+          (let* ((cmd (format "python %s \"%s\"" Baidu-OCR-Python-file absolute-full-file-path)))
             (eshell-command "workon ipy3")
             (eshell-command cmd)))
         (install-monitor-file-exists absolute-full-file-path 1 #'callback-BaiduOcr)))))

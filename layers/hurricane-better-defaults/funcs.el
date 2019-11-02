@@ -15,7 +15,7 @@
 
 ;; {{
 ;; @see: http://emacsredux.com/blog/2013/03/26/smarter-open-line/
-(defun czqhurricane/smart-open-line ()
+(defun hurricane/smart-open-line ()
   "Insert an empty line after the current line.
 Position the cursor at its beginning, according to the current mode."
   (interactive)
@@ -23,7 +23,7 @@ Position the cursor at its beginning, according to the current mode."
   (newline-and-indent))
 ;; }}
 
-(defun czqhurricane/rename-file-and-buffer ()
+(defun hurricane/rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
   (interactive)
   (let ((filename (buffer-file-name)))
@@ -36,13 +36,15 @@ Position the cursor at its beginning, according to the current mode."
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
 
-(defun czqhurricane/yank-to-end-of-line ()
+(defun hurricane/yank-to-end-of-line ()
   "Yank to end of line."
   (interactive)
   (evil-yank (point) (point-at-eol)))
 
-(defun czqhurricane/occur-dwin ()
-  "Call 'occur` with a sane default."
+;; {{
+;; @see:https://oremacs.com/2015/01/26/occur-dwim/
+(defun hurricane/occur-dwin ()
+  "Call `occur' with a sane default."
   (interactive)
   (push (if (region-active-p)
             (buffer-substring-no-properties
@@ -54,6 +56,7 @@ Position the cursor at its beginning, according to the current mode."
         regexp-history)
   (deactivate-mark)
   (call-interactively 'occur))
+;; }}
 
 (defun occur-non-ascii ()
   "Find any non-ascii characters in the current buffer."
@@ -111,23 +114,21 @@ Position the cursor at its beginning, according to the current mode."
 (defun dired-copy-file-here (file)
   "This command copies the file oldname to newname.
 An error is signaled if oldname is not a regular file.
-If newname names a directory, it copies oldname into that directory,
-preserving its final name component."
+If newname names a directory, it copies oldname into that directory, preserving its final name component."
   (interactive "fCopy file: ")
   (copy-file file default-directory))
 
 (defun my-dired-find-file ()
-  "Open buffer in another window"
+  "Open buffer in another window."
   (interactive)
   (let ((filename (dired-get-filename nil t)))
     (if (car (file-attributes filename))
         (dired-find-alternate-file)
       (dired-find-file-other-window))))
 
-(defun czqhurricane/dired-do-command (command)
-  "Run COMMAND on marked files. Any files not already open will be opened.
-After this command has been run, any buffers it's modified will remain
-open and unsaved."
+(defun hurricane/dired-do-command (command)
+  "Run `COMMAND' on marked files. Any files not already open will be opened.
+After this command has been run, any buffers it's modified will remain open and unsaved."
   (interactive "CRun on marked files M-x ")
   (save-window-excursion
     (mapc (lambda (filename)
@@ -135,12 +136,12 @@ open and unsaved."
             (call-interactively command))
           (dired-get-marked-files))))
 
-(defun czqhurricane/dired-up-directory ()
+(defun hurricane/dired-up-directory ()
   "Goto up directory and resue buffer."
   (interactive)
   (find-alternate-file ".."))
 
-(defun czqhurricane/insert-space-after-point ()
+(defun hurricane/insert-space-after-point ()
   (interactive)
   (save-excursion (insert " ")))
 
@@ -169,13 +170,16 @@ open and unsaved."
   (progn
     (keyboard-quit)))
 
-(defun czqhurricane//dired-store-link (orig-fun &rest args)
+(defun hurricane//dired-store-link (orig-fun &rest args)
   (if (or (derived-mode-p 'dired-mode) (derived-mode-p 'org-mode))
     (cond
       ((derived-mode-p 'dired-mode)
         (let ((file (dired-get-filename nil t)))
           (setf file (if file
-                         (dired-make-relative (expand-file-name file) (file-name-directory (directory-file-name (file-name-directory default-directory))))
+                         (dired-make-relative (expand-file-name file)
+                                              (file-name-directory
+                                               (directory-file-name
+                                                (file-name-directory default-directory))))
                        default-directory))
             (let ((link (concat "file:" file))
                   (desc  file))
@@ -194,20 +198,13 @@ open and unsaved."
           (message "Stored: %s" (or link desc))
           (car org-stored-links))))))
       (apply orig-fun args)))
-(advice-add 'org-store-link :around #'czqhurricane//dired-store-link)
+(advice-add 'org-store-link :around #'hurricane//dired-store-link)
 
-(defadvice find-file (after insert-header-to-org-buffer
-                            activate compile)
-  "When a new `org' buffer is created, then insert a header to it."
-  (when (buffer-file-name)
-    (if (equal "org" (file-name-extension buffer-file-name))
-      (progn
-        (save-excursion
-        (goto-char (point-min))
-        (when (not (re-search-forward "# -\\*- eval: (setq org-download-image-dir (concat default-directory \\\"/screenshotImg\\\")); -\\*-" nil t))
-          (insert "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-\n"))
-        (save-buffer))))))
+(advice-add 'org-insert-link :after #'org-display-inline-images)
 
-(defadvice org-insert-link (after display-inline-images-after-org-insert-link
-                                  activate compile)
-  (org-display-inline-images))
+(define-advice show-paren-function (:around (fn) fix-show-paren-function)
+  "Highlight enclosing parens."
+  (cond ((looking-at-p "\\s(") (funcall fn))
+        (t (save-excursion
+             (ignore-errors (backward-up-list))
+             (funcall fn)))))

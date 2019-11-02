@@ -1,4 +1,4 @@
-(setq czqhurricane-misc-packages
+(setq hurricane-misc-packages
       '(
         helm-github-stars
         helm
@@ -34,15 +34,17 @@
         browse-at-remote
         (shell-mode :location local)
         pandoc-mode
-        (autoinsert :location built-in)))
+        (autoinsert :location built-in)
+        use-package-ensure-system-package
+        magit-todos))
 
-(defun czqhurricane-misc/init-browse-at-remote ()
+(defun hurricane-misc/init-browse-at-remote ()
   (use-package browse-at-remote
     :defer t
     :init
     (spacemacs/set-leader-keys "gho" 'browse-at-remote)))
 
-(defun czqhurricane-misc/init-highlight-global ()
+(defun hurricane-misc/init-highlight-global ()
   (use-package highlight-global
     :init
       (spacemacs/set-leader-keys "hh" 'highlight-frame-toggle)
@@ -53,7 +55,7 @@
           ('hi-pink . 0)
           ('hi-blue-b . 0)))))
 
-(defun czqhurricane-misc/init-symbol-overlay ()
+(defun hurricane-misc/init-symbol-overlay ()
   (use-package symbol-overlay
     :init
     (progn
@@ -84,7 +86,7 @@
       (define-key symbol-overlay-map (kbd "<") 'symbol-overlay-switch-first)
       (define-key symbol-overlay-map (kbd ">") 'symbol-overlay-switch-last))))
 
-(defun czqhurricane-misc/post-init-golden-ratio ()
+(defun hurricane-misc/post-init-golden-ratio ()
   (with-eval-after-load 'golden-ratio
     (dolist (mode '("dired-mode" "occur-mode"))
       (add-to-list 'golden-ratio-exclude-modes mode))
@@ -93,7 +95,7 @@
 
 ;; {{
 ;; @see: https://emacs-china.org/t/ranger-golden-ratio/964/2
-(defun czqhurricane-misc/post-init-ranger ()
+(defun hurricane-misc/post-init-ranger ()
   (defun my-ranger ()
     (interactive)
     (if golden-ratio-mode
@@ -121,7 +123,7 @@
 (spacemacs/set-leader-keys "ar" 'my-ranger))
 
 ;; Copy from spacemacs helm layer
-(defun czqhurricane-misc/init-helm-ag ()
+(defun hurricane-misc/init-helm-ag ()
   (use-package helm-ag
     :defer t
     :init
@@ -430,13 +432,13 @@
         (kbd "gr") 'helm-ag--update-save-results
         (kbd "q") 'quit-window))))
 
-(defun czqhurricane-misc/post-init-hydra ()
+(defun hurricane-misc/post-init-hydra ()
   (progn
     (defhydra hydra-hotspots (:color blue)
       "Hotspots"
       ("b" blog-admin-start "blog")
       ("g" helm-github-stars "helm github stars")
-      ("r" czqhurricane/run-current-file "run current file"))
+      ("r" hurricane/run-current-file "run current file"))
 
     (defhydra multiple-cursors-hydra (:hint nil)
       "
@@ -456,8 +458,7 @@
       ("P" mc/skip-to-previous-like-this)
       ("M-p" mc/unmark-previous-like-this)
       ("r" mc/mark-all-in-region-regexp :exit t)
-      ("q"
-       nil))
+      ("q" nil))
 
     (defhydra
       hydra-apropos (:color blue)
@@ -489,7 +490,7 @@
 
     ))
 
-(defun czqhurricane-misc/post-init-gist ()
+(defun hurricane-misc/post-init-gist ()
   (use-package gist
     :defer t
     :init
@@ -525,7 +526,7 @@
     ))
 
 ;; Preview files in dired
-(defun czqhurricane-misc/init-peep-dired ()
+(defun hurricane-misc/init-peep-dired ()
   (use-package peep-dired
     :defer t
     :commands (peep-dired-next-file
@@ -533,34 +534,36 @@
     :bind (:map dired-mode-map
                 ("P" . peep-dired))))
 
-(defun czqhurricane-misc/post-init-flyspell-correct ()
+(defun hurricane-misc/post-init-flyspell-correct ()
   (progn
     (with-eval-after-load 'flyspell
       (define-key flyspell-mode-map (kbd "C-;") 'flyspell-correct-previous-word-generic))
     (setq flyspell-correct-interface 'flyspell-correct-ivy)))
 
-(defun czqhurricane-misc/post-init-smartparens ()
+(defun hurricane-misc/post-init-smartparens ()
   (use-package smartparens
     :defer t
     :init
-    (progn
-      (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens))
+    (smartparens-global-mode t)
+    (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens)
     :config
-    (progn
-      (setq sp-highlight-pair-overlay nil)
-      (evil-define-key 'normal sp-keymap
-        (kbd ")>") 'sp-forward-slurp-sexp
-        (kbd ")<") 'sp-forward-barf-sexp
-        (kbd "(>") 'sp-backward-barf-sexp
-        (kbd "(<") 'sp-backward-slurp-sexp))))
+    ;; 写 lisp 时不成对补全 "'" 和 "`"
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+    (setq sp-highlight-pair-overlay t)
+    (evil-define-key 'normal sp-keymap
+      (kbd ")>") 'sp-forward-slurp-sexp
+      (kbd ")<") 'sp-forward-barf-sexp
+      (kbd "(>") 'sp-backward-barf-sexp
+      (kbd "(<") 'sp-backward-slurp-sexp)))
 
-(defun czqhurricane-misc/init-tiny ()
+(defun hurricane-misc/init-tiny ()
   (use-package tiny
     :defer t
     :init
     (spacemacs/set-leader-keys "oe" 'tiny-expand)))
 
-(defun czqhurricane-misc/post-init-helm ()
+(defun hurricane-misc/post-init-helm ()
   (with-eval-after-load 'helm
     (progn
       ;; Limit max number of matches displayed for speed
@@ -571,24 +574,24 @@
       (setq helm-locate-command "mdfind -name %s %s")
       (push "\\.emlx$" helm-boring-file-regexp-list))))
 
-(defun czqhurricane-misc/init-helm-github-stars ()
+(defun hurricane-misc/init-helm-github-stars ()
   (use-package helm-github-stars
     :commands (helm-github-stars)
     :init
-    (setq helm-github-stars-username "czqhurricane")))
+    (setq helm-github-stars-username "hurricane")))
 
-(defun czqhurricane-misc/post-init-command-log ()
+(defun hurricane-misc/post-init-command-log ()
   (with-eval-after-load 'global-command-log-mode
     (setq clm/log-command-exceptions* (append clm/log-command-exceptions*
                                               '(evil-next-visual-line
                                                 evil-previous-visual-line)))))
 
-(defun czqhurricane-misc/init-litable ()
+(defun hurricane-misc/init-litable ()
   (use-package litable
     :init
     :defer t))
 
-(defun czqhurricane-misc/init-osx-dictionary ()
+(defun hurricane-misc/init-osx-dictionary ()
   (use-package osx-dictionary
     :init
     (progn
@@ -596,7 +599,7 @@
       (setq osx-dictionary-use-chinese-text-segmentation t)
       (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer))))
 
-(defun czqhurricane-misc/init-4clojure ()
+(defun hurricane-misc/init-4clojure ()
   (use-package 4clojure
     :init
     (progn
@@ -606,15 +609,15 @@
       (spacemacs/set-leader-keys "o4p" '4clojure-previous-question)
       (spacemacs/set-leader-keys "o4c" '4clojure-check-answers))))
 
-(defun czqhurricane-misc/post-init-avy ()
+(defun hurricane-misc/post-init-avy ()
   (progn
     (global-set-key (kbd "C-s-'") 'avy-goto-char-2)
     (global-set-key (kbd "M-'") 'avy-goto-char-2)))
 
-(defun czqhurricane-misc/post-init-ace-window ()
+(defun hurricane-misc/post-init-ace-window ()
   (global-set-key (kbd "C-x C-o") #'ace-window))
 
-(defun czqhurricane-misc/init-discover-my-major ()
+(defun hurricane-misc/init-discover-my-major ()
   (use-package discover-my-major
     :defer t
     :init
@@ -622,7 +625,7 @@
       (spacemacs/set-leader-keys (kbd "mhm") 'discover-my-major)
       (evilified-state-evilify makey-key-mode makey-key-mode-get-key-map))))
 
-(defun czqhurricane-misc/post-init-elfeed ()
+(defun hurricane-misc/post-init-elfeed ()
   (use-package elfeed
     :init
     (global-set-key (kbd "C-x w") 'elfeed)
@@ -657,12 +660,12 @@
         "G" 'elfeed-update
         "g" 'elfeed-search-update--force)
 
-      (defun czqhurricane/elfeed-mark-all-as-read ()
+      (defun hurricane/elfeed-mark-all-as-read ()
         (interactive)
         (mark-whole-buffer)
         (elfeed-search-untag-all-unread))
 
-      (define-key elfeed-search-mode-map (kbd "R") 'czqhurricane/elfeed-mark-all-as-read)
+      (define-key elfeed-search-mode-map (kbd "R") 'hurricane/elfeed-mark-all-as-read)
 
       (defadvice elfeed-show-yank (after elfeed-show-yank-to-kill-ring activate compile)
         "Insert the yanked text from x-selection to kill ring"
@@ -670,7 +673,7 @@
 
       (ad-activate 'elfeed-show-yank))))
 
-(defun czqhurricane-misc/post-init-evil ()
+(defun hurricane-misc/post-init-evil ()
   (progn
     (setcdr evil-insert-state-map nil)
     (define-key evil-insert-state-map [escape] 'evil-normal-state)
@@ -709,7 +712,7 @@
     (define-key evil-visual-state-map (kbd "y") 'my-evil-yank)
 
     (define-key evil-normal-state-map
-      (kbd "Y") 'czqhurricane/yank-to-end-of-line)
+      (kbd "Y") 'hurricane/yank-to-end-of-line)
 
     (define-key evil-normal-state-map (kbd "[ SPC") (lambda () (interactive) (evil-insert-newline-above) (forward-line)))
     (define-key evil-normal-state-map (kbd "] SPC") (lambda () (interactive) (evil-insert-newline-below) (forward-line -1)))
@@ -745,7 +748,6 @@
         (define-key (eval map) "\C-w" nil)))
     ;; }}
 
-    (spacemacs/set-leader-keys "bi" 'ibuffer)
     (define-key evil-ex-completion-map "\C-a" 'move-beginning-of-line)
     (define-key evil-ex-completion-map "\C-e" 'move-end-of-line)
     (define-key evil-ex-completion-map "\C-b" 'backward-char)
@@ -756,7 +758,7 @@
     ;; (define-key evil-emacs-state-map "\C-e" 'evil-end-of-line)
 
     (define-key evil-visual-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
-    (define-key evil-visual-state-map (kbd "C-r") 'czqhurricane/evil-quick-replace)
+    (define-key evil-visual-state-map (kbd "C-r") 'hurricane/evil-quick-replace)
     (define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
     (define-key evil-visual-state-map (kbd "mp") 'mc/mark-previous-like-this)
     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
@@ -780,7 +782,7 @@
     (define-key evil-insert-state-map (kbd "C-z") 'evil-emacs-state)
     ;; This will break visual column edit
     ;; enable hybrid editing style
-    ;; (defadvice evil-insert-state (around czqhurricane/holy-mode activate)
+    ;; (defadvice evil-insert-state (around hurricane/holy-mode activate)
     ;;   "Preparing the holy water flasks."
     ;;   (evil-emacs-state))
     ;; disable c-[ temporally
@@ -790,11 +792,11 @@
     ;; (define-key evil-emacs-state-map [escape] 'evil-normal-state)
     ))
 
-(defun czqhurricane-misc/init-visual-regexp ()
+(defun hurricane-misc/init-visual-regexp ()
   (use-package visual-regexp
     :commands (vr/replace vr/query-replace)))
 
-(defun czqhurricane-misc/init-visual-regexp-steroids ()
+(defun hurricane-misc/init-visual-regexp-steroids ()
   (use-package visual-regexp-steroids
     :commands (vr/select-replace vr/select-query-replace)
     :init
@@ -802,7 +804,7 @@
       (define-key global-map (kbd "C-c r") 'vr/replace)
       (define-key global-map (kbd "C-c q") 'vr/query-replace))))
 
-(defun czqhurricane-misc/init-multiple-cursors ()
+(defun hurricane-misc/init-multiple-cursors ()
   (use-package multiple-cursors
     :init
     (progn
@@ -839,7 +841,7 @@
     (setq mc/cmds-to-run-once
           '(
             counsel-M-x
-            czqhurricane/my-mc-mark-next-like-this))
+            hurricane/my-mc-mark-next-like-this))
     (setq mc/cmds-to-run-for-all
           '(
             electric-newline-and-maybe-indent
@@ -877,7 +879,7 @@
             orgtbl-hijacker-command-109))
     ))
 
-(defun czqhurricane-misc/post-init-chinese-wbim ()
+(defun hurricane-misc/post-init-chinese-wbim ()
   (progn
     (bind-key* ";" 'chinese-wbim-insert-ascii)
     (setq chinese-wbim-punc-translate-p nil)
@@ -892,10 +894,10 @@
                   (define-key map "=" 'chinese-wbim-next-page))))))
 
 
-(defun czqhurricane-misc/post-init-evil-escape ()
+(defun hurricane-misc/post-init-evil-escape ()
   (setq evil-escape-delay 0.2))
 
-(defun czqhurricane-misc/init-find-file-in-project ()
+(defun hurricane-misc/init-find-file-in-project ()
   (use-package find-file-in-project
     :defer t
     :config
@@ -926,7 +928,7 @@
           ))
       (ad-activate 'find-file-in-project))))
 
-(defun czqhurricane-misc/post-init-projectile ()
+(defun hurricane-misc/post-init-projectile ()
   (progn
     (with-eval-after-load 'projectile
       (progn
@@ -946,7 +948,7 @@
         (occur my-simple-todo-regex)))
     ))
 
-(defun czqhurricane-misc/post-init-prodigy ()
+(defun hurricane-misc/post-init-prodigy ()
   (progn
     (prodigy-define-tag
       :name 'jekyll
@@ -992,7 +994,7 @@
     (prodigy-define-service
       :name "Debug Fireball"
       :command "npm"
-      :args '("start" "--" "--nologin" "/Users/czqhurricane/Github/example-cases")
+      :args '("start" "--" "--nologin" "/Users/hurricane/Github/example-cases")
       :cwd "~/Github/fireball/"
       :tags '(work)
       :kill-signal 'sigkill
@@ -1009,28 +1011,28 @@
       :kill-process-buffer-on-stop t)
 
     (defun refresh-chrome-current-tab (beg end length-before)
-      (call-interactively 'czqhurricane/browser-refresh--chrome-applescript))
+      (call-interactively 'hurricane/browser-refresh--chrome-applescript))
       ;; add watch for prodigy-view-mode buffer change event
       (add-hook 'prodigy-view-mode-hook
                 #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))))
 
-(defun czqhurricane-misc/init-moz-controller ()
+(defun hurricane-misc/init-moz-controller ()
   (use-package moz-controller
     :init
     (progn
       (moz-controller-global-mode t)
       (spacemacs|hide-lighter moz-controller-mode))))
 
-(defun czqhurricane-misc/init-ag ()
+(defun hurricane-misc/init-ag ()
   (use-package ag
     :init))
 
-(defun czqhurricane-misc/post-init-erc ()
+(defun hurricane-misc/post-init-erc ()
   (progn
     (add-hook 'erc-text-matched-hook 'my-erc-hook)
     (spaceline-toggle-erc-track-off)))
 
-(defun czqhurricane-misc/init-wrap-region ()
+(defun hurricane-misc/init-wrap-region ()
   (use-package wrap-region
     :init
     (progn
@@ -1048,15 +1050,15 @@
     :config
     (spacemacs|hide-lighter wrap-region-mode)))
 
-(defun czqhurricane-misc/init-keyfreq ()
+(defun hurricane-misc/init-keyfreq ()
   (use-package keyfreq
     :init
     (progn
       (keyfreq-mode t)
       (keyfreq-autosave-mode 1))))
 
-(defun czqhurricane-misc/post-init-swiper ()
-  "Initialize my package"
+(defun hurricane-misc/post-init-swiper ()
+  "Initialize `swiper' package"
   (progn
     (setq ivy-use-virtual-buffers t)
     (setq ivy-display-style 'fancy)
@@ -1089,6 +1091,7 @@
         (define-key ivy-minibuffer-map (kbd "C-s-m") 'ivy-partial-or-done)
         (define-key ivy-minibuffer-map (kbd "C-c s") 'ivy-ff-checksum)
         (define-key ivy-minibuffer-map (kbd "s-o") 'ivy-dispatching-done-hydra)
+        (define-key ivy-minibuffer-map (kbd "C-o") 'hydra-ivy/body)
         (define-key ivy-minibuffer-map (kbd "C-c C-e") 'spacemacs//counsel-edit)
         (define-key ivy-minibuffer-map (kbd "<f3>") 'ivy-occur)
         (define-key ivy-minibuffer-map (kbd "C-s-j") 'ivy-immediate-done)
@@ -1098,7 +1101,7 @@
     ;; (define-key global-map (kbd "C-s") 'my-swiper-search)))
     (define-key global-map (kbd "C-s") 'color-rg-search-symbol)))
 
-(defun czqhurricane-misc/post-init-magit ()
+(defun hurricane-misc/post-init-magit ()
   (progn
     (with-eval-after-load 'magit
       (progn
@@ -1122,38 +1125,38 @@
 
     (eval-after-load 'magit
       '(define-key magit-mode-map (kbd "C-c g")
-         #'czqhurricane/magit-visit-pull-request))
+         #'hurricane/magit-visit-pull-request))
 
     (setq magit-process-popup-time 10)))
 
-(defun czqhurricane-misc/post-init-git-messenger ()
+(defun hurricane-misc/post-init-git-messenger ()
   (use-package git-messenger
     :defer t
     :config
     (progn
-      (define-key git-messenger-map (kbd "f") 'czqhurricane/github-browse-commit))))
+      (define-key git-messenger-map (kbd "f") 'hurricane/github-browse-commit))))
 
 ;; {{
 ;; Fix:markdown failed with exit code 127
 ;; @see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
 ;; @see: https://github.com/jrblevin/markdown-mode/issues/177
-(defun czqhurricane-misc/post-init-markdown-mode ()
+(defun hurricane-misc/post-init-markdown-mode ()
   (progn
     (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
     (with-eval-after-load 'markdown-mode
       (progn
         (setq markdown-command "pandoc -s -f markdown -t html5 --mathjax --highlight-style pygments --standalone")
         (spacemacs/set-leader-keys-for-major-mode 'gfm-mode-map
-          "p" 'czqhurricane/markdown-to-html)
+          "p" 'hurricane/markdown-to-html)
         (spacemacs/set-leader-keys-for-major-mode 'markdown-mode
-          "p" 'czqhurricane/markdown-to-html)
+          "p" 'hurricane/markdown-to-html)
         (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
         ))))
 ;; }}
 
 ;; {{
 ;; @see: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
-(defun czqhurricane-misc/post-init-shell-mode ()
+(defun hurricane-misc/post-init-shell-mode ()
   (spacemacs|use-package-add-hook shell-mode
     :post-config
     (progn
@@ -1257,14 +1260,14 @@
         (comint-read-input-ring t)))))
 ;; }}
 
-(defun czqhurricane-misc/init-pandoc-mode ()
+(defun hurricane-misc/init-pandoc-mode ()
   (use-package pandoc-mode
     :defer t
     :config
     (progn
       (add-hook 'markdown-mode-hook 'pandoc-mode))))
 
-(defun czqhurricane-misc/post-init-expand-region ()
+(defun hurricane-misc/post-init-expand-region ()
   (with-eval-after-load 'expand-region
     (when (configuration-layer/package-usedp 'helm-ag)
       (defadvice er/prepare-for-more-expansions-internal
@@ -1279,7 +1282,7 @@
           (cl-pushnew
            '("H" (lambda ()
                    (call-interactively
-                    'czqhurricane/highlight-dwim)))
+                    'hurricane/highlight-dwim)))
            new-bindings)
           (cl-pushnew
            '("/" (lambda ()
@@ -1298,7 +1301,7 @@
            new-bindings)
           (setq ad-return-value (cons new-msg new-bindings)))))))
 
-(defun czqhurricane-misc/init-autoinsert ()
+(defun hurricane-misc/init-autoinsert ()
   (use-package autoinsert
     :config
     ;; Don't want to be prompted before insertion.
@@ -1306,5 +1309,15 @@
     (setq auto-insert-query nil)
     (add-hook 'find-file-hook 'auto-insert)
     (setq auto-insert-directory auto-insert-dir)
-    (define-auto-insert "\\.html?$" ["default-html.html" czqhurricane/autoinsert-yas-expand])
-    (define-auto-insert "\\.el?$" ["default-lisp.el" czqhurricane/autoinsert-yas-expand])))
+    (define-auto-insert "\\.html?$" ["default-html.html" hurricane/autoinsert-yas-expand])
+    (define-auto-insert "\\.el?$" ["default-lisp.el" hurricane/autoinsert-yas-expand])
+    (define-auto-insert "\\.org?$" ["default-org.org" hurricane/autoinsert-yas-expand])))
+
+(defun hurricane-misc/init-use-package-ensure-system-package ()
+  (use-package use-package-ensure-system-package
+    :ensure t))
+
+;; Show TODOs in magit
+(defun hurricane-misc/init-magit-todos ()
+  (use-package magit-todos
+    :hook (emacs-startup . magit-todos-mode)))

@@ -1,4 +1,4 @@
-(defconst czqhurricane-org-packages
+(defconst hurricane-org-packages
   '(
     (org :location built-in)
     (org-mac-link :location built-in)
@@ -19,18 +19,18 @@
                              :repo "tumashu/org2ctex"))
     org-tree-slide))
 
-(defun czqhurricane-org/post-init-org-pomodoro ()
+(defun hurricane-org/post-init-org-pomodoro ()
   (progn
-    (add-hook 'org-pomodoro-finished-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Finished" "Have a break!")))
-    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (czqhurricane/notify-osx "Short Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (czqhurricane/notify-osx "Long Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-kill-hook '(lambda () (czqhurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
+    (add-hook 'org-pomodoro-finished-hook '(lambda () (hurricane/notify-osx "Pomodoro Finished" "Have a break!")))
+    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (hurricane/notify-osx "Short Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (hurricane/notify-osx "Long Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-kill-hook '(lambda () (hurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
 
 ;; In order to export pdf to support Chinese, I should install Latex in here:
 ;; @see: https://www.tug.org/mactex/
 ;; @see: http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
 ;; @see: http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
-(defun czqhurricane-org/post-init-org ()
+(defun hurricane-org/post-init-org ()
   (with-eval-after-load 'org
     (progn
       (spacemacs|disable-company org-mode)
@@ -98,7 +98,7 @@
       (add-hook 'org-mode-hook '(lambda ()
                                   ;; Keybinding for inserting code blocks.
                                   (local-set-key (kbd "C-c s i")
-                                                 'czqhurricane/org-insert-src-block)
+                                                 'hurricane/org-insert-src-block)
                                   ;; Keybinding for editing source code blocks.
                                   (local-set-key (kbd "C-c s e")
                                                  'org-edit-special)
@@ -175,7 +175,7 @@
                "* TODO [#A] %?\n  %i\n %U"
                :empty-lines 1)
               ("c" "Chrome" entry (file+headline org-agenda-file-note "Quick notes")
-               "* TODO [#C] %?\n %(czqhurricane/retrieve-chrome-current-tab-url)\n %i\n %U"
+               "* TODO [#C] %?\n %(hurricane/retrieve-chrome-current-tab-url)\n %i\n %U"
                :empty-lines 1)
               ("l" "links" entry (file+headline org-agenda-file-note "Quick notes")
                "* TODO [#C] %?\n  %i\n %a \n %U"
@@ -199,14 +199,14 @@
               ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
               ("p" . "项目安排")
               ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"cocos2d-x\"")
-              ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"czqhurricane\"")
+              ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"hurricane\"")
               ("W" "Weekly Review"
                ((stuck "") ;; Review stuck projects as designated by org-stuck-projects.
                 (tags-todo "PROJECT") ;; Review all projects (assuming you use todo keywords to designate projects).
                 ))))
 
-      ;; Used by czqhurricane/org-clock-sum-today-by-tags.
-      (add-hook 'org-after-todo-statistics-hook 'czqhurricane/org-summary-todo)
+      ;; Used by hurricane/org-clock-sum-today-by-tags.
+      (add-hook 'org-after-todo-statistics-hook 'hurricane/org-summary-todo)
 
       (define-key org-mode-map (kbd "s-p") 'org-priority)
       (spacemacs/set-leader-keys-for-major-mode 'org-mode
@@ -295,7 +295,7 @@
 
       )))
 
-(defun czqhurricane-org/init-org-mac-link ()
+(defun hurricane-org/init-org-mac-link ()
   (use-package org-mac-link
     :after org
     :commands org-mac-grab-link
@@ -305,51 +305,51 @@
                 (lambda ()
                   (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))))
 ;; FIXME:
-(defun czqhurricane-org/post-init-ox-reveal ()
+(defun hurricane-org/post-init-ox-reveal ()
   (setq org-reveal-root "file:///Users/guanghui/.emacs.d/reveal-js"))
 
-(defun czqhurricane-org/init-org-tree-slide ()
+(defun hurricane-org/init-org-tree-slide ()
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'org-tree-slide)
     (spacemacs/set-leader-keys "oto" 'org-tree-slide-mode)))
 
-(defun czqhurricane-org/init-worf ()
+(defun hurricane-org/init-worf ()
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'worf)
     (add-hook 'org-mode-hook 'worf-mode)))
 
-(defun czqhurricane-org/post-init-deft ()
+(defun hurricane-org/post-init-deft ()
   (progn
     (setq deft-use-filter-string-for-filename t)
     (setq deft-recursive t)
     (setq deft-extension "org")
     (setq deft-directory deft-dir)))
 
-(defun czqhurricane-org/init-org-protocol ()
+(defun hurricane-org/init-org-protocol ()
   (use-package org-protocol))
 
-(defun czqhurricane-org/init-org-protocol-capture-html ()
+(defun hurricane-org/init-org-protocol-capture-html ()
   (spacemacs|use-package-add-hook org-protocol
     :post-config (require 'org-protocol-capture-html)))
 
-(defun czqhurricane-org/init-ox-latex ()
+(defun hurricane-org/init-ox-latex ()
   (spacemacs|use-package-add-hook org :post-config (require 'ox-latex)))
 
-(defun czqhurricane-org/init-ox-md ()
+(defun hurricane-org/init-ox-md ()
   (spacemacs|use-package-add-hook org :post-config (require 'ox-md)))
 
-(defun czqhurricane-org/init-org-compat ()
+(defun hurricane-org/init-org-compat ()
   (spacemacs|use-package-add-hook org :post-config (require 'org-compat)))
 
-(defun czqhurricane-org/init-org-habit ()
+(defun hurricane-org/init-org-habit ()
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'org-habit)
     (add-to-list 'org-modules 'org-habit)))
 
-(defun czqhurricane-org/init-org-emacs-lisp ()
+(defun hurricane-org/init-org-emacs-lisp ()
   (spacemacs|use-package-add-hook org :post-config (require 'org-emacs-lisp)))
 
 ;; {{
@@ -360,7 +360,7 @@
 ;; Must install ipython and jupyter in ipy virtual envirnment first.
 ;; $ pip install ipython
 ;; $ pip install --upgrade jupyter
-(defun czqhurricane-org/init-ob-ipython ()
+(defun hurricane-org/init-ob-ipython ()
   (use-package ob-ipython
     :after org
     :init
@@ -372,10 +372,10 @@
       (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append))))
 ;; }}
 
-(defun czqhurricane-org/init-ob-lisp ()
+(defun hurricane-org/init-ob-lisp ()
   (spacemacs|use-package-add-hook org :post-config (require 'ob-lisp)))
 
-(defun czqhurricane-org/post-init-org-download ()
+(defun hurricane-org/post-init-org-download ()
   (use-package org-download
   ;; :ensure-system-package (pngpaste . "brew install pngpaste")
   :init
@@ -389,7 +389,7 @@
 
 ;; {{
 ;; @see: https://github.com/tumashu/org2ctex
-(defun czqhurricane-org/init-org2ctex ()
+(defun hurricane-org/init-org2ctex ()
   (use-package org2ctex
     :after org
     :config
@@ -486,6 +486,8 @@
                     \\usepackage{zhnumber}
                     % 插入图片
                     \\usepackage{graphicx}
+                    % 图文混排
+                    % \\usepackage{picins}
                     % 插入链接
                     \\usepackage{hyperref}
                     % 数学符号

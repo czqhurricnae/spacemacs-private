@@ -1,4 +1,4 @@
-(defconst czqhurricane-programming-packages
+(defconst hurricane-programming-packages
   '(
     flycheck
     dash-at-point
@@ -17,7 +17,7 @@
     ;; prettier-js
 ))
 
-(defun czqhurricane-programming/post-init-yasnippet ()
+(defun hurricane-programming/post-init-yasnippet ()
   (progn
     (yas-global-mode 1)
     (set-face-background 'secondary-selection "gray")
@@ -25,41 +25,41 @@
     (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
                                                                       org-mode-hook
                                                                       markdown-mode-hook))
-    (spacemacs/add-to-hooks 'czqhurricane/load-yasnippet '(prog-mode-hook
+    (spacemacs/add-to-hooks 'hurricane/load-yasnippet '(prog-mode-hook
                                                            org-mode-hook
                                                            markdown-mode-hook))))
 
-(defun czqhurricane-programming/post-init-exec-path-from-shell ()
+(defun hurricane-programming/post-init-exec-path-from-shell ()
   (use-package exec-path-from-shell
     :init
-      (when (memq window-system '(mac ns x))
-        (exec-path-from-shell-initialize))))
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize))))
 
-(defun czqhurricane-programming/init-virtualenvwrapper ()
+(defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
     :config
-      (venv-initialize-interactive-shells)
-      (venv-initialize-eshell)
-      (setq venv-location virtualenv-dir)))
+    (venv-initialize-interactive-shells)
+    (venv-initialize-eshell)
+    (setq venv-location virtualenv-dir)))
 
-(defun czqhurricane-programming/post-init-web-mode ()
+(defun hurricane-programming/post-init-web-mode ()
   (use-package web-mode
     :config
-      (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
-      (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-      (add-to-list 'auto-mode-alist '("\\.jsx$" . react-mode))
-      (add-hook 'web-mode-hook  'web-mode-init-hook)
-      ;; Remove the annoying underline in flycheck.
-      (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
-      (web-mode-toggle-current-element-highlight)
-      (web-mode-dom-errors-show)))
-      (setq company-backends-web-mode '((company-dabbrev-code
-                                         company-keywords
-                                         company-etags)
-                                         company-files
-                                         company-dabbrev))
+    (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsx$" . react-mode))
+    (add-hook 'web-mode-hook  'web-mode-init-hook)
+    ;; Remove the annoying underline in flycheck.
+    (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
+    (web-mode-toggle-current-element-highlight)
+    (web-mode-dom-errors-show)))
+    (setq company-backends-web-mode '((company-dabbrev-code
+                                       company-keywords
+                                       company-etags)
+                                       company-files
+                                       company-dabbrev))
 
-(defun czqhurricane-programming/post-init-dumb-jump ()
+(defun hurricane-programming/post-init-dumb-jump ()
   (setq dumb-jump-selector 'ivy))
 
 (defun my-dumb-jump ()
@@ -67,25 +67,25 @@
   (evil-set-jump)
   (dumb-jump-go-other-window))
 
-(defun czqhurricane-programming/init-ycmd ()
+(defun hurricane-programming/init-ycmd ()
   (use-package ycmd
     :init
-      (set-variable 'ycmd-global-config "/Users/c/.ycm_extra_conf.py")
-      (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
-      (setq ycmd-tag-files 'auto)
-      (setq ycmd-force-semantic-completion t)
-      (setq ycmd-request-message-level -1)
-      (add-hook 'c++-mode-hook 'ycmd-mode)
-      (add-hook 'python-mode-hook 'ycmd-mode)
-      (setq company-backends-c-mode-common '((company-c-headers
-                                              company-dabbrev-code
-                                              company-keywords
-                                              company-gtags :with company-yasnippet)
-                                              company-files company-dabbrev ))
-      (czqhurricane|toggle-company-backends company-ycmd)
-      :config
-      (eval-after-load 'ycmd
-        '(spacemacs|hide-lighter ycmd-mode))))
+    (set-variable 'ycmd-global-config "/Users/c/.ycm_extra_conf.py")
+    (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
+    (setq ycmd-tag-files 'auto)
+    (setq ycmd-force-semantic-completion t)
+    (setq ycmd-request-message-level -1)
+    (add-hook 'c++-mode-hook 'ycmd-mode)
+    (add-hook 'python-mode-hook 'ycmd-mode)
+    (setq company-backends-c-mode-common '((company-c-headers
+                                            company-dabbrev-code
+                                            company-keywords
+                                            company-gtags :with company-yasnippet)
+                                            company-files company-dabbrev ))
+    (hurricane|toggle-company-backends company-ycmd)
+    :config
+    (eval-after-load 'ycmd
+      '(spacemacs|hide-lighter ycmd-mode))))
 
 ;; {{
 ;; @see: https://github.com/slime/slime
@@ -93,7 +93,7 @@
 ;; This layer defaults to using sbcl.
 ;; $ brew install sbcl
 ;; Set your lisp system and, optionally, some contribs.
-(defun czqhurricane-programming/post-init-slime ()
+(defun hurricane-programming/post-init-slime ()
   (progn
     (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
     (setq slime-contribs '(slime-fancy))))
@@ -102,7 +102,7 @@
 ;; {{
 ;; @see: https://github.com/manateelazycat/color-rg
 ;; $ brew install rg
-(defun czqhurricane-programming/init-color-rg ()
+(defun hurricane-programming/init-color-rg ()
   (use-package color-rg
     :config
     (add-to-list 'evil-emacs-state-modes 'color-rg-mode)))
@@ -119,17 +119,17 @@ variables such as `exec-path'."
 
 ;; {{
 ;; @see: https://github.com/abicky/nodejs-repl.el
-(defun czqhurricane-programming/init-nodejs-repl ()
+(defun hurricane-programming/init-nodejs-repl ()
   (use-package nodejs-repl))
 ;; }}
 
-(defun czqhurricane-programming/init-dash-at-point ()
+(defun hurricane-programming/init-dash-at-point ()
   (use-package dash-at-point
     :config
-      (add-to-list 'load-path "/Users/c/.emacs.d/elpa/dash-at-point-20180710.1356")
-      (autoload 'dash-at-point "dash-at-point"
-        "Search the word at point with Dash." t nil)
-      (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))))
+    (add-to-list 'load-path "/Users/c/.emacs.d/elpa/dash-at-point-20180710.1356")
+    (autoload 'dash-at-point "dash-at-point"
+      "Search the word at point with Dash." t nil)
+    (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))))
 
 ;; {{
 ;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
@@ -138,7 +138,7 @@ variables such as `exec-path'."
 ;; $ npm install -g eslint-plugin-react
 ;; $ cd XXX
 ;; $ eslint --init
-(defun czqhurricane-programming/post-init-flycheck ()
+(defun hurricane-programming/post-init-flycheck ()
   (with-eval-after-load 'flycheck
     (progn
       (setq flycheck-display-errors-delay 0.9)
@@ -158,12 +158,12 @@ variables such as `exec-path'."
                                    (flycheck-select-checker 'javascript-standard))))))
 ;; }}
 
-(defun czqhurricane-programming/init-flycheck-package ()
+(defun hurricane-programming/init-flycheck-package ()
   (use-package flycheck-package))
 
 ;; {{
 ;; $ npm install -g prettier
-;; (defun czqhurricane-programming/init-prettier-js ()
+;; (defun hurricane-programming/init-prettier-js ()
 ;;   (use-package prettier-js
 ;;     :after web-mode
 ;;     :init
@@ -192,22 +192,22 @@ variables such as `exec-path'."
 ;;                                   '("\\.jsx?\\'" . prettier-js-mode))))))
 ;; }}
 
-(defun czqhurricane-programming/init-add-node-modules-path ()
+(defun hurricane-programming/init-add-node-modules-path ()
   (use-package add-node-modules-path))
 
-(defun czqhurricane-programming/init-standardfmt ()
+(defun hurricane-programming/init-standardfmt ()
   (use-package standardfmt
     :config
     (add-hook 'react-mode-hook #'standardfmt-mode)))
 
-(defun czqhurricane-programming/init-eslintfmt ()
+(defun hurricane-programming/init-eslintfmt ()
   (use-package eslintfmt
     :config
     (setq eslintfmt-command-args (list "--config" eslintfmt-configuration-file))
     (add-hook 'js-mode-hook #'eslintfmt-mode)
     (add-hook 'js2-mode-hook #'eslintfmt-mode)))
 
-(defun czqhurricane-programming/init-pythonfmt ()
+(defun hurricane-programming/init-pythonfmt ()
   (use-package pythonfmt
     :config
     (setq pythonfmt-command "yapf")

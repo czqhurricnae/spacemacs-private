@@ -1,4 +1,4 @@
-(defconst czqhurricane-better-defaults-packages
+(defconst hurricane-better-defaults-packages
   '(
     (youdao-dictionary :location elpa)
     (mic-paren :location elpa)
@@ -6,20 +6,20 @@
     (occur-mode :location local)
     (dired-mode :location local)))
 
-(defun czqhurricane-better-defaults/init-youdao-dictionary ()
+(defun hurricane-better-defaults/init-youdao-dictionary ()
   (use-package youdao-dictionay
     :defer
     :init
     (spacemacs/set-leader-keys "hy" 'youdao-dictionary-search-at-point+)))
 
-(defun czqhurricane-better-defaults/init-mic-paren ()
+(defun hurricane-better-defaults/init-mic-paren ()
   (use-package mic-paren
     :config
     (setq blink-matching-paren nil)
     (paren-activate)
     (setq paren-match-face 'mode-line)))
 
-(defun czqhurricane-better-defaults/post-init-recentf ()
+(defun hurricane-better-defaults/post-init-recentf ()
   (progn
     (setq recentf-exclude
       '("COMMIT_MSG"
@@ -42,7 +42,7 @@
         ".*png$"))
     (setq recentf-max-saved-items 2048)))
 
-(defun czqhurricane-better-defaults/init-dired-mode ()
+(defun hurricane-better-defaults/init-dired-mode ()
   (use-package dired-mode
     :defer t
     :init
@@ -102,7 +102,7 @@
       (evilified-state-evilify-map dired-mode-map
         :mode dired-mode
         :bindings
-        (kbd "C-k") 'czqhurricane/dired-up-directory
+        (kbd "C-k") 'hurricane/dired-up-directory
         "E" 'dired-toggle-read-only
         "C" 'dired-do-copy
         "<mouse-2>" 'my-dired-find-file
@@ -112,17 +112,17 @@
         "z" 'dired-get-size
         "c" 'dired-copy-file-here
         "J" 'counsel-find-file
-        "f" 'czqhurricane/open-file-with-projectile-or-counsel-git
+        "f" 'hurricane/open-file-with-projectile-or-counsel-git
         ")" 'dired-omit-mode)
       )))
 
-(defun czqhurricane-better-defaults/init-profiler ()
+(defun hurricane-better-defaults/init-profiler ()
   (use-package profiler
     :defer t
     :init
     (evilified-state-evilify profiler-report-mode profiler-report-mode-map)))
 
-(defun czqhurricane-better-defaults/post-init-occur-mode ()
+(defun hurricane-better-defaults/post-init-occur-mode ()
   "Auto switch to `occur buffer'"
     (add-hook 'occur-hook
               '(lambda ()

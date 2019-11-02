@@ -68,7 +68,8 @@ values."
      latex
      deft
      (javascript :variables
-                 javascript-disable-tern-port-files nil)
+                 javascript-disable-tern-port-files nil
+                 add-node-modules-path t)
      (typescript :variables
                  typescript-fmt-on-save nil
                  typescript-fmt-tool 'typescript-formatter)
@@ -402,6 +403,7 @@ you should place your code here."
          nil "_"))))
   ;; }}
   (server-start)
+  (global-hungry-delete-mode t)
   (global-company-mode 1)
   (global-hl-line-highlight)
   ;; Setup javascript auto-complete.

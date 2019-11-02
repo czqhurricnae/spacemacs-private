@@ -86,12 +86,12 @@
     (setq pangu-spacing-include-regexp
           (rx (group-n 1 (in "a-zA-Z0-9,.!?])%#@&1234567890,;\":\`"))
           (group-n 2 (category chinse-two-byte))))
-    ;; Add toggle options
+    ;; Add toggle options.
     (spacemacs|add-toggle toggle-pangu-spaceing
       :status pangu-spacing-mode
       :on (global-pangu-spacing-mode)
       :off (global-pangu-spacing-mode -1)
-      :documentation "Toggle pangu spacing mode"
+      :documentation "Toggle pangu spacing mode."
       :evil-leader "ots")
     (add-hook 'org-mode-hook
               '(lambda ()
@@ -101,7 +101,7 @@
 ;; {{
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
 (defun hurricane/define-evil-normal-keybinding (key def &rest bindings)
-  "Binding keys and func for normal state map and motion state map"
+  "Binding keys and func for normal state map and motion state map."
   (while key
     (define-key evil-normal-state-map (kbd key) def)
     (define-key evil-motion-state-map (kbd key) def)
@@ -156,9 +156,9 @@
     ))
 ;; }}
 
-;; Enforce rules for popups
-(defvar shackle--popup-window-list nil) ; all popup windows
-(defvar-local shackle--current-popup-window nil) ; current popup window
+;; Enforce rules for popups.
+(defvar shackle--popup-window-list nil) ; All popup windows.
+(defvar-local shackle--current-popup-window nil) ; Current popup window.
 (put 'shackle--current-popup-window 'permanent-local t)
 
 (defun hurricane-ui/init-shackle ()
@@ -175,7 +175,7 @@
         (display-buffer shackle-last-buffer)))
     (bind-key "C-h z" #'shackle-last-popup-buffer)
 
-    ;; Add keyword: `autoclose'
+    ;; Add keyword: `autoclose'.
     (defun shackle-display-buffer-hack (fn buffer alist plist)
       (let ((window (funcall fn buffer alist plist)))
         (setq shackle--current-popup-window window)
@@ -191,7 +191,7 @@
                      if (and (window-live-p window)
                              (equal (window-buffer window) buffer))
                      collect (cons window buffer)))
-      ;; `C-g' can deactivate region
+      ;; `C-g' can deactivate region.
       (when (and (called-interactively-p 'interactive)
                  (not (region-active-p)))
         (let (window buffer)
@@ -214,10 +214,10 @@
     (advice-add #'keyboard-quit :before #'shackle-close-popup-window-hack)
     (advice-add #'shackle-display-buffer :around #'shackle-display-buffer-hack))
 
-  ;; HACK: compatibility issuw with `org-switch-to-buffer-other-window'
+  ;; HACK: Compatibility issuw with `org-switch-to-buffer-other-window'.
   (advice-add #'org-switch-to-buffer-other-window :override #'switch-to-buffer-other-window)
 
-  ;; rules
+  ;; Rules.
   (setq shackle-default-size 0.4
         shackle-default-alignment 'below
         shackle-default-rule nil
@@ -265,4 +265,3 @@
           (list-environment-mode :select t :size 0.3 :align 'below :autoclose t)
           (profiler-report-mode :select t :size 0.5 :align 'below)
           (tabulated-list-mode :align 'below)))))
-;;; packages.el ends here

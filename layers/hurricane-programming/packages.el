@@ -110,7 +110,7 @@
 
 (defun exec-path-from-shell-setenv (name value)
   "Set the value of environment var NAME to VALUE.
-Additionally, if NAME is \"PATH\" then also set corresponding
+Additionally, if `name' is `path' then also set corresponding
 variables such as `exec-path'."
   (setenv name value)
   (when (string-equal "PATH" name)
@@ -180,7 +180,7 @@ variables such as `exec-path'."
 ;;                              "--arrow-parens" "always"
 ;;                              "--insert-pragma true"))
 ;;     (defun enable-minor-mode (my-pair)
-;;       "Enable minor mode if filename match the regexp.  `MY-PAIR' is a cons cell (regexp . minor-mode)."
+;;       "Enable minor mode if filename match the regexp.  `my-pair' is a cons cell (regexp . minor-mode)."
 ;;       (if (buffer-file-name)
 ;;           (if (string-match (car my-pair) buffer-file-name)
 ;;               (funcall (cdr my-pair)))))

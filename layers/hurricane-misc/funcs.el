@@ -6,16 +6,16 @@
         (deactivate-mark))
     (symbol-overlay-put)))
 
-;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+;; @see: https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
 (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
   `(eval-after-load (quote ,(if r r m))
      '(progn
         (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
-        ;; force update evil keymaps after git-timemachine-mode loaded
+        ;; Force update evil keymaps after git-timemachine-mode loaded.
         (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
 
 (defun hurricane/insert-semicolon-at-the-end-of-this-line ()
-  "insert`;'at the end of current line"
+  "Insert `;' at the end of current line."
   (interactive)
   (save-excursion
     (end-of-line)
@@ -53,10 +53,11 @@
   (interactive)
   (persp-save-state-to-file (concat persp-save-dir "hurricane")))
 
+;; {{
 ;; http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
 ;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun counsel-yank-bash-history ()
-  "Yank the zsh history"
+  "Yank the `zsh' history."
   (interactive)
   (let (hist-cmd collection val)
     (shell-command "history -r") ; reload history
@@ -74,35 +75,35 @@
       ;; (setq val (replace-regexp-in-string ".*;" "" val))
       (kill-new val)
       (message "%s => kill-ring" val))))
+;; }}
 
 (defun hurricane/indent-region(numSpaces)
   (progn
-    ;; default to start and end of current line
+    ;; Default to start and end of current line.
     (setq regionStart (line-beginning-position))
     (setq regionEnd (line-end-position))
 
-    ;; if there's a selection, use that instead of the current line
+    ;; If there's a selection, use that instead of the current line.
     (when (use-region-p)
       (setq regionStart (region-beginning))
       (setq regionEnd (region-end))
       )
 
-    (save-excursion                          ;; restore the position afterwards
-      (goto-char regionStart)                ;; go to the start of region
-      (setq start (line-beginning-position)) ;; save the start of the line
-      (goto-char regionEnd)                  ;; go to the end of region
-      (setq end (line-end-position))         ;; save the end of the line
+    (save-excursion                          ;; Restore the position afterwards.
+      (goto-char regionStart)                ;; Go to the start of region.
+      (setq start (line-beginning-position)) ;; Save the start of the line.
+      (goto-char regionEnd)                  ;; Go to the end of region.
+      (setq end (line-end-position))         ;; Save the end of the line.
 
-      (indent-rigidly start end numSpaces)   ;; indent between start and end
-      (setq deactivate-mark nil)             ;; restore the selected region
+      (indent-rigidly start end numSpaces)   ;; Indent between start and end.
+      (setq deactivate-mark nil)             ;; Restore the selected region.
       )))
 
 (defun hurricane/tab-region (N)
   (interactive "p")
   (if (use-region-p)
-      (hurricane/indent-region 4)         ;; region was selected, call indent-region
-    (insert "    ")                          ;; else insert four spaces as expected
-    ))
+      (hurricane/indent-region 4)            ;; Region was selected, call indent-region.
+    (insert "    ")))                        ;; Else insert four spaces as expected.
 
 (defun hurricane/untab-region (N)
   (interactive "p")
@@ -111,8 +112,7 @@
 (defun hurricane/hack-tab-key ()
   (interactive)
   (local-set-key (kbd "<tab>") 'hurricane/tab-region)
-  (local-set-key (kbd "<S-tab>") 'hurricane/untab-region)
-  )
+  (local-set-key (kbd "<S-tab>") 'hurricane/untab-region))
 
 ;; I'm don't like this settings too much.
 ;; (add-hook 'prog-mode-hook 'hurricane/hack-tab-key)
@@ -130,14 +130,13 @@
   (if (not (eq last-command-event 13))
       (git-timemachine-quit)))
 
-;; http://blog.binchen.org/posts/new-git-timemachine-ui-based-on-ivy-mode.html
+;; @see: http://blog.binchen.org/posts/new-git-timemachine-ui-based-on-ivy-mode.html
 (defun my-git-timemachine-show-selected-revision ()
   "Show last (current) revision of file."
-  (interactive)
   (let (collection)
     (setq collection
           (mapcar (lambda (rev)
-                    ;; re-shape list for the ivy-read
+                    ;; Re-shape list for the ivy-read.
                     (cons (concat (substring (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
                   (git-timemachine--revisions)))
     (ivy-read "commits:"
@@ -147,7 +146,8 @@
                         (git-timemachine-show-revision (cdr rev))))))
 
 (defun my-git-timemachine ()
-  "Open git snapshot with the selected version.  Based on ivy-mode."
+  "Open `git snapshot' with the selected version.
+Based on ivy-mode."
   (interactive)
   (unless (featurep 'git-timemachine)
     (require 'git-timemachine))
@@ -155,13 +155,13 @@
 
 (defun hurricane/helm-hotspots ()
   "Helm interface to my hotspots, which includes my locations,
-org-files and bookmarks"
+org-files and bookmarks."
   (interactive)
   (helm :buffer "*helm: utities*"
         :sources `(,(hurricane//hotspots-sources))))
 
 (defun hurricane//hotspots-sources ()
-  "Construct the helm sources for my hotspots"
+  "Construct the helm sources for my hotspots."
   `((name . "Mail and News")
     (candidates . (("Calendar" . (lambda ()  (browse-url "https://www.google.com/calendar/render")))
                    ("RSS" . elfeed)
@@ -175,17 +175,19 @@ org-files and bookmarks"
     (action . (("Open" . (lambda (x) (funcall x)))))))
 
 (defun hurricane/now ()
-  "Insert string for the current time formatted like '2:34 PM'."
-  (interactive)                 ; permit invocation in minibuffer
+  "Insert string for the current time formatted like `2:34 PM'."
+  ;; Permit invocation in minibuffer.
+  (interactive)
   (insert (format-time-string "%D %-I:%M %p")))
 
 (defun hurricane/today ()
   "Insert string for today's date nicely formatted in American style,
-e.g. Sunday, September 17, 2000."
-  (interactive)                 ; permit invocation in minibuffer
+e.g. `Sunday, September 17, 2000'."
+  ;; Permit invocation in minibuffer.
+  (interactive)
   (insert (format-time-string "%A, %B %e, %Y")))
 
-;; https://github.com/syohex/emacs-browser-refresh/blob/master/browser-refresh.el
+;; @see: https://github.com/syohex/emacs-browser-refresh/blob/master/browser-refresh.el
 (defun hurricane/browser-refresh--chrome-applescript ()
   (interactive)
   (do-applescript
@@ -220,12 +222,12 @@ e.g. Sunday, September 17, 2000."
       (counsel-file-jump))))
 
 (defun hurricane/goto-match-paren (arg)
-  "Go to the matching  if on (){}[], similar to vi style of % "
+  "Go to the matching  if on `(){}[]', similar to vi style of % ."
   (interactive "p")
-  ;; first, check for "outside of bracket" positions expected by forward-sexp, etc
+  ;; First, check for "outside of bracket" positions expected by forward-sexp, etc.
   (cond ((looking-at "[\[\(\{]") (evil-jump-item))
         ((looking-back "[\]\)\}]" 1) (evil-jump-item))
-        ;; now, try to succeed from inside of a bracket
+        ;; Now, try to succeed from inside of a bracket.
         ((looking-at "[\]\)\}]") (forward-char) (evil-jump-item))
         ((looking-back "[\[\(\{]" 1) (backward-char) (evil-jump-item))
         (t nil)))
@@ -237,13 +239,13 @@ e.g. Sunday, September 17, 2000."
   (aset buffer-display-table ?\^M []))
 
 (defun hurricane/remove-dos-eol ()
-  "Replace DOS eolns CR LF with Unix eolns CR"
+  "Replace DOS eolns CR LF with Unix eolns CR".
   (interactive)
   (goto-char (point-min))
   (while (search-forward "\r" nil t) (replace-match "")))
 
 (defun hurricane/retrieve-chrome-current-tab-url ()
-  "Get the URL of the active tab of the first window"
+  "Get the `URL' of the active tab of the first window."
   (interactive)
   (let ((result (do-applescript
                  (concat
@@ -259,7 +261,7 @@ e.g. Sunday, September 17, 2000."
     (format "%s" (s-chop-suffix "\"" (s-chop-prefix "\"" result)))))
 
 (defun hurricane/insert-chrome-current-tab-url ()
-  "Get the URL of the active tab of the first window"
+  "Insert the `URL' of the active tab of the first window."
   (interactive)
   (insert (hurricane/retrieve-chrome-current-tab-url)))
 
@@ -267,22 +269,22 @@ e.g. Sunday, September 17, 2000."
   (interactive)
   (kill-new (hurricane/retrieve-chrome-current-tab-url)))
 
-;; Remove all the duplicated emplies in current buffer
+;; Remove all the duplicated emplies in current buffer.
 (defun hurricane/single-lines-only ()
-  "Replace multiple blank lines with a single one"
+  "Replace multiple blank lines with a single one."
   (interactive)
   (goto-char (point-min))
   (while (re-search-forward "\\(^\\s-*$\\)\n" nil t)
     (replace-match "\n")
     (forward-char 1)))
 
-;; For running long run ansi-term
+;; For running long run ansi-term.
 (defun hurricane/named-term (name)
   (interactive "sName: ")
   (ansi-term "/bin/zsh" name))
 
 (defun hurricane/ash-term-hooks ()
-  ;; Dabbrev-expand in term
+  ;; Dabbrev-expand in term.
   (define-key term-raw-escape-map "/"
     (lambda ()
       (interactive)
@@ -290,7 +292,7 @@ e.g. Sunday, September 17, 2000."
         (dabbrev-expand nil)
         (kill-region beg (point)))
       (term-send-raw-string (substring-no-properties (current-kill 0)))))
-  ;; yank in term (bound to C-c C-y)
+  ;; Yank in term (bound to C-c C-y).
   (define-key term-raw-escape-map "\C-y"
     (lambda ()
       (interactive)
@@ -315,26 +317,26 @@ e.g. Sunday, September 17, 2000."
   (rx (category chinese)))
 
 (defvar wc-regexp-chinese-punc
-  "[.,！？；：「」『』()、【】《》〈〉※—]")
+  "[.,!?,:「」『』(),[]《》〈〉※—]")
 
 (defvar wc-regexp-english-word
   "[a-zA-Z0-9-]+")
 
 (defun hurricane/word-count-for-chinese ()
-  "`比较精确地' 统计中/日/英文字数.
+  "比较精确地统计中/日/英文字数.
 - 文章中的注解不算在字数内.
-- 平假名与片假名亦包含在`中日字数' 内, 每个平/片假名都算单独一个字 (但片假名不含连音 `-').
-- 英文只计算`单子数', 不含标点.
+- 平假名与片假名亦包含在 `中日字数' 内, 每个平/片假名都算单独一个字 (但片假名不含连音 `-').
+- 英文只计算 `单子数', 不含标点.
 - 韩文不包含在内."
   (interactive)
   (let* ((v-buffer-string
           (progn
-            (if (eq major-mode 'org-mode) ;; 去掉 org 文件的 OPTIONS(以#+开头)
+            (if (eq major-mode 'org-mode) ;; 去掉 org 文件的 OPTIONS (以#+开头).
                 (setq v-buffer-string (replace-regexp-in-string "^#\\+.+" ""
                                                                 (buffer-substring-no-properties (point-min) (point-max))))
               (setq v-buffer-string (buffer-substring-no-properties (point-min) (point-max))))
             (replace-regexp-in-string (format "^ *%s *.+" comment-start) "" v-buffer-string)))
-                                          ;; 把注释行删掉(不把注释算进字数内).
+                                          ;; 把注释行删掉 (不把注释算进字数内).
          (chinese-char-and-punc 0)
          (chinese-punc 0)
          (english-word 0)
@@ -342,24 +344,24 @@ e.g. Sunday, September 17, 2000."
     (with-temp-buffer
       (insert v-buffer-string)
       (goto-char (point-min))
-      ;; 中文(含标点, 片假名).
+      ;; 中文 (含标点, 片假名).
       (while (re-search-forward wc-regexp-chinese-char-and-punc nil :no-error)
         (setq chinese-char-and-punc (1+ chinese-char-and-punc)))
       ;; 中文标点符号.
       (goto-char (point-min))
       (while (re-search-forward wc-regexp-chinese-punc nil :no-error)
         (setq chinese-punc (1+ chinese-punc)))
-      ;; 英文字数(不含标点).
+      ;; 英文字数 (不含标点).
       (goto-char (point-min))
       (while (re-search-forward wc-regexp-english-word nil :no-error)
         (setq english-word (1+ english-word))))
     (setq chinese-char (- chinese-char-and-punc chinese-punc))
     (message
-     (format "中日文字数(不含标点):%s
-中日文字数(包含标点):%s
-英文字数(不含标点):%s
+     (format "中日文字数 (不含标点): %s
+中日文字数 (包含标点): %s
+英文字数 (不含标点): %s
 =======================
-中英文合计(不含标点):%s"
+中英文合计 (不含标点): %s"
              chinese-char chinese-char-and-punc english-word
              (+ chinese-char english-word)))))
 ;; }}
@@ -389,7 +391,7 @@ with PREFIX, cd to project root."
                      current-prefix-arg))
   (let* ((dir (if prefix (hurricane/git-project-root)
                 default-directory))
-         ;; If COMMAND is empty, just change directory.
+         ;; If `command' is empty, just change directory.
          (cmd (format "cd %s ;%s" dir command)))
     (do-applescript
      (format
@@ -432,8 +434,7 @@ If the buffer is currently not visible, makes it sticky."
     (hurricane/notify-osx
      (concat "ERC: : " (buffer-name (current-buffer)))
      message
-     t
-     )))
+     t)))
 
 (defun my-swiper-search (p)
   (interactive "P")
@@ -443,7 +444,7 @@ If the buffer is currently not visible, makes it sticky."
        #'counsel-grep-or-swiper))))
 
 (defun ivy-ff-checksum ()
-  "Calculate the checksum of FILE. The checksum is copied to kill-ring."
+  "Calculate the checksum of `file'. The checksum is copied to kill-ring."
   (interactive)
   (let ((file (expand-file-name (ivy-state-current ivy-last) ivy--directory))
         (algo (intern (ivy-read
@@ -467,7 +468,7 @@ If the buffer is currently not visible, makes it sticky."
     (message "%s is not a valid directory." repo)))
 
 (defun my-open-file-in-external-app (file)
-  "Open file in external application."
+  "Open `file' in external application."
   (interactive)
   (let ((default-directory (hurricane/git-project-root))
         (file-path file))
@@ -488,13 +489,13 @@ If the buffer is currently not visible, makes it sticky."
     (kill-new x)))
 
 (defun counsel-goto-recent-directory ()
-  "Recent directories"
+  "Recent directories."
   (interactive)
   (unless recentf-mode (recentf-mode 1))
   (let ((collection
          (delete-dups
           (append (mapcar 'file-name-directory recentf-list)
-                  ;; fasd history
+                  ;; Fasd history.
                   (if (executable-find "fasd")
                       (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
     (ivy-read "directories:" collection
@@ -508,7 +509,7 @@ If the buffer is currently not visible, makes it sticky."
   (let ((collection
          (delete-dups
           (append (mapcar 'file-name-directory recentf-list)
-                  ;; fasd history
+                  ;; Fasd history.
                   (if (executable-find "fasd")
                       (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
     (ivy-read "directories:" collection
@@ -538,7 +539,7 @@ If the buffer is currently not visible, makes it sticky."
   (browse-url (format "http://localhost:5000/%s.%s" (file-name-base) (file-name-extension (buffer-file-name)))))
 
 (defun github-browse-file--relative-url ()
-  "Return \"username/repo\" for current repository.
+  "Return `username/repo' for current repository.
   Error out if this isn't a GitHub repo."
   (require 'vc-git)
   (let ((url (vc-git--run-command-string nil "config" "remote.origin.url")))
@@ -571,12 +572,12 @@ If the buffer is currently not visible, makes it sticky."
   (evil-set-jump))
 
 (defun append-string-to-file (string filename)
-  "Append STRING to FILENAME"
+  "Append `string' to `filename'."
   (interactive)
   (append-to-file string nil filename))
 
 (defun get-filename-from-url (url)
-  "Get the substring of url which after the final slash."
+  "Get the substring of `URL' which after the final slash."
   (with-temp-buffer
     (insert url)
     (let ((filename-origin 0))
@@ -595,8 +596,8 @@ If the buffer is currently not visible, makes it sticky."
     (shell-command command-string)))
 
 (defun install-monitor (file secs func)
-  "Pretend to monitor the given file (AS FILE) by issuing a check every secs (AS SECS) seconds.
-If a change in `file-attributes` happended call func."
+  "Pretend to monitor the given `file' (AS FILE) by issuing a check every `secs' (AS SECS) seconds.
+If a change in `file-attributes' happended call func."
   (let ((monitor-attributes (file-attributes file))
         (fun func))
     (run-with-timer
@@ -672,7 +673,7 @@ If a change in `file-attributes` happended call func."
                 (setq search-origin (match-end 0)))))))))
 
 (defun extract-content-from-stackoverflow-to-org-file (src-code-type)
-  ;; Insert a `SRC-CODE-TYPE' type source code block in org-mode.
+  ;; Insert a `src-code-type' type source code block in org-mode.
   (interactive
    (let ((src-code-types
           '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
@@ -689,7 +690,7 @@ If a change in `file-attributes` happended call func."
                                             ("#\\+END_EXAMPLE" . "#+END_SRC")
                                             ("\\[\\[\.*png\.*/\\(.*\\)\\]\\]" . "[[file:screenshotImg/\\1")
                                             ("\\[\\[http.*/" . "[[file:screenshotImg/")))
-    ;; Read url string from minibuffer, while the string read is empty, this loop will not stop.
+    ;; Read `URL' string from minibuffer, while the string read is empty, this loop will not stop.
     (setq url "")
     (while (string-equal url "")
       (setq url (read-string "Please input the StackOverFlow url to extract: "
@@ -700,7 +701,7 @@ If a change in `file-attributes` happended call func."
           (t
            (setq begin-marker (concat "#+BEGIN_SRC " src-code-type))))
     (add-to-list 'org-replace-string-rule-lists `("#\\+BEGIN_EXAMPLE" . ,begin-marker))
-    ;; Get filename from url to create html and org file.
+    ;; Get `filename' from `URL' to create html and org file.
     (setq html-file-name (concat
                           (concat "~/"
                                   (get-filename-from-url url))
@@ -711,7 +712,7 @@ If a change in `file-attributes` happended call func."
                          ".org"))
     ;; Extract content to file.
     (with-current-buffer (url-retrieve-synchronously url)
-      ;; Remove the "^M" character in html file.
+      ;; Remove the `^M' character in html file.
       (dos2unix)
       ;; Extract question strings to file.
       (progn
@@ -814,7 +815,7 @@ If a change in `file-attributes` happended call func."
 ;; {{
 ;; @see: https://emacs-china.org/t/topic/5518
 (defun hurricane/chrome-tabs ()
-  "返回 Chrome 标签."
+  "Return `Chrome' tabs."
   (let ((script
          (mapconcat
           #'identity
@@ -850,7 +851,7 @@ If a change in `file-attributes` happended call func."
 ;; Google - 标题
 
 (defun hurricane/chrome-switch-tab-1 (window-id tab-id)
-  ;; FIXME: 不知道如何处理多余一个窗口的情况
+  ;; FIXME: 不知道如何处理多余一个窗口的情况.
   (do-applescript
    (concat "tell application \"Google Chrome\"\n"
            (format "  set active tab index of first window to %s\n" tab-id)
@@ -890,7 +891,8 @@ If a change in `file-attributes` happended call func."
 ;; }}
 
 (defun hurricane/open-link-in-chrome ()
-  "Open URL under cursor in Chrome.Work in macOS only."
+  "Open `URL' under cursor in Chrome.
+Work in macOS only."
   (interactive)
   (let* (($inputStr (if (use-region-p)
                         (buffer-substring-no-properties (region-beginning) (region-end))

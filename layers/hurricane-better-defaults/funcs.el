@@ -24,7 +24,7 @@ Position the cursor at its beginning, according to the current mode."
 ;; }}
 
 (defun hurricane/rename-file-and-buffer ()
-  "Rename the current buffer and file it is visiting."
+  "Rename the current buffer and file that is visiting."
   (interactive)
   (let ((filename (buffer-file-name)))
     (if (not (and filename (file-exists-p filename)))
@@ -127,7 +127,7 @@ If newname names a directory, it copies oldname into that directory, preserving 
       (dired-find-file-other-window))))
 
 (defun hurricane/dired-do-command (command)
-  "Run `COMMAND' on marked files. Any files not already open will be opened.
+  "Run `command' on marked files. Any files not already open will be opened.
 After this command has been run, any buffers it's modified will remain open and unsaved."
   (interactive "CRun on marked files M-x ")
   (save-window-excursion

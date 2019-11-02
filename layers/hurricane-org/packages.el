@@ -120,7 +120,7 @@
       (add-to-list 'org-entities-user
                    '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
       (setq org-export-backends (quote (ascii html icalendar latex md)))
-      ;; Make org not to treat '_' with sub-superscript, but '_{}'.
+      ;; Make org not to treat `_' with sub-superscript, but `_{}'.
       (setq org-export-with-sub-superscripts '{})
 
       ;; Reset subtask.
@@ -154,10 +154,22 @@
       (with-eval-after-load 'org-agenda
         (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
         (spacemacs/set-leader-keys-for-major-mode 'org-agenda-mode
-          "." 'spacemacs/org-agenda-transient-state/body)
-        )
+          "." 'spacemacs/org-agenda-transient-state/body))
+
       ;; {{
-      ;; The %i would copy the selected text into the template.
+      ;; @see: https://emacs.stackexchange.com/questions/22396/export-without-links
+      (with-eval-after-load 'ox
+        (defun custom-pdf-link-filter (link backend info)
+          "Rewrite `org' file links in export to preserve link text only."
+          (if (eq backend `pdf)
+              (replace-regexp-in-string "\\[\\[\\([^]]*\\)\\]\\]" "\\1" link)
+            link))
+        (add-to-list 'org-export-filter-link-functions
+                     'custom-pdf-link-filter))
+      ;; }}
+
+      ;; {{
+      ;; The `%i' would copy the selected text into the template.
       ;; @see: http://www.howardism.org/Technical/Emacs/journaling-org.html
       ;; Add multi-file journal.
       ;; }}
@@ -189,8 +201,8 @@
                "* %^{Title}\n %:initial")
               ))
 
-      ;; An entry without a cookie is treated just like priority 'B'.
-      ;; So when create new task, they are default '重要且紧急'.
+      ;; An entry without a cookie is treated just like priority `B'.
+      ;; So when create new task, they are default `重要且紧急'.
       (setq org-agenda-custom-commands
             '(
               ("w" . "任务安排")
@@ -215,9 +227,9 @@
 
       ;; Hack for org headline toc.
       (defun org-html-headline (headline contents info)
-        "Transcode a HEADLINE element from Org to HTML.
-        CONTENTS holds the contents of the headline.
-        INFO is a plist holding contextual information."
+        "Transcode a `headline' element from Org to HTML.
+        `contents' holds the contents of the headline.
+        `info' is a plist holding contextual information."
         (unless (org-element-property :footnote-section-p headline)
           (let* ((numberedp (org-export-numbered-headline-p headline info))
                  (numbers (org-export-get-headline-number headline info))
@@ -353,7 +365,7 @@
   (spacemacs|use-package-add-hook org :post-config (require 'org-emacs-lisp)))
 
 ;; {{
-;; @see https://github.com/gregsexton/ob-ipython
+;; @see: https://github.com/gregsexton/ob-ipython
 ;; Set ob-ipython-command to the path of jupyter, must be be corresponding to
 ;; the path of ipython virtual envirnment which is setting by
 ;; '(setq venv-location virtualenv-dir)'.
@@ -520,4 +532,3 @@
                     ("\\question{%s}" . "\\subsection*{%s}")
                     ("\\begin{solution}{%s}\\end{solution}" . "\\subsubsection*{%s}"))))))
 ;; }}
-;;; packages.el ends here

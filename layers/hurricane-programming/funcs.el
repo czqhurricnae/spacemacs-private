@@ -1,5 +1,5 @@
 (defun hurricane/vcs-project-root ()
-  "return the project root for current buffer."
+  "Return the project root for current buffer."
   (let ((directory default-directory))
     (locate-dominating-file directory ".git")))
 

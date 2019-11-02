@@ -15,15 +15,15 @@
 (global-prettify-symbols-mode 1)
 (setq-default fill-column 80)
 
-;; Prevent dired window press `o' to split into three column
+;; Prevent dired window press `o' to split into three column.
 (setq-default split-width-threshold 200)
 
 (setq recenter-positions '(top middle bottom))
 
-;; Delete the selection with a key press
+;; Delete the selection with a key press.
 (delete-selection-mode t)
 
-;;Add auto format paste code
+;;Add auto format paste code.
 (dolist (command '(yank yank-pop))
   (eval
    `(defadvice ,command (after indent-region activate)
@@ -49,9 +49,9 @@
 ;; {{
 ;; @see: https://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 ;; @see: https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
-;; This settings will cause command 'vc-annotate' failed.
-;; 如果把 vc-handled-backends去掉,那么 vc-follow-symlinks 这个选项就会失效.
-;; 进而, 如果你访问一个在版本控制里面的alias的话,它不会自动去访问原文件,这个是非常不爽的.
+;; This settings will cause command `vc-annotate' failed.
+;; 如果把 `vc-handled-backends' 去掉,那么 `vc-follow-symlinks' 这个选项就会失效.
+;; 进而, 如果你访问一个在版本控制里面的 alias的话, 它不会自动去访问原文件, 这个是非常不爽的.
 ;; (setq vc-handled-backends ())
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
 ;; }}
@@ -63,7 +63,7 @@
 
 (setq save-abbrevs nil)
 
-;; Turn on abbrev mode globally
+;; Turn on abbrev mode globally.
 (setq-default abbrev-mode t)
 
 (setq url-show-status nil)
@@ -78,7 +78,7 @@
       (remq 'process-kill-buffer-query-function
             kill-buffer-query-functions))
 
-;; Cleanup recent files
+;; Cleanup recent files.
 (defun czqhuricane/cleanup-recentf ()
   (progn
     (and (fboundp 'recentf-cleanup)
@@ -86,7 +86,7 @@
 
 (add-hook 'kill-emacs-hook #'czqhuricane/cleanup-recentf)
 
-;; Change evil initial mode state
+;; Change evil initial mode state.
 (menu-bar-mode t)
 
 (add-hook 'before-save-hook
@@ -100,7 +100,7 @@
 ;; {{
 ;; @see: http://emacs.stackexchange.com/questions/13970/fixing-double-capitals-as-i-type
 (defun dcaps-to-scaps ()
-  "Convert word in DOuble CApitals to Single Capitals."
+  "Convert word in `DOuble CApitals' to `Single Capitals'."
   (interactive)
   (and (= ?w (char-syntax (char-before)))
     (save-excursion
@@ -113,7 +113,8 @@
 ;; }}
 
 (define-minor-mode dubcaps-mode
-  "Toggle `dubcaps-mode'.Converts words in DOuble CApitals to Single Capitals as you type."
+  "Toggle `dubcaps-mode'.
+Converts words in `DOuble CApitals' to `Single Capitals' as you type."
   :init-value nil
   :lighter (" DC")
   (if dubcaps-mode
@@ -146,13 +147,13 @@
 
 ;; {{
 ;; @see: http://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html
-(defun czqhuricane/stop-using-minibuffer ()
-  "kill the minibuffer"
+(defun hurricane/stop-using-minibuffer ()
+  "kill the minibuffer."
   (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
     (abort-recursive-edit)))
 ;; }}
 
-(add-hook 'mouse-leave-buffer-hook 'czqhuricane/stop-using-minibuffer)
+(add-hook 'mouse-leave-buffer-hook 'hurricane/stop-using-minibuffer)
 
 (setq tags-add-tables nil)
 
@@ -178,13 +179,13 @@
       make-backup-files nil
       create-lockfiles nil)
 
-;; FIXME: --vimgrep will break ivy-occur with wgrep
+;; FIXME: `--vimgrep' will break ivy-occur with wgrep.
 (setq counsel-async-split-string-re "\r?\n")
 ;; (setq counsel-ag-base-command  "ag --vimgrep --nocolor --nogroup %s")
 
 ;; {{
-;; `--line-number' forces line numbers (disabled by default on windows)
-;; No --vimgrep because it adds column numbers that wgrep can't handle
+;; `--line-number' forces line numbers (disabled by default on windows).
+;; No `--vimgrep' because it adds column numbers that wgrep can't handle.
 ;; @see: https://github.com/syl20bnr/spacemacs/pull/8065
 (defvar spacemacs--counsel-commands
   '(
@@ -193,12 +194,11 @@
     ("pt" . "pt -e --nocolor --nogroup %s %S .")
     ("ack" . "ack --nocolor --nogroup %s %S .")
     ("grep" . "grep -nrP %s %S ."))
-  "An alist of search commands and their corresponding commands
-with options to run in the shell.")
+  "An alist of search commands and their corresponding commands with options to run in the shell.")
 ;; }}
 
 ;; {{
-;; Search chinse must add this line
+;; Search chinse must add this line.
 ;; @see: https://emacs-china.org/t/emacs-helm-ag/6764
 (if (spacemacs/system-is-mswindows)
     (modify-coding-system-alist 'process "rg" '(utf-8 . chinese-gbk-dos))
@@ -222,7 +222,7 @@ with options to run in the shell.")
                 (insert-text-button
                  "Remove"
                  'action
-                 ;; In case lexical-binding is off
+                 ;; In case lexical-binding is off.
                  `(lambda (_)
                     (message "Removing %s of advice from %s" ',function ',advice)
                     (advice-remove ',function #',advice)
@@ -241,11 +241,11 @@ with options to run in the shell.")
 
 (advice-add 'helm-ag--edit :before #'hurricane-edit-ag)
 
-;; 使用 counsel-git 查找文件的时候，忽略指定后缀的文件
+;; 使用 `counsel-git' 查找文件的时候，忽略指定后缀的文件.
 (when (spacemacs/system-is-mswindows)
   (setq counsel-git-cmd "git ls-files --full-name -- \":!:*.js.meta\" \":!:*.meta\""))
 
-;; Auto switch to `occur buffer`
+;; Auto switch to `occur buffer`.
 (add-hook 'occur-hook
           '(lambda ()
              (switch-to-buffer-other-window "*Occur*")))

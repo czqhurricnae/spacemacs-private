@@ -1,3 +1,6 @@
+(defvar killed-file-list nil
+  "List of recently killed files.")
+
 (defcustom org-dot-image-dir-name "dotImg"
   "Default directory name for org dot image."
   :type 'string)
@@ -52,11 +55,11 @@
 
 (defun replace-in-the-entire-buffer (query replace subexp)
   "Replace query string with the replace string in the entire buffer.
-query: the string will be replaced.
-replace: the string used to replace.
+`query': the string will be replaced.
+`replace': the string used to replace.
 Subexp:
-1. used in function 'replace-match'.
-2. represent 'replace' argument will be implemented in which one match group."
+1. used in function `replace-match'.
+2. represent `replace' argument will be implemented in which one match group."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward query nil t)
@@ -78,7 +81,7 @@ Subexp:
 
 (defun image-to-base64-handler (file-full-path)
   "Encode the image file to base64 string.
-file-full-path: the full path of image which will be converted."
+`file-full-path': the full path of image which will be converted."
   (progn
     (setq result (trim-space-in-string (format "data:image/png;base64,%s"
                                                (tobase64 file-full-path))))
@@ -130,8 +133,8 @@ buffer file directory and insert a link to this file."
         (image-to-base64-converter full-file-path)))))
 
 (defun find-org-link-begin-and-end (plist string)
-  "Find link from plist whose link is equal to string, return a
-list just like '((name begin-position end-position))'"
+  "Find link from plist whose link is equal to `string', return a
+list just like `((name begin-position end-position))'"
   (let ((return-list '()))
     (progn
       (while plist
@@ -143,8 +146,8 @@ list just like '((name begin-position end-position))'"
       return-list)))
 
 (defun do-delete-link-function (be-list)
-  "Goto the begining of link and delete it, be-list is a list
-just like '((name begin-position end-position))'"
+  "Goto the begining of link and delete it, `be-list' is a list
+just like `((name begin-position end-position))'"
   (while be-list
     (progn
       (goto-char (car (car be-list)))
@@ -294,7 +297,7 @@ just like '((name begin-position end-position))'"
   )))
 
 (defun hurricane/org-insert-src-block (src-code-type)
-  "Insert a 'SRC-CODE-TYPE' type source code block in org-mode."
+  "Insert a `src-code-type' type source code block in org-mode."
   (interactive
     (let ((src-code-types
           '("ipython" "example" "value" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
@@ -349,7 +352,7 @@ just like '((name begin-position end-position))'"
     (kill-buffer-and-window)))
 
 (defun save-buffer-filter ()
-  "Replace the expected charaters except 'funcs.el<hurricane-org>' file."
+  "Replace the expected charaters except `funcs.el<hurricane-org>' file."
   (interactive)
   (save-buffer)
   (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/hurricane-org/funcs.el"))
@@ -359,15 +362,14 @@ just like '((name begin-position end-position))'"
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.
-'(= ?* (aref name 0))' <- check whether the first character of string name
-is '*'or not?
-if yes, then compara the 'useless-buffer-name' with the name of current buffer."
+`(= ?* (aref name 0))' <- check whether the first character of string name is '*'or not?
+If yes, then compara the 'useless-buffer-name' with the name of current buffer."
   (let ((name (buffer-name buffer-to-be-inspected)))
     (and (= ?* (aref name 0))
          (string-equal useless-buffer-name name))))
 
 (defun kill-buffer-without-confirmation (buffer)
-  "'kill-buffer' references the varibale 'kill-buffer-query-functions',
+  "`kill-buffer' references the varibale `kill-buffer-query-functions',
 remove the expected function from the relevant varibale."
   (interactive)
   (let ((buffer-modified-p nil))
@@ -377,7 +379,7 @@ remove the expected function from the relevant varibale."
     (kill-buffer buffer)))
 
 (defun kill-useless-buffer (useless-buffer-name)
-  "'(require 'cl)' brings in Emacs's Common Lisp Package,
+  "`(require 'cl)' brings in Emacs's Common Lisp Package,
 which is where the 'loop' macro lives."
   (require 'cl)
   (interactive)
@@ -401,9 +403,6 @@ should only be used in org-mode."
   (interactive)
   (goto-char (point-min))
   (while (search-forward "\r" nil t) (replace-match "")))
-
-(defvar killed-file-list nil
-  "List of recently killed files.")
 
 (defun add-file-to-killed-file-list ()
   "If buffer is associated with a file name, add that file to the

@@ -127,4 +127,3 @@
     (add-hook 'occur-hook
               '(lambda ()
                  (switch-to-buffer-other-window "*Occur*"))))
-;;; packages.el ends here

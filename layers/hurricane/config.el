@@ -23,7 +23,7 @@
   "Eslintfmt global configuration.")
 
 (defvar Baidu-OCR-Python-file ""
-  "Baidu OCR Python file locaiton. ")
+  "Baidu OCR Python file location. ")
 
 (setq-default
  org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"

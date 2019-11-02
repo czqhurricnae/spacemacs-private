@@ -1,5 +1,5 @@
 (defun hurricane/layout-format-name (name pos)
-  "Format the layout name given by NAME for display in mode-line."
+  "Format the layout name given by `name' for display in mode-line."
   (let* ((layout-name (if (file-directory-p name)
                           (file-name-nondirectory (directory-file-name name))
                         name))
@@ -53,7 +53,7 @@
       (setq frame-title-format '(:eval (hurricane/default-title-bar)))
     (setq frame-title-format '(:eval (hurricane/layouts-for-title-bar))))
   (redraw-frame))(defun hurricane/layout-format-name (name pos)
-  "Format the layout name given by NAME for display in mode-line."
+  "Format the layout name given by `name' for display in mode-line."
   (let* ((layout-name (if (file-directory-p name)
                           (file-name-nondirectory (directory-file-name name))
                         name))
@@ -113,11 +113,11 @@
 ;; @see: https://blog.csdn.net/xh_acmagic/article/details/78939246
 (defun hurricane/better-font()
   (interactive)
-  ;; english font
+  ;; English font.
   (if (display-graphic-p)
       (progn
         (set-face-attribute 'default nil :font (format   "%s:pixelsize=%d" "Inconsolata" 20)) ;; 11 13 17 19 23
-        ;; chinese font
+        ;; Chinese font.
         (dolist (charset '(kana han symbol cjk-misc bopomofo))
           (set-fontset-font (frame-parameter nil 'font)
                             charset

@@ -122,7 +122,7 @@
 
 (spacemacs/set-leader-keys "ar" 'my-ranger))
 
-;; Copy from spacemacs helm layer
+;; Copy from spacemacs `helm' layer.
 (defun hurricane-misc/init-helm-ag ()
   (use-package helm-ag
     :defer t
@@ -132,7 +132,7 @@
         "Search with `ag' with a default input."
         (require 'helm-ag)
         (cl-letf* (((symbol-value 'helm-ag-insert-at-point) 'symbol)
-                   ;; make thing-at-point choosing the active region first
+                   ;; Make thing-at-point choosing the active region first.
                    ((symbol-function 'this-fn) (symbol-function 'thing-at-point))
                    ((symbol-function 'thing-at-point)
                     (lambda (thing)
@@ -144,7 +144,7 @@
           (funcall func dir)))
 
       (defun spacemacs//helm-do-search-find-tool (base tools default-inputp)
-        "Create a cond form given a TOOLS string list and evaluate it."
+        "Create a cond form given a `tools' string list and evaluate it."
         (eval
          `(cond
            ,@(mapcar
@@ -162,7 +162,7 @@
               tools)
            (t 'helm-do-grep))))
 
-      ;; Search in current file ----------------------------------------------
+      ;; Search in current file. ----------------------------------------------
 
       (defun spacemacs/helm-file-do-ag (&optional _)
         "Wrapper to execute `helm-ag-this-file.'"
@@ -177,7 +177,7 @@
       (defun spacemacs/helm-file-smart-do-search (&optional default-inputp)
         "Search in current file using `dotspacemacs-search-tools'.
         Search for a search tool in the order provided by `dotspacemacs-search-tools'
-        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        If `default-inputp' is non nil then the current region or symbol at point
         are used as default input."
         (interactive)
         (call-interactively
@@ -186,13 +186,12 @@
                                               default-inputp)))
 
       (defun spacemacs/helm-file-smart-do-search-region-or-symbol ()
-        "Search in current file using `dotspacemacs-search-tools' with
-        default input.
+        "Search in current file using `dotspacemacs-search-tools' with default input.
         Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-file-smart-do-search t))
 
-      ;; Search in files -----------------------------------------------------
+      ;; Search in files. -----------------------------------------------------
 
       (defun spacemacs/helm-files-do-ag (&optional dir)
         "Search in files with `ag' using a default input."
@@ -229,7 +228,7 @@
       (defun spacemacs/helm-files-smart-do-search (&optional default-inputp)
         "Search in opened buffers using `dotspacemacs-search-tools'.
         Search for a search tool in the order provided by `dotspacemacs-search-tools'
-        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        If `default-inputp' is non nil then the current region or symbol at point
         are used as default input."
         (interactive)
         (call-interactively
@@ -244,7 +243,7 @@
         (interactive)
         (spacemacs/helm-files-smart-do-search t))
 
-      ;; Search in buffers ---------------------------------------------------
+      ;; Search in buffers. ---------------------------------------------------
 
       (defun spacemacs/helm-buffers-do-ag (&optional _)
         "Wrapper to execute `helm-ag-buffers.'"
@@ -281,7 +280,7 @@
       (defun spacemacs/helm-buffers-smart-do-search (&optional default-inputp)
         "Search in opened buffers using `dotspacemacs-search-tools'.
         Search for a search tool in the order provided by `dotspacemacs-search-tools'
-        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        If `default-inputp' is non nil then the current region or symbol at point
         are used as default input."
         (interactive)
         (call-interactively
@@ -290,13 +289,12 @@
                                               default-inputp)))
 
       (defun spacemacs/helm-buffers-smart-do-search-region-or-symbol ()
-        "Search in opened buffers using `dotspacemacs-search-tools' with
-        default input.
+        "Search in opened buffers using `dotspacemacs-search-tools' with default input.
         Search for a search tool in the order provided by `dotspacemacs-search-tools'."
         (interactive)
         (spacemacs/helm-buffers-smart-do-search t))
 
-      ;; Search in project ---------------------------------------------------
+      ;; Search in project. ---------------------------------------------------
 
       (defun spacemacs/helm-project-do-ag ()
         "Search in current project with `ag'."
@@ -351,7 +349,7 @@
       (defun spacemacs/helm-project-smart-do-search (&optional default-inputp)
         "Search in current project using `dotspacemacs-search-tools'.
         Search for a search tool in the order provided by `dotspacemacs-search-tools'
-        If DEFAULT-INPUTP is non nil then the current region or symbol at point
+        If `default-inputp' is non nil then the current region or symbol at point
         are used as default input."
         (interactive)
         (let ((projectile-require-project-root nil))
@@ -367,8 +365,8 @@
         (interactive)
         (spacemacs/helm-project-smart-do-search t))
 
-      ;; This overrides the default C-s action in helm-projectile-switch-project
-      ;; to search using ag/pt/whatever instead of just grep
+      ;; This overrides the default C-s action in helm-projectile-switch-project.
+      ;; To search using ag/pt/whatever instead of just grep.
       (with-eval-after-load 'helm-projectile
         (defun spacemacs/helm-project-smart-do-search-in-dir (dir)
           (interactive)
@@ -381,15 +379,15 @@
             (helm-exit-and-execute-action
              'spacemacs/helm-project-smart-do-search-in-dir))))
 
-      ;; evilify the helm-grep buffer
+      ;; Evilify the helm-grep buffer.
       (evilified-state-evilify helm-grep-mode helm-grep-mode-map
         (kbd "RET") 'helm-grep-mode-jump-other-window
         (kbd "q") 'quit-window)
 
       (spacemacs/set-leader-keys
-        ;; helm-ag marks
+        ;; Helm-ag marks.
         "s`"  'helm-ag-pop-stack
-        ;; Opened buffers scope
+        ;; Opened buffers scope.
         "sb"  'spacemacs/helm-buffers-smart-do-search
         "sB"  'spacemacs/helm-buffers-smart-do-search-region-or-symbol
         "sab" 'helm-do-ag-buffers
@@ -398,12 +396,12 @@
         "skB" 'spacemacs/helm-buffers-do-ack-region-or-symbol
         "stb" 'spacemacs/helm-buffers-do-pt
         "stB" 'spacemacs/helm-buffers-do-pt-region-or-symbol
-        ;; Current file scope
+        ;; Current file scope.
         "ss"  'spacemacs/helm-file-smart-do-search
         "sS"  'spacemacs/helm-file-smart-do-search-region-or-symbol
         "saa" 'helm-ag-this-file
         "saA" 'spacemacs/helm-file-do-ag-region-or-symbol
-        ;; Files scope
+        ;; Files scope.
         "sf"  'spacemacs/helm-files-smart-do-search
         "sF"  'spacemacs/helm-files-smart-do-search-region-or-symbol
         "saf" 'helm-do-ag
@@ -412,7 +410,7 @@
         "skF" 'spacemacs/helm-files-do-ack-region-or-symbol
         "stf" 'spacemacs/helm-files-do-pt
         "stF" 'spacemacs/helm-files-do-pt-region-or-symbol
-        ;; Current project scope
+        ;; Current project scope.
         "/"   'spacemacs/helm-project-smart-do-search
         "*"   'spacemacs/helm-project-smart-do-search-region-or-symbol
         "sp"  'spacemacs/helm-project-smart-do-search
@@ -435,7 +433,7 @@
 (defun hurricane-misc/post-init-hydra ()
   (progn
     (defhydra hydra-hotspots (:color blue)
-      "Hotspots"
+      "Hotspots."
       ("b" blog-admin-start "blog")
       ("g" helm-github-stars "helm github stars")
       ("r" hurricane/run-current-file "run current file"))
@@ -462,7 +460,7 @@
 
     (defhydra
       hydra-apropos (:color blue)
-      "Apropos"
+      "Apropos."
       ("a" apropos "apropos")
       ("c" apropos-command "cmd")
       ("d" apropos-documentation "doc")
@@ -477,7 +475,7 @@
 
     (defhydra
       hydra-customize-apropos (:color blue)
-      "Apropos (customize)"
+      "Apropos (customize)."
       ("a" customize-apropos "apropos")
       ("f" customize-apropos-faces "faces")
       ("g" customize-apropos-groups "groups")
@@ -525,7 +523,7 @@
         "." 'spacemacs/gist-list-mode-transient-state/body))
     ))
 
-;; Preview files in dired
+;; Preview files in dired.
 (defun hurricane-misc/init-peep-dired ()
   (use-package peep-dired
     :defer t
@@ -547,7 +545,7 @@
     (smartparens-global-mode t)
     (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens)
     :config
-    ;; 写 lisp 时不成对补全 "'" 和 "`"
+    ;; 写 lisp 时不成对补全 "'" 和 "`".
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (setq sp-highlight-pair-overlay t)
@@ -566,11 +564,11 @@
 (defun hurricane-misc/post-init-helm ()
   (with-eval-after-load 'helm
     (progn
-      ;; Limit max number of matches displayed for speed
+      ;; Limit max number of matches displayed for speed.
       (setq helm-candidate-number-limit 100)
-      ;; Ignore boring files like .o and .a
+      ;; Ignore boring files like .o and .a.
       (setq helm-ff-skip-boring-files t)
-      ;; Replace locate with spotlight on Mac
+      ;; Replace locate with spotlight on macOS.
       (setq helm-locate-command "mdfind -name %s %s")
       (push "\\.emlx$" helm-boring-file-regexp-list))))
 
@@ -668,7 +666,7 @@
       (define-key elfeed-search-mode-map (kbd "R") 'hurricane/elfeed-mark-all-as-read)
 
       (defadvice elfeed-show-yank (after elfeed-show-yank-to-kill-ring activate compile)
-        "Insert the yanked text from x-selection to kill ring"
+        "Insert the yanked text from x-selection to kill ring."
         (kill-new (x-get-selection)))
 
       (ad-activate 'elfeed-show-yank))))
@@ -678,7 +676,7 @@
     (setcdr evil-insert-state-map nil)
     (define-key evil-insert-state-map [escape] 'evil-normal-state)
 
-    ;; Disable highlight when use swiper or evil ex search, this option won't effect evil-ex-search-next command
+    ;; Disable highlight when use swiper or evil ex search, this option won't effect evil-ex-search-next command.
     (setq-default evil-ex-search-persistent-highlight nil)
 
     (push "TAGS" spacemacs-useless-buffers-regexp)
@@ -689,12 +687,12 @@
     (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
     (define-key evil-insert-state-map (kbd "C-r") 'evil-paste-from-register)
 
-    ;; Change evil initial mode state
+    ;; Change evil initial mode state.
     (loop for (mode . state) in
           '((shell-mode . normal))
           do (evil-set-initial-state mode state))
 
-    ;; Mimic "nzz" behaviou in vim
+    ;; Mimic "nzz" behaviou in vim.
     (defadvice evil-search-next (after advice-for-evil-search-next activate)
       (evil-scroll-line-to-center (line-number-at-pos)))
 
@@ -721,7 +719,7 @@
     (define-key evil-normal-state-map (kbd "] b") 'next-buffer)
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
 
-    ;; {{ Unbinding Evil's mappings
+    ;; {{ Unbinding Evil's mappings.
     ;; @see: https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
     (eval-after-load "evil-maps"
       (dolist (map '(evil-motion-state-map
@@ -764,9 +762,9 @@
     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
     (define-key evil-visual-state-map (kbd "mf") 'mc/mark-all-like-this-in-defun)
 
-    ;; In spacemacs, we always use evilify miscro state
+    ;; In spacemacs, we always use evilify miscro state.
     (evil-add-hjkl-bindings package-menu-mode-map 'emacs)
-    ;; Don't move back the cursor one position when exiting insert mode
+    ;; Don't move back the cursor one position when exiting insert mode.
     (setq evil-move-cursor-back nil)
 
     (evil-define-key 'emacs term-raw-map (kbd "C-w")
@@ -780,16 +778,6 @@
           evil-operator-state-tag (propertize "[O]" 'face '((:background "purple"))))
     (setq evil-insert-state-cursor '("chartreuse3" box))
     (define-key evil-insert-state-map (kbd "C-z") 'evil-emacs-state)
-    ;; This will break visual column edit
-    ;; enable hybrid editing style
-    ;; (defadvice evil-insert-state (around hurricane/holy-mode activate)
-    ;;   "Preparing the holy water flasks."
-    ;;   (evil-emacs-state))
-    ;; disable c-[ temporally
-    ;; (define-key input-decode-map [?\C-\[] (kbd "<C-[>"))
-    ;; (bind-keys ("<C-[>" . evil-normal-state))
-    ;; (setq evil-emacs-state-cursor '("chartreuse3" (bar . 2)))
-    ;; (define-key evil-emacs-state-map [escape] 'evil-normal-state)
     ))
 
 (defun hurricane-misc/init-visual-regexp ()
@@ -818,17 +806,17 @@
 
       ;; @see: http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
       (define-prefix-command 'endless/mc-map)
-      ;; C-x m is usually `compose-mail'. Bind it to something
+      ;; `C-x m' is usually `compose-mail'. Bind it to something.
       ;; Else if you use this command.
       (define-key ctl-x-map "m" 'endless/mc-map)
 
-      ;; Really really nice!
+      ;; Really really nice.
       (define-key endless/mc-map "i" #'mc/insert-numbers)
       (define-key endless/mc-map "h" #'mc-hide-unmatched-lines-mode)
       (define-key endless/mc-map "a" #'mc/mark-all-like-this)
       (define-key endless/mc-map "t" #'set-rectangular-region-anchor)
 
-      ;; Occasionally useful
+      ;; Occasionally useful.
       (define-key endless/mc-map "d" #'mc/mark-all-dwim)
       (define-key endless/mc-map "f" #'mc/mark-all-symbols-like-this-in-defun)
       (define-key endless/mc-map "r" #'mc/reverse-regions)
@@ -904,24 +892,24 @@
     (progn
       ;; If you use other VCS (subversion, for example), enable the following option.
       ;; (setq ffip-project-file ".svn")
-      ;; In MacOS X, the search file command is CMD+p.
+      ;; In macOS X, the search file command is `cmd-p'.
       ;; For this project, I'm only interested certain types of files.
       (setq-default ffip-patterns '("*.html" "*.js" "*.css" "*.java" "*.xml" "*.cpp" "*.h" "*.c" "*.mm" "*.m" "*.el"))
-      ;; If the full path of current file is under SUBPROJECT1 or SUBPROJECT2.
+      ;; If the full path of current file is under `subproject1' or `subproject2'.
       ;; OR if I'm reading my personal issue track document.
       (defadvice find-file-in-project (before my-find-file-in-project activate compile)
         (when (ffip-current-full-filename-match-pattern-p "\\(/fireball\\)")
-          ;; set the root directory into "~/projs/PROJECT_DIR"
+          ;; Set the root directory into `~/projs/project_dir'.
           (setq-local ffip-project-root "~/Github/fireball")
-          ;; Well, I'm not interested in concatenated BIG js file or file in dist.
+          ;; Well, I'm not interested in concatenated big js file or file in dist.
           (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'")
           ;; Do not search files in below directories, the default value is better.
           (dolist (item '("*/docs/html/*" "*.meta" "*/cocos2d-x/*" "*.asset" "*/visual-tests/res/*"))
             (push item  ffip-prune-patterns)))
         (when (ffip-current-full-filename-match-pattern-p "\\(/cocos2d-x\\)")
-          ;; Set the root directory into "~/projs/PROJECT_DIR"
+          ;; Set the root directory into `~/projs/project_dir'
           (setq-local ffip-project-root "~/cocos2d-x")
-          ;; Well, I'm not interested in concatenated BIG js file or file in dist.
+          ;; Well, I'm not interested in concatenated big js file or file in dist.
           (setq-local ffip-find-options "-not -size +64k -not -iwholename '*/bin/*'")
           ;; Do not search files in below directories, the default value is better.
           ;; (setq-default ffip-prune-patterns '(".git" ".hg" "*.svn" "node_modules" "bower_components" "obj"))
@@ -945,8 +933,7 @@
       (interactive)
       (if (projectile-project-p)
           (multi-occur (projectile-project-buffer-files) my-simple-todo-regex)
-        (occur my-simple-todo-regex)))
-    ))
+        (occur my-simple-todo-regex)))))
 
 (defun hurricane-misc/post-init-prodigy ()
   (progn
@@ -1012,7 +999,7 @@
 
     (defun refresh-chrome-current-tab (beg end length-before)
       (call-interactively 'hurricane/browser-refresh--chrome-applescript))
-      ;; add watch for prodigy-view-mode buffer change event
+      ;; Add watch for prodigy-view-mode buffer change event.
       (add-hook 'prodigy-view-mode-hook
                 #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))))
 
@@ -1117,7 +1104,7 @@
           "Set upstream" "--set-upstream")
         ))
 
-    ;; Prefer two way ediff
+    ;; Prefer two way ediff.
     (setq magit-ediff-dwim-show-on-hunks t)
 
     (setq magit-repository-directories '("~/Python/"))
@@ -1137,7 +1124,7 @@
       (define-key git-messenger-map (kbd "f") 'hurricane/github-browse-commit))))
 
 ;; {{
-;; Fix:markdown failed with exit code 127
+;; Fix: markdown failed with exit code 127.
 ;; @see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
 ;; @see: https://github.com/jrblevin/markdown-mode/issues/177
 (defun hurricane-misc/post-init-markdown-mode ()
@@ -1170,7 +1157,7 @@
               compilation-buffer)
       (add-hook 'shell-mode-hook (lambda () (highlight-regexp
                                        "\\[OK\\]" "hi-green-b")))
-      ;; Make URLs clickable.
+      ;; Make `URLs' clickable.
       (add-hook 'shell-mode-hook (lambda ()(goto-address-mode)))
 
       ;; Make file paths clickable.
@@ -1182,7 +1169,7 @@
 
       ;; @see: https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
       ;; Change directory with ido.
-      ;; Ido will keep asking for subdirectory after selecting directory with RET, to finish selection press C-RET.
+      ;; Ido will keep asking for subdirectory after selecting directory with `RET', to finish selection press `C-RET'.
       (require 'ido)
       (require 'cl-lib)
       (require 'shell)
@@ -1210,7 +1197,7 @@
 
       (defun my-complete-directory-name (directory current-input)
         "Prompts user for directories in `directory', `current-input'
-        is the string entered by the user till now"
+        is the string entered by the user till now."
         (let* ((filtered-input (my-filter-cd-input current-input))
                (directory-path (car filtered-input))
                (partial-input (cadr filtered-input))
@@ -1228,7 +1215,7 @@
 
       (defun my-prompt-for-dir-or-fallback ()
         "If current shell command is `cd' prompt for directory
-        using ido otherwise fallback to normal completion"
+        using ido otherwise fallback to normal completion."
         (interactive)
         (let* ((user-input (buffer-substring-no-properties (comint-line-beginning-position)
                                                            (point-max))))

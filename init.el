@@ -57,7 +57,7 @@ values."
      (auto-completion :variables
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
-		      auto-completion-enable-help-tooltip nil
+                      auto-completion-enable-help-tooltip nil
                       :disabled-for org markdown)
      (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English"
                      osx-command-as 'super)
@@ -93,7 +93,9 @@ values."
                         layouts-enable-autosave nil
                         layouts-autosave-delay 300)
      theming
-     czqhurricane)
+     (chinese :variables chinese-default-input-method 'pinyin
+              chinese-enable-youdao-dict t)
+     hurricane)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -388,7 +390,8 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (package-initialize)
-  ;; {{Fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
+  ;; {{
+  ;; Fix bug: Your 'python-shell-interpreter' doesn't seem to support readline
   ;; @See: https://emacs.stackexchange.com/questions/30082/your-python-shell-interpreter-doesn-t-seem-to-support-readline
   (with-eval-after-load 'python
     (defun python-shell-completion-native-try ()

@@ -120,8 +120,8 @@ values."
                     helm-c-yasnippet ace-jump-helm-line helm-make magithub
                     helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp counsel-projectile
-		                highlight-parentheses org-pdfview doc-view org-projectile
-                    pyim slime )
+                    highlight-parentheses org-pdfview doc-view org-projectile
+                    slime)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any

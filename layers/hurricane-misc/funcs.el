@@ -222,7 +222,7 @@ e.g. `Sunday, September 17, 2000'."
       (counsel-file-jump))))
 
 (defun hurricane/goto-match-paren (arg)
-  "Go to the matching  if on `(){}[]', similar to vi style of % ."
+  "Go to the matching  if on `(){}[]', similar to vi style of `%'."
   (interactive "p")
   ;; First, check for "outside of bracket" positions expected by forward-sexp, etc.
   (cond ((looking-at "[\[\(\{]") (evil-jump-item))
@@ -239,7 +239,7 @@ e.g. `Sunday, September 17, 2000'."
   (aset buffer-display-table ?\^M []))
 
 (defun hurricane/remove-dos-eol ()
-  "Replace DOS eolns CR LF with Unix eolns CR".
+  "Replace DOS eolns CR LF with Unix eolns CR."
   (interactive)
   (goto-char (point-min))
   (while (search-forward "\r" nil t) (replace-match "")))
@@ -540,7 +540,7 @@ If the buffer is currently not visible, makes it sticky."
 
 (defun github-browse-file--relative-url ()
   "Return `username/repo' for current repository.
-  Error out if this isn't a GitHub repo."
+Error out if this isn't a GitHub repo."
   (require 'vc-git)
   (let ((url (vc-git--run-command-string nil "config" "remote.origin.url")))
     (unless url (error "Not in a GitHub repo"))

@@ -79,9 +79,7 @@
       spacemacs-buffer-mode ibuffer-mode help-mode deft-text-mode) . hide-mode-line-mode)))
 ;; }}
 
-(defun hurricane-ui/init-pangu-spacing ()
-  (use-package pangu-spacing
-  :init
+(defun hurricane-ui/post-init-pangu-spacing ()
   (progn
     (setq pangu-spacing-include-regexp
           (rx (group-n 1 (in "a-zA-Z0-9,.!?])%#@&1234567890,;\":\`"))
@@ -96,7 +94,7 @@
     (add-hook 'org-mode-hook
               '(lambda ()
                   (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
-                  (spacemacs/toggle-toggle-pangu-spaceing-on))))))
+                  (spacemacs/toggle-toggle-pangu-spaceing-on)))))
 
 ;; {{
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md

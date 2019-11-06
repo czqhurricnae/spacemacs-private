@@ -94,7 +94,8 @@ values."
                         layouts-enable-autosave nil
                         layouts-autosave-delay 300)
      theming
-     (chinese :variables chinese-default-input-method 'pinyin
+     (chinese :variables
+              chinese-default-input-method 'pinyin
               chinese-enable-youdao-dict t)
      hurricane)
    ;; List of additional packages that will be installed without being

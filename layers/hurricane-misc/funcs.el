@@ -4,7 +4,7 @@
       (progn
         (highlight-frame-toggle)
         (deactivate-mark))
-    (symbol-overlay-put)))
+    (spacemacs/symbol-overlay)))
 
 ;; @see: https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
 (defmacro adjust-major-mode-keymap-with-evil (m &optional r)

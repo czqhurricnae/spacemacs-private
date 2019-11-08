@@ -37,3 +37,6 @@
 (global-set-key (kbd "C-x c y") 'hurricane/copy-chrome-current-tab-url)
 (global-set-key (kbd "C-x c s") 'hurricane/chrome-switch-tab)
 (global-set-key (kbd "C-x c o") 'hurricane/open-link-in-chrome)
+
+;; Highlight.
+(spacemacs/set-leader-keys "hh" 'hurricane/highlight-dwim)

@@ -56,36 +56,13 @@
           ('hi-pink . 0)
           ('hi-blue-b . 0)))))
 
-(defun hurricane-misc/init-symbol-overlay ()
-  (use-package symbol-overlay
-    :init
+(defun hurricane-misc/post-init-symbol-overlay ()
+  (with-eval-after-load 'symbol-overlay
     (progn
-      (defun symbol-overlay-switch-first ()
-        (interactive)
-        (let* ((symbol (symbol-overlay-get-symbol))
-               (keyword (symbol-overlay-assoc symbol))
-               (a-symbol (car keyword))
-               (before (symbol-overlay-get-list a-symbol 'car))
-               (count (length before)))
-          (symbol-overlay-jump-call 'symbol-overlay-basic-jump (- count))))
-
-      (defun symbol-overlay-switch-last ()
-        (interactive)
-        (let* ((symbol (symbol-overlay-get-symbol))
-               (keyword (symbol-overlay-assoc symbol))
-               (a-symbol (car keyword))
-               (after (symbol-overlay-get-list a-symbol 'cdr))
-               (count (length after)))
-          (symbol-overlay-jump-call 'symbol-overlay-basic-jump (- count 1))))
-      ;; (spacemacs/set-leader-keys "hh" 'symbol-overlay-put)
-      ;; (spacemacs/set-leader-keys "hc" 'symbol-overlay-remove-all)
-      (global-set-key (kbd "M-h") 'symbol-overlay-put)
-      (global-set-key (kbd "M-n") 'symbol-overlay-switch-forward)
-      (global-set-key (kbd "M-p") 'symbol-overlay-switch-backward))
-    :config
-    (progn
-      (define-key symbol-overlay-map (kbd "<") 'symbol-overlay-switch-first)
-      (define-key symbol-overlay-map (kbd ">") 'symbol-overlay-switch-last))))
+      (spacemacs/transient-state-register-add-bindings 'symbol-overlay
+        '((">" symbol-overlay-jump-last)
+          ("s" spacemacs/swiper-region-or-symbol)
+          ("<" symbol-overlay-jump-first))))))
 
 (defun hurricane-misc/post-init-golden-ratio ()
   (with-eval-after-load 'golden-ratio

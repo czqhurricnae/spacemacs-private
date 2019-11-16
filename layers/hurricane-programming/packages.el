@@ -134,8 +134,7 @@ variables such as `exec-path'."
 ;; {{
 ;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
 ;; @see: https://github.com/flycheck/flycheck/issues/997
-;; $ npm install -g eslint
-;; $ npm install -g eslint-plugin-react
+;; $ npm install -g eslint babel-eslint eslint-plugin-react js-beautify prettier
 ;; $ cd XXX
 ;; $ eslint --init
 (defun hurricane-programming/post-init-flycheck ()
@@ -152,10 +151,11 @@ variables such as `exec-path'."
       ;;                            (flycheck-mode)
       ;;                            (flycheck-add-mode 'javascript-eslint 'js2-mode)
       ;;                            (flycheck-select-checker 'javascript-eslint)))
-      (add-hook 'react-mode-hook (lambda ()
-                                   (flycheck-mode)
-                                   (flycheck-add-mode 'javascript-standard 'react-mode)
-                                   (flycheck-select-checker 'javascript-standard))))))
+      (add-hook 'rjsx-mode-hook (lambda ()
+        (setq exec-path (cons "/usr/local/bin/node" exec-path))
+        (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
+        (flycheck-select-checker 'javascript-standard)))
+      )))
 ;; }}
 
 (defun hurricane-programming/init-flycheck-package ()

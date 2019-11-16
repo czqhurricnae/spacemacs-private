@@ -47,7 +47,7 @@
     :config
     (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-    (add-to-list 'auto-mode-alist '("\\.jsx$" . react-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
     (add-hook 'web-mode-hook  'web-mode-init-hook)
     ;; Remove the annoying underline in flycheck.
     (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
@@ -198,7 +198,7 @@ variables such as `exec-path'."
 (defun hurricane-programming/init-standardfmt ()
   (use-package standardfmt
     :config
-    (add-hook 'react-mode-hook #'standardfmt-mode)))
+    (add-hook 'rjsx-mode-hook #'standardfmt-mode)))
 
 (defun hurricane-programming/init-eslintfmt ()
   (use-package eslintfmt

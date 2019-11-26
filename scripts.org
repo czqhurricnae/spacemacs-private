@@ -1,0 +1,40 @@
+# -*- eval: (setq org-download-image-dir (concat default-directory "/screenshotImg")); -*-
+@see: https://stackoverflow.com/questions/47891892/org-mode-how-to-automatically-generate-nice-file-hierarchy-trees-with-well-form
+$ brew install tree
+使用前先安装 ~tree~ 命令.
+#+NAME: createTree
+#+BEGIN_SRC sh :results drawer :var toInclude="*.*" :var toExclude="" :var directory="./" :var createLink="true" :exports none
+set -e
+buffer=$(mktemp /tmp/buffer.XXXXXXXXX)
+current_directory=$(pwd)
+cd $(eval echo "$directory")
+tree -a -P "$toInclude" -I "$toExclude" -if --noreport  --prune \
+    | sed "s/.//"  | sed "s/^\///"  > "$buffer"
+
+if [ $(grep --regexp="$" --count "$buffer") -eq 0 ]; then
+    echo "**ERROR empty list**"
+else
+    for f in $(cat "$buffer")
+    do
+    filename=$(basename $f)
+    ext="${filename##*.}"
+    baseFilename="${filename%.*}"
+    if [ -f $f ]; then
+        # removes org extension (only)
+        if [ "$ext" = "org" ]; then
+        filename="$baseFilename"
+        fi
+        # creates org link (or not)
+        if [ "$createLink" = true ]; then
+        echo "$(echo "$f" | tr -cd / | tr / \\t)+ [[file:"$directory/$f"][$filename]]"
+        else
+        echo "$(echo "$f" | tr -cd / | tr / \\t)+ $filename"
+        fi
+    else
+        echo  "$(echo "$f" | tr -cd / | tr / \\t)+ $filename/"
+    fi
+    done
+fi
+rm "$buffer"
+cd "$current_directory"
+#+END_SRC

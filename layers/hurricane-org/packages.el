@@ -130,6 +130,8 @@
             (expand-file-name "~/.spacemacs.d/plantuml.jar"))
       (setq org-ditaa-jar-path "~/.spacemacs.d/ditaa.jar")
 
+      (org-babel-lob-ingest scripts-file)
+
       ;; Copy from chinese layer.
       (defadvice org-html-paragraph (before org-html-paragraph-advice
                                             (paragraph contents info) activate)

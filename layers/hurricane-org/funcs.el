@@ -304,7 +304,7 @@ just like `((name begin-position end-position))'"
             "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
             "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
             "haskell" "latex" "lisp" "matlab" "ocaml" "perl" "ruby"
-            "scheme" "sqlite" "graphviz" "html")))
+            "scheme" "sqlite" "graphviz" "html" "call")))
       (list (ido-completing-read "Source code type: " src-code-types))))
   (catch 'return-catch
   (progn
@@ -329,6 +329,8 @@ just like `((name begin-position end-position))'"
               (insert (format "#+BEGIN_SRC %s :results value table :exports both\n" src-code-type)))
             ((equal src-code-type "dot")
               (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
+            ((equal src-code-type "call")
+             (insert "#+CALL: createTree(toInclude=\"*.*\", toExclude=\"\", directory=\"\", createLink=\"true\")"))
             ((equal src-code-type "graphviz")
               (create-graphviz)
             (throw 'return-catch "I will not going any where else."))

@@ -2,7 +2,6 @@
   '(
     flycheck
     dash-at-point
-    nodejs-repl
     virtualenvwrapper
     web-mode
     slime
@@ -13,7 +12,6 @@
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
     (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
     (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
-    add-node-modules-path
     ;; prettier-js
 ))
 
@@ -117,12 +115,6 @@ variables such as `exec-path'."
     (setq eshell-path-env value
           exec-path (append (parse-colon-path value) (list exec-directory)))))
 
-;; {{
-;; @see: https://github.com/abicky/nodejs-repl.el
-(defun hurricane-programming/init-nodejs-repl ()
-  (use-package nodejs-repl))
-;; }}
-
 (defun hurricane-programming/init-dash-at-point ()
   (use-package dash-at-point
     :config
@@ -191,9 +183,6 @@ variables such as `exec-path'."
 ;;                                  (enable-minor-mode
 ;;                                   '("\\.jsx?\\'" . prettier-js-mode))))))
 ;; }}
-
-(defun hurricane-programming/init-add-node-modules-path ()
-  (use-package add-node-modules-path))
 
 (defun hurricane-programming/init-standardfmt ()
   (use-package standardfmt

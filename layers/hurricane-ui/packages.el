@@ -75,8 +75,14 @@
 (defun hurricane-ui/init-hide-mode-line ()
   (use-package hide-mode-line
     :hook
-    ((neotree-mode imenu-list-minor-mode minimap-mode
-      spacemacs-buffer-mode ibuffer-mode help-mode deft-text-mode) . hide-mode-line-mode)))
+    ((neotree-mode
+      imenu-list-minor-mode
+      minimap-mode
+      spacemacs-buffer-mode
+      ibuffer-mode
+      help-mode
+      deft-text-mode
+      ) . hide-mode-line-mode)))
 ;; }}
 
 (defun hurricane-ui/post-init-pangu-spacing ()
@@ -124,27 +130,27 @@
         :on-enter (awesome-tab-mode t)
         :on-exit (awesome-tab-mode -1)
         :bindings
-        ;; Fast Move
+        ;; Fast Move.
         ("p" awesome-tab-backward-group)
         ("n" awesome-tab-forward-group)
         ("h" awesome-tab-backward-tab)
         ("l" awesome-tab-forward-tab)
         ("H" awesome-tab-forward-tab-other-window)
         ("L" awesome-tab-backward-tab-other-window)
-        ;; Tab
+        ;; Tab.
         ("C-a" awesome-tab-select-beg-tab)
         ("C-e" awesome-tab-select-end-tab)
         ("C-j" awesome-tab-ace-jump)
         ("C-h" awesome-tab-move-current-tab-to-left)
         ("C-l" awesome-tab-move-current-tab-to-right)
-        ;; Window
+        ;; Window.
         ("-" split-window-below)
         ("v" split-window-right)
         ("D" ace-delete-window)
-        ;; Search
+        ;; Search.
         ("b" ivy-switch-buffer)
         ("g" awesome-tab-counsel-switch-group)
-        ;; Misc
+        ;; Misc.
         ("C-k" kill-current-buffer)
         ("C-S-k" awesome-tab-kill-other-buffers-in-current-group)
         ("q" nil :exit t))

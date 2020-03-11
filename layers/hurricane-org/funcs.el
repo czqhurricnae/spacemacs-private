@@ -554,3 +554,54 @@ and insert a link to this file."
     (insert (concat "#+CAPTION: " input-string))
     (newline-and-indent)
     (insert (format "<<%s>>" input-string))))
+
+(defun save-and-publish-website()
+    "Save all buffers and publish."
+  (interactive)
+  (when (yes-or-no-p "Really save and publish current project?")
+    (save-some-buffers t)
+    (org-publish-project "website" t)
+    (message "Site published done.")))
+
+(defun save-and-publish-statics ()
+  "Just copy statics like js, css, and image file .etc."
+  (interactive)
+  (org-publish-project "statics" t)
+  (message "Copy statics done."))
+
+(defun save-and-publish-file ()
+    "Save current buffer and publish."
+  (interactive)
+  (save-buffer t)
+  (org-publish-current-file t))
+
+(defun delete-org-and-html ()
+  "Delete current org and the relative html when it exists."
+  (interactive)
+  (when (yes-or-no-p "Really delete current org and the relative html?")
+    (let ((fileurl (concat "~/site/public/" (file-name-base (buffer-name)) ".html")))
+      (if (file-exists-p fileurl)
+          (delete-file fileurl))
+      (delete-file (buffer-file-name))
+      (kill-this-buffer)
+      (message "Delete org and the relative html done."))))
+
+(defun just-delete-relative-html ()
+  "Just delete the relative html when it exists."
+  (interactive)
+  (when (yes-or-no-p "Really delete the relative html?")
+    (let ((fileurl (concat "~/site/public/" (file-name-base (buffer-name)) ".html")))
+      (if (file-exists-p fileurl)
+          (progn
+            (delete-file fileurl)
+            (message "Delete the relative html done.")
+            )
+        (message "None relative html.")))))
+
+(defun preview-current-buffer-in-browser ()
+  "Open current buffer as html."
+  (interactive)
+  (let ((fileurl (concat "http://127.0.0.1:8080/" (file-name-base (buffer-name)) ".html")))
+    (save-and-publish-file)
+    (unless (httpd-running-p) (httpd-start))
+    (browse-url fileurl)))

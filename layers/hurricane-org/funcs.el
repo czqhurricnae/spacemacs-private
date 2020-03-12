@@ -605,3 +605,16 @@ and insert a link to this file."
     (save-and-publish-file)
     (unless (httpd-running-p) (httpd-start))
     (browse-url fileurl)))
+
+;; {{
+;; Fix: ox-publish 导出的静态博客网页代码片段中代码行末尾有乱码.
+;; @see: https://github.com/alpaker/Fill-Column-Indicator/issues/45#issuecomment-108911964
+(defun fci-mode-override-advice (&rest args))
+
+(advice-add 'org-html-fontify-code :around
+            (lambda (fun &rest args)
+              (advice-add 'fci-mode :override #'fci-mode-override-advice)
+              (let ((result  (apply fun args)))
+                (advice-remove 'fci-mode #'fci-mode-override-advice)
+                result)))
+;; }}

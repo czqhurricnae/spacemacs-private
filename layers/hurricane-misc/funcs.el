@@ -704,11 +704,17 @@ If a change in `file-attributes' happended call func."
     ;; Get `filename' from `URL' to create html and org file.
     (setq html-file-name (concat
                           (concat "~/"
-                                  (get-filename-from-url url))
+                                  (replace-regexp-in-string
+                                   "-"
+                                   "_"
+                                   (get-filename-from-url url)))
                           ".html")
           org-file-name (concat
                          (concat "~/"
-                                 (get-filename-from-url url))
+                                 (replace-regexp-in-string
+                                  "-"
+                                  "_"
+                                  (get-filename-from-url url)))
                          ".org"))
     ;; Extract content to file.
     (with-current-buffer (url-retrieve-synchronously url)

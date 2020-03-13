@@ -654,6 +654,7 @@
 
 (defun hurricane-misc/post-init-evil ()
   (progn
+    (require 'cl)
     (setcdr evil-insert-state-map nil)
     (define-key evil-insert-state-map [escape] 'evil-normal-state)
 

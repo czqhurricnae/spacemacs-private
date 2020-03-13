@@ -721,7 +721,7 @@ If a change in `file-attributes' happended call func."
         (goto-char question-start)
         (setq question-end (re-search-forward (cdr question-string-pattern-list)))
         (setq question-string (buffer-substring question-start (- question-end 6)))
-        (append-string-to-file "# -*- eval: (setq org-download-image-dir (concat default-directory \"/screenshotImg\")); -*-")
+        (append-string-to-file "# -*- eval: (setq org-download-image-dir (concat default-directory \"screenshotImg\")); -*-" html-file-name)
         (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
         (append-string-to-file question-string html-file-name))
       ;; Extract image and comment strings to file.

@@ -36,8 +36,11 @@
         pandoc-mode
         (autoinsert :location built-in)
         use-package-ensure-system-package
-        magit-todos
         pyim))
+
+(defconst sys/macp
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
 
 (defun hurricane-misc/init-browse-at-remote ()
   (use-package browse-at-remote
@@ -1267,15 +1270,11 @@
   (use-package use-package-ensure-system-package
     :ensure t))
 
-;; Show TODOs in magit
-(defun hurricane-misc/init-magit-todos ()
-  (use-package magit-todos
-    :hook (emacs-startup . magit-todos-mode)))
-
 ;; {{
 ;; @see: https://manateelazycat.github.io/emacs/2019/07/24/use-rime-in-emacs.html
 (defun hurricane-misc/post-init-pyim ()
-  (progn
+  (cond (sys/macp
+   (progn
     (eval-and-compile
       (if (fboundp 'window-inside-edges)
           ;; Emacs devel.
@@ -1354,4 +1353,4 @@
         ;; (liberime-get-schema-list)
 
         (liberime-select-schema "luna_pinyin_simp")
-        (setq pyim-default-scheme 'rime-quanpin)))))
+        (setq pyim-default-scheme 'rime-quanpin)))))))

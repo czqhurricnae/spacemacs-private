@@ -1,3 +1,7 @@
+(defconst sys/macp
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
+
 (defun hurricane/highlight-dwim ()
   (interactive)
   (if (use-region-p)
@@ -817,7 +821,7 @@ If a change in `file-attributes' happended call func."
       (mac-select-input-source (car ID-map))))
 
 ;; (add-hook 'evil-insert-state-entry-hook (lambda () (hurricane/switch-input-source chinese-ID-map)))
-(add-hook 'evil-insert-state-exit-hook (lambda () (hurricane/switch-input-source english-ID-map)))
+(cond (sys/macp (add-hook 'evil-insert-state-exit-hook (lambda () (hurricane/switch-input-source english-ID-map)))))
 
 ;; {{
 ;; @see: https://emacs-china.org/t/topic/5518

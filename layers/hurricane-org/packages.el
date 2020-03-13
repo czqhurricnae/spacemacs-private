@@ -379,12 +379,12 @@
 ;; $ pip install ipython
 ;; $ pip install --upgrade jupyter
 (defun hurricane-org/post-init-ob-ipython ()
-    (progn
-      (setq ob-ipython-command jupyter-bin)
-      (with-eval-after-load 'company
-        (add-to-list 'company-backends 'company-ob-ipython))
-      ;; Display/update images in the buffer after I evaluate.
-      (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)))
+  (progn
+    (setq ob-ipython-command jupyter-bin)
+    (with-eval-after-load 'company
+      (add-to-list 'company-backends 'company-ob-ipython))
+    ;; Display/update images in the buffer after I evaluate.
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)))
 ;; }}
 
 (defun hurricane-org/init-ob-lisp ()

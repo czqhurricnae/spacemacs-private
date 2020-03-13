@@ -547,10 +547,10 @@
     :post-config
     (require 'ox-publish)
     (setq org-publish-project-alist
-          '(("orgfiles"
+          `(("orgfiles"
              ;; ; Sources and destinations for files.
-             :base-directory "~/site/org/"  ;; local dir
-             :publishing-directory "~/site/public/" ;; :publishing-directory "/ssh:jack@192.112.245.112:~/site/public/"
+             :base-directory ,(concat deft-dir "notes/")  ;; local dir
+             :publishing-directory ,(concat deft-dir "public/") ;; :publishing-directory "/ssh:jack@192.112.245.112:~/site/public/"
              ;; :preparation-function
              ;; :complete-function
 
@@ -667,30 +667,30 @@
              )
             ;; static assets
             ("js"
-             :base-directory "~/site/js/"
+             :base-directory (concat deft-dir "js/")
              :base-extension "js"
-             :publishing-directory "~/site/public/js/"
+             :publishing-directory(concat deft-dir "public/js/")
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("css"
-             :base-directory "~/site/css/"
+             :base-directory (concat deft-dir "css/")
              :base-extension "css"
-             :publishing-directory "~/site/public/css/"
+             :publishing-directory (concat deft-dir "public/css/")
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("images"
-             :base-directory "~/site/images/"
+             :base-directory (concat deft-dir "images/")
              :base-extension "jpg\\|gif\\|png\\|svg\\|gif"
-             :publishing-directory "~/site/public/images/"
+             :publishing-directory (concat deft-dir "public/images/")
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("assets"
-             :base-directory "~/site/assets/"
+             :base-directory (concat deft-dir "assets/")
              :base-extension "mp3"
-             :publishing-directory "~/site/public/assets/"
+             :publishing-directory (concat deft-dir "public/assets/")
              :recursive t
              :publishing-function org-publish-attachment
              )

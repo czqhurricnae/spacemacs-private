@@ -1,4 +1,4 @@
-# -*- eval: (setq org-download-image-dir (concat default-directory "/screenshotImg")); -*-
+# -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg/")); -*-
 @see: https://stackoverflow.com/questions/47891892/org-mode-how-to-automatically-generate-nice-file-hierarchy-trees-with-well-form
 $ brew install tree
 使用前先安装 ~tree~ 命令.

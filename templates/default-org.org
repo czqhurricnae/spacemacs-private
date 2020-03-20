@@ -1,1 +1,1 @@
-# -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg")); -*-
+# -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg/")); -*-

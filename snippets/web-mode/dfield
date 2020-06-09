@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: dfield
+# key: dfield
+# --
+<th data-field="$1" data-sortable="$2">$0</th>

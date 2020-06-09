@@ -60,9 +60,6 @@
 
 (defun hurricane-ui/post-init-pangu-spacing ()
   (progn
-    (setq pangu-spacing-include-regexp
-          (rx (group-n 1 (in "a-zA-Z0-9,.!?])%#@&1234567890,;\":\`"))
-          (group-n 2 (category chinse-two-byte))))
     ;; Add toggle options.
     (spacemacs|add-toggle toggle-pangu-spaceing
       :status pangu-spacing-mode

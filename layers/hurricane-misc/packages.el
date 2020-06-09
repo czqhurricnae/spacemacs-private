@@ -37,6 +37,7 @@
         (autoinsert :location built-in)
         use-package-ensure-system-package
         rime
+        atomic-chrome
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1271,9 +1272,27 @@
   (use-package use-package-ensure-system-package
     :ensure t))
 
+(defun hurricane-misc/init-atomic-chrome ()
+  (use-package atomic-chrome
+    :ensure t
+    :defer 5                            ; since the entry of this
+                                        ; package is from Chrome.
+    :config
+    (setq atomic-chrome-url-major-mode-alist
+          '(("github\\.com"        . gfm-mode)
+            ("emacs-china\\.org"   . gfm-mode)
+            ("stackexchange\\.com" . gfm-mode)
+            ("stackoverflow\\.com" . gfm-mode)))
 
+    (defun hurricane-atomic-chrome-mode-setup ()
+      (setq header-line-format
+            (substitute-command-keys
+             "Edit Chrome text area.  Finish \
+`\\[atomic-chrome-close-current-buffer]'.")))
 
+    (add-hook 'atomic-chrome-edit-mode-hook #'hurricane-atomic-chrome-mode-setup)
 
+    (atomic-chrome-start-server)))
 
 
 (defun hurricane-misc/init-rime ()

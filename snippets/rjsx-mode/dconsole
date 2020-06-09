@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: dconsole
+# key: dconsole
+# --
+console.log('`(buffer-name)` -> `(which-function)` -> `(line-number-at-pos)` -> $1', ${0:enumerate})

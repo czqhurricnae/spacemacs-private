@@ -12,6 +12,8 @@
     (shackle :location (recipe :fetcher
                         github :repo "wasamasa/shackle"))
     all-the-icons-dired
+    (ivy-posframe :location (recipe :fetcher
+                             github :repo "tumashu/ivy-posframe"))
     ))
 
 ;; {{
@@ -295,3 +297,17 @@
                 (forward-line 1)))
           (message "Not display icons because of too many items.")))
       (advice-add #'all-the-icons-dired--refresh :override #'my-all-the-icons-dired--refresh))))
+
+(defun hurricane-ui/init-ivy-posframe ()
+  (use-package ivy-posframe
+    :ensure t
+    :after (ivy)
+    :config
+    (setq ivy-posframe-display-functions-alist
+        '((swiper . ivy-posframe-display-at-frame-center)
+          (complete-symbol . ivy-posframe-display-at-point)
+          (counsel-M-x . ivy-posframe-display-at-frame-center)
+          (counsel-find-file . ivy-posframe-display-at-frame-center)
+          (ivy-switch-buffer . ivy-posframe-display-at-frame-center)
+          (t . ivy-posframe-display-at-frame-center)))
+    (ivy-posframe-enable)))

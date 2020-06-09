@@ -730,9 +730,6 @@
     (define-key evil-ex-completion-map "\C-b" 'backward-char)
     (define-key evil-ex-completion-map "\C-k" 'kill-line)
     (define-key minibuffer-local-map (kbd "C-w") 'evil-delete-backward-word)
-    ;; (define-key evil-motion-state-map "\C-e" 'evil-end-of-line)
-    ;; (define-key evil-insert-state-map "\C-e" 'evil-end-of-line)
-    ;; (define-key evil-emacs-state-map "\C-e" 'evil-end-of-line)
 
     (define-key evil-visual-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
     (define-key evil-visual-state-map (kbd "C-r") 'hurricane/evil-quick-replace)

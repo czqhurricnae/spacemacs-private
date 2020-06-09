@@ -80,7 +80,7 @@ values."
      ipython-notebook
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode)
-     ycmd
+     ;; ycmd
      ;; common-lisp
      emacs-lisp
      markdown

@@ -1,0 +1,5 @@
+patch:
+  switches:
+    - name: simplification
+      reset: 1
+      states: [漢字，汉字]

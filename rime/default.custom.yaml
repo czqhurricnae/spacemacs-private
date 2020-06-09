@@ -1,0 +1,5 @@
+# default.custom.yaml
+patch:
+  menu/page_size: 9
+  schema_list:
+    - schema: luna_pinyin_simp

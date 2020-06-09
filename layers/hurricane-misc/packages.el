@@ -698,7 +698,8 @@
 
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
 
-    ;; {{ Unbinding Evil's mappings.
+    ;; {{
+    ;; Unbinding Evil's mappings.
     ;; @see: https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
     (eval-after-load "evil-maps"
       (dolist (map '(evil-motion-state-map
@@ -740,6 +741,7 @@
 
     ;; In spacemacs, we always use evilify miscro state.
     (evil-add-hjkl-bindings package-menu-mode-map 'emacs)
+
     ;; Don't move back the cursor one position when exiting insert mode.
     (setq evil-move-cursor-back nil)
 

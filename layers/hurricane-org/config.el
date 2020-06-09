@@ -1,14 +1,3 @@
-;;; CONFIG ---
-;;
-;; Author: c <c@MacBook-Pro.local>
-;; Copyright © 2020, c, all rights reserved.
-;; Created: 12 March 2020
-;;
-;;; Commentary:
-;;
-;;
-;;
-;;; Code:
 (progn
   "Settings of `org-export'."
   (setq org-export-in-background t

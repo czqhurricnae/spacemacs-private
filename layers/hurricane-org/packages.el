@@ -2,8 +2,9 @@
   '(
     (org :location built-in)
     (org-mac-link :location built-in)
-    (org-pomodoro :location (recipe :fetcher github
-                                    :repo "lolownia/org-pomodoro"))
+    (org-pomodoro :location (recipe
+                             :fetcher github
+                             :repo "lolownia/org-pomodoro"))
     (ox-latex :location built-in)
     (ox-md :location built-in)
     deft
@@ -548,38 +549,44 @@
     (require 'ox-publish)
     (setq org-publish-project-alist
           `(("orgfiles"
-             ;; ; Sources and destinations for files.
-             :base-directory ,(concat deft-dir "notes/")  ;; local dir
-             :publishing-directory ,(concat deft-dir "public/") ;; :publishing-directory "/ssh:jack@192.112.245.112:~/site/public/"
+             ;; Sources and destinations for files.
+             ;; local org files directory.
+             :base-directory ,(concat deft-dir "notes/")
+             ;; :publishing directory "/ssh:c@182.61.145.178:/home/c/site/public/"
+             :publishing-directory ,(concat deft-dir "public/")
              ;; :preparation-function
              ;; :complete-function
 
-             ;; ; Selecting files
+             ;; Selecting files.
              :base-extension "org"
-             ;; :exclude "PrivatePage.org"     ;; regexp
+             ;; :exclude "PrivatePage.org"
              ;; :include
              :recursive t
 
-             ;; ; Publishing action
+             ;; Publishing action.
              :publishing-function org-html-publish-to-html
-
              ;; :htmlized-source
 
+             ;; Options for the exporters.
 
-             ;; ;;; Options for the exporters
-
-             ;; ; Generic properties
+             ;; {{
+             ;; Generic properties.
              ;; :archived-trees	org-export-with-archived-trees
              ;; :exclude-tags	org-export-exclude-tags
-             :headline-levels 4 ;; org-export-headline-levels
+             ;; org-export-headline-levels.
+             :headline-levels 4
              ;; :language	org-export-default-language
              ;; :preserve-breaks	org-export-preserve-breaks
-             :section-numbers nil	;; org-export-with-section-numbers
+             ;; org-export-with-section-numbers.
+             :section-numbers nil
              ;; :select-tags	org-export-select-tags
-             :with-author "Jack Liu" ;; org-export-with-author
+             ;; org-export-with-author.
+             :with-author "Hurricane Chen"
              ;; :with-broken-links	org-export-with-broken-links
-             ;; :with-clocks	t ;; org-export-with-clocks
-             ;; :with-creator nil ;; org-export-with-creator
+             ;; org-export-with-clocks.
+             ;; :with-clocks	t
+             ;; org-export-with-creator.
+             ;; :with-creator nil
              ;; :with-date org-export-with-date
              ;; :with-drawers	org-export-with-drawers
              ;; :with-email	org-export-with-email
@@ -588,7 +595,8 @@
              ;; :with-footnotes	org-export-with-footnotes
              ;; :with-latex	org-export-with-latex
              ;; :with-planning	org-export-with-planning
-             :with-priority t ;; org-export-with-priority ;
+             ;; org-export-with-priority.
+             :with-priority t
              ;; :with-properties	org-export-with-properties
              ;; :with-special-strings	org-export-with-special-strings
              ;; :with-sub-superscript	org-export-with-sub-superscripts
@@ -597,18 +605,22 @@
              ;; :with-tasks	org-export-with-tasks
              ;; :with-timestamps	org-export-with-timestamps
              ;; :with-title	org-export-with-title
-             :with-toc t ;; org-export-with-toc
+             ;; org-export-with-toc.
+             :with-toc t
              ;; :with-todo-keywords	org-export-with-todo-keywords
+             ;; }}
 
-
-             ;; ; HTML specific properties
+             ;; {{
+             ;;  HTML specific properties
              ;; :html-allow-name-attribute-in-anchors	org-html-allow-name-attribute-in-anchors
              ;; :html-checkbox-type	org-html-checkbox-type
              ;; :html-container	org-html-container-element
              ;; :html-divs	org-html-divs
-             :html-doctype "html5" ;; org-html-doctype
+             ;; org-html-doctype.
+             :html-doctype "html5"
              ;; :html-extension	org-html-extension
-             ;; :html-footnote-format nil ;; org-html-footnote-format
+             ;; org-html-footnote-format.
+             ;; :html-footnote-format nil
              ;; :html-footnote-separator	org-html-footnote-separator
              ;; :html-footnotes-section	org-html-footnotes-section
              ;; :html-format-drawer-function	org-html-format-drawer-function
@@ -632,10 +644,13 @@
              ;; :html-mathjax-options	org-html-mathjax-options
              ;; :html-mathjax-template	org-html-mathjax-template
              ;; :html-metadata-timestamp-format	org-html-metadata-timestamp-format
-             ;; :html-postamble-format t ;; org-html-postamble-format
-             ;; :html-postamble t ;; org-html-postamble
+             ;; org-html-postamble-format.
+             ;; :html-postamble-format t
+             ;; org-html-postamble.
+             ;; :html-postamble t
              ;; :html-preamble-format	org-html-preamble-format
-             ;; :html-preamble nil ;; org-html-preamble
+             ;; org-html-preamble.
+             ;; :html-preamble nil
              ;; :html-self-link-headlines	org-html-self-link-headlines
              ;; :html-table-align-individual-field	de{org-html-table-align-individual-fields
              ;; :html-table-attributes	org-html-table-default-attributes
@@ -653,19 +668,23 @@
              ;; :html-viewport	org-html-viewport
              ;; :html-wrap-src-lines	org-html-wrap-src-lines
              ;; :html-xml-declaration	org-html-xml-declaration
+             ;; }}
 
-
-             ;; ; Markdown specific properties
+             ;; {{
+             ;; Markdown specific properties.
              ;; :md-footnote-format	org-md-footnote-format
              ;; :md-footnotes-section	org-md-footnotes-section
              ;; :md-headline-style	org-md-headline-style
+             ;; }}
 
-
-             ;; ; Other options
+             ;; {{
+             ;; Other options
              :table-of-contents t
              ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
+             ;; }}
              )
-            ;; static assets
+
+            ;; Static assets.
             ("js"
              :base-directory (concat deft-dir "js/")
              :base-extension "js"

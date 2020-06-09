@@ -13,6 +13,7 @@
   (setq ns-pop-up-frames nil))
 
 (global-prettify-symbols-mode 1)
+
 (setq-default fill-column 80)
 
 ;; Prevent dired window press `o' to split into three column.

@@ -783,3 +783,7 @@ and insert a link to this file."
                    ))))
 
 (add-to-list 'safe-local-eval-forms '(blog-site-project-setup))
+
+(defun connect-baiduyun ()
+  (interactive)
+  (find-file "/ssh:c@182.61.145.178:/home/c/site/public/"))

@@ -36,6 +36,7 @@
         pandoc-mode
         (autoinsert :location built-in)
         use-package-ensure-system-package
+        rime
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1275,3 +1276,74 @@
 
 
 
+(defun hurricane-misc/init-rime ()
+  (use-package rime
+    :ensure t
+    :init
+    (when (functionp 'module-load)
+      (progn
+        (require 'posframe)
+        (setq rime-show-candidate 'posframe)
+        (setq rime-posframe-properties
+              (list :font "sarasa ui sc"
+                    :internal-border-width 10))))
+    (setq default-input-method "rime")
+    (setq rime-user-data-dir rime-dir)
+    (setq rime-disable-predicates
+     '(rime-predicate-evil-mode-p
+       rime-predicate-after-alphabet-char-p
+       rime-predicate-prog-in-code-p))
+
+    (defun +rime-force-enable ()
+      "强制 `rime' 使用中文输入状态。
+  如果当前不是 `rime' 输入法，则先激活 `rime' 输入法。如果当前是
+  `evil' 的非编辑状态，则转为 `evil-insert-state'。"
+      (interactive)
+      (let ((input-method "rime"))
+        (unless (string= current-input-method input-method)
+          (activate-input-method input-method))
+        (when (rime-predicate-evil-mode-p)
+          (if (= (+ 1 (point)) (line-end-position))
+              (evil-append 1)
+            (evil-insert 1)))
+        (rime-force-enable)))
+
+    (defun +rime-convert-string-at-point (&optional return-cregexp)
+      "将光标前的字符串转换为中文。"
+      (interactive "P")
+      (+rime-force-enable)
+      (let ((string (if mark-active
+                        (buffer-substring-no-properties
+                         (region-beginning) (region-end))
+                      (buffer-substring-no-properties
+                       (line-beginning-position) (point))))
+            code
+            length)
+        (cond ((string-match "\\([a-z'-]+\\|[[:punct:]]\\) *$" string)
+               (setq code (replace-regexp-in-string
+                           "^[-']" ""
+                           (match-string 0 string)))
+               (setq length (length code))
+               (setq code (replace-regexp-in-string " +" "" code))
+               (if mark-active
+                   (delete-region (region-beginning) (region-end))
+                 (when (> length 0)
+                   (delete-char (- 0 length))))
+               (when (> length 0)
+                 (setq unread-command-events
+                       (append (listify-key-sequence code)
+                               unread-command-events))))
+              (t (message "`+rime-convert-string-at-point' did nothing.")))))
+
+    :custom
+    (rime-librime-root "~/.emacs.d/librime/dist")
+    (rime-posframe-properties
+          (list :background-color "#333333"
+                :foreground-color "#dcdccc"
+                :internal-border-width 10))
+    :bind
+    ("C-\\" . #'+rime-force-enable)
+    ("M-g" . #'+rime-convert-string-at-point)
+    (:map rime-mode-map
+          ("M-n" . #'rime-inline-ascii)
+          ("C-`" . rime-send-keybinding))))

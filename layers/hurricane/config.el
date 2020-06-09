@@ -13,11 +13,14 @@
 (defvar virtualenv-dir ""
   "Virtualenvs location.")
 
-(defvar jupyter-bin ""
-  "Jupyter location.")
-
 (defvar auto-insert-dir ""
   "Auto insert templates location.")
+
+(defvar rime-dir ""
+  "Emacs-rime configuration location.")
+
+(defvar jupyter-bin ""
+  "Jupyter location.")
 
 (defvar eslintfmt-configuration-file ""
   "Eslintfmt global configuration.")
@@ -34,8 +37,9 @@
  blog-admin-dir "~/hurricane.com"
  snippet-dir "~/.spacemacs.d/snippets/"
  virtualenv-dir "~/.virtualenvs/"
- jupyter-bin "~/.virtualenvs/ipy3/bin/jupyter"
  auto-insert-dir "~/.spacemacs.d/templates/"
+ rime-dir "~/.spacemacs.d/rime/"
+ jupyter-bin "~/.virtualenvs/ipy3/bin/jupyter"
  eslintfmt-configuration-file "~/.spacemacs.d/.eslintrc.js"
  Baidu-OCR-Python-file "~/.spacemacs.d/BaiduOcr.py"
  scripts-file "~/.spacemacs.d/scripts.org"

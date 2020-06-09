@@ -904,59 +904,34 @@
       :name 'jekyll
       :env '(("LANG" "en_US.UTF-8")
              ("LC_ALL" "en_US.UTF-8")))
+
     ;; Define service.
+
     (prodigy-define-service
-      :name "Preview cocos2d-x web"
-      :command "python"
-      :args '("-m" "SimpleHTTPServer" "6001")
-      :cwd "~/cocos2d-x/web"
-      :tags '(work)
+      :name "Blog push"
+      :command "rsync"
+      :args '("-avzt" "-vvvv" "--exclude=\"./.DS_Store\"" "." "c@182.61.145.178:/home/c/site/public/")
+      :cwd blog-dir
+      :tags '(blog push)
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
-      :name "Preview creator engine"
-      :command "python"
-      :args '("-m" "SimpleHTTPServer" "6004")
-      :cwd "~/Github/fireball/engine"
-      :tags '(work)
+      :name "Blog pull"
+      :command "rsync"
+      :args '("-avzt" "-vvvv" "c@182.61.145.178:/home/c/site/public/" "." )
+      :cwd blog-dir
+      :tags '(blog pull)
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
-      :name "Hexo Server"
-      :command "hexo"
-      :args '("server")
-      :cwd blog-admin-dir
-      :tags '(hexo server)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Hexo Deploy"
-      :command "hexo"
-      :args '("deploy" "--generate")
-      :cwd blog-admin-dir
-      :tags '(hexo deploy)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Debug Fireball"
-      :command "npm"
-      :args '("start" "--" "--nologin" "/Users/hurricane/Github/example-cases")
-      :cwd "~/Github/fireball/"
-      :tags '(work)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
-      :name "Org wiki preview"
+      :name "Blog preview"
       :command "python"
       :args '("-m" "SimpleHTTPServer" "8088")
-      :cwd "~/org-notes/public_html"
-      :tags '(org-mode)
-      :init (lambda () (browse-url "http://localhost:8088"))
+      :cwd blog-dir
+      :tags '(blog preview)
+      :init (lambda () (browse-url "http://localhost:8088/index.html"))
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 

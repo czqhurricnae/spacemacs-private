@@ -4,8 +4,8 @@
 (defvar deft-dir ""
   "Deft org files locaiton.")
 
-(defvar blog-admin-dir ""
-  "Blog-admin files location.")
+(defvar blog-dir ""
+  "Blog files locaiton.")
 
 (defvar snippet-dir ""
   "Yasnippet files location.")
@@ -34,7 +34,7 @@
 (setq-default
  org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
  deft-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
- blog-admin-dir "~/hurricane.com"
+ blog-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/public/"
  snippet-dir "~/.spacemacs.d/snippets/"
  virtualenv-dir "~/.virtualenvs/"
  auto-insert-dir "~/.spacemacs.d/templates/"

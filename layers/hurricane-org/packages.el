@@ -391,6 +391,9 @@
 (defun hurricane-org/init-ob-lisp ()
   (spacemacs|use-package-add-hook org :post-config (require 'ob-lisp)))
 
+(defun hurricane-org/init-ob-ipython ()
+  (spacemacs|use-package-add-hook org :post-config (require 'ob-ipython)))
+
 (defun hurricane-org/post-init-org-download ()
   (use-package org-download
   ;; :ensure-system-package (pngpaste . "brew install pngpaste")

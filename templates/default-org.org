@@ -1,1 +1,3 @@
 # -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg/")); -*-
+#+LATEX_CLASS: my-article
+sheader

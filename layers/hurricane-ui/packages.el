@@ -51,7 +51,6 @@
     ((neotree-mode
       imenu-list-minor-mode
       minimap-mode
-      spacemacs-buffer-mode
       ibuffer-mode
       help-mode
       deft-text-mode

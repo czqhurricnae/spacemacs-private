@@ -696,11 +696,6 @@
     (define-key evil-normal-state-map
       (kbd "Y") 'hurricane/yank-to-end-of-line)
 
-    (define-key evil-normal-state-map (kbd "[ SPC") (lambda () (interactive) (evil-insert-newline-above) (forward-line)))
-    (define-key evil-normal-state-map (kbd "] SPC") (lambda () (interactive) (evil-insert-newline-below) (forward-line -1)))
-
-    (define-key evil-normal-state-map (kbd "[ b") 'previous-buffer)
-    (define-key evil-normal-state-map (kbd "] b") 'next-buffer)
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
 
     ;; {{ Unbinding Evil's mappings.

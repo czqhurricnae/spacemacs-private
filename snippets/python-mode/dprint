@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: dprint
+# key: dprint
+# --
+print('{!s} -> {!s} -> {!s}'.format('`(buffer-name)`', '`(line-number-at-pos)`', '`(which-function)`'), $0)

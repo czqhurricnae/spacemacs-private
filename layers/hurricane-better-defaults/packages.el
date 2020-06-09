@@ -129,7 +129,8 @@
                 (add-hook 'ediff-after-quit-hook-internal
                           (lambda ()
                             (setq ediff-after-quit-hook-internal nil)
-                            (set-window-configuration wnd))))
+                            (if wnd
+                                (set-window-configuration wnd)))))
             (error "no more than 2 files should be marked"))))
       ;; }}
 

@@ -23,3 +23,5 @@
                              'face face)))
               ((\` interrupted) " -")
               ((\` suspicious) '(propertize " ?" 'face 'warning))))))
+
+(setq hurricane-icon t)

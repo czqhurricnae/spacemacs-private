@@ -38,6 +38,7 @@
         use-package-ensure-system-package
         rime
         atomic-chrome
+        dired-rsync))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1294,6 +1295,10 @@
 
     (atomic-chrome-start-server)))
 
+(defun hurricane-misc/init-dired-rsync ()
+  (use-package dired-rsync
+    :config
+    (bind-key "C-c C-r" 'dired-rsync dired-mode-map)))
 
 (defun hurricane-misc/init-rime ()
   (use-package rime

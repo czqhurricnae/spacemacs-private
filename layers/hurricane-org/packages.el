@@ -722,4 +722,4 @@
   (use-package simple-httpd
     :ensure t
     :config
-    (setq httpd-root (concat deft-dir "site/public"))))
+    (setq httpd-root blog-dir)))

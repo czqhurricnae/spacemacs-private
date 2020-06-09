@@ -410,7 +410,7 @@
     :after org
     :config
       (progn
-        (org2ctex-toggle t)
+        (org2ctex-mode t)
         (add-to-list 'org2ctex-latex-classes '("my-article" "\\documentclass[20pt]{ctexart}
                     [NO-DEFAULT-PACKAGES]
                     \\usepackage{xeCJK}

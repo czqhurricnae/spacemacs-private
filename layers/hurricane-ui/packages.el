@@ -37,24 +37,11 @@
     ))
 ;; }}
 
-(defun hurricane-ui/init-doom-modeline ()
-  (use-package doom-modeline
-    :init
-    (spacemacs/add-to-hooks 'doom-modeline-env-update-python '(pyvenv-post-activate-hooks
-                                                               pyvenv-post-deactivate-hooks
-                                                               venv-postactivate-hook
-                                                               venv-postdeactivate-hook))
-    :ensure t
-    :defer t
-    :hook
-    (after-init . doom-modeline-mode)
-    :custom
-    (doom-modeline-icon t)
-    (doom-modeline-major-mode-icon nil)
-    (doom-modeline-minor-modes nil)
-    :config
-    (line-number-mode 0)
-    (column-number-mode 0)))
+(defun hurricane-ui/pre-init-doom-modeline ()
+  (spacemacs/add-to-hooks 'doom-modeline-env-update-python '(pyvenv-post-activate-hooks
+                                                             pyvenv-post-deactivate-hooks
+                                                             venv-postactivate-hook
+                                                             venv-postdeactivate-hook)))
 
 ;; {{
 ;; @see: https://github.com/hlissner/emacs-hide-mode-line

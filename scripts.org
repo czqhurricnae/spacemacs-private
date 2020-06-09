@@ -1,7 +1,9 @@
 # -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg/")); -*-
+#+LATEX_CLASS: my_article
 @see: https://stackoverflow.com/questions/47891892/org-mode-how-to-automatically-generate-nice-file-hierarchy-trees-with-well-form
 $ brew install tree
-使用前先安装 ~tree~ 命令.
+使用前先安装 ~tree~ 命令。
+
 #+NAME: createTree
 #+BEGIN_SRC sh :results drawer :var toInclude="*.*" :var toExclude="" :var directory="./" :var createLink="true" :exports none
 set -e

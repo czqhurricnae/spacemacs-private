@@ -6,7 +6,6 @@
                               github :repo "seagle0128/doom-modeline"))
     (hide-mode-line :location (recipe :fetcher
                                github :repo "hlissner/emacs-hide-mode-line"))
-    which-func
     pangu-spacing
     (awesome-tab :location (recipe :fetcher
                             github :repo "manateelazycat/awesome-tab"))
@@ -14,22 +13,6 @@
                         github :repo "wasamasa/shackle"))
     all-the-icons-dired
     ))
-
-;; {{
-;; Show the current function name in the Power line.
-;; @see: http://emacsredux.com/blog/2014/04/05/which-function-mode/
-(defun hurricane-ui/init-which-func ()
-  (use-package which-func
-  :init
-  (progn
-    (which-function-mode 1)
-    (if (not (member '(which-func-mode ("" which-func-format " ")) mode-line-format))
-      (progn
-      (push '(which-func-mode ("" which-func-format " ")) mode-line-format)))
-  )
-  :defer t
-  :config
-    (setq mode-line-format (remove '(which-func-mode ("" which-func-format " ")) mode-line-format))))
 
 ;; {{
 ;; @see: https://github.com/hlissner/emacs-doom-themes

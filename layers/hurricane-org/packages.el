@@ -554,9 +554,9 @@
           `(("orgfiles"
              ;; Sources and destinations for files.
              ;; local org files directory.
-             :base-directory ,(concat deft-dir "notes/")
+             :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
              ;; :publishing directory "/ssh:c@182.61.145.178:/home/c/site/public/"
-             :publishing-directory ,(concat deft-dir "public/")
+             :publishing-directory ,(concat deft-dir (file-name-as-directory "public"))
              ;; :preparation-function
              ;; :complete-function
 
@@ -689,30 +689,30 @@
 
             ;; Static assets.
             ("js"
-             :base-directory (concat deft-dir "js/")
+             :base-directory (concat deft-dir (file-name-as-directory "js"))
              :base-extension "js"
-             :publishing-directory(concat deft-dir "public/js/")
+             :publishing-directory(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("css"
-             :base-directory (concat deft-dir "css/")
+             :base-directory (concat deft-dir (file-name-as-directory "css"))
              :base-extension "css"
-             :publishing-directory (concat deft-dir "public/css/")
+             :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("images"
-             :base-directory (concat deft-dir "images/")
+             :base-directory (concat deft-dir (file-name-as-directory "images"))
              :base-extension "jpg\\|gif\\|png\\|svg\\|gif"
-             :publishing-directory (concat deft-dir "public/images/")
+             :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("assets"
-             :base-directory (concat deft-dir "assets/")
+             :base-directory (concat deft-dir (file-name-as-directory "assets"))
              :base-extension "mp3"
-             :publishing-directory (concat deft-dir "public/assets/")
+             :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
              :recursive t
              :publishing-function org-publish-attachment
              )

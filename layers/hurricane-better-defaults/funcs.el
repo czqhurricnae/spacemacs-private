@@ -118,7 +118,7 @@ If newname names a directory, it copies oldname into that directory, preserving 
   (interactive "fCopy file: ")
   (copy-file file default-directory))
 
-(defun my-dired-find-file ()
+(defun hurricane/dired-find-file ()
   "Open buffer in another window."
   (interactive)
   (let ((filename (dired-get-filename nil t)))
@@ -170,7 +170,7 @@ After this command has been run, any buffers it's modified will remain open and 
   (progn
     (keyboard-quit)))
 
-(defun hurricane//dired-store-link (orig-fun &rest args)
+(defun hurricane/dired-store-link (orig-fun &rest args)
   (if (or (derived-mode-p 'dired-mode) (derived-mode-p 'org-mode))
     (cond
       ((derived-mode-p 'dired-mode)
@@ -199,7 +199,7 @@ After this command has been run, any buffers it's modified will remain open and 
           (message "Stored: %s" (or link desc))
           (car org-stored-links))))))
       (apply orig-fun args)))
-(advice-add 'org-store-link :around #'hurricane//dired-store-link)
+(advice-add 'org-store-link :around #'hurricane/dired-store-link)
 
 (advice-add 'org-insert-link :after #'org-display-inline-images)
 

@@ -144,7 +144,7 @@
         (kbd "C-k") 'hurricane/dired-up-directory
         "E" 'dired-toggle-read-only
         "C" 'dired-do-copy
-        "<mouse-2>" 'my-dired-find-file
+        "<mouse-2>" #'hurricane/dired-find-file
         "`" 'dired-open-terminal
         "p" 'peep-dired-prev-file
         "n" 'peep-dired-next-file

@@ -386,7 +386,7 @@
       :post-config
       (require 'ob-ipython)
       (progn
-        (setq ob-ipython-command jupyter-bin)
+        (when (file-exists-p jupyter-bin) (setq ob-ipython-command jupyter-bin))
         (with-eval-after-load 'company
           (add-to-list 'company-backends 'company-ob-ipython))
         ;; Display/update images in the buffer after I evaluate.

@@ -380,7 +380,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq purpose-mode nil)
   ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
-  (setq evil-want-C-w-delete t))
+  (setq evil-want-C-w-delete t)
   (setq dotspacemacs-mode-line-theme 'doom))
 
 (defun dotspacemacs/user-config ()

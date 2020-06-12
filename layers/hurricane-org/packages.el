@@ -1,5 +1,5 @@
 (defconst hurricane-org-packages
-  '(
+  `(
     (org :location built-in)
     (org-mac-link :location built-in)
     (org-pomodoro :location (recipe
@@ -11,7 +11,7 @@
     (org-protocol-capture-html :location (recipe
                                           :fetcher github
                                           :repo "alphapapa/org-protocol-capture-html"))
-    ob-ipython
+    ,@(when sys/macp '(ob-ipython))
     (org-download :location (recipe
                              :fetcher github
                              :repo "abo-abo/org-download"))
@@ -39,6 +39,8 @@
     (progn
       (spacemacs|disable-company org-mode)
       (spacemacs/set-leader-keys-for-major-mode 'org-mode "," 'org-priority)
+      (when sys/macp
+        (push '(ipython . t) org-babel-load-languages))
       (org-babel-do-load-languages
        'org-babel-load-languages
        '((perl . t)
@@ -48,7 +50,6 @@
          (js . t)
          (latex .t)
          (python . t)
-         (ipython . t)
          (emacs-lisp . t)
          (plantuml . t)
          (C . t)
@@ -379,20 +380,21 @@
 ;; Must install ipython and jupyter in ipy virtual envirnment first.
 ;; $ pip install ipython
 ;; $ pip install --upgrade jupyter
-(defun hurricane-org/post-init-ob-ipython ()
-  (progn
-    (setq ob-ipython-command jupyter-bin)
-    (with-eval-after-load 'company
-      (add-to-list 'company-backends 'company-ob-ipython))
-    ;; Display/update images in the buffer after I evaluate.
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)))
+(when sys/macp
+  (defun hurricane-org/init-ob-ipython ()
+    (spacemacs|use-package-add-hook org
+      :post-config
+      (require 'ob-ipython)
+      (progn
+        (setq ob-ipython-command jupyter-bin)
+        (with-eval-after-load 'company
+          (add-to-list 'company-backends 'company-ob-ipython))
+        ;; Display/update images in the buffer after I evaluate.
+        (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)))))
 ;; }}
 
 (defun hurricane-org/init-ob-lisp ()
   (spacemacs|use-package-add-hook org :post-config (require 'ob-lisp)))
-
-(defun hurricane-org/init-ob-ipython ()
-  (spacemacs|use-package-add-hook org :post-config (require 'ob-ipython)))
 
 (defun hurricane-org/post-init-org-download ()
   (use-package org-download

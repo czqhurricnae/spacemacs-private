@@ -1284,7 +1284,6 @@
     (setq rime-user-data-dir rime-dir)
     (setq rime-disable-predicates
      '(rime-predicate-evil-mode-p
-       rime-predicate-after-alphabet-char-p
        rime-predicate-prog-in-code-p))
 
     (defun +rime-force-enable ()

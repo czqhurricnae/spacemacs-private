@@ -227,6 +227,8 @@
       ;; Used by hurricane/org-clock-sum-today-by-tags.
       (add-hook 'org-after-todo-statistics-hook 'hurricane/org-summary-todo)
 
+      (org-link-set-parameters "video" :export 'org-video-link-export)
+
       (define-key org-mode-map (kbd "s-p") 'org-priority)
       (spacemacs/set-leader-keys-for-major-mode 'org-mode
         "tl" 'org-toggle-link-display)

@@ -788,3 +788,12 @@ and insert a link to this file."
 (defun connect-baiduyun ()
   (interactive)
   (find-file "/ssh:c@182.61.145.178:/home/c/site/public/"))
+
+(defun org-video-link-export (path desc backend)
+  (let ((ext (file-name-extension path)))
+    (cond
+     ((eq 'html backend)
+      (format "<video preload='metadata' controls='controls'><source type='video/%s' src='screenshotImg/%s' /></video>" ext path))
+     ;; fall-through case for everything else
+     (t
+      path))))

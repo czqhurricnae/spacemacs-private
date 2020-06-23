@@ -608,7 +608,6 @@ and insert a link to this file."
 (defun preview-current-buffer-in-browser ()
   "Open current buffer as html."
   (interactive)
-  (let ((fileurl (concat "http://127.0.0.1:8080/" (file-name-nondirectory (directory-file-name (file-name-directory buffer-file-name))) "/" (file-name-base (buffer-name)) ".html")))
   (let ((fileurl (concat "http://127.0.0.1:8080/" (file-relative-name (file-name-directory buffer-file-name) (concat deft-dir "notes/")) (file-name-base (buffer-file-name)) ".html")))
     (save-and-publish-file)
     (unless (httpd-running-p) (httpd-start))

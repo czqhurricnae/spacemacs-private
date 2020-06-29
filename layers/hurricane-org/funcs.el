@@ -334,7 +334,7 @@ just like `((name begin-position end-position))'"
             ((equal src-code-type "graphviz")
               (create-graphviz)
             (throw 'return-catch "I will not going any where else."))
-            (t (insert (format "#+BEGIN_SRC %s :results valuse list :exports both\n" src-code-type))))
+            (t (insert (format "#+BEGIN_SRC %s :results values list :exports both\n" src-code-type))))
     (newline-and-indent)
     (insert "#+END_SRC\n")
     (previous-line 2)

@@ -17,4 +17,6 @@
         (add-hook 'after-save-hook #'save-and-publish-file :append :local))
     ;; When the mode is disabled
     (remove-hook 'after-save-hook #'save-and-publish-file :local)))
+
+(setq org-link-file-path-type 'relative)
 ;;; config.el ends here

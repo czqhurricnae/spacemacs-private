@@ -172,8 +172,8 @@ After this command has been run, any buffers it's modified will remain open and 
 
 (defun hurricane/dired-store-link (orig-fun &rest args)
   (if (or (derived-mode-p 'dired-mode) (derived-mode-p 'org-mode))
-    (cond
-      ((derived-mode-p 'dired-mode)
+      (cond
+       ((derived-mode-p 'dired-mode)
         (let ((file (dired-get-filename nil t)))
           (setf file (if file
                          (dired-make-relative (expand-file-name file)
@@ -183,13 +183,13 @@ After this command has been run, any buffers it's modified will remain open and 
                        default-directory))
             (let ((link (concat "file:" file))
                   (desc  file))
-              (if (string-match ".*?\\.\\(?:png\\|jpg\\)\\(.*\\)$" (file-name-nondirectory file))
+              (if (string-match ".*?\\.\\(?:png\\|jpg\\|mp4\\)\\(.*\\)$" (file-name-nondirectory file))
                   (push (list link nil) org-stored-links)
                 (push (list link desc) org-stored-links))
               (message "Stored: %s" (or desc link))
               (car org-stored-links))))
-    ((derived-mode-p 'org-mode)
-     (when (or (org-in-regexp org-radio-target-regexp)
+       ((derived-mode-p 'org-mode)
+        (when (or (org-in-regexp org-radio-target-regexp)
                (org-in-regexp org-target-regexp))
         (let ((target nil))
         (setf target (string-trim (match-string 0) "<<" ">>"))
@@ -197,8 +197,8 @@ After this command has been run, any buffers it's modified will remain open and 
               (desc (concat "See " target)))
           (push (list link desc) org-stored-links)
           (message "Stored: %s" (or link desc))
-          (car org-stored-links))))))
-      (apply orig-fun args)))
+          (car org-stored-links)))))
+       (t (apply orig-fun args)))))
 (advice-add 'org-store-link :around #'hurricane/dired-store-link)
 
 (advice-add 'org-insert-link :after #'org-display-inline-images)

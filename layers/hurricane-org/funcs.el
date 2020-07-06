@@ -10,32 +10,33 @@
   :type 'string)
 
 (setq buffer-replace-string-rule-lists '(("，" . ",")
-                                         ("。" . ".")
+                                         ("。" . "\\.")
                                          ("！" . "!")
                                          ("？" . "?")
-                                         ("【" . "[")
-                                         ("】" . "]")
+                                         ("【" . "\\[")
+                                         ("】" . "\\]")
                                          ("（" . "(")
                                          ("）" . ")")
                                          ("％" . "%")
                                          ("＃" . "#")
                                          ("＠" . "@")
                                          ("＆" . "&")
-                                         ("１" . "1")
-                                         ("２" . "2")
-                                         ("３" . "3")
-                                         ("４" . "4")
-                                         ("５" . "5")
-                                         ("６" . "6")
-                                         ("７" . "7")
-                                         ("８" . "8")
-                                         ("９" . "9")
-                                         ("０" . "0")
-                                         ("、" . ",")
-                                         ("；" . ",")
+                                         ;; ("１" . "1")
+                                         ;; ("２" . "2")
+                                         ;; ("３" . "3")
+                                         ;; ("４" . "4")
+                                         ;; ("５" . "5")
+                                         ;; ("６" . "6")
+                                         ;; ("７" . "7")
+                                         ;; ("８" . "8")
+                                         ;; ("９" . "9")
+                                         ;; ("０" . "0")
+                                         ;; ;; ("、" . ",")
+                                         ;; ("；" . ",")
                                          ("“" . "\"")
-                                         ("”" . "\"")
-                                         ("：" . ":")))
+                                         ;; ("”" . "\"")
+                                         ("：" . ":")
+                                         ("“" . "`")))
 
 (defun org-dot-image-dir ()
   (or org-dot-image-dir-name "."))
@@ -53,17 +54,25 @@
 (defun trim-space-in-string (string)
   (replace-regexp-in-string "[\t\n ]+" "" string))
 
-(defun replace-in-the-entire-buffer (query replace subexp)
-  "Replace query string with the replace string in the entire buffer.
-`query': the string will be replaced.
-`replace': the string used to replace.
-Subexp:
-1. used in function `replace-match'.
-2. represent `replace' argument will be implemented in which one match group."
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward query nil t)
-      (replace-match replace t nil nil subexp))))
+(defun replace-region-or-buffer (query replace subexp)
+  "Replace query string with the replace string in the region or entire buffer.
+'QUERY': the string will be replaced.
+'REPLACE': the string used to replace.
+'SUBEXP':
+1. Used in function `replace-match'.
+2. Represent 'replace' argument will be implemented in which one match group."
+  (progn
+    (setq start (point-min))
+    (setq end (point-max))
+
+    (when (use-region-p)
+      (setq start (region-beginning))
+      (setq end (region-end)))
+
+    (save-excursion
+      (goto-char start)
+      (while (re-search-forward query end t)
+      (replace-match replace t nil nil subexp)))))
 
 (defun jump-to-penultimate-line ()
   (delete-blank-lines)
@@ -196,13 +205,13 @@ just like `((name begin-position end-position))'"
            '\`' -> ''
 "
   (interactive)
-  (replace-in-the-entire-buffer "\\\\(" " $" nil)
-  (replace-in-the-entire-buffer "\\\\)" "$ " nil)
-  (replace-in-the-entire-buffer "\\\\times" "×" nil)
-  (replace-in-the-entire-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
-  (replace-in-the-entire-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]\r" 1)
-  (replace-in-the-entire-buffer "```comment" "" nil)
-  (replace-in-the-entire-buffer "\\\\`" "`" nil))
+  (replace-region-or-buffer "\\\\(" " $" nil)
+  (replace-region-or-buffer "\\\\)" "$ " nil)
+  (replace-region-or-buffer "\\\\times" "×" nil)
+  (replace-region-or-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
+  (replace-region-or-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]\r" 1)
+  (replace-region-or-buffer "```comment" "" nil)
+  (replace-region-or-buffer "\\\\`" "`" nil))
 
 (defun create-graphviz ()
   (interactive)
@@ -360,7 +369,7 @@ just like `((name begin-position end-position))'"
   (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/hurricane-org/funcs.el"))
       (progn
         (dolist (replace-string-rule buffer-replace-string-rule-lists)
-          (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil)))))
+          (replace-region-or-buffer (cdr replace-string-rule) (car replace-string-rule) nil)))))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.

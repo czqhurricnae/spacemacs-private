@@ -81,25 +81,25 @@
       (message "%s => kill-ring" val))))
 ;; }}
 
-(defun hurricane/indent-region(numSpaces)
+(defun hurricane/indent-region(spaces)
   (progn
     ;; Default to start and end of current line.
-    (setq regionStart (line-beginning-position))
-    (setq regionEnd (line-end-position))
+    (setq start (line-beginning-position))
+    (setq end (line-end-position))
 
     ;; If there's a selection, use that instead of the current line.
     (when (use-region-p)
-      (setq regionStart (region-beginning))
-      (setq regionEnd (region-end))
+      (setq start (region-beginning))
+      (setq end (region-end))
       )
 
     (save-excursion                          ;; Restore the position afterwards.
-      (goto-char regionStart)                ;; Go to the start of region.
+      (goto-char start)                      ;; Go to the start of region.
       (setq start (line-beginning-position)) ;; Save the start of the line.
-      (goto-char regionEnd)                  ;; Go to the end of region.
+      (goto-char end)                        ;; Go to the end of region.
       (setq end (line-end-position))         ;; Save the end of the line.
 
-      (indent-rigidly start end numSpaces)   ;; Indent between start and end.
+      (indent-rigidly start end spaces)   ;; Indent between start and end.
       (setq deactivate-mark nil)             ;; Restore the selected region.
       )))
 
@@ -162,9 +162,9 @@ Based on ivy-mode."
 org-files and bookmarks."
   (interactive)
   (helm :buffer "*helm: utities*"
-        :sources `(,(hurricane//hotspots-sources))))
+        :sources `(,(hurricane/hotspots-sources))))
 
-(defun hurricane//hotspots-sources ()
+(defun hurricane/hotspots-sources ()
   "Construct the helm sources for my hotspots."
   `((name . "Mail and News")
     (candidates . (("Calendar" . (lambda ()  (browse-url "https://www.google.com/calendar/render")))

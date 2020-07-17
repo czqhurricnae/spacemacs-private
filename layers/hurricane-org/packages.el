@@ -16,8 +16,8 @@
                              :fetcher github
                              :repo "abo-abo/org-download"))
     (org2ctex :location (recipe
-                             :fetcher github
-                             :repo "tumashu/org2ctex"))
+                         :fetcher github
+                         :repo "tumashu/org2ctex"))
     org-tree-slide
     (ox-html :location built-in)
     (ox-publish :location built-in)

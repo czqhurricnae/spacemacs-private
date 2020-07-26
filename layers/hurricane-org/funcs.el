@@ -822,3 +822,10 @@ and insert a link to this file."
      ;; fall-through case for everything else
      (t
       path))))
+
+(defun org-time-today ()
+  "Time in seconds today at 0:00.
+Returns the float number of seconds since the beginning of the
+epoch to the beginning of today (00:00)."
+  (float-time (apply 'encode-time
+                     (append '(0 0 0) (nthcdr 3 (decode-time))))))

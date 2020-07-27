@@ -630,7 +630,7 @@ If a change in `file-attributes' happended call func."
   (with-temp-buffer
     (insert-file-contents filename)
     (dolist (replace-string-rule replace-string-rule-lists)
-      (replace-in-the-entire-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
+      (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
     (write-file filename)))
 
 (defvar question-string-pattern-list

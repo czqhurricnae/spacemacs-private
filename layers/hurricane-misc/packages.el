@@ -906,11 +906,28 @@
              ("LC_ALL" "en_US.UTF-8")))
 
     ;; Define service.
+    (prodigy-define-service
+      :name "Blog index"
+      :command "grunt"
+      :args '("search-index")
+      :cwd blog-dir
+      :tags '(blog index)
+      :kill-signal 'sigkill
+      :kill-process-buffer-on-stop t)
+
+    (prodigy-define-service
+      :name "Blog segment"
+      :command "grunt"
+      :args '("pre-segment")
+      :cwd blog-dir
+      :tags '(blog segment)
+      :kill-signal 'sigkill
+      :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
       :name "Blog push"
       :command "rsync"
-      :args '("-avzt" "-vvvv" "--exclude=\"./.DS_Store\"" "." "c@182.61.145.178:/home/c/site/public/")
+      :args '("-avzt" "--exclude=\"./.DS_Store\"" "." "c@182.61.145.178:/home/c/site/public/")
       :cwd blog-dir
       :tags '(blog push)
       :kill-signal 'sigkill

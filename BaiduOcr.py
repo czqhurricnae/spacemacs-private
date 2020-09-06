@@ -1,6 +1,7 @@
 from aip import AipOcr
 import os
 import sys
+import subprocess
 
 config = {
     'appId': '15533798',
@@ -23,7 +24,14 @@ def img_to_str(image_path):
         return '\n'.join([w['words'] for w in result['words_result']])
 
 
+def write_to_clipboard(output):
+    process = subprocess.Popen('pbcopy',
+                               env={'LANG': 'en_US.UTF-8'},
+                               stdin=subprocess.PIPE)
+    process.communicate(output.encode('utf-8'))
+
+
 if __name__ == '__main__':
     img_path = sys.argv[1]
     result = img_to_str(img_path)
-    os.system('echo "%s" | pbcopy' % result)
+    write_to_clipboard(result)

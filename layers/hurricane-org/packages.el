@@ -21,7 +21,8 @@
     org-tree-slide
     (ox-html :location built-in)
     (ox-publish :location built-in)
-    simple-httpd))
+    simple-httpd
+    org-roam))
 
 (defun hurricane-org/post-init-org-pomodoro ()
   (progn
@@ -649,3 +650,33 @@
     :ensure t
     :config
     (setq httpd-root blog-dir)))
+
+(defun hurricane-org/init-org-roam ()
+  (use-package org-roam
+    :hook
+    (after-init . org-roam-mode)
+    :custom
+    (org-roam-directory deft-dir)
+    (org-roam-capture-templates
+     '(("d" "default" plain (function org-roam-capture--get-point)
+       "%?"
+       :file-name "${slug}"
+       :head "#+DATE: %<<%F %a %R>> \n#+TITLE: ${title}\n"
+       :unnarrowed t)))
+    :init
+    (progn
+      (spacemacs/declare-prefix "ar" "org-roam")
+      (spacemacs/set-leader-keys
+        "arl" 'org-roam
+        "art" 'org-roam-dailies-today
+        "arf" 'org-roam-find-file
+        "arg" 'org-roam-graph)
+
+      (spacemacs/declare-prefix-for-mode 'org-mode "mr" "org-roam")
+      (spacemacs/set-leader-keys-for-major-mode 'org-mode
+        "rl" 'org-roam
+        "rt" 'org-roam-dailies-today
+        "rb" 'org-roam-switch-to-buffer
+        "rf" 'org-roam-find-file
+        "ri" 'org-roam-insert
+        "rg" 'org-roam-graph))))

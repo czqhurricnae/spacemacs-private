@@ -828,3 +828,21 @@ Returns the float number of seconds since the beginning of the
 epoch to the beginning of today (00:00)."
   (float-time (apply 'encode-time
                      (append '(0 0 0) (nthcdr 3 (decode-time))))))
+
+
+(defadvice org-roam--find-file (after make-screenshotImg-directory-maybe
+                                      (file) activate)
+  "Create screenshot image directory if not exists while visiting file."
+  (unless (file-exists-p file)
+    (let ((dir (concat "screenshotImg/" (file-name-base (file-name-nondirectory file)))))
+      (when dir
+        (unless (file-exists-p dir)
+          (make-directory dir t))))))
+
+(defadvice org-roam--format-link (after make-screenshotImg-directory-maybe
+                                        (target &optional description type) activate)
+  "Create screenshot image directory if not exists while visiting file."
+  (let ((dir (concat "screenshotImg/" (file-name-base (file-name-nondirectory target)))))
+    (when dir
+      (unless (file-exists-p dir)
+        (make-directory dir t)))))

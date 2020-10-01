@@ -103,7 +103,7 @@
   (progn
     (define-key ranger-normal-mode-map (kbd "q") 'my-quit-ranger)))
 
-(spacemacs/set-leader-keys "ar" 'my-ranger))
+(spacemacs/set-leader-keys "atr" 'my-ranger))
 
 ;; Copy from spacemacs `helm' layer.
 (defun hurricane-misc/init-helm-ag ()

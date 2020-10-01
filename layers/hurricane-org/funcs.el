@@ -584,12 +584,6 @@ and insert a link to this file."
   (blog-site-project-setup)
   (org-publish-current-file t))
 
-(defun save-and-publish-index-file ()
-  "Save current buffer and publish."
-  (interactive)
-  (save-buffer t)
-  (org-publish-current-file t))
-
 (defun delete-org-and-html ()
   "Delete current org and the relative html when it exists."
   (interactive)
@@ -775,30 +769,30 @@ and insert a link to this file."
 
         ;; Static assets.
         ("js"
-         :base-directory (concat deft-dir (file-name-as-directory "js"))
+         :base-directory ,(concat deft-dir (file-name-as-directory "js"))
          :base-extension "js"
-         :publishing-directory(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
+         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
          :recursive t
          :publishing-function org-publish-attachment
          )
         ("css"
-         :base-directory (concat deft-dir (file-name-as-directory "css"))
+         :base-directory ,(concat deft-dir (file-name-as-directory "css"))
          :base-extension "css"
-         :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
+         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
          :recursive t
          :publishing-function org-publish-attachment
          )
         ("images"
-         :base-directory (concat deft-dir (file-name-as-directory "images"))
+         :base-directory ,(concat deft-dir (file-name-as-directory "images"))
          :base-extension "jpg\\|gif\\|png\\|svg\\|gif"
-         :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
+         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
          :recursive t
          :publishing-function org-publish-attachment
          )
         ("assets"
-         :base-directory (concat deft-dir (file-name-as-directory "assets"))
+         :base-directory ,(concat deft-dir (file-name-as-directory "assets"))
          :base-extension "mp3"
-         :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
+         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
          :recursive t
          :publishing-function org-publish-attachment
          )
@@ -818,7 +812,7 @@ and insert a link to this file."
     (cond
      ((eq 'html backend)
       (format "<video preload='metadata' controls='controls'><source type='video/%s' src='screenshotImg/%s' /></video>" ext path))
-     ;; fall-through case for everything else
+     ;; fall-through case for everything else.
      (t
       path))))
 

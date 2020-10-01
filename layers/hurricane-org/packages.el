@@ -613,30 +613,30 @@
 
             ;; Static assets.
             ("js"
-             :base-directory (concat deft-dir (file-name-as-directory "js"))
+             :base-directory ,(concat deft-dir (file-name-as-directory "js"))
              :base-extension "js"
-             :publishing-directory(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
+             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("css"
-             :base-directory (concat deft-dir (file-name-as-directory "css"))
+             :base-directory ,(concat deft-dir (file-name-as-directory "css"))
              :base-extension "css"
-             :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
+             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("images"
-             :base-directory (concat deft-dir (file-name-as-directory "images"))
+             :base-directory ,(concat deft-dir (file-name-as-directory "images"))
              :base-extension "jpg\\|gif\\|png\\|svg\\|gif"
-             :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
+             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
              :recursive t
              :publishing-function org-publish-attachment
              )
             ("assets"
-             :base-directory (concat deft-dir (file-name-as-directory "assets"))
+             :base-directory ,(concat deft-dir (file-name-as-directory "assets"))
              :base-extension "mp3"
-             :publishing-directory (concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
+             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
              :recursive t
              :publishing-function org-publish-attachment
              )

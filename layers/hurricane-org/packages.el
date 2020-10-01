@@ -656,12 +656,12 @@
     :hook
     (after-init . org-roam-mode)
     :custom
-    (org-roam-directory deft-dir)
+    (org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
     (org-roam-capture-templates
      '(("d" "default" plain (function org-roam-capture--get-point)
        "%?"
        :file-name "${slug}"
-       :head "#+DATE: %<<%F %a %R>> \n#+TITLE: ${title}\n"
+       :head "#+DATE: %T \n#+TITLE: ${title}\n"
        :unnarrowed t)))
     :init
     (progn

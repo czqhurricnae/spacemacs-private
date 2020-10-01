@@ -835,8 +835,26 @@ epoch to the beginning of today (00:00)."
 
 (defadvice org-roam--format-link (after make-screenshotImg-directory-maybe
                                         (target &optional description type) activate)
-  "Create screenshot image directory if not exists while visiting file."
+  "Create screenshot image directory if not exists while insert new file."
   (let ((dir (concat "screenshotImg/" (file-name-base (file-name-nondirectory target)))))
     (when dir
       (unless (file-exists-p dir)
         (make-directory dir t)))))
+
+(defun org-roam--backlinks-list (file)
+  (if (org-roam--org-roam-file-p file)
+      (--reduce-from
+       (concat acc (format "- [[file:%s][%s]]\n"
+                           (file-relative-name (car it) org-roam-directory)
+                           (org-roam--get-title-or-slug (car it))))
+       "" (org-roam-sql [:select [from] :from links :where (= to $s1)] file))
+    ""))
+
+(defun org-export-preprocessor (backend)
+  (let ((links (org-roam--backlinks-list (buffer-file-name))))
+    (unless (string= links "")
+      (save-excursion
+        (goto-char (point-max))
+        (insert (concat "\n* Backlinks\n") links)))))
+
+(add-hook 'org-export-before-processing-hook 'org-export-preprocessor)

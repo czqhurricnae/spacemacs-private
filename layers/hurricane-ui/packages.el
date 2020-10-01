@@ -13,6 +13,7 @@
                         github :repo "wasamasa/shackle"))
     (ivy-posframe :location (recipe :fetcher
                              github :repo "tumashu/ivy-posframe"))
+    pretty-hydra
     ))
 
 ;; {{
@@ -256,3 +257,7 @@
           (ivy-switch-buffer . ivy-posframe-display-at-frame-center)
           (t . ivy-posframe-display-at-frame-center)))
     (ivy-posframe-enable)))
+
+(defun hurricane-ui/init-pretty-hydra ()
+  (use-package pretty-hydra
+    :ensure t))

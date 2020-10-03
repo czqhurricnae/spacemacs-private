@@ -20,21 +20,20 @@
 ;; @see: https://github.com/hlissner/emacs-doom-themes
 (defun hurricane-ui/init-doom-themes ()
   (use-package doom-themes
-    :init
-    (load-theme 'doom-nord t)
+    ;; :init
+    ;; (load-theme 'doom-solarized-light t)
     :custom
     (doom-themes-enable-italic t)
     (doom-themes-enable-bold t)
     :config
     (doom-themes-neotree-config)
     (doom-themes-org-config)
-    ;; Enable flashing mode-line on errors
+    ;; Enable flashing mode-line on errors.
     (doom-themes-visual-bell-config)
     (set-face-attribute 'doom-visual-bell nil
                         :background (face-foreground 'error)
                         :foreground (face-background 'default)
-                        :inverse-video nil)
-    ))
+                        :inverse-video nil)))
 ;; }}
 
 (defun hurricane-ui/pre-init-doom-modeline ()

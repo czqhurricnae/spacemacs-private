@@ -1,3 +1,2 @@
 # -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg/`(file-name-nondirectory (file-name-base (buffer-file-name)))`")); -*-
 #+LATEX_CLASS: my-article
-#+SETUPFILE: ../../theme-rose.setup

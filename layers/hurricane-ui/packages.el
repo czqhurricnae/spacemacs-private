@@ -255,7 +255,8 @@
           (counsel-find-file . ivy-posframe-display-at-frame-center)
           (ivy-switch-buffer . ivy-posframe-display-at-frame-center)
           (t . ivy-posframe-display-at-frame-center)))
-    (ivy-posframe-enable)))
+    (setq ivy-posframe-hide-minibuffer nil)
+    (ivy-posframe-mode)))
 
 (defun hurricane-ui/init-pretty-hydra ()
   (use-package pretty-hydra

@@ -1290,14 +1290,9 @@
   (use-package rime
     :ensure t
     :init
-    (when (functionp 'module-load)
-      (progn
-        (require 'posframe)
-        (setq rime-show-candidate 'posframe)
-        (setq rime-posframe-properties
-              (list :font "sarasa ui sc"
-                    :internal-border-width 10))))
     (setq default-input-method "rime")
+    (setq rime-show-candidate 'posframe)
+    (setq rime-posframe-style 'simple)
     (setq rime-user-data-dir rime-dir)
     (setq rime-disable-predicates
      '(rime-predicate-evil-mode-p
@@ -1346,10 +1341,6 @@
 
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")
-    (rime-posframe-properties
-          (list :background-color "#333333"
-                :foreground-color "#dcdccc"
-                :internal-border-width 10))
     :bind
     ("C-\\" . #'+rime-force-enable)
     ("M-g" . #'+rime-convert-string-at-point)

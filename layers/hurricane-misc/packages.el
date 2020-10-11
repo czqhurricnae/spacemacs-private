@@ -1347,5 +1347,5 @@
     ("C-\\" . #'+rime-force-enable)
     ("M-g" . #'+rime-convert-string-at-point)
     (:map rime-mode-map
-          ("M-n" . #'rime-inline-ascii)
-          ("C-`" . rime-send-keybinding))))
+          ("C-s-g" . #'rime-inline-ascii)
+          ("C-s-`" . rime-send-keybinding))))

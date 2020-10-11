@@ -59,7 +59,7 @@
 (defun hurricane-ui/post-init-pangu-spacing ()
   (progn
     ;; Add toggle options.
-    (spacemacs|add-toggle toggle-pangu-spaceing
+    (spacemacs|add-toggle pangu-spaceing
       :status pangu-spacing-mode
       :on (global-pangu-spacing-mode)
       :off (global-pangu-spacing-mode -1)
@@ -68,7 +68,7 @@
     (add-hook 'org-mode-hook
               '(lambda ()
                   (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
-                  (spacemacs/toggle-toggle-pangu-spaceing-on)))))
+                  (spacemacs/toggle-pangu-spaceing-on)))))
 
 ;; {{
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md

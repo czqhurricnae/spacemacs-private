@@ -661,7 +661,7 @@
      '(("d" "default" plain (function org-roam-capture--get-point)
        "%?"
        :file-name "${slug}"
-       :head "#+DATE: %T \n#+TITLE: ${title}\n"
+       :head "#+SETUPFILE: ../theme-rose.setup\n#+DATE: %T\n#+TITLE: ${title}\n"
        :unnarrowed t)))
     :init
     (progn

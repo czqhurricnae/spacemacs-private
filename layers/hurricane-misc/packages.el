@@ -1310,6 +1310,8 @@
           (if (= (+ 1 (point)) (line-end-position))
               (evil-append 1)
             (evil-insert 1)))
+        (when (rime--ascii-mode-p)
+          (rime-inline-ascii))
         (rime-force-enable)))
 
     (defun +rime-convert-string-at-point (&optional return-cregexp)

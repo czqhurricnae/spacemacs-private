@@ -633,8 +633,21 @@ If a change in `file-attributes' happended call func."
       (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
     (write-file filename)))
 
+(defun unexpected-strings-replace (filename replace-string-rule-lists)
+  (with-temp-buffer
+    (insert-file-contents filename)
+    (dolist (replace-string-rule replace-string-rule-lists)
+      (progn
+        (message "%s" (car replace-string-rule))
+        (goto-char (point-min))
+        (replace-string (car replace-string-rule) (cdr replace-string-rule))))
+    (write-file filename)))
+
+;; (defvar question-string-pattern-list
+;;   '("<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
+;; 如果无法提取则使用以下规则。
 (defvar question-string-pattern-list
-  '("<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
+  '("<div class=\"s-prose js-post-body\" itemprop=\"text\">" . "</div>"))
 (defvar answer-string-pattern-list
   '("\\(<div class=\"answercell post-layout--right\">\\|<div style=\"display: block;\" class=\"comment-body\">\\|<div class=\"comment-body\" style=\"display: block;\" >\\)" . "</div>"))
 ;; Used to replace unexpected strings in raw extracted html file.
@@ -657,18 +670,18 @@ If a change in `file-attributes' happended call func."
                                          ("{%" . "<")
                                          ("%}" . ">")))
 
-(defvar image-url-pattern-list '("<img src=\"" . "\""))
+(defvar stackoverflow-image-url-pattern-list '("<img src=\"" . "\""))
 
-(defun download-all-images (file)
+(defun stackoverflow-download-all-images (file)
   ;; Use `org-download-image' to download image from `html' file.
   (with-temp-buffer
     (insert-file-contents file)
     (let ((search-origin 0) )
-      (while (string-match (car image-url-pattern-list) (buffer-string) search-origin)
+      (while (string-match (car stackoverflow-image-url-pattern-list) (buffer-string) search-origin)
         (progn
           (goto-char search-origin)
-          (setq image-url-start (re-search-forward (car image-url-pattern-list)))
-          (setq image-url-end (re-search-forward (cdr image-url-pattern-list)))
+          (setq image-url-start (re-search-forward (car stackoverflow-image-url-pattern-list)))
+          (setq image-url-end (re-search-forward (cdr stackoverflow-image-url-pattern-list)))
           (setq image-url (buffer-substring  image-url-start (- image-url-end 1)))
           (if image-url
               (progn
@@ -761,12 +774,12 @@ If a change in `file-attributes' happended call func."
 
     (install-monitor-file-exists org-file-name 1 #'callback-unexpected-strings-filter)
 
-    (append-string-to-file
-     "\n#+BEGIN_SRC comment :results valuse list :exports both\n\n#+END_SRC"
-     org-file-name)
+    ;; (append-string-to-file
+    ;;  "\n#+BEGIN_SRC comment :results valuse list :exports both\n\n#+END_SRC"
+    ;;  org-file-name)
 
     ;; Download all images.
-    (download-all-images html-file-name)
+    (stackoverflow-download-all-images html-file-name)
 )
 
 (defun hurricane/org-as-mac-iTerm2-get-link ()
@@ -981,3 +994,83 @@ Work in macOS only."
         (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
 
     (advice-add 'evil-insert :after 'display-current-input-method-title))))
+
+(defvar mp-all-images-url-list)
+(defvar mp-image-url-pattern-list '("<img data-s=\"300,640\" data-type=\"png\" data-src=\"\\|data-s=\"300,640\" data-src=\"" . "\""))
+
+(defun get--mp-all-images-url (file)
+  ;; Use `org-download-image' to download image from `html' file.
+  (with-temp-buffer
+    (insert-file-contents file)
+    (let ((image-url-list nil)
+          (search-origin 0) )
+      (while (string-match (car mp-image-url-pattern-list) (buffer-string) search-origin)
+        (progn
+          (goto-char search-origin)
+          (setq image-url-start (re-search-forward (car mp-image-url-pattern-list)))
+          (setq image-url-end (re-search-forward (cdr mp-image-url-pattern-list)))
+          (setq image-url (buffer-substring  image-url-start (- image-url-end 1)))
+          (if image-url
+              (progn
+                (push (cons image-url (concat (number-to-string (match-end 0)) ".jpeg")) image-url-list)
+                (setq search-origin (match-end 0))))))
+      image-url-list)))
+
+(defun download--mp-all-images (url-list)
+  (cl-loop for url in url-list
+           do (progn
+                (org-download--image (car url) (cdr url))
+                (sleep-for 1))))
+
+(defvar mp-content-pattern-list
+  '("<div class=\"rich_media_content \" id=\"js_content\" style=\"visibility: hidden;\">" . "</div>"))
+
+(defun extract-content-from-mp-to-org-file ()
+  ;; Insert a `src-code-type' type source code block in org-mode.
+  (interactive)
+
+
+
+    ;; Read `URL' string from minibuffer, while the string read is empty, this loop will not stop.
+    (setq url "")
+    (while (string-equal url "")
+      (setq url (read-string "Please input the StackOverFlow url to extract: "
+                             nil nil "" nil)))
+
+    (setq html-file-name "mp.html"
+          org-file-name  "mp.org")
+    ;; Extract content to file.
+    (with-current-buffer (url-retrieve-synchronously url)
+      ;; Remove the `^M' character in html file.
+      (dos2unix)
+      (progn
+        (goto-char 0)
+        (setq content-start (re-search-forward (car mp-content-pattern-list)))
+        (goto-char content-start)
+        (setq content-end (re-search-forward (cdr mp-content-pattern-list)))
+        (setq content-string (buffer-substring content-start (- content-end 6)))
+        (append-string-to-file content-string html-file-name))
+      ;; Extract image and comment strings to file.
+      )
+
+    ;; (defun callback-unexpected-strings-filter ()
+    ;;   (unexpected-strings-filter org-file-name org-replace-string-rule-lists))
+
+    ;; (install-monitor-file-exists org-file-name 1 #'callback-unexpected-strings-filter)
+
+    ;; (append-string-to-file
+    ;;  "\n#+BEGIN_SRC comment :results valuse list :exports both\n\n#+END_SRC"
+    ;;  org-file-name)
+
+    ;; Download all images.
+    (setq mp-all-images-url-list (get--mp-all-images-url html-file-name))
+    (download--mp-all-images mp-all-images-url-list)
+
+    (message "%s" mp-all-images-url-list)
+
+    (unexpected-strings-replace html-file-name mp-all-images-url-list)
+    (sleep-for 1)
+    (unexpected-strings-filter html-file-name '(("data-src" . "src")))
+
+    (pandoc-converter html-file-name org-file-name "html" "org")
+)

@@ -111,9 +111,6 @@
                                   ;; Keybinding for executing source code blocks.
                                   (local-set-key (kbd "C-c s r")
                                                  'org-src-do-at-code-block)
-                                  ;; Keybinding for export org file to markdown file.
-                                  (local-set-key (kbd "C-c f c")
-                                                 'org-gfm-export-to-markdown-filter)
                                   (local-set-key (kbd "C-l")
                                                  'evil-insert)))
 

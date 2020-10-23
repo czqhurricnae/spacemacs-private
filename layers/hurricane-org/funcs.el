@@ -195,24 +195,6 @@ just like `((name begin-position end-position))'"
   (interactive)
   (delete-image-file-and-link (or org-screenshot-image-dir-name org-dot-image-dir-name)))
 
-(defun replace-symbols-dollar-and-times ()
-  "Used in markdown file , replace unexpected symbols:
-           '\(' -> ' $'
-           '\)' -> '$'
-       '\times' -> '×'
-  '![img](...)' -> '![img][...]\r' <- '\r' : new line
-   '```comment' -> ''
-           '\`' -> ''
-"
-  (interactive)
-  (replace-region-or-buffer "\\\\(" " $" nil)
-  (replace-region-or-buffer "\\\\)" "$ " nil)
-  (replace-region-or-buffer "\\\\times" "×" nil)
-  (replace-region-or-buffer "!\\[img\\]\\((\\)\.*" "[" 1)
-  (replace-region-or-buffer "!\\[img\\]\.*?\\()\\)\.*?" "]\r" 1)
-  (replace-region-or-buffer "```comment" "" nil)
-  (replace-region-or-buffer "\\\\`" "`" nil))
-
 (defun create-graphviz ()
   (interactive)
   (let* ((img-dir org-dot-image-dir-name))
@@ -350,17 +332,6 @@ just like `((name begin-position end-position))'"
     (org-edit-src-code)
     (if region-active-flag
         (clipboard-yank)))))
-
-(defun org-gfm-export-to-markdown-filter ()
-  (interactive)
-  (progn
-    (org-open-file (org-gfm-export-to-markdown))
-    (end-of-buffer)
-    (previous-line 1)
-    (kill-line)
-    (replace-symbols-dollar-and-times)
-    (save-buffer)
-    (kill-buffer-and-window)))
 
 (defun save-buffer-filter ()
   "Replace the expected charaters except `funcs.el<hurricane-org>' file."

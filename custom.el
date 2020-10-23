@@ -49,8 +49,8 @@
     (("d" "default" plain
       (function org-roam-capture--get-point)
       "%?" :file-name "${slug}" :head "#+SETUPFILE: ../theme-rose.setup
- #+DATE: %T
- #+TITLE: ${title}
+#+DATE: %T
+#+TITLE: ${title}
 " :unnarrowed t))))
  '(org-roam-directory
    "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/notes/")
@@ -77,41 +77,59 @@
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(pyfmt-command "black")
  '(request-backend (quote curl))
- '(rime-librime-root "~/.emacs.d/librime/dist")
+ '(rime-librime-root "~/.emacs.d/librime/dist" t)
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    (quote
     ((eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python 内置函数 type()"))
+           (concat default-directory "screenshotImg/自动油门电门组件/"))
      (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python 类的 __get__() 调用"))
+           (concat default-directory "screenshotImg/737NG 飞机 APU 启动发电机基本原理浅析/"))
      (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python 属性的查找顺序"))
+           (concat default-directory "screenshotImg/737NG APU 滑油滤压差指示器弹出/"))
      (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python 包，模块，类以及代码文件和目录的一种管理方案"))
+           (concat default-directory "screenshotImg/737NG 的 APU 爆炸帽灯点亮的故障分析/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/When_to_use_weak_references_in_python/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/Accessibility: sr-only or aria-label/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/Flask-0.1/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/filter_python_list/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/Using_org_babel_to_enable_virtualenv/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/what_does_sudo_h_do/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/container document/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/Custom_Flask-Admin_list_action"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/get_content_of_a_buffer/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/how_to_reference_named_table_or_code_block_in_org_mode/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/维 a 酸使用注意事项/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/fix_columns_in_horizontal_scrolling/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "/screenshotImg/Flask-SQLAlchemy_db_create_all_not_creating_database/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/sae 部署/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "screenshotImg/Python 2-MRO_and_super/"))
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/Python-asyncio_gather_vs_asyncio_wait/"))
      (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python __package__ 变量"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python _all_ 变量"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/Python yield"))
-     (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/Python-协程/"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/`(file-name-nondirectory (file-name-base (buffer-file-name)))`"))
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/Nginx 怎么转发/"))
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/PyCharm 激活/"))
      (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/python_实现在类中动态添加属性和生成对象"))
-     (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/evil-guide/"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg"))
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/MacOS 无法登录 App Store 修复/"))
      (eval setq org-download-image-dir
@@ -225,8 +243,6 @@
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/JavaScript-basic/"))
      (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/" 航线线路施工及检查/))
-     (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/JavaScript-call_stack_callback_queue_event_loop/"))
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/Custom_Flask-Admin_list_action/"))
@@ -242,27 +258,11 @@
            (concat default-directory "screenshotImg/737-800 空调温度控制/"))
      (eval setq org-download-image-dir
            (concat default-directory "screenshotImg/737-800 空调平衡和不平衡/"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/电话"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/补充"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/卡路里"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/不可以.org"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/糖糖"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/茉莉花茶"))
-     (eval setq org-download-image-dir
-           (concat default-directory "screenshotImg/"))
      (typescript-backend . tide)
      (typescript-backend . lsp)
      (javascript-backend . tide)
      (javascript-backend . tern)
-     (javascript-backend . lsp)
-     (eval setq org-download-image-dir
-           (concat default-directory "/screenshotImg")))))
+     (javascript-backend . lsp))))
  '(vc-annotate-background "#FDF6E3")
  '(vc-annotate-color-map
    (list

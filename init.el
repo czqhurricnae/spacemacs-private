@@ -422,7 +422,7 @@ you should place your code here."
   (setq split-height-threshold nil)
   (setq split-width-threshold 0)
   (setcdr evil-insert-state-map nil)
-  (add-hook 'prog-mode-hook 'turn-on-fci-mode)
+  (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
   (setq browse-url-browser-function 'eww-browse-url)

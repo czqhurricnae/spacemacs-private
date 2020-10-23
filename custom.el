@@ -16,7 +16,6 @@
  '(doom-themes-enable-italic t)
  '(evil-want-Y-yank-to-eol t)
  '(evil-want-y-yank-to-eol t)
- '(fci-rule-color "#D6D6D6")
  '(hl-todo-keyword-faces
    (quote
     (("TODO" . "#dc752f")

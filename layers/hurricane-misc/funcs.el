@@ -167,8 +167,7 @@ org-files and bookmarks."
 (defun hurricane/hotspots-sources ()
   "Construct the helm sources for my hotspots."
   `((name . "Mail and News")
-    (candidates . (("Calendar" . (lambda ()  (browse-url "https://www.google.com/calendar/render")))
-                   ("RSS" . elfeed)
+    (candidates . (("RSS" . elfeed)
                    ("Blog" . blog-admin-start)
                    ("Github" . (lambda() (helm-github-stars)))
                    ("Calculator" . (lambda () (helm-calcul-expression)))
@@ -203,19 +202,6 @@ e.g. `Sunday, September 17, 2000'."
     reload active tab of winref
   end tell
 " )))
-
-(define-minor-mode
-  shadowsocks-proxy-mode
-  :global t
-  :init-value nil
-  :lighter " SS"
-  (if shadowsocks-proxy-mode
-      (setq url-gateway-method 'socks)
-    (setq url-gateway-method 'native)))
-
-(define-global-minor-mode
-  global-shadowsocks-proxy-mode shadowsocks-proxy-mode shadowsocks-proxy-mode
-  :group 'shadowsocks-proxy)
 
 (defun hurricane/open-file-with-projectile-or-counsel-git ()
   (interactive)

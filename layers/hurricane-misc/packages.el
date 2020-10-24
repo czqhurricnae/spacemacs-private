@@ -1040,8 +1040,7 @@
         (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
         (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
 
-    ;; (define-key global-map (kbd "C-s") 'my-swiper-search)))
-    (define-key global-map (kbd "C-s") 'color-rg-search-symbol)))
+    (define-key global-map (kbd "C-s") 'my-swiper-search)))
 
 (defun hurricane-misc/post-init-magit ()
   (progn

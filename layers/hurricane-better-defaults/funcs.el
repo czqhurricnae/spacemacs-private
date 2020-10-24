@@ -26,14 +26,14 @@ Position the cursor at its beginning, according to the current mode."
 (defun hurricane/rename-file-and-buffer ()
   "Rename the current buffer and file that is visiting."
   (interactive)
-  (let ((filename (buffer-file-name)))
-    (if (not (and filename (file-exists-p filename)))
+  (let ((file-name (buffer-file-name)))
+    (if (not (and file-name (file-exists-p file-name)))
         (message "Buffer is not visiting a file!")
-      (let ((new-name (read-file-name "New name: " filename)))
+      (let ((new-name (read-file-name "New name: " file-name)))
         (cond
-         ((vc-backend filename) (vc-rename-file filename new-name))
+         ((vc-backend file-name) (vc-rename-file file-name new-name))
          (t
-          (rename-file filename new-name t)
+          (rename-file file-name new-name t)
           (set-visited-file-name new-name t t)))))))
 
 (defun hurricane/yank-to-end-of-line ()
@@ -121,8 +121,8 @@ If newname names a directory, it copies oldname into that directory, preserving 
 (defun hurricane/dired-find-file ()
   "Open buffer in another window."
   (interactive)
-  (let ((filename (dired-get-filename nil t)))
-    (if (car (file-attributes filename))
+  (let ((file-name (dired-get-filename nil t)))
+    (if (car (file-attributes file-name))
         (dired-find-alternate-file)
       (dired-find-file-other-window))))
 
@@ -131,8 +131,8 @@ If newname names a directory, it copies oldname into that directory, preserving 
 After this command has been run, any buffers it's modified will remain open and unsaved."
   (interactive "CRun on marked files M-x ")
   (save-window-excursion
-    (mapc (lambda (filename)
-            (find-file filename)
+    (mapc (lambda (file-name)
+            (find-file file-name)
             (call-interactively command))
           (dired-get-marked-files))))
 

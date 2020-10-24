@@ -261,7 +261,7 @@
 
 (defun hurricane-org/post-init-deft ()
   (progn
-    (setq deft-use-filter-string-for-filename t)
+    (setq deft-use-filter-string-for-file-name t)
     (setq deft-recursive t)
     (setq deft-extension "org")
     (setq deft-directory deft-dir)))
@@ -679,7 +679,7 @@
         "rg" 'org-roam-graph))
     :config
     (defun org-roam--title-to-slug (title)
-      "Convert TITLE to a filename-suitable slug."
+      "Convert TITLE to a file-name-suitable slug."
       (cl-flet* ((nonspacing-mark-p (char)
                                     (eq 'Mn (get-char-code-property char 'general-category)))
                  (strip-nonspacing-marks (s)

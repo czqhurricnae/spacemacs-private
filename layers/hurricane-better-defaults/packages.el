@@ -116,7 +116,7 @@
                             (setq ediff-after-quit-hook-internal nil)
                             (if wnd
                                 (set-window-configuration wnd)))))
-            (error "no more than 2 files should be marked"))))
+            (error "No more than 2 files should be marked"))))
       ;; }}
 
       (defvar dired-filelist-cmd
@@ -147,7 +147,7 @@
     (evilified-state-evilify profiler-report-mode profiler-report-mode-map)))
 
 (defun hurricane-better-defaults/post-init-occur-mode ()
-  "Auto switch to `occur buffer'"
+  "Auto switch to `occur buffer'."
     (add-hook 'occur-hook
               '(lambda ()
                  (switch-to-buffer-other-window "*Occur*"))))

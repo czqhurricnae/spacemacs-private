@@ -172,7 +172,7 @@ variables such as `exec-path'."
 ;;                              "--arrow-parens" "always"
 ;;                              "--insert-pragma true"))
 ;;     (defun enable-minor-mode (my-pair)
-;;       "Enable minor mode if filename match the regexp.  `my-pair' is a cons cell (regexp . minor-mode)."
+;;       "Enable minor mode if file-name match the regexp.  `my-pair' is a cons cell (regexp . minor-mode)."
 ;;       (if (buffer-file-name)
 ;;           (if (string-match (car my-pair) buffer-file-name)
 ;;               (funcall (cdr my-pair)))))

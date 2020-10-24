@@ -135,10 +135,10 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 (add-hook 'find-file-hook 'spacemacs/check-large-file)
 
 (defadvice find-file (before make-directory-maybe
-                             (filename &optional wildcards) activate)
+                             (file-name &optional wildcards) activate)
   "Create parent directory if not exists while visiting file."
-  (unless (file-exists-p filename)
-    (let ((dir (file-name-directory filename)))
+  (unless (file-exists-p file-name)
+    (let ((dir (file-name-directory file-name)))
       (when dir
         (unless (file-exists-p dir)
           (make-directory dir t))))))

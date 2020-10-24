@@ -98,7 +98,7 @@
         :on-enter (awesome-tab-mode t)
         :on-exit (awesome-tab-mode -1)
         :bindings
-        ;; Fast Move.
+        ;; Fast move.
         ("p" awesome-tab-backward-group)
         ("n" awesome-tab-forward-group)
         ("h" awesome-tab-backward-tab)

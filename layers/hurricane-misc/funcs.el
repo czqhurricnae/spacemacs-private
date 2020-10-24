@@ -58,8 +58,8 @@
   (persp-save-state-to-file (concat persp-save-dir "hurricane")))
 
 ;; {{
-;; http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
-;; http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
+;; @see: http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
+;; @see: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun counsel-yank-bash-history ()
   "Yank the `zsh' history."
   (interactive)
@@ -99,7 +99,7 @@
       (goto-char end)                        ;; Go to the end of region.
       (setq end (line-end-position))         ;; Save the end of the line.
 
-      (indent-rigidly start end spaces)   ;; Indent between start and end.
+      (indent-rigidly start end spaces)      ;; Indent between start and end.
       (setq deactivate-mark nil)             ;; Restore the selected region.
       )))
 
@@ -141,7 +141,7 @@
     (setq collection
           (mapcar (lambda (rev)
                     ;; Re-shape list for the ivy-read.
-                    (cons (concat (substring (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
+                    (cons (concat (substring (nth 0 rev) 0 7) "|" (nth 3 rev) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
                   (git-timemachine--revisions)))
     (ivy-read "commits:"
               collection
@@ -561,33 +561,35 @@ Error out if this isn't a GitHub repo."
   (counsel-imenu)
   (evil-set-jump))
 
-(defun append-string-to-file (string filename)
-  "Append `string' to `filename'."
+(defun append-string-to-file (string file-name)
+  "Append STRING to FILE-NAME."
   (interactive)
-  (append-to-file string nil filename))
+  (append-to-file string nil file-name))
 
-(defun get-filename-from-url (url)
-  "Get the substring of `URL' which after the final slash."
+(defun get-file-name-from-url (url)
+  "Get the substring of URL which after the final slash."
   (with-temp-buffer
     (insert url)
-    (let ((filename-origin 0))
-      (goto-char filename-origin)
-      (while (string-match "/" url filename-origin)
+    (let ((file-name-origin 0))
+      (goto-char file-name-origin)
+      (while (string-match "/" url file-name-origin)
         (progn
-          (goto-char filename-origin)
-          (setq filename-start (re-search-forward "/"))
-          (setq filename-origin (match-end 0))))
-      (substring (buffer-string) (- filename-start 1)))))
+          (goto-char file-name-origin)
+          (setq file-name-start (re-search-forward "/"))
+          (setq file-name-origin (match-end 0))))
+      (substring (buffer-string) (- file-name-start 1)))))
 
-(defun pandoc-converter (input-file output-file read-format write-format)
+(defun pandoc-converter (input-file-name output-file-name read-format write-format)
   "Call pandoc-mode to convert file."
-  (let ((command-string (concat "pandoc " input-file " -f " read-format " -t "
+  (let* ((input-file (shell-quote-argument input-file-name))
+         (output-file (shell-quote-argument output-file-name))
+         (command-string (concat "pandoc " input-file " -f " read-format " -t "
                                 write-format " -s -o " output-file)))
     (shell-command command-string)))
 
 (defun install-monitor (file secs func)
-  "Pretend to monitor the given `file' (AS FILE) by issuing a check every `secs' (AS SECS) seconds.
-If a change in `file-attributes' happended call func."
+  "Pretend to monitor the given FILE by issuing a check every SECS seconds.
+If a change in `file-attributes' happended call FUNC."
   (let ((monitor-attributes (file-attributes file))
         (fun func))
     (run-with-timer
@@ -612,30 +614,29 @@ If a change in `file-attributes' happended call func."
             (cancel-timer inner-timer)))))
      file func)))
 
-(defun unexpected-strings-filter (filename replace-string-rule-lists)
+(defun replace-unexpected-string-in-file (file-name replace-string-rule-lists)
   (with-temp-buffer
-    (insert-file-contents filename)
+    (insert-file-contents file-name)
     (dolist (replace-string-rule replace-string-rule-lists)
       (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
-    (write-file filename)))
+    (write-file file-name)))
 
-(defun unexpected-strings-replace (filename replace-string-rule-lists)
+(defun replace-url-with-file-path-in-org (file-name url-and-file-path-map-list)
   (with-temp-buffer
-    (insert-file-contents filename)
-    (dolist (replace-string-rule replace-string-rule-lists)
+    (insert-file-contents (concat file-name ".org"))
+    (let ((image-directory (concat org-screenshot-image-dir-name "/" file-name)))
+      (dolist (url-file-path-map url-and-file-path-map-list)
       (progn
-        (message "%s" (car replace-string-rule))
         (goto-char (point-min))
-        (replace-string (car replace-string-rule) (cdr replace-string-rule))))
-    (write-file filename)))
+        (replace-string (car url-file-path-map) (concat "file:" image-directory "/" (cdr url-file-path-map))))))
+    (write-file (concat file-name ".org"))))
 
-;; (defvar question-string-pattern-list
-;;   '("<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
-;; 如果无法提取则使用以下规则。
 (defvar question-string-pattern-list
-  '("<div class=\"s-prose js-post-body\" itemprop=\"text\">" . "</div>"))
+  '("<div class=\"s-prose js-post-body\" itemprop=\"text\">\\|<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
+
 (defvar answer-string-pattern-list
   '("\\(<div class=\"answercell post-layout--right\">\\|<div style=\"display: block;\" class=\"comment-body\">\\|<div class=\"comment-body\" style=\"display: block;\" >\\)" . "</div>"))
+
 ;; Used to replace unexpected strings in raw extracted html file.
 (defvar html-replace-string-rule-lists
   '(("<span class=\"comment-date\" dir=\"ltr\">\.*" . "")
@@ -861,7 +862,7 @@ If a change in `file-attributes' happended call func."
 ;; Google - 标题
 
 (defun hurricane/chrome-switch-tab-1 (window-id tab-id)
-  ;; FIXME: 不知道如何处理多余一个窗口的情况.
+  ;; FIXME: 不知道如何处理多余一个窗口的情况。
   (do-applescript
    (concat "tell application \"Google Chrome\"\n"
            (format "  set active tab index of first window to %s\n" tab-id)

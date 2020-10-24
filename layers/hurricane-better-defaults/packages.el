@@ -8,47 +8,32 @@
 
 (defun hurricane-better-defaults/pre-init-youdao-dictionary ()
   (use-package youdao-dictionary
-    :functions (posframe-show
-                posframe-hide)
-    :commands (youdao-dictionary-mode
-               youdao-dictionary--region-or-word
-               youdao-dictionary--format-result)
+    :commands youdao-dictionary-play-voice-of-current-word
     :bind (("C-c y" . my-youdao-search-at-point)
-           ("C-c Y" . youdao-dictionary-search-at-point))
-    :config
-    ;; Cache documents.
-    (setq url-automatic-caching t)
-
-    ;; Enable Chinese word segmentation support(支持中文分词)
-    (setq youdao-dictionary-use-chinese-word-segmentation t)
-
-    (with-eval-after-load 'posframe
-      (defun youdao-dictionary-search-at-point-posframe ()
-        "Search word at point and display result with posframe."
-        (interactive)
-        (let ((word (youdao-dictionary--region-or-word)))
-          (if word
-              (progn
-                (with-current-buffer (get-buffer-create youdao-dictionary-buffer-name)
-                  (let ((inhibit-read-only t))
-                    (erase-buffer)
-                    (youdao-dictionary-mode)
-                    (insert (youdao-dictionary--format-result word))
-                    (goto-char (point-min))
-                    (set (make-local-variable 'youdao-dictionary-current-buffer-word) word)))
-                (posframe-show youdao-dictionary-buffer-name :postion (point))
-                (unwind-protect
-                    (push (read-event) unread-command-events)
-                  (posframe-hide youdao-dictionary-buffer-name)))
-            (message "Nothing to look up.")))))
+           ("C-c Y" . youdao-dictionary-search-at-point)
+           :map youdao-dictionary-mode-map
+           ("h" . youdao-dictionary-hydra/body)
+           ("?" . youdao-dictionary-hydra/body))
+    :init
+    (setq url-automatic-caching t
+          youdao-dictionary-use-chinese-word-segmentation t)
 
     (defun my-youdao-search-at-point ()
       (interactive)
       (if (display-graphic-p)
-          (if (fboundp 'youdao-dictionary-search-at-point-posframe)
+          (if emacs/>=26p
               (youdao-dictionary-search-at-point-posframe)
             (youdao-dictionary-search-at-point-tooltip))
-        (youdao-dictionary-search-at-point)))))
+        (youdao-dictionary-search-at-point)))
+    :config
+    (with-eval-after-load 'hydra
+      (defhydra youdao-dictionary-hydra (:color blue)
+        ("p" youdao-dictionary-play-voice-of-current-word "play voice of current word")
+        ("y" youdao-dictionary-play-voice-at-point "play voice at point")
+        ("q" quit-window "quit")
+        ("C-g" quit-window "quit")
+        ("h" nil nil)
+        ("?" nil nil)))))
 
 (defun hurricane-better-defaults/init-mic-paren ()
   (use-package mic-paren

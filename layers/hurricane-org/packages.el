@@ -22,7 +22,8 @@
     (ox-html :location built-in)
     (ox-publish :location built-in)
     simple-httpd
-    org-roam))
+    org-roam
+    (org-transclusion :location local)))
 
 (defun hurricane-org/post-init-org-pomodoro ()
   (progn
@@ -693,3 +694,6 @@
                         ("_$" . "")))  ;; remove ending underscore
                (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
           slug)))))
+
+(defun hurricane-org/init-org-transclusion ()
+  (use-package org-transclusion))

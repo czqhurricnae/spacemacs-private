@@ -38,7 +38,8 @@
         use-package-ensure-system-package
         rime
         atomic-chrome
-        dired-rsync))
+        dired-rsync
+        (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1348,3 +1349,8 @@
     (:map rime-mode-map
           ("C-s-g" . #'rime-inline-ascii)
           ("C-s-`" . rime-send-keybinding))))
+
+(defun hurricane-misc/init-with-proxy ()
+  (use-package with-proxy
+    :config
+    (setq with-proxy-http-server "127.0.0.1:8118")))

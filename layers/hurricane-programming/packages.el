@@ -103,7 +103,11 @@
 (defun hurricane-programming/init-color-rg ()
   (use-package color-rg
     :config
-    (add-to-list 'evil-emacs-state-modes 'color-rg-mode)))
+    (add-to-list 'evil-emacs-state-modes 'color-rg-mode)
+    :bind(("M-s M-s" . 'isearch-toggle-color-rg)
+          ("M-s i" . 'color-rg-search-input)
+          ("M-s M-i" . 'color-rg-search-input-in-current-file)
+          ("M-s p" . 'color-rg-search-project))))
 ;; }}
 
 (defun exec-path-from-shell-setenv (name value)

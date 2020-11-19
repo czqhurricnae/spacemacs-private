@@ -165,21 +165,21 @@ just like `((name begin-position end-position))'"
       (setq be-list (cdr be-list)))))
 
 (defun delete-image-file-and-link (img-dir)
-  (interactive)
-  (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
+  (let* ((relative-img-dir (concat img-dir "/" (file-name-sans-extension (buffer-name)) "/"))
+         (link-list (org-element-map (org-element-parse-buffer) 'link
                       (lambda (link)
                         (when (string= (org-element-property :type link) "file")
                           (list (org-element-property :path link)
                                 (org-element-property :begin link)
                                 (org-element-property :end link))))))
-         (absolute-img-dir (concat default-directory img-dir))
-         (temp-name (ivy-read "please selete a image name you want to delete"
+         (absolute-img-dir (concat default-directory relative-img-dir "/"))
+         (temp-name (ivy-read "Please select a image you want to delete"
                               (delete ".."
-                                      (delete "." (directory-files img-dir)))))
-         (file-full-path (concat absolute-img-dir "/" temp-name))
-         (begin-end-list (find-org-link-begin-and-end link-list (concat img-dir "/" temp-name))))
+                                      (delete "." (directory-files relative-img-dir)))))
+         (file-full-path (concat absolute-img-dir temp-name))
+         (begin-end-list (find-org-link-begin-and-end link-list (concat relative-img-dir temp-name))))
     (progn
-      (if (yes-or-no-p "Do you want to delete the image links?")
+      (if (yes-or-no-p "Do you want to delete the image link?")
         (do-delete-link-function begin-end-list))
       (if (yes-or-no-p
            "Do you really want to delete the image file? This can't be revert!")

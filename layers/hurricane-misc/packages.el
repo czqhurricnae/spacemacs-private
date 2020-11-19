@@ -1337,14 +1337,26 @@
                                unread-command-events))))
               (t (message "`+rime-convert-string-at-point' did nothing.")))))
 
+    (defun ivy-dispatching-enchancer (origin-func)
+      (defadvice origin-func (before rime-disable-predicate-maybe
+                                     () activate)
+        "Disable predicate if Ivy dispatch action is activated."
+        (rime-inline-ascii)))
+
+    (mapc #'ivy-dispatching-enchancer '(ivy-dispatching-done ivy-dispatching-call hydra-ivy/body))
+
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")
     :bind
     ("C-\\" . #'+rime-force-enable)
     ("M-g" . #'+rime-convert-string-at-point)
     (:map rime-mode-map
-          ("C-s-g" . #'rime-inline-ascii)
-          ("C-s-`" . rime-send-keybinding))))
+          ("C-M-g" . #'rime-inline-ascii)
+          ("C-M-`" . #'rime-send-keybinding)
+          :map rime-active-mode-map
+          ("C-M-g" . #'rime-inline-ascii)
+          :map ivy-minibuffer-map
+          ("C-M-g" . #'rime-inline-ascii))))
 
 (defun hurricane-misc/init-with-proxy ()
   (use-package with-proxy

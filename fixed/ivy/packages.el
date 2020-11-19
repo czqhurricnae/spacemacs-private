@@ -241,7 +241,8 @@
         "sS" 'spacemacs/swiper-region-or-symbol
         "sb" 'swiper-all
         "sB" 'spacemacs/swiper-all-region-or-symbol)
-      (global-set-key "\C-s" 'swiper))))
+      ;; (global-set-key "\C-s" 'swiper)
+      )))
 
 (defun ivy/init-wgrep ()
   (evil-define-key 'normal wgrep-mode-map ",," 'wgrep-finish-edit)

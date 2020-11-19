@@ -142,7 +142,7 @@ buffer file directory and insert a link to this file."
         (image-to-base64-converter full-file-path)))))
 
 (defun find-org-link-begin-and-end (plist string)
-  "Find link from plist whose link is equal to `string', return a
+  "Find link from plist whose link is equal to STRING, return a
 list just like `((name begin-position end-position))'"
   (let ((return-list '()))
     (progn
@@ -155,7 +155,7 @@ list just like `((name begin-position end-position))'"
       return-list)))
 
 (defun do-delete-link-function (be-list)
-  "Goto the begining of link and delete it, `be-list' is a list
+  "Goto the begining of link and delete it, BE-LIST is a list
 just like `((name begin-position end-position))'"
   (while be-list
     (progn
@@ -769,7 +769,7 @@ and insert a link to this file."
   (let ((ext (file-name-extension path)))
     (cond
      ((eq 'html backend)
-      (format "<video preload='metadata' controls='controls'><source type='video/%s' src='screenshotImg/%s' /></video>" ext path))
+      (format "<video preload='metadata' controls='controls'><source type='video/%s' src='%s' /></video>" ext path))
      ;; fall-through case for everything else.
      (t
       path))))

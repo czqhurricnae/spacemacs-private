@@ -228,10 +228,8 @@
 
       (org-link-set-parameters "video" :export 'org-video-link-export)
 
-      (define-key org-mode-map (kbd "s-p") 'org-priority)
-      (spacemacs/set-leader-keys-for-major-mode 'org-mode
-        "tl" 'org-toggle-link-display)
       (define-key evil-normal-state-map (kbd "C-c C-w") 'org-refile)
+      (define-key global-map (kbd "<f12>") 'org-transclusion-mode)
       )))
 
 (defun hurricane-org/init-org-mac-link ()
@@ -317,16 +315,13 @@
   (spacemacs|use-package-add-hook org :post-config (require 'ob-lisp)))
 
 (defun hurricane-org/post-init-org-download ()
-  (use-package org-download
-  ;; :ensure-system-package (pngpaste . "brew install pngpaste")
-  :init
   (progn
     ;; (setq org-download-screenshot-method "screencapture -i %s")
     (setq org-download-screenshot-method "pngpaste %s")
     (setq org-download-heading-lvl nil)
     (setq org-download-screenshot-file (expand-file-name "screenshot.jpg" temporary-file-directory))
     ;; Drag-and-drop to `dired`.
-    (add-hook 'dired-mode-hook 'org-download-enable))))
+    (add-hook 'dired-mode-hook 'org-download-enable)))
 
 ;; {{
 ;; @see: https://github.com/tumashu/org2ctex

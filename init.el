@@ -59,10 +59,17 @@ values."
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip nil
                       :disabled-for org markdown)
-     (osx :variables osx-dictionary-dictionary-choice "Simplified Chinese - English"
-                     osx-command-as 'super)
+     (osx :variables
+          osx-dictionary-dictionary-choice "Simplified Chinese - English"
+          osx-command-as 'super)
      restclient
-     (gtags :disabled-for clojure emacs-lisp javascript latex python shell-scripts)
+     (gtags :disabled-for
+            clojure
+            emacs-lisp
+            javascript
+            latex
+            python
+            shell-scripts)
      (shell :variables shell-default-shell 'eshell)
      ;; docker
      latex
@@ -121,9 +128,9 @@ values."
                     helm-flyspell flyspell-correct-helm clean-aindent-mode
                     helm-c-yasnippet ace-jump-helm-line helm-make magithub
                     helm-swoop helm-spacemacs-help smeargle
-                    ido-vertical-mode flx-ido company-quickhelp counsel-projectile
-                    highlight-parentheses org-pdfview doc-view org-projectile
-                    slime pyim)
+                    ido-vertical-mode flx-ido company-quickhelp
+                    counsel-projectile highlight-parentheses org-pdfview
+                    doc-view org-projectile slime pyim)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -379,7 +386,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq warning-minimum-level :error)
   ;; Hack for remove purpose mode
   (setq purpose-mode nil)
-  ;; Fix startup message: 'unless you set the ycmd-server-command variable to the path to a ycmd install'.
+  ;; Fix startup message:
+  ;;'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
   (setq evil-want-C-w-delete t)
   (setq dotspacemacs-mode-line-theme 'doom))
@@ -425,12 +433,13 @@ you should place your code here."
   (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
   (add-hook 'c-mode-hook (lambda ()
                            (electric-indent-mode -1)))
-  (setq browse-url-browser-function 'eww-browse-url)
+  ;; (setq browse-url-browser-function 'eww-browse-url)
   ;; (setq url-user-agent "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; WOW64; Trident/4.0; SLCC1)")
   ;; (set-face-attribute 'default nil :family "Source Code Pro")
   ;; (set-face-attribute 'default nil :height 165)
   (spacemacs/toggle-debug-on-error-off)
- )
+  ;; TLS
+)
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()

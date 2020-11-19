@@ -1292,7 +1292,9 @@
     (setq rime-user-data-dir rime-dir)
     (setq rime-disable-predicates
      '(rime-predicate-evil-mode-p
-       rime-predicate-prog-in-code-p))
+       rime-predicate-prog-in-code-p
+       rime-predicate-ace-window-p
+       rime-predicate-hydra-p))
 
     (defun +rime-force-enable ()
       "强制 `rime' 使用中文输入状态。
@@ -1337,13 +1339,16 @@
                                unread-command-events))))
               (t (message "`+rime-convert-string-at-point' did nothing.")))))
 
-    (defun ivy-dispatching-enchancer (origin-func)
+    (defun dispatching-enchancer (origin-func)
       (defadvice origin-func (before rime-disable-predicate-maybe
                                      () activate)
         "Disable predicate if Ivy dispatch action is activated."
         (rime-inline-ascii)))
 
-    (mapc #'ivy-dispatching-enchancer '(ivy-dispatching-done ivy-dispatching-call hydra-ivy/body))
+    (mapc #'dispatching-enchancer '(ivy-dispatching-done
+                                        ivy-dispatching-call
+                                        hydra-ivy/body
+                                        which-key-C-h-dispatch))
 
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")

@@ -230,6 +230,164 @@
 
       (define-key evil-normal-state-map (kbd "C-c C-w") 'org-refile)
       (define-key global-map (kbd "<f12>") 'org-transclusion-mode)
+
+      (setq org-publish-project-alist
+            `(("orgfiles"
+               ;; Sources and destinations for files.
+               ;; local org files directory.
+               :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
+               ;; :publishing directory "/ssh:c@182.61.145.178:/home/c/site/public/"
+               :publishing-directory ,blog-dir
+               ;; :preparation-function
+               ;; :complete-function
+
+               ;; Selecting files.
+               :base-extension "org"
+               ;; :exclude "PrivatePage.org"
+               ;; :include
+               :recursive t
+
+               ;; Publishing action.
+               :publishing-function org-html-publish-to-html
+               :htmlized-source nil
+
+               ;; Options for the exporters.
+
+               ;; {{
+               ;; Generic properties.
+               ;; :archived-trees	org-export-with-archived-trees
+               ;; :exclude-tags	org-export-exclude-tags
+               ;; org-export-headline-levels.
+               :headline-levels 4
+               ;; :language	org-export-default-language
+               ;; :preserve-breaks	org-export-preserve-breaks
+               ;; org-export-with-section-numbers.
+               :section-numbers nil
+               ;; :select-tags	org-export-select-tags
+               ;; org-export-with-author.
+               :with-author "Hurricane Chen"
+               ;; :with-broken-links	org-export-with-broken-links
+               ;; org-export-with-clocks.
+               ;; :with-clocks	t
+               ;; org-export-with-creator.
+               ;; :with-creator nil
+               ;; :with-date org-export-with-date
+               ;; :with-drawers	org-export-with-drawers
+               ;; :with-email	org-export-with-email
+               ;; :with-emphasize	org-export-with-emphasize
+               ;; :with-fixed-width org-export-with-fixed-width
+               ;; :with-footnotes	org-export-with-footnotes
+               ;; :with-latex	org-export-with-latex
+               ;; :with-planning	org-export-with-planning
+               ;; org-export-with-priority.
+               :with-priority t
+               ;; :with-properties	org-export-with-properties
+               ;; :with-special-strings	org-export-with-special-strings
+               ;; :with-sub-superscript	org-export-with-sub-superscripts
+               ;; :with-tables	org-export-with-tables
+               ;; :with-tags	org-export-with-tags
+               ;; :with-tasks	org-export-with-tasks
+               ;; :with-timestamps	org-export-with-timestamps
+               ;; :with-title	org-export-with-title
+               ;; org-export-with-toc.
+               :with-toc t
+               ;; :with-todo-keywords	org-export-with-todo-keywords
+               ;; }}
+
+               ;; {{
+               ;;  HTML specific properties
+               ;; :html-allow-name-attribute-in-anchors	org-html-allow-name-attribute-in-anchors
+               ;; :html-checkbox-type	org-html-checkbox-type
+               :html-container "section"
+               ;; :html-divs	org-html-divs
+               ;; org-html-doctype.
+               :html-doctype "html5"
+               ;; :html-extension	org-html-extension
+               ;; org-html-footnote-format.
+               ;; :html-footnote-format nil
+               ;; :html-footnote-separator	org-html-footnote-separator
+               ;; :html-footnotes-section	org-html-footnotes-section
+               ;; :html-format-drawer-function	org-html-format-drawer-function
+               ;; :html-format-headline-function	org-html-format-headline-function
+               ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
+               ;; :html-head-extra	,hurricane/head-extra
+               ;; :html-head-include-default-style nil
+               ;; :html-head-include-scripts nil
+               ;; :html-head	org-html-head
+               ;; :html-home/up-format	org-html-home/up-format
+               ;; :html-html5-fancy t
+               ;; :html-indent	org-html-indent
+               ;; :html-infojs-options	org-html-infojs-options
+               ;; :html-infojs-template	org-html-infojs-template
+               ;; :html-inline-image-rules	org-html-inline-image-rules
+               ;; :html-inline-images	org-html-inline-images
+               ;; :html-link-home	org-html-link-home
+               ;; :html-link-org-files-as-html	org-html-link-org-files-as-html
+               ;; :html-link-up	org-html-link-up
+               ;; :html-link-use-abs-url	org-html-link-use-abs-url
+               ;; :html-mathjax-options	org-html-mathjax-options
+               ;; :html-mathjax-template	org-html-mathjax-template
+               ;; :html-metadata-timestamp-format	org-html-metadata-timestamp-format
+               ;; org-html-postamble-format.
+               ;; :html-postamble-format t
+               ;; org-html-postamble.
+               :html-postamble ,hurricane/postamble
+               ;; :html-preamble-format	org-html-preamble-format
+               ;; org-html-preamble.
+               ;; :html-preamble ,hurricane/preamble
+               ;; :html-self-link-headlines	org-html-self-link-headlines
+               ;; :html-table-align-individual-field	de{org-html-table-align-individual-fields
+               ;; :html-table-attributes	org-html-table-default-attributes
+               ;; :html-table-caption-above	org-html-table-caption-above
+               ;; :html-table-data-tags	org-html-table-data-tags
+               ;; :html-table-header-tags	org-html-table-header-tags
+               ;; :html-table-row-tags	org-html-table-row-tags
+               ;; :html-table-use-header-tags-for-first-column	org-html-table-use-header-tags-for-first-column
+               ;; :html-tag-class-prefix	org-html-tag-class-prefix
+               ;; :html-text-markup-alist	org-html-text-markup-alist
+               ;; :html-todo-kwd-class-prefix	org-html-todo-kwd-class-prefix
+               ;; :html-toplevel-hlevel	org-html-toplevel-hlevel
+               ;; :html-use-infojs	org-html-use-infojs
+               ;; :html-validation-link	org-html-validation-link
+               ;; :html-viewport	org-html-viewport
+               ;; :html-wrap-src-lines	org-html-wrap-src-lines
+               ;; :html-xml-declaration	org-html-xml-declaration
+               ;; }}
+
+               ;; {{
+               ;; Markdown specific properties.
+               ;; :md-footnote-format	org-md-footnote-format
+               ;; :md-footnotes-section	org-md-footnotes-section
+               ;; :md-headline-style	org-md-headline-style
+               ;; }}
+
+               ;; {{
+               ;; Other options
+               :table-of-contents t
+               ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
+               ;; }}
+               :auto-sitemap t
+               :exclude "node_modules"
+               :sitemap-title "Hurricane"
+               :sitemap-sort-files anti-chronologically
+               :sitemap-function hurricane/org-publish-sitemap
+               :sitemap-format-entry sitemap-format-entry
+               :sitemap-filename "index.org"
+               )
+
+              ;; Static assets.
+              ("images"
+               :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "screenshotImg"))
+               :base-extension "jpg\\|gif\\|png\\|svg\\|gif\\|jpeg"
+               :publishing-directory ,(concat blog-dir (file-name-as-directory "screenshotImg"))
+               :exclude "node_modules"
+               :recursive t
+               :publishing-function org-publish-attachment
+               )
+
+              ("website" :components ("orgfiles" "images"))
+              ("statics" :components ("images"))
+              ))
       )))
 
 (defun hurricane-org/init-org-mac-link ()
@@ -459,184 +617,14 @@
 
 (defun hurricane-org/init-ox-html ()
   (spacemacs|use-package-add-hook org
-    :post-config
+    :post-init
     (require 'ox-html)
-    (setq user-full-name "Hurricane Chen")))
+    ))
 
 (defun hurricane-org/init-ox-publish ()
   (spacemacs|use-package-add-hook org
-    :post-config
-    (require 'ox-publish)
-    (setq org-publish-project-alist
-          `(("orgfiles"
-             ;; Sources and destinations for files.
-             ;; local org files directory.
-             :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
-             ;; :publishing directory "/ssh:c@182.61.145.178:/home/c/site/public/"
-             :publishing-directory ,(concat deft-dir (file-name-as-directory "public"))
-             ;; :preparation-function
-             ;; :complete-function
-
-             ;; Selecting files.
-             :base-extension "org"
-             ;; :exclude "PrivatePage.org"
-             ;; :include
-             :recursive t
-
-             ;; Publishing action.
-             :publishing-function org-html-publish-to-html
-             ;; :htmlized-source
-
-             ;; Options for the exporters.
-
-             ;; {{
-             ;; Generic properties.
-             ;; :archived-trees	org-export-with-archived-trees
-             ;; :exclude-tags	org-export-exclude-tags
-             ;; org-export-headline-levels.
-             :headline-levels 4
-             ;; :language	org-export-default-language
-             ;; :preserve-breaks	org-export-preserve-breaks
-             ;; org-export-with-section-numbers.
-             :section-numbers nil
-             ;; :select-tags	org-export-select-tags
-             ;; org-export-with-author.
-             :with-author "Hurricane Chen"
-             ;; :with-broken-links	org-export-with-broken-links
-             ;; org-export-with-clocks.
-             ;; :with-clocks	t
-             ;; org-export-with-creator.
-             ;; :with-creator nil
-             ;; :with-date org-export-with-date
-             ;; :with-drawers	org-export-with-drawers
-             ;; :with-email	org-export-with-email
-             ;; :with-emphasize	org-export-with-emphasize
-             ;; :with-fixed-width org-export-with-fixed-width
-             ;; :with-footnotes	org-export-with-footnotes
-             ;; :with-latex	org-export-with-latex
-             ;; :with-planning	org-export-with-planning
-             ;; org-export-with-priority.
-             :with-priority t
-             ;; :with-properties	org-export-with-properties
-             ;; :with-special-strings	org-export-with-special-strings
-             ;; :with-sub-superscript	org-export-with-sub-superscripts
-             ;; :with-tables	org-export-with-tables
-             ;; :with-tags	org-export-with-tags
-             ;; :with-tasks	org-export-with-tasks
-             ;; :with-timestamps	org-export-with-timestamps
-             ;; :with-title	org-export-with-title
-             ;; org-export-with-toc.
-             :with-toc t
-             ;; :with-todo-keywords	org-export-with-todo-keywords
-             ;; }}
-
-             ;; {{
-             ;;  HTML specific properties
-             ;; :html-allow-name-attribute-in-anchors	org-html-allow-name-attribute-in-anchors
-             ;; :html-checkbox-type	org-html-checkbox-type
-             ;; :html-container	org-html-container-element
-             ;; :html-divs	org-html-divs
-             ;; org-html-doctype.
-             :html-doctype "html5"
-             ;; :html-extension	org-html-extension
-             ;; org-html-footnote-format.
-             ;; :html-footnote-format nil
-             ;; :html-footnote-separator	org-html-footnote-separator
-             ;; :html-footnotes-section	org-html-footnotes-section
-             ;; :html-format-drawer-function	org-html-format-drawer-function
-             ;; :html-format-headline-function	org-html-format-headline-function
-             ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
-             ;; :html-head-extra	org-html-head-extra
-             ;; :html-head-include-default-style	org-html-head-include-default-style
-             ;; :html-head-include-scripts	org-html-head-include-scripts
-             ;; :html-head	org-html-head
-             ;; :html-home/up-format	org-html-home/up-format
-             ;; :html-html5-fancy	org-html-html5-fancy
-             ;; :html-indent	org-html-indent
-             ;; :html-infojs-options	org-html-infojs-options
-             ;; :html-infojs-template	org-html-infojs-template
-             ;; :html-inline-image-rules	org-html-inline-image-rules
-             ;; :html-inline-images	org-html-inline-images
-             ;; :html-link-home	org-html-link-home
-             ;; :html-link-org-files-as-html	org-html-link-org-files-as-html
-             ;; :html-link-up	org-html-link-up
-             ;; :html-link-use-abs-url	org-html-link-use-abs-url
-             ;; :html-mathjax-options	org-html-mathjax-options
-             ;; :html-mathjax-template	org-html-mathjax-template
-             ;; :html-metadata-timestamp-format	org-html-metadata-timestamp-format
-             ;; org-html-postamble-format.
-             ;; :html-postamble-format t
-             ;; org-html-postamble.
-             ;; :html-postamble t
-             ;; :html-preamble-format	org-html-preamble-format
-             ;; org-html-preamble.
-             ;; :html-preamble nil
-             ;; :html-self-link-headlines	org-html-self-link-headlines
-             ;; :html-table-align-individual-field	de{org-html-table-align-individual-fields
-             ;; :html-table-attributes	org-html-table-default-attributes
-             ;; :html-table-caption-above	org-html-table-caption-above
-             ;; :html-table-data-tags	org-html-table-data-tags
-             ;; :html-table-header-tags	org-html-table-header-tags
-             ;; :html-table-row-tags	org-html-table-row-tags
-             ;; :html-table-use-header-tags-for-first-column	org-html-table-use-header-tags-for-first-column
-             ;; :html-tag-class-prefix	org-html-tag-class-prefix
-             ;; :html-text-markup-alist	org-html-text-markup-alist
-             ;; :html-todo-kwd-class-prefix	org-html-todo-kwd-class-prefix
-             ;; :html-toplevel-hlevel	org-html-toplevel-hlevel
-             ;; :html-use-infojs	org-html-use-infojs
-             ;; :html-validation-link	org-html-validation-link
-             ;; :html-viewport	org-html-viewport
-             ;; :html-wrap-src-lines	org-html-wrap-src-lines
-             ;; :html-xml-declaration	org-html-xml-declaration
-             ;; }}
-
-             ;; {{
-             ;; Markdown specific properties.
-             ;; :md-footnote-format	org-md-footnote-format
-             ;; :md-footnotes-section	org-md-footnotes-section
-             ;; :md-headline-style	org-md-headline-style
-             ;; }}
-
-             ;; {{
-             ;; Other options
-             :table-of-contents t
-             ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
-             ;; }}
-             )
-
-            ;; Static assets.
-            ("js"
-             :base-directory ,(concat deft-dir (file-name-as-directory "js"))
-             :base-extension "js"
-             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
-             :recursive t
-             :publishing-function org-publish-attachment
-             )
-            ("css"
-             :base-directory ,(concat deft-dir (file-name-as-directory "css"))
-             :base-extension "css"
-             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
-             :recursive t
-             :publishing-function org-publish-attachment
-             )
-            ("images"
-             :base-directory ,(concat deft-dir (file-name-as-directory "images"))
-             :base-extension "jpg\\|gif\\|png\\|svg\\|gif"
-             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
-             :recursive t
-             :publishing-function org-publish-attachment
-             )
-            ("assets"
-             :base-directory ,(concat deft-dir (file-name-as-directory "assets"))
-             :base-extension "mp3"
-             :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
-             :recursive t
-             :publishing-function org-publish-attachment
-             )
-
-            ("website" :components ("orgfiles" "js" "css" "images"))
-            ("statics" :components ("js" "css" "images" "assets"))
-            ))))
+    :post-init
+    (require 'ox-publish)))
 
 (defun hurricane-org/init-simple-httpd ()
   (use-package simple-httpd

@@ -552,7 +552,7 @@ and insert a link to this file."
     "Save current buffer and publish."
   (interactive)
   (save-buffer t)
-  (blog-site-project-setup)
+  ;; (blog-site-project-setup)
   (org-publish-current-file t))
 
 (defun delete-org-and-html ()
@@ -606,7 +606,7 @@ and insert a link to this file."
 
          ;; Publishing action.
          :publishing-function org-html-publish-to-html
-         ;; :htmlized-source
+         :htmlized-source nil
 
          ;; Options for the exporters.
 
@@ -622,7 +622,7 @@ and insert a link to this file."
          :section-numbers nil
          ;; :select-tags	org-export-select-tags
          ;; org-export-with-author.
-         :with-author "Hurricane Chen"
+         ;; :with-author "Hurricane Chen"
          ;; :with-broken-links	org-export-with-broken-links
          ;; org-export-with-clocks.
          ;; :with-clocks	t
@@ -655,7 +655,7 @@ and insert a link to this file."
          ;;  HTML specific properties
          ;; :html-allow-name-attribute-in-anchors	org-html-allow-name-attribute-in-anchors
          ;; :html-checkbox-type	org-html-checkbox-type
-         ;; :html-container	org-html-container-element
+         :html-container "section"
          ;; :html-divs	org-html-divs
          ;; org-html-doctype.
          :html-doctype "html5"
@@ -667,12 +667,12 @@ and insert a link to this file."
          ;; :html-format-drawer-function	org-html-format-drawer-function
          ;; :html-format-headline-function	org-html-format-headline-function
          ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
-         ;; :html-head-extra	org-html-head-extra
-         ;; :html-head-include-default-style	org-html-head-include-default-style
-         ;; :html-head-include-scripts	org-html-head-include-scripts
+         ;; :html-head-extra	,hurricane/head-extra
+         ;; :html-head-include-default-style nil
+         ;; :html-head-include-scripts nil
          ;; :html-head	org-html-head
          ;; :html-home/up-format	org-html-home/up-format
-         ;; :html-html5-fancy	org-html-html5-fancy
+         ;; :html-html5-fancy t
          ;; :html-indent	org-html-indent
          ;; :html-infojs-options	org-html-infojs-options
          ;; :html-infojs-template	org-html-infojs-template
@@ -688,10 +688,10 @@ and insert a link to this file."
          ;; org-html-postamble-format.
          ;; :html-postamble-format t
          ;; org-html-postamble.
-         ;; :html-postamble t
+         :html-postamble ,hurricane/postamble
          ;; :html-preamble-format	org-html-preamble-format
          ;; org-html-preamble.
-         ;; :html-preamble nil
+         ;; :html-preamble ,hurricane/preamble
          ;; :html-self-link-headlines	org-html-self-link-headlines
          ;; :html-table-align-individual-field	de{org-html-table-align-individual-fields
          ;; :html-table-attributes	org-html-table-default-attributes
@@ -723,40 +723,27 @@ and insert a link to this file."
          :table-of-contents t
          ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
          ;; }}
+         :auto-sitemap t
+         :exclude "node_modules"
+         :sitemap-title "Hurricane"
+         :sitemap-sort-files anti-chronologically
+         :sitemap-function hurricane/org-publish-sitemap
+         :sitemap-format-entry sitemap-format-entry
+         :sitemap-filename "index.org"
          )
 
         ;; Static assets.
-        ("js"
-         :base-directory ,(concat deft-dir (file-name-as-directory "js"))
-         :base-extension "js"
-         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "js"))
-         :recursive t
-         :publishing-function org-publish-attachment
-         )
-        ("css"
-         :base-directory ,(concat deft-dir (file-name-as-directory "css"))
-         :base-extension "css"
-         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "css"))
-         :recursive t
-         :publishing-function org-publish-attachment
-         )
         ("images"
-         :base-directory ,(concat deft-dir (file-name-as-directory "images"))
-         :base-extension "jpg\\|gif\\|png\\|svg\\|gif"
-         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory "images"))
-         :recursive t
-         :publishing-function org-publish-attachment
-         )
-        ("assets"
-         :base-directory ,(concat deft-dir (file-name-as-directory "assets"))
-         :base-extension "mp3"
-         :publishing-directory ,(concat deft-dir (file-name-as-directory "public") (file-name-as-directory"assets"))
+         :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "screenshotImg"))
+         :base-extension "jpg\\|gif\\|png\\|svg\\|gif\\|jpeg"
+         :publishing-directory ,(concat blog-dir (file-name-as-directory "screenshotImg"))
+         :exclude "node_modules"
          :recursive t
          :publishing-function org-publish-attachment
          )
 
-        ("website" :components ("orgfiles" "js" "css" "images"))
-        ("statics" :components ("js" "css" "images" "assets"))
+        ("website" :components ("orgfiles" "images"))
+        ("statics" :components ("images"))
         )))
 
 (add-to-list 'safe-local-eval-forms '(blog-site-project-setup))
@@ -805,7 +792,7 @@ epoch to the beginning of today (00:00)."
        (concat acc (format "- [[file:%s][%s]]\n"
                            (file-relative-name (car it) org-roam-directory)
                            (org-roam--get-title-or-slug (car it))))
-       "" (org-roam-sql [:select [from] :from links :where (= to $s1)] file))
+       "" (org-roam-db-query [:select [from] :from links :where (= to $s1)] file))
     ""))
 
 (defun org-export-preprocessor (backend)
@@ -816,3 +803,19 @@ epoch to the beginning of today (00:00)."
         (insert (concat "\n* Backlinks\n") links)))))
 
 (add-hook 'org-export-before-processing-hook 'org-export-preprocessor)
+
+(defun hurricane/publish ()
+  (interactive)
+  (rassq-delete-all 'html-mode auto-mode-alist)
+  (rassq-delete-all 'web-mode auto-mode-alist)
+  (fset 'web-mode (symbol-function 'fundamental-mode))
+  (call-interactively 'org-publish-all))
+
+;; Republish all files, even if no changes made to the page content.
+;; (for example, if you want backlinks to be regenerated).
+(defun hurricane/republish ()
+  (interactive)
+	(let ((current-prefix-arg 4))
+    (rassq-delete-all 'web-mode auto-mode-alist)
+    (fset 'web-mode (symbol-function 'fundamental-mode))
+    (call-interactively 'org-publish-all)))

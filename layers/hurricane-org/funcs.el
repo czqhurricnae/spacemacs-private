@@ -503,7 +503,7 @@ and insert a link to this file."
       (if (file-exists-p img-dir)
           (print (format "Screnshot image directory: '%s' already exists." img-dir))
         (mkdir img-dir))
-      ;; 统一将截图和下载图片存放的文件夹, 为以文件的同一目录下的 `screenshotImg' 文件夹.
+      ;; 统一将截图和下载图片存放的文件夹，为以文件的同一目录下的 `screenshotImg' 文件夹。
       (setq absolute-img-dir (concat default-directory img-dir))
       ;; (let ((temp-name (select-or-enter-file-name absolute-img-dir)))
       (let ((temp-name (select-or-enter-file-name img-dir)))

@@ -39,7 +39,8 @@
         rime
         atomic-chrome
         dired-rsync
-        (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))))
+        (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
+        (thing-edit :location (recipe :fetcher github :repo "manateelazycat/thing-edit"))))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1367,3 +1368,42 @@
   (use-package with-proxy
     :config
     (setq with-proxy-http-server "127.0.0.1:8118")))
+
+(defun hurricane-misc/init-thing-edit ()
+  (use-package thing-edit
+    :config
+    (with-eval-after-load 'hydra
+      (defhydra hydra-thing-edit (:color pink :hint nil)
+        "
+                               ^Thing edit^
+-----------------------------------------------------------------------
+^file^    ^sentence^  ^buffer^ ^line^ ^parenthese^ ^sexp^   ^paragrap^
+_f_ copy     _s_      _b_      _r_       _p_           _s_  _a_
+_F_ cut      _S_      _B_      _R_       _P_           _S_  _A_
+_1_ replace  _2_      _3_      _4_       _5_           _6_  _7_
+"
+        ("f" thing-copy-filename)
+        ("F" thing-cut-filename)
+        ("1" thing-replace-filename)
+        ("s" thing-copy-sentence)
+        ("S" thing-cut-sentence)
+        ("2" thing-replace-sentence)
+        ("b" thing-copy-whole-buffer)
+        ("B" thing-cut-whole-buffer)
+        ("3" thing-replace-whole-buffer)
+        ("r" thing-copy-line)
+        ("R" thing-cut-line)
+        ("4" thing-replace-line)
+        ("p" thing-copy-parentheses)
+        ("P" thing-cut-parentheses)
+        ("5" thing-replace-parentheses)
+        ("s" thing-copy-sexp)
+        ("S" thing-cut-sexp)
+        ("6" thing-replace-sexp)
+        ("a" thing-copy-paragrap)
+        ("A" thing-cut-paragrap)
+        ("7" thing-replace-paragrap)
+        ;; quit
+        ("q" nil)
+        ("." nil :color blue)))
+    :bind ("M-s k" . hydra-thing-edit/body)))

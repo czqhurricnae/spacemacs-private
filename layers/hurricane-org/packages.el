@@ -23,7 +23,11 @@
     (ox-publish :location built-in)
     simple-httpd
     org-roam
-    (org-transclusion :location local)))
+    (org-transclusion :location local)
+    (anki-editor :location (recipe
+                            :fetcher github
+                            :repo "louietan/anki-editor")))
+  )
 
 (defun hurricane-org/post-init-org-pomodoro ()
   (progn
@@ -124,6 +128,7 @@
       (add-to-list 'org-entities-user
                    '("exclamation" "\\exclamation{}" t "!" "!" "!" "!"))
       (setq org-export-backends (quote (ascii html icalendar latex md)))
+
       ;; Make org not to treat `_' with sub-superscript, but `_{}'.
       (setq org-export-with-sub-superscripts '{})
 
@@ -680,3 +685,6 @@
 
 (defun hurricane-org/init-org-transclusion ()
   (use-package org-transclusion))
+
+(defun hurricane-org/init-anki-editor ()
+  (use-package anki-editor))

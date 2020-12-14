@@ -104,7 +104,7 @@
   (use-package color-rg
     :config
     (add-to-list 'evil-emacs-state-modes 'color-rg-mode)
-    :bind(("M-s M-s" . 'isearch-toggle-color-rg)
+    :bind (("M-s M-s" . 'isearch-toggle-color-rg)
           ("M-s i" . 'color-rg-search-input)
           ("M-s M-i" . 'color-rg-search-input-in-current-file)
           ("M-s p" . 'color-rg-search-project))))

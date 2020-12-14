@@ -1014,7 +1014,7 @@ Image file name is generated from `match-end' position string."
       (insert-file-contents (concat file-name ".org"))
       (goto-char (point-min))
       (insert (format "# -*- eval: (setq org-download-image-dir (concat default-directory \"screenshotImg/%s/\")); -*-\n" file-name))
-      (insert "#+LATEX_CLASS: my-article\n#+SETUPFILE: ../theme-roje.setup\n")
+      (insert "#+LATEX_CLASS: my-article\n#+SETUPFILE: ../theme-rose.setup\n")
       (insert (format "#+DATE: <%s>\n" (format-time-string "%Y-%m-%d %b %H:%M")))
       (insert (format "#+TITLE: %s\n" file-name))
       (write-file (concat file-name ".org")))))

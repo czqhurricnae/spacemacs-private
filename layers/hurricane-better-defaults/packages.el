@@ -33,7 +33,11 @@
         ("q" quit-window "quit")
         ("C-g" quit-window "quit")
         ("h" nil nil)
-        ("?" nil nil)))))
+        ("?" nil nil)))
+    (add-hook 'youdao-dictionary-mode-hook
+              (lambda ()
+                (define-key evil-normal-state-local-map
+                  (kbd "h") #'youdao-dictionary-hydra/body)))))
 
 (defun hurricane-better-defaults/init-mic-paren ()
   (use-package mic-paren

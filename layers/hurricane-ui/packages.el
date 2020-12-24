@@ -81,7 +81,6 @@
 
 (defun hurricane-ui/init-awesome-tab ()
   (use-package awesome-tab
-    :load-path "~/.emacs.d/elpa/awesome-tab"
     :commands (awesome-tab-mode)
     :defer t
     :init

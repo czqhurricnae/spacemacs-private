@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name:anormal
+# key: anormal
+# --
+* $1
+:PROPERTIES:
+:ANKI_DECK: II 类 第一阶段
+:ANKI_NOTE_TYPE: 基础
+:END:
+
+** 正面
+$1
+** 背面
+$0

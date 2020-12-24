@@ -484,7 +484,9 @@
     (setq org-download-heading-lvl nil)
     (setq org-download-screenshot-file (expand-file-name "screenshot.jpg" temporary-file-directory))
     ;; Drag-and-drop to `dired`.
-    (add-hook 'dired-mode-hook 'org-download-enable)))
+    (add-hook 'dired-mode-hook 'org-download-enable)
+    ;; Disable DOWNLOADED attribute.
+    (setq org-download-annotate-function (lambda (_link) ""))))
 
 ;; {{
 ;; @see: https://github.com/tumashu/org2ctex

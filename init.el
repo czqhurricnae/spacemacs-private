@@ -94,7 +94,8 @@ values."
      (org :variables
           org-want-to-do-binding t
           org-enable-github-support t
-          org-enable-reveal-js-support t)
+          org-enable-reveal-js-support t
+          org-enable-roam-support t)
      ;; Must ensure fasd installed first.
      fasd
      (spacemacs-layouts :variables

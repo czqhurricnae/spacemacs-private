@@ -22,7 +22,6 @@
     (ox-html :location built-in)
     (ox-publish :location built-in)
     simple-httpd
-    org-roam
     (org-transclusion :location local)
     (anki-editor :location (recipe
                             :fetcher github
@@ -131,6 +130,7 @@
 
       ;; Make org not to treat `_' with sub-superscript, but `_{}'.
       (setq org-export-with-sub-superscripts '{})
+      (setq org-use-sub-superscripts '{})
 
       ;; Reset subtask.
       (setq org-default-properties (cons "RESET_SUBTASKS" org-default-properties))
@@ -241,7 +241,6 @@
                ;; Sources and destinations for files.
                ;; local org files directory.
                :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
-               ;; :publishing directory "/ssh:c@182.61.145.178:/home/c/site/public/"
                :publishing-directory ,blog-dir
                ;; :preparation-function
                ;; :complete-function
@@ -315,7 +314,7 @@
                ;; :html-format-drawer-function	org-html-format-drawer-function
                ;; :html-format-headline-function	org-html-format-headline-function
                ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
-               ;; :html-head-extra	,hurricane/head-extra
+               :html-head-extra	,hurricane/head-extra
                ;; :html-head-include-default-style nil
                ;; :html-head-include-scripts nil
                ;; :html-head	org-html-head
@@ -383,7 +382,7 @@
               ;; Static assets.
               ("images"
                :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "screenshotImg"))
-               :base-extension "jpg\\|gif\\|png\\|svg\\|gif\\|jpeg"
+               :base-extension "css\\|js\\|png\\|jpg\\|gif\\|png\\|svg\\|gif\\|jpeg"
                :publishing-directory ,(concat blog-dir (file-name-as-directory "screenshotImg"))
                :exclude "node_modules"
                :recursive t
@@ -625,8 +624,7 @@
 (defun hurricane-org/init-ox-html ()
   (spacemacs|use-package-add-hook org
     :post-init
-    (require 'ox-html)
-    ))
+    (require 'ox-html)))
 
 (defun hurricane-org/init-ox-publish ()
   (spacemacs|use-package-add-hook org
@@ -639,51 +637,41 @@
     :config
     (setq httpd-root blog-dir)))
 
-(defun hurricane-org/init-org-roam ()
-  (use-package org-roam
-    :hook
-    (after-init . org-roam-mode)
-    :custom
-    (org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
-    (org-roam-capture-templates
-     '(("d" "default" plain (function org-roam-capture--get-point)
-       "%?"
-       :file-name "${slug}"
-       :head "#+SETUPFILE: ../theme-rose.setup\n#+DATE: %T\n#+TITLE: ${title}\n"
-       :unnarrowed t)))
-    :init
-    (progn
-      (spacemacs/declare-prefix "ar" "org-roam")
-      (spacemacs/set-leader-keys
-        "arl" 'org-roam
-        "art" 'org-roam-dailies-today
-        "arf" 'org-roam-find-file
-        "arg" 'org-roam-graph)
-
-      (spacemacs/declare-prefix-for-mode 'org-mode "mr" "org-roam")
-      (spacemacs/set-leader-keys-for-major-mode 'org-mode
-        "rl" 'org-roam
-        "rt" 'org-roam-dailies-today
-        "rb" 'org-roam-switch-to-buffer
-        "rf" 'org-roam-find-file
-        "ri" 'org-roam-insert
-        "rg" 'org-roam-graph))
-    :config
-    (defun org-roam--title-to-slug (title)
-      "Convert TITLE to a file-name-suitable slug."
-      (cl-flet* ((nonspacing-mark-p (char)
-                                    (eq 'Mn (get-char-code-property char 'general-category)))
-                 (strip-nonspacing-marks (s)
-                                         (apply #'string (seq-remove #'nonspacing-mark-p
-                                                                     (ucs-normalize-NFD-string s))))
-                 (cl-replace (title pair)
-                             (replace-regexp-in-string (car pair) (cdr pair) title)))
-        (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . " ")  ;; convert anything not alphanumeric
-                        ;; ("__*" . "_")  ;; remove sequential underscores
-                        ("^_" . "")  ;; remove starting underscore
-                        ("_$" . "")))  ;; remove ending underscore
-               (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-          slug)))))
+(defun hurricane-org/pre-init-org-roam ()
+  (spacemacs|use-package-add-hook org-roam
+  :post-init
+  (setq org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
+  (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
+  (setq org-roam-capture-templates
+   '(("d" "default" plain (function org-roam-capture--get-point)
+      "%?"
+      :file-name "${slug}"
+      :head "#+DATE: %T\n#+TITLE: ${title}\n"
+      :unnarrowed t)))
+  (progn
+    (spacemacs/declare-prefix "ar" "org-roam")
+    (spacemacs/set-leader-keys
+      "arl" 'org-roam
+      "art" 'org-roam-dailies-today
+      "arf" 'org-roam-find-file
+      "arg" 'org-roam-graph))
+  :post-config
+  (defun org-roam--title-to-slug (title)
+    "Convert TITLE to a file-name-suitable slug.
+  Use hyphens rather than underscores."
+    (cl-flet* ((nonspacing-mark-p (char)
+                                  (eq 'Mn (get-char-code-property char 'general-category)))
+               (strip-nonspacing-marks (s)
+                                       (apply #'string (seq-remove #'nonspacing-mark-p
+                                                                   (ucs-normalize-NFD-string s))))
+               (cl-replace (title pair)
+                           (replace-regexp-in-string (car pair) (cdr pair) title)))
+      (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . " ")  ;; convert anything not alphanumeric
+                      ;; ("__*" . "_")  ;; remove sequential underscores
+                      ("^_" . "")  ;; remove starting underscore
+                      ("_$" . "")))  ;; remove ending underscore
+             (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
+        slug)))))
 
 (defun hurricane-org/init-org-transclusion ()
   (use-package org-transclusion))

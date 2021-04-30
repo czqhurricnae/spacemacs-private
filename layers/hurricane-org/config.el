@@ -2,7 +2,7 @@
   "Settings of `org-export'."
   (setq org-export-in-background t
         ;; Hide html built-in style and script.
-        org-html-htmlize-output-type 'inline-css ;; 保留代码块高亮。
+        org-html-htmlize-output-type nil
         org-html-head-include-default-style nil
         org-html-head-include-scripts nil
         ))
@@ -46,8 +46,10 @@
 <script src='/static/vendor/js/URI.js'></script>
 <script src='/static/vendor/js/page.js'></script>
 
-<script src='/static/vendor/json/jieba.json'></script>"
-)
+<script src='//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js'></script>
+<link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/atom-one-light.min.css'>
+<script>hljs.highlightAll();</script>
+")
 
 ;; {{
 ;; Fiddle with the HTML output.
@@ -111,8 +113,7 @@
                "</div>")
              (org-html--build-pre/postamble 'postamble info)
              "</body>
-          </html>"))
-  )
+          </html>")))
 ;; }}
 
 ;;{{ @see https://vicarie.in/posts/blogging-with-org.html
@@ -130,7 +131,7 @@
 TITLE is the title of the site map.  LIST is an internal
 representation for the files to include, as returned by
 `org-list-to-lisp'.  PROJECT is the current project."
-  (concat "#+SETUPFILE: ../theme-rose.setup\n#+TITLE: " title "\n\n" "
+  (concat title "#+TITLE: " title "\n\n" "
 #+HTML: <div class='container-fluid'>
 #+HTML:    <div class='row'>
 #+HTML:      <div class='col-xs-12 col-md-3'>

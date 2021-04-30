@@ -667,7 +667,7 @@ and insert a link to this file."
          ;; :html-format-drawer-function	org-html-format-drawer-function
          ;; :html-format-headline-function	org-html-format-headline-function
          ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
-         ;; :html-head-extra	,hurricane/head-extra
+         :html-head-extra	,hurricane/head-extra
          ;; :html-head-include-default-style nil
          ;; :html-head-include-scripts nil
          ;; :html-head	org-html-head
@@ -735,7 +735,7 @@ and insert a link to this file."
         ;; Static assets.
         ("images"
          :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "screenshotImg"))
-         :base-extension "jpg\\|gif\\|png\\|svg\\|gif\\|jpeg"
+         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|svg\\|svg\\|json\\|pdf"
          :publishing-directory ,(concat blog-dir (file-name-as-directory "screenshotImg"))
          :exclude "node_modules"
          :recursive t
@@ -791,8 +791,8 @@ epoch to the beginning of today (00:00)."
       (--reduce-from
        (concat acc (format "- [[file:%s][%s]]\n"
                            (file-relative-name (car it) org-roam-directory)
-                           (org-roam--get-title-or-slug (car it))))
-       "" (org-roam-db-query [:select [from] :from links :where (= to $s1)] file))
+                           (org-roam-db--get-title (car it))))
+       "" (org-roam-db-query [:select [source] :from links :where (= dest $s1)] file))
     ""))
 
 (defun org-export-preprocessor (backend)
@@ -819,3 +819,15 @@ epoch to the beginning of today (00:00)."
     (rassq-delete-all 'web-mode auto-mode-alist)
     (fset 'web-mode (symbol-function 'fundamental-mode))
     (call-interactively 'org-publish-all)))
+
+(defun hurricane/org-html-wrap-blocks-in-code (src backend info)
+  "Wrap a source block in <pre><code class=\"lang\">.</code></pre>"
+  (when (org-export-derived-backend-p backend 'html)
+    (replace-regexp-in-string
+     "\\(</pre>\\)" "</code>\n\\1"
+     (replace-regexp-in-string "<pre class=\"src src-\\([^\"]*?\\)\">"
+                               "<pre>\n<code class=\"\\1\">\n" src))))
+
+(with-eval-after-load 'ox-html
+  (add-to-list 'org-export-filter-src-block-functions
+               'hurricane/org-html-wrap-blocks-in-code))

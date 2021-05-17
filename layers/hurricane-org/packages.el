@@ -38,6 +38,10 @@
     (shrface :location (recipe
                         :fetcher github
                         :repo "chenyanming/shrface"))
+    org-roam
+    (nroam :location (recipe
+                      :fetcher github
+                      :repo "NicolasPetton/nroam"))
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
@@ -733,3 +737,9 @@
     (shrface-trial)
     (shrface-default-keybindings) ; setup default keybindings
     (setq shrface-href-versatile t)))
+
+(defun hurricane-org/init-nroam ()
+  (use-package nroam
+    :after org-roam
+    :config
+    (add-hook 'org-mode-hook #'nroam-setup-maybe)))

@@ -32,6 +32,9 @@
     (mpv :location (recipe
                     :fetcher github
                     :repo "kljohann/mpv.el"))
+    (org-fc :location (recipe
+                       :fetcher github
+                       :repo "l3kn/org-fc"))
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
@@ -698,3 +701,23 @@
 (defun hurricane-org/init-mpv ()
   (use-package mpv
     :defer t))
+
+(defun hurricane-org/init-org-fc ()
+  (use-package org-fc
+    :config
+    (require 'org-fc-hydra)
+    (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
+      (kbd "RET") 'org-fc-review-flip
+      (kbd "n") 'org-fc-review-flip
+      (kbd "s") 'org-fc-review-suspend-card
+      (kbd "q") 'org-fc-review-quit)
+
+    (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-rate-mode
+      (kbd "a") 'org-fc-review-rate-again
+      (kbd "h") 'org-fc-review-rate-hard
+      (kbd "g") 'org-fc-review-rate-good
+      (kbd "e") 'org-fc-review-rate-easy
+      (kbd "s") 'org-fc-review-suspend-card
+      (kbd "q") 'org-fc-review-quit)
+    :custom
+    (setq org-fc-directories `(,@(concat deft-dir (file-name-as-directory "notes"))))))

@@ -25,7 +25,10 @@
     (org-transclusion :location local)
     (anki-editor :location (recipe
                             :fetcher github
-                            :repo "louietan/anki-editor")))
+                            :repo "louietan/anki-editor"))
+    (org-media-note :location (recipe
+                               :fetcher github
+                               :repo "yuchen-lea/org-media-note"))
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
@@ -677,4 +680,14 @@
   (use-package org-transclusion))
 
 (defun hurricane-org/init-anki-editor ()
-  (use-package anki-editor))
+  (use-package anki-editor
+    :defer t))
+
+(defun hurricane-org/init-org-media-note ()
+  (use-package org-media-note
+    :defer t
+    :hook (after-init . org-media-note-mode)
+    :init
+    (spacemacs/set-leader-keys "av" 'org-media-note-hydra/body)
+    :config
+    (make-variable-buffer-local 'org-media-note-screenshot-image-dir)))

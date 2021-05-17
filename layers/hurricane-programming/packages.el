@@ -7,7 +7,6 @@
     slime
     (exec-path-from-shell :location elpa)
     dumb-jump
-    (color-rg :location (recipe :fetcher github :repo "manateelazycat/color-rg"))
     yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
     (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
@@ -95,19 +94,6 @@
   (progn
     (setq inferior-lisp-program "/usr/local/opt/sbcl/bin/sbcl")
     (setq slime-contribs '(slime-fancy))))
-;; }}
-
-;; {{
-;; @see: https://github.com/manateelazycat/color-rg
-;; $ brew install rg
-(defun hurricane-programming/init-color-rg ()
-  (use-package color-rg
-    :config
-    (add-to-list 'evil-emacs-state-modes 'color-rg-mode)
-    :bind (("M-s M-s" . 'isearch-toggle-color-rg)
-          ("M-s i" . 'color-rg-search-input)
-          ("M-s M-i" . 'color-rg-search-input-in-current-file)
-          ("M-s p" . 'color-rg-search-project))))
 ;; }}
 
 (defun exec-path-from-shell-setenv (name value)

@@ -2,8 +2,8 @@
   '(
     (doom-themes :location (recipe :fetcher
                             github :repo "hlissner/emacs-doom-themes"))
-    (doom-modeline :location (recipe :fetcher
-                              github :repo "seagle0128/doom-modeline"))
+    ;; (doom-modeline :location (recipe :fetcher
+    ;;                           github :repo "seagle0128/doom-modeline"))
     (hide-mode-line :location (recipe :fetcher
                                github :repo "hlissner/emacs-hide-mode-line"))
     pangu-spacing

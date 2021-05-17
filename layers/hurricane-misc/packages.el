@@ -41,6 +41,7 @@
         dired-rsync
         (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
         (anki :location (recipe :fetcher github :repo "chenyanming/anki.el"))
+        (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1423,3 +1424,6 @@ _1_ replace  _2_      _3_      _4_       _5_           _6_  _7_
     (setq anki-shr-rendering-functions (append anki-shr-rendering-functions shr-external-rendering-functions))
     (setq sql-sqlite-program "/usr/bin/sqlite3")
     (setq anki-collection-dir "/Users/c/Library/Application Support/Anki2/User 1")))
+
+(defun hurricane-misc/init-emacsql ()
+  (use-package emacsql))

@@ -42,6 +42,9 @@
     (nroam :location (recipe
                       :fetcher github
                       :repo "NicolasPetton/nroam"))
+    (e2ansi :location (recipe
+                       :fetcher github
+                       :repo "Lindydancer/e2ansi")))
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
@@ -743,3 +746,6 @@
     :after org-roam
     :config
     (add-hook 'org-mode-hook #'nroam-setup-maybe)))
+
+(defun hurricane-org/init-e2ansi ()
+  (use-package e2ansi))

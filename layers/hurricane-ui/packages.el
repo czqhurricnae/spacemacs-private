@@ -14,6 +14,8 @@
     (ivy-posframe :location (recipe :fetcher
                              github :repo "tumashu/ivy-posframe"))
     pretty-hydra
+    (good-scroll :location (recipe :fetcher
+                                   github :repo "io12/good-scroll.el"))
     ))
 
 ;; {{
@@ -260,3 +262,8 @@
 (defun hurricane-ui/init-pretty-hydra ()
   (use-package pretty-hydra
     :ensure t))
+
+(defun hurricane-ui/init-good-scroll ()
+  (use-package good-scroll
+    :config
+    (good-scroll-mode 1)))

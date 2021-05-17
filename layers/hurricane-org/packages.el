@@ -692,7 +692,10 @@
         slug)))))
 
 (defun hurricane-org/init-org-transclusion ()
-  (use-package org-transclusion))
+  (use-package org-transclusion
+    :config
+    (setq org-transclusion-include-first-section t)
+    (setq org-transclusion-exclude-elements '(property-drawer keyword))))
 
 (defun hurricane-org/init-anki-editor ()
   (use-package anki-editor

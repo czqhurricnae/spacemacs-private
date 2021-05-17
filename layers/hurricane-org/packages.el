@@ -35,6 +35,9 @@
     (org-fc :location (recipe
                        :fetcher github
                        :repo "l3kn/org-fc"))
+    (shrface :location (recipe
+                        :fetcher github
+                        :repo "chenyanming/shrface"))
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
@@ -721,3 +724,12 @@
       (kbd "q") 'org-fc-review-quit)
     :custom
     (setq org-fc-directories `(,@(concat deft-dir (file-name-as-directory "notes"))))))
+
+(defun hurricane-org/init-shrface ()
+  (use-package shrface
+    :defer t
+    :config
+    (shrface-basic)
+    (shrface-trial)
+    (shrface-default-keybindings) ; setup default keybindings
+    (setq shrface-href-versatile t)))

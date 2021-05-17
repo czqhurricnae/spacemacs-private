@@ -450,8 +450,7 @@
   (use-package org-protocol))
 
 (defun hurricane-org/init-org-protocol-capture-html ()
-  (spacemacs|use-package-add-hook org-protocol
-    :post-config (require 'org-protocol-capture-html)))
+  (use-package org-protocol-capture-html))
 
 (defun hurricane-org/init-ox-latex ()
   (spacemacs|use-package-add-hook org :post-config (require 'ox-latex)))

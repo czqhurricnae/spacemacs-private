@@ -151,7 +151,7 @@
       ;; Key bindings
       (spacemacs/set-leader-keys
         "a'" 'spacemacs/ivy-available-repls
-        "fr" 'counsel-recentf
+        "fr" 'spacemacs/counsel-recentf
         "rl" 'ivy-resume
         "bb" 'ivy-switch-buffer)
 

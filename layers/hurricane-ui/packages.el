@@ -48,6 +48,7 @@
 ;; @see: https://github.com/hlissner/emacs-hide-mode-line
 (defun hurricane-ui/init-hide-mode-line ()
   (use-package hide-mode-line
+    :defer t
     :hook
     ((neotree-mode
       imenu-list-minor-mode

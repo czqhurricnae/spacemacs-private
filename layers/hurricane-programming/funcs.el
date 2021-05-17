@@ -13,7 +13,7 @@
 (defun hurricane/load-yasnippet ()
   (progn
     (setq my-snippet-dir (expand-file-name snippet-dir))
-    (setq yas-snippet-dirs  my-snippet-dir)
+    (setq yas-snippet-dirs '(my-snippet-dir))
     (yas-load-directory my-snippet-dir)
     (setq yas-wrap-around-region t)
     (setq yas-indent-line 'fixed)

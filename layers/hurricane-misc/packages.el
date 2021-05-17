@@ -91,7 +91,6 @@
       (progn
         (ranger)
         (setq golden-ratio-previous-enable nil))))
-;; }}
 
 (defun my-quit-ranger ()
   (interactive)
@@ -105,7 +104,9 @@
   (progn
     (define-key ranger-normal-mode-map (kbd "q") 'my-quit-ranger)))
 
-(spacemacs/set-leader-keys "atr" 'my-ranger))
+;; (spacemacs/set-leader-keys "atr" 'my-ranger)
+)
+;; }}
 
 ;; Copy from spacemacs `helm' layer.
 (defun hurricane-misc/init-helm-ag ()
@@ -419,7 +420,6 @@
   (progn
     (defhydra hydra-hotspots (:color blue)
       "Hotspots."
-      ("b" blog-admin-start "blog")
       ("g" helm-github-stars "helm github stars")
       ("r" hurricane/run-current-file "run current file"))
 
@@ -559,6 +559,7 @@
 
 (defun hurricane-misc/init-helm-github-stars ()
   (use-package helm-github-stars
+    :defer t
     :commands (helm-github-stars)
     :init
     (setq helm-github-stars-username "hurricane")))
@@ -571,7 +572,6 @@
 
 (defun hurricane-misc/init-litable ()
   (use-package litable
-    :init
     :defer t))
 
 (defun hurricane-misc/init-osx-dictionary ()
@@ -962,14 +962,14 @@
 
 (defun hurricane-misc/init-moz-controller ()
   (use-package moz-controller
+    :defer t
     :init
     (progn
       (moz-controller-global-mode t)
       (spacemacs|hide-lighter moz-controller-mode))))
 
 (defun hurricane-misc/init-ag ()
-  (use-package ag
-    :init))
+  (use-package ag))
 
 (defun hurricane-misc/post-init-erc ()
   (progn
@@ -1017,11 +1017,11 @@
 
         (ivy-set-actions
          t
-         '(("f" my-find-file-in-git-repo "find files")
-           ("!" my-open-file-in-external-app "Open file in external app")
-           ("I" ivy-insert-action "insert")
-           ("C" ivy-kill-new-action "copy")
-           ("S" ivy-ff-checksum-action "Checksum")))
+         '(("f" my-find-file-in-git-repo "@ Find files")
+           ("!" my-open-file-in-external-app "@ Open file in external app")
+           ("I" ivy-insert-action "@ Insert")
+           ("C" ivy-kill-new-action "@ Copy")
+           ("S" ivy-ff-checksum-action "@ Checksum")))
 
         (spacemacs/set-leader-keys "fad" 'counsel-goto-recent-directory)
         (spacemacs/set-leader-keys "faf" 'counsel-find-file-recent-directory)

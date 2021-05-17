@@ -3,8 +3,6 @@
 (spacemacs/set-leader-keys "hS" 'org-delete-screenshot-image-file-and-link)
 (spacemacs/set-leader-keys "he" 'org-image-to-base64-converter)
 (spacemacs/set-leader-keys "hE" 'org-delete-image-file-and-link)
-(spacemacs/set-leader-keys "hp" 'dash-at-point-with-docset)
-(spacemacs/set-leader-keys "hP" 'dash-at-point)
 (spacemacs/set-leader-keys "so" 'hurricane/occur-dwin)
 (spacemacs/set-leader-keys "ii" 'ein:worksheet-insert-cell-below)
 (spacemacs/set-leader-keys "iI" 'ein:worksheet-insert-cell-above)

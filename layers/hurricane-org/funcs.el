@@ -126,7 +126,7 @@ buffer file directory and insert a link to this file."
   (let* ((img-dir org-screenshot-image-dir-name))
     (progn
       (if (file-exists-p img-dir)
-          (print (format "Screnshot image directory: '%s' already exists." img-dir))
+          (print (format "Screenshot image directory: '%s' already exists." img-dir))
         (mkdir img-dir))
       ;; 统一将截图和下载图片存放的文件夹, 为以文件的同一目录下的'screenshotImg'文件夹.
       ;; (setq absolute-img-dir (concat default-directory img-dir))
@@ -173,7 +173,7 @@ just like `((name begin-position end-position))'"
                                 (org-element-property :begin link)
                                 (org-element-property :end link))))))
          (absolute-img-dir (concat default-directory relative-img-dir "/"))
-         (temp-name (ivy-read "Please select a image you want to delete"
+         (temp-name (ivy-read "Please select an image you want to delete."
                               (delete ".."
                                       (delete "." (directory-files relative-img-dir)))))
          (file-full-path (concat absolute-img-dir temp-name))
@@ -593,7 +593,6 @@ and insert a link to this file."
          ;; Sources and destinations for files.
          ;; local org files directory.
          :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
-         ;; :publishing directory "/ssh:c@182.61.145.178:/home/c/site/public/"
          :publishing-directory ,(concat deft-dir (file-name-as-directory "public"))
          ;; :preparation-function
          ;; :complete-function

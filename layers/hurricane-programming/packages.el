@@ -24,8 +24,8 @@
                                                                       org-mode-hook
                                                                       markdown-mode-hook))
     (spacemacs/add-to-hooks 'hurricane/load-yasnippet '(prog-mode-hook
-                                                           org-mode-hook
-                                                           markdown-mode-hook))))
+                                                        org-mode-hook
+                                                        markdown-mode-hook))))
 
 (defun hurricane-programming/post-init-exec-path-from-shell ()
   (use-package exec-path-from-shell
@@ -46,7 +46,7 @@
     (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
     (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
-    (add-hook 'web-mode-hook  'web-mode-init-hook)
+    ;; (add-hook 'web-mode-hook  'web-mode-init-hook)
     ;; Remove the annoying underline in flycheck.
     (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
     (web-mode-toggle-current-element-highlight)

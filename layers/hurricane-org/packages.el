@@ -29,6 +29,9 @@
     (org-media-note :location (recipe
                                :fetcher github
                                :repo "yuchen-lea/org-media-note"))
+    (mpv :location (recipe
+                    :fetcher github
+                    :repo "kljohann/mpv.el"))
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
@@ -691,3 +694,7 @@
     (spacemacs/set-leader-keys "av" 'org-media-note-hydra/body)
     :config
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)))
+
+(defun hurricane-org/init-mpv ()
+  (use-package mpv
+    :defer t))

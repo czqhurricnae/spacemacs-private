@@ -17,7 +17,6 @@
         avy
         4clojure
         tiny
-        ;; smartparens
         flyspell-correct
         peep-dired
         markdown-mode
@@ -526,12 +525,9 @@
     (setq flyspell-correct-interface 'flyspell-correct-ivy)))
 
 (defun hurricane-misc/post-init-smartparens ()
-  (use-package smartparens
-    :defer t
-    :init
+  (progn
     (smartparens-global-mode t)
     (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens)
-    :config
     ;; 写 lisp 时不成对补全 "'" 和 "`".
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)

@@ -521,7 +521,7 @@ and insert a link to this file."
 
 (defun org-insert-caption-and-target ()
   (interactive)
-  (let* ((current-symbol (color-rg-pointer-string))
+  (let* ((current-symbol (hurricane/pointer-string))
          (input-string
           (string-trim
            (read-string
@@ -820,6 +820,54 @@ epoch to the beginning of today (00:00)."
     (fset 'web-mode (symbol-function 'fundamental-mode))
     (call-interactively 'org-publish-all)))
 
+(defun hurricane/pointer-string ()
+  (if (use-region-p)
+      ;; Get region string if mark is set.
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    ;; Get current symbol or string, and remove prefix char before return.
+    (let* ((current-string (if (hurricane/in-string-p)
+                               (buffer-substring-no-properties
+                                (1+ (car (hurricane/string-start+end-points)))
+                                (cdr (hurricane/string-start+end-points)))
+                             ""))
+           (current-symbol (if (or (string-empty-p current-string)
+                                   (string-match-p "[[:space:]]" current-string))
+                               ;; Get symbol around point if string around point is empty or include spaces.
+                               (thing-at-point 'symbol)
+                             ;; Otherwise, get string around point.
+                             current-string)))
+      (cond ((string-prefix-p "." current-symbol)
+             (string-remove-prefix "." current-symbol))
+            ((string-prefix-p "#" current-symbol)
+             (string-remove-prefix "#" current-symbol))
+            (t current-symbol)))))
+
+(defun hurricane/current-parse-state ()
+  "Return parse state of point from beginning of defun."
+  (let ((point (point)))
+    (beginning-of-defun)
+    (parse-partial-sexp (point) point)))
+
+(defun hurricane/in-string-p (&optional state)
+  (or (nth 3 (or state (hurricane/current-parse-state)))
+      (and
+       (eq (get-text-property (point) 'face) 'font-lock-string-face)
+       (eq (get-text-property (- (point) 1) 'face) 'font-lock-string-face))
+      (and
+       (eq (get-text-property (point) 'face) 'font-lock-doc-face)
+       (eq (get-text-property (- (point) 1) 'face) 'font-lock-doc-face))))
+
+(defun hurricane/string-start+end-points (&optional state)
+  "Return a cons of the points of open and close quotes of the string.
+The string is determined from the parse state STATE, or the parse state
+  from the beginning of the defun to the point.
+This assumes that `hurricane/in-string-p' has already returned true, i.e.
+  that the point is already within a string."
+  (save-excursion
+    (let ((start (nth 8 (or state (hurricane/current-parse-state)))))
+      (goto-char start)
+      (forward-sexp 1)
+      (cons start (1- (point))))))
 (defun hurricane/org-html-wrap-blocks-in-code (src backend info)
   "Wrap a source block in <pre><code class=\"lang\">.</code></pre>"
   (when (org-export-derived-backend-p backend 'html)

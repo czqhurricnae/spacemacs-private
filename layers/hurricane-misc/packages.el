@@ -40,7 +40,7 @@
         atomic-chrome
         dired-rsync
         (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
-        (thing-edit :location (recipe :fetcher github :repo "manateelazycat/thing-edit"))))
+        (anki :location (recipe :fetcher github :repo "chenyanming/anki.el"))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1407,3 +1407,19 @@ _1_ replace  _2_      _3_      _4_       _5_           _6_  _7_
         ("q" nil)
         ("." nil :color blue)))
     :bind ("M-s k" . hydra-thing-edit/body)))
+
+(defun hurricane-misc/init-anki ()
+  (use-package anki
+    :defer t
+    :load-path "~/.emacs.d/elpa/develop/anki-20201013.2241/"
+    :init
+    (add-hook 'anki-mode-hook #'shrface-mode)
+    (add-hook 'anki-card-mode-hook #'shrface-mode)
+    (autoload 'anki "anki")
+    (autoload 'anki-browser "anki")
+    (autoload 'anki-list-decks "anki")
+    :config
+    (require 'shrface)
+    (setq anki-shr-rendering-functions (append anki-shr-rendering-functions shr-external-rendering-functions))
+    (setq sql-sqlite-program "/usr/bin/sqlite3")
+    (setq anki-collection-dir "/Users/c/Library/Application Support/Anki2/User 1")))

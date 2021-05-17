@@ -867,6 +867,23 @@ This assumes that `hurricane/in-string-p' has already returned true, i.e.
       (goto-char start)
       (forward-sexp 1)
       (cons start (1- (point))))))
+
+(defun hurricane/navigate-note (arg &optional note choices)
+  "Navigate notes by link. With universal ARG tries to use only to navigate the tags of the current note. Optionally takes a selected NOTE and filepaths CHOICES."
+  (interactive "P")
+  (let* ((choices (or
+                   choices
+                   (when arg (org-roam-db--links-with-max-distance (buffer-file-name) 1))))
+         (all-notes (org-roam--get-title-path-completions))
+         (completions
+          (or (--filter (-contains-p choices (plist-get (cdr it) :path)) all-notes) all-notes))
+         (title-with-tags (org-roam-completion--completing-read "File: " completions))
+         (res (cdr (assoc title-with-tags completions)))
+         (next-note (plist-get res :path)))
+    (if (string= note next-note)
+        (find-file note)
+      (hurricane/navigate-note nil next-note (org-roam-db--links-with-max-distance next-note 1)))))
+
 (defun hurricane/org-html-wrap-blocks-in-code (src backend info)
   "Wrap a source block in <pre><code class=\"lang\">.</code></pre>"
   (when (org-export-derived-backend-p backend 'html)

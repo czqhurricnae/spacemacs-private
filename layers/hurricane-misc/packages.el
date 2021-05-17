@@ -42,6 +42,7 @@
         (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
         (anki :location (recipe :fetcher github :repo "chenyanming/anki.el"))
         (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
+        (iscroll :location local)))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1427,3 +1428,7 @@ _1_ replace  _2_      _3_      _4_       _5_           _6_  _7_
 
 (defun hurricane-misc/init-emacsql ()
   (use-package emacsql))
+
+(defun hurricane-misc/init-iscroll ()
+  (use-package iscroll
+    :defer t))

@@ -135,7 +135,7 @@
 (put 'shackle--current-popup-window 'permanent-local t)
 
 (defun hurricane-ui/init-shackle ()
- (use-package shackle
+  (use-package shackle
   :functions org-switch-to-buffer-other-window
   :commands shackle-display-buffer
   :hook (after-init . shackle-mode)

@@ -26,11 +26,13 @@
                                                         org-mode-hook
                                                         markdown-mode-hook))))
 
-(defun hurricane-programming/post-init-exec-path-from-shell ()
+(defun hurricane-programming/init-exec-path-from-shell ()
   (use-package exec-path-from-shell
     :init
     (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize))))
+      (exec-path-from-shell-initialize)
+      (exec-path-from-shell-copy-envs '("LC_ALL"))
+      (message "Initialized PATH and other variables from SHELL."))))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper

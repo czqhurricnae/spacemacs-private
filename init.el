@@ -439,6 +439,7 @@ you should place your code here."
   ;; (set-face-attribute 'default nil :family "Source Code Pro")
   ;; (set-face-attribute 'default nil :height 165)
   (set-face-background 'scroll-bar "transparent")
+  (exec-path-from-shell-setenv "LC_ALL" "en_US.UTF-8")
   (spacemacs/toggle-debug-on-error-off)
   ;; TLS
 )

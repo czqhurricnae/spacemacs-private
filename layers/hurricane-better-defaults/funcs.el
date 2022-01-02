@@ -1,8 +1,8 @@
-(defun indent-buffer()
+(defun hurricane//indent-buffer()
   (interactive)
   (indent-region (point-min) (point-max)))
 
-(defun indent-region-or-buffer()
+(defun hurricane/indent-region-or-buffer()
   (interactive)
   (save-excursion
     (if (region-active-p)
@@ -10,7 +10,7 @@
           (indent-region (region-beginning) (region-end))
           (message "Indent selected region."))
       (progn
-        (indent-buffer)
+        (hurricane//indent-buffer)
         (message "Indent buffer.")))))
 
 ;; {{
@@ -58,7 +58,7 @@ Position the cursor at its beginning, according to the current mode."
   (call-interactively 'occur))
 ;; }}
 
-(defun occur-non-ascii ()
+(defun hurricane/occur-non-ascii ()
   "Find any non-ascii characters in the current buffer."
   (interactive)
   (occur "[^[:ascii:]]"))
@@ -74,7 +74,7 @@ Position the cursor at its beginning, according to the current mode."
          (re-search-backward "\\(^[ 0-9.,]+[A-Za-z]+\\).*total$")
          (match-string 1))))))
 
-(defun dired-start-process (cmd &optional file-list)
+(defun hurricane//dired-start-process (cmd &optional file-list)
   (interactive
    (let ((files (dired-get-marked-files
                  t current-prefix-arg)))
@@ -95,7 +95,7 @@ Position the cursor at its beginning, according to the current mode."
         cmd)
       (mapconcat #'expand-file-name file-list "\" \"")))))
 
-(defun dired-open-terminal ()
+(defun hurricane/dired-open-terminal ()
   "Open an `ansi-term' that corresponds to current directory."
   (interactive)
   (let* ((current-dir (dired-current-directory))
@@ -111,14 +111,14 @@ Position the cursor at its beginning, according to the current mode."
                    (aref v 1) (aref v 2)))
        (format "cd '%s'\n" current-dir)))))
 
-(defun dired-copy-file-here (file)
+(defun hurricane/dired-copy-file-here (file)
   "This command copies the file oldname to newname.
 An error is signaled if oldname is not a regular file.
 If newname names a directory, it copies oldname into that directory, preserving its final name component."
   (interactive "fCopy file: ")
   (copy-file file default-directory))
 
-(defun hurricane/dired-find-file ()
+(defun hurricane//dired-find-file ()
   "Open buffer in another window."
   (interactive)
   (let ((file-name (dired-get-filename nil t)))
@@ -135,11 +135,6 @@ After this command has been run, any buffers it's modified will remain open and 
             (find-file file-name)
             (call-interactively command))
           (dired-get-marked-files))))
-
-(defun hurricane/dired-up-directory ()
-  "Goto up directory and resue buffer."
-  (interactive)
-  (find-alternate-file ".."))
 
 (defun hurricane/insert-space-after-point ()
   (interactive)
@@ -163,14 +158,14 @@ After this command has been run, any buffers it's modified will remain open and 
 (dakra-define-up/downcase-dwim "downcase")
 (dakra-define-up/downcase-dwim "capitalize")
 
-(defun evil-keyboard-quit ()
+(defun hurricane//evil-keyboard-quit ()
   "Keyboard quit and force normal state."
   (interactive)
   (and evil-mode (evil-force-normal-state))
   (progn
     (keyboard-quit)))
 
-(defun hurricane/dired-store-link (orig-fun &rest args)
+(defun hurricane//dired-store-link (orig-fun &rest args)
   (if (or (derived-mode-p 'dired-mode) (derived-mode-p 'org-mode))
       (cond
        ((derived-mode-p 'dired-mode)
@@ -197,7 +192,8 @@ After this command has been run, any buffers it's modified will remain open and 
           (message "Stored: %s" (or link desc))
           (car org-stored-links)))))
        (t (apply orig-fun args)))))
-(advice-add 'org-store-link :around #'hurricane/dired-store-link)
+
+;; (advice-add 'org-store-link :around #'hurricane//dired-store-link)
 
 (advice-add 'org-insert-link :after #'org-display-inline-images)
 
@@ -207,3 +203,55 @@ After this command has been run, any buffers it's modified will remain open and 
         (t (save-excursion
              (ignore-errors (backward-up-list))
              (funcall fn)))))
+
+(defun hurricane//open-file-in-external-app (file)
+  "Open `file' in external application."
+  (interactive)
+  (let ((file-path file))
+    (if file-path
+        (cond
+         ((spacemacs/system-is-mswindows) (w32-shell-execute "open" (replace-regexp-in-string "/" "\\\\" file-path)))
+         ((spacemacs/system-is-mac) (shell-command (format "open \"%s\"" file-path)))
+         ((spacemacs/system-is-linux) (let ((process-connection-type nil))
+                                        (start-process "" nil "xdg-open" file-path))))
+      (message "No file associated to this buffer."))))
+
+(defun hurricane//find-file-in-git-repo (repo)
+  (if (file-directory-p repo)
+      (let* ((default-directory repo)
+             (files (split-string (shell-command-to-string (format "cd %s && git ls-files" repo)) "\n" t)))
+        (ivy-read "files:" files
+                  :action 'find-file
+                  :caller 'hurricane//find-file-in-git-repo))
+    (message "%s is not a valid directory." repo)))
+
+(defun hurricane//ivy-ff-checksum ()
+  "Calculate the checksum of `file'. The checksum is copied to kill-ring."
+  (interactive)
+  (let ((file (expand-file-name (ivy-state-current ivy-last) ivy--directory))
+        (algo (intern (ivy-read
+                       "Algorithm: "
+                       '(md5 sha1 sha224 sha256 sha384 sha512)))))
+    (kill-new (with-temp-buffer
+                (insert-file-contents-literally file)
+                (secure-hash algo (current-buffer))))
+    (message "Checksum copied to kill-ring.")))
+
+(defun hurricane//ivy-ff-checksum-action (x)
+  (hurricane//ivy-ff-checksum))
+
+(defun hurricane/open-file-with-projectile-or-counsel-git ()
+  (interactive)
+  (if (hurricane//git-project-root)
+      (counsel-git)
+    (if (projectile-project-p)
+        (projectile-find-file)
+      (counsel-file-jump))))
+
+;; @see: https://emacs-china.org/t/topic/6119
+(defun set-image-mode-mwheel-scroll-function ()
+  (setq-local mwheel-scroll-down-function 'image-scroll-down)
+  (setq-local mwheel-scroll-up-function 'image-scroll-up))
+
+(add-hook 'image-mode-hook #'set-image-mode-mwheel-scroll-function)
+(add-hook 'org-mode-hook #'set-image-mode-mwheel-scroll-function)

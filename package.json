@@ -1,0 +1,19 @@
+{
+  "name": "spacemacs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/czqhurricnae/spacemacs_private.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/czqhurricnae/spacemacs_private/issues"
+  },
+  "homepage": "https://github.com/czqhurricnae/spacemacs_private#readme"
+}

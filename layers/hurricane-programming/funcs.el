@@ -3,13 +3,6 @@
   (let ((directory default-directory))
     (locate-dominating-file directory ".git")))
 
-;; (defun hurricane/open-file-with-projectile-or-counsel-git ()
-;;   (if (hurricane/vcs-project-root)
-;;       (counsel-git)
-;;     (if (projectile-project-p)
-;;         (projectile-find-file)
-;;       (ido-find-file))))
-
 (defun hurricane/load-yasnippet ()
   (progn
     (setq my-snippet-dir (expand-file-name snippet-dir))

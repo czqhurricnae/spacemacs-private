@@ -47,7 +47,7 @@
     (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
     (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
-    ;; (add-hook 'web-mode-hook  'web-mode-init-hook)
+    (add-hook 'web-mode-hook  'web-mode-init-hook)
     ;; Remove the annoying underline in flycheck.
     (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
     (web-mode-toggle-current-element-highlight)
@@ -61,7 +61,7 @@
 (defun hurricane-programming/post-init-dumb-jump ()
   (setq dumb-jump-selector 'ivy))
 
-(defun my-dumb-jump ()
+(defun hurricane/dumb-jump ()
   (interactive)
   (evil-set-jump)
   (dumb-jump-go-other-window))
@@ -135,9 +135,13 @@ variables such as `exec-path'."
       ;;                            (flycheck-mode)
       ;;                            (flycheck-add-mode 'javascript-eslint 'js2-mode)
       ;;                            (flycheck-select-checker 'javascript-eslint)))
+      ;; (add-hook 'rjsx-mode-hook  'web-mode-init-hook)
       (add-hook 'rjsx-mode-hook (lambda ()
         (setq exec-path (cons "/usr/local/bin/node" exec-path))
         (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
+        (setq sgml-basic-offset 2)
+        (setq js-indent-level 2)
+        (web-mode-init-hook)
         (flycheck-select-checker 'javascript-standard)))
       )))
 ;; }}

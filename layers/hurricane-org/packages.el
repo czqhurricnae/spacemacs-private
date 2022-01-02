@@ -7,7 +7,6 @@
                              :repo "lolownia/org-pomodoro"))
     (ox-latex :location built-in)
     (ox-md :location built-in)
-    deft
     (org-protocol-capture-html :location (recipe
                                           :fetcher github
                                           :repo "alphapapa/org-protocol-capture-html"))
@@ -22,37 +21,54 @@
     (ox-html :location built-in)
     (ox-publish :location built-in)
     simple-httpd
-    (org-transclusion :location local)
+    (org-transclusion :location (recipe
+                                 :fetcher github
+                                 :repo "nobiot/org-transclusion"))
     (anki-editor :location (recipe
                             :fetcher github
-                            :repo "louietan/anki-editor"))
+                            :repo "leoc/anki-editor"
+                            :branch "develop"))
     (org-media-note :location (recipe
                                :fetcher github
                                :repo "yuchen-lea/org-media-note"))
     (mpv :location (recipe
                     :fetcher github
                     :repo "kljohann/mpv.el"))
-    (org-fc :location (recipe
-                       :fetcher github
-                       :repo "l3kn/org-fc"))
     (shrface :location (recipe
                         :fetcher github
                         :repo "chenyanming/shrface"))
     org-roam
-    (nroam :location (recipe
-                      :fetcher github
-                      :repo "NicolasPetton/nroam"))
     (e2ansi :location (recipe
                        :fetcher github
-                       :repo "Lindydancer/e2ansi")))
+                       :repo "Lindydancer/e2ansi"))
+    (org-super-links :location (recipe
+                                :fetcher github
+                                :repo "toshism/org-super-links"))
+    (org-super-links-peek :location (recipe
+                                     :fetcher github
+                                     :repo "toshism/org-super-links-peek"))
+    (incremental-reading :location local)
+    (popweb :location (recipe
+                       :fetcher github
+                       :repo "czqhurricnae/popweb"
+                       :files ("*.*" "extension")))
+    (org-latex-impatient (recipe
+                          :fetcher github
+                          :repo "yangsheng6810/org-latex-impatient"))
+    (org-roam-ui (recipe
+                  :fetcher github
+                  :repo "org-roam/org-roam-ui"
+                  :branch "main"
+                  :files ("*.el" "out")))
+    )
   )
 
 (defun hurricane-org/post-init-org-pomodoro ()
   (progn
-    (add-hook 'org-pomodoro-finished-hook '(lambda () (hurricane/notify-osx "Pomodoro Finished" "Have a break!")))
-    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (hurricane/notify-osx "Short Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (hurricane/notify-osx "Long Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-kill-hook '(lambda () (hurricane/notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
+    (add-hook 'org-pomodoro-finished-hook #'(lambda () (hurricane//notify-osx "Pomodoro Finished" "Have a break!")))
+    (add-hook 'org-pomodoro-short-break-finished-hook #'(lambda () (hurricane//notify-osx "Short Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-long-break-finished-hook #'(lambda () (hurricane//notify-osx "Long Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-kill-hook #'(lambda () (hurricane//notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
 
 ;; In order to export pdf to support Chinese, I should install Latex in here:
 ;; @see: https://www.tug.org/mactex/
@@ -78,7 +94,8 @@
          (plantuml . t)
          (C . t)
          (sql . t)
-         (ditaa . t)))
+         (ditaa . t)
+         (calc . t)))
 
       ;; Make Yasnippet effect when the editing org source code is JavaScript.
       (add-to-list 'org-src-lang-modes '("js" . js2))
@@ -123,8 +140,8 @@
 
       (setq org-image-actual-width '(350))
 
-      (add-hook 'org-mode-hook '(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
-      (add-hook 'org-mode-hook '(lambda ()
+      (add-hook 'org-mode-hook #'(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
+      (add-hook 'org-mode-hook #'(lambda ()
                                   ;; Keybinding for inserting code blocks.
                                   (local-set-key (kbd "C-c s i")
                                                  'hurricane/org-insert-src-block)
@@ -179,7 +196,7 @@
       (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
-      (setq org-agenda-files (list org-agenda-dir))
+      (setq org-agenda-files (list org-agenda-dir (concat deft-dir (file-name-as-directory "notes"))))
 
       (with-eval-after-load 'org-agenda
         (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
@@ -213,9 +230,9 @@
               ("s" "Code Snippet" entry
                (file org-agenda-file-code-snippet)
                "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
-              ("W" "Work" entry (file+headline org-agenda-file-gtd "Work")
-               "* TODO [#A] %?\n  %i\n %U"
-               :empty-lines 1)
+              ;; ("W" "Work" entry (file+headline org-agenda-file-gtd "Work")
+              ;;  "* TODO [#A] %?\n  %i\n %U"
+              ;;  :empty-lines 1)
               ("c" "Chrome" entry (file+headline org-agenda-file-note "Quick notes")
                "* TODO [#C] %?\n %(hurricane/retrieve-chrome-current-tab-url)\n %i\n %U"
                :empty-lines 1)
@@ -226,9 +243,12 @@
                entry (file+datetree org-agenda-file-journal)
                "* %U - %^{heading}\n %?"
                :empty-lines 1)
-              ("p" "Protocol"
-               entry (file+headline org-agenda-file-note "Quick notes")
-               "* %^{Title}\n %:initial")
+              ;; ("p" "Protocol"
+              ;;  entry (file+headline org-agenda-file-note "Quick notes")
+              ;;  "* %^{Title}\n %:initial")
+              ("w" "Web site" entry
+               (file "")
+               "* %a :website:\n\n%U %?\n\n%:initial")
               ))
 
       ;; An entry without a cookie is treated just like priority `B'.
@@ -247,13 +267,12 @@
                 (tags-todo "PROJECT") ;; Review all projects (assuming you use todo keywords to designate projects).
                 ))))
 
-      ;; Used by hurricane/org-clock-sum-today-by-tags.
-      (add-hook 'org-after-todo-statistics-hook 'hurricane/org-summary-todo)
+      (org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
 
-      (org-link-set-parameters "video" :export 'org-video-link-export)
-
-      (define-key evil-normal-state-map (kbd "C-c C-w") 'org-refile)
-      (define-key global-map (kbd "<f12>") 'org-transclusion-mode)
+      (define-key evil-normal-state-map (kbd "C-c C-w") #'org-refile)
+      (define-key global-map (kbd "<f9>") #'popweb-org-roam-link-preview-select)
+      (define-key global-map (kbd "<f11>") #'org-transclusion-make-from-link)
+      (define-key global-map (kbd "<f12>") #'org-transclusion-mode)
 
       (setq org-publish-project-alist
             `(("orgfiles"
@@ -278,110 +297,110 @@
 
                ;; {{
                ;; Generic properties.
-               ;; :archived-trees	org-export-with-archived-trees
-               ;; :exclude-tags	org-export-exclude-tags
+               ;; :archived-trees org-export-with-archived-trees
+               ;; :exclude-tags org-export-exclude-tags
                ;; org-export-headline-levels.
                :headline-levels 4
-               ;; :language	org-export-default-language
-               ;; :preserve-breaks	org-export-preserve-breaks
+               ;; :language org-export-default-language
+               ;; :preserve-breaks org-export-preserve-breaks
                ;; org-export-with-section-numbers.
                :section-numbers nil
-               ;; :select-tags	org-export-select-tags
+               ;; :select-tags org-export-select-tags
                ;; org-export-with-author.
                :with-author "Hurricane Chen"
-               ;; :with-broken-links	org-export-with-broken-links
+               ;; :with-broken-links org-export-with-broken-links
                ;; org-export-with-clocks.
-               ;; :with-clocks	t
+               ;; :with-clocks t
                ;; org-export-with-creator.
                ;; :with-creator nil
                ;; :with-date org-export-with-date
-               ;; :with-drawers	org-export-with-drawers
-               ;; :with-email	org-export-with-email
-               ;; :with-emphasize	org-export-with-emphasize
+               ;; :with-drawers org-export-with-drawers
+               ;; :with-email org-export-with-email
+               ;; :with-emphasize org-export-with-emphasize
                ;; :with-fixed-width org-export-with-fixed-width
-               ;; :with-footnotes	org-export-with-footnotes
-               ;; :with-latex	org-export-with-latex
-               ;; :with-planning	org-export-with-planning
+               :with-footnotes org-export-with-footnotes
+               ;; :with-latex org-export-with-latex
+               ;; :with-planning org-export-with-planning
                ;; org-export-with-priority.
                :with-priority t
-               ;; :with-properties	org-export-with-properties
-               ;; :with-special-strings	org-export-with-special-strings
-               ;; :with-sub-superscript	org-export-with-sub-superscripts
-               ;; :with-tables	org-export-with-tables
-               ;; :with-tags	org-export-with-tags
-               ;; :with-tasks	org-export-with-tasks
-               ;; :with-timestamps	org-export-with-timestamps
-               ;; :with-title	org-export-with-title
+               ;; :with-properties org-export-with-properties
+               ;; :with-special-strings org-export-with-special-strings
+               ;; :with-sub-superscript org-export-with-sub-superscripts
+               ;; :with-tables org-export-with-tables
+               ;; :with-tags org-export-with-tags
+               ;; :with-tasks org-export-with-tasks
+               ;; :with-timestamps org-export-with-timestamps
+               ;; :with-title org-export-with-title
                ;; org-export-with-toc.
                :with-toc t
-               ;; :with-todo-keywords	org-export-with-todo-keywords
+               ;; :with-todo-keywords org-export-with-todo-keywords
                ;; }}
 
                ;; {{
                ;;  HTML specific properties
-               ;; :html-allow-name-attribute-in-anchors	org-html-allow-name-attribute-in-anchors
-               ;; :html-checkbox-type	org-html-checkbox-type
+               ;; :html-allow-name-attribute-in-anchors org-html-allow-name-attribute-in-anchors
+               ;; :html-checkbox-type org-html-checkbox-type
                :html-container "section"
-               ;; :html-divs	org-html-divs
+               ;; :html-divs org-html-divs
                ;; org-html-doctype.
                :html-doctype "html5"
-               ;; :html-extension	org-html-extension
+               ;; :html-extension org-html-extension
                ;; org-html-footnote-format.
                ;; :html-footnote-format nil
-               ;; :html-footnote-separator	org-html-footnote-separator
-               ;; :html-footnotes-section	org-html-footnotes-section
-               ;; :html-format-drawer-function	org-html-format-drawer-function
-               ;; :html-format-headline-function	org-html-format-headline-function
-               ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
-               :html-head-extra	,hurricane/head-extra
+               ;; :html-footnote-separator org-html-footnote-separator
+               ;; :html-footnotes-section org-html-footnotes-section
+               ;; :html-format-drawer-function org-html-format-drawer-function
+               ;; :html-format-headline-function org-html-format-headline-function
+               ;; :html-format-inlinetask-function org-html-format-inlinetask-function
+               :html-head-extra ,hurricane/head-extra
                ;; :html-head-include-default-style nil
                ;; :html-head-include-scripts nil
-               ;; :html-head	org-html-head
-               ;; :html-home/up-format	org-html-home/up-format
+               ;; :html-head org-html-head
+               ;; :html-home/up-format org-html-home/up-format
                ;; :html-html5-fancy t
-               ;; :html-indent	org-html-indent
-               ;; :html-infojs-options	org-html-infojs-options
-               ;; :html-infojs-template	org-html-infojs-template
-               ;; :html-inline-image-rules	org-html-inline-image-rules
-               ;; :html-inline-images	org-html-inline-images
-               ;; :html-link-home	org-html-link-home
-               ;; :html-link-org-files-as-html	org-html-link-org-files-as-html
-               ;; :html-link-up	org-html-link-up
-               ;; :html-link-use-abs-url	org-html-link-use-abs-url
-               ;; :html-mathjax-options	org-html-mathjax-options
-               ;; :html-mathjax-template	org-html-mathjax-template
-               ;; :html-metadata-timestamp-format	org-html-metadata-timestamp-format
+               ;; :html-indent org-html-indent
+               ;; :html-infojs-options org-html-infojs-options
+               ;; :html-infojs-template org-html-infojs-template
+               ;; :html-inline-image-rules org-html-inline-image-rules
+               ;; :html-inline-images org-html-inline-images
+               ;; :html-link-home org-html-link-home
+               ;; :html-link-org-files-as-html org-html-link-org-files-as-html
+               ;; :html-link-up org-html-link-up
+               ;; :html-link-use-abs-url org-html-link-use-abs-url
+               ;; :html-mathjax-options org-html-mathjax-options
+               ;; :html-mathjax-template org-html-mathjax-template
+               ;; :html-metadata-timestamp-format org-html-metadata-timestamp-format
                ;; org-html-postamble-format.
                ;; :html-postamble-format t
                ;; org-html-postamble.
                :html-postamble ,hurricane/postamble
-               ;; :html-preamble-format	org-html-preamble-format
+               ;; :html-preamble-format org-html-preamble-format
                ;; org-html-preamble.
                ;; :html-preamble ,hurricane/preamble
-               ;; :html-self-link-headlines	org-html-self-link-headlines
-               ;; :html-table-align-individual-field	de{org-html-table-align-individual-fields
-               ;; :html-table-attributes	org-html-table-default-attributes
-               ;; :html-table-caption-above	org-html-table-caption-above
-               ;; :html-table-data-tags	org-html-table-data-tags
-               ;; :html-table-header-tags	org-html-table-header-tags
-               ;; :html-table-row-tags	org-html-table-row-tags
-               ;; :html-table-use-header-tags-for-first-column	org-html-table-use-header-tags-for-first-column
-               ;; :html-tag-class-prefix	org-html-tag-class-prefix
-               ;; :html-text-markup-alist	org-html-text-markup-alist
-               ;; :html-todo-kwd-class-prefix	org-html-todo-kwd-class-prefix
-               ;; :html-toplevel-hlevel	org-html-toplevel-hlevel
-               ;; :html-use-infojs	org-html-use-infojs
-               ;; :html-validation-link	org-html-validation-link
-               ;; :html-viewport	org-html-viewport
-               ;; :html-wrap-src-lines	org-html-wrap-src-lines
-               ;; :html-xml-declaration	org-html-xml-declaration
+               ;; :html-self-link-headlines org-html-self-link-headlines
+               ;; :html-table-align-individual-field de{org-html-table-align-individual-fields
+               ;; :html-table-attributes org-html-table-default-attributes
+               ;; :html-table-caption-above org-html-table-caption-above
+               ;; :html-table-data-tags org-html-table-data-tags
+               ;; :html-table-header-tags org-html-table-header-tags
+               ;; :html-table-row-tags org-html-table-row-tags
+               ;; :html-table-use-header-tags-for-first-column org-html-table-use-header-tags-for-first-column
+               ;; :html-tag-class-prefix org-html-tag-class-prefix
+               ;; :html-text-markup-alist org-html-text-markup-alist
+               ;; :html-todo-kwd-class-prefix org-html-todo-kwd-class-prefix
+               ;; :html-toplevel-hlevel org-html-toplevel-hlevel
+               ;; :html-use-infojs org-html-use-infojs
+               ;; :html-validation-link org-html-validation-link
+               ;; :html-viewport org-html-viewport
+               ;; :html-wrap-src-lines org-html-wrap-src-lines
+               ;; :html-xml-declaration org-html-xml-declaration
                ;; }}
 
                ;; {{
                ;; Markdown specific properties.
-               ;; :md-footnote-format	org-md-footnote-format
-               ;; :md-footnotes-section	org-md-footnotes-section
-               ;; :md-headline-style	org-md-headline-style
+               ;; :md-footnote-format org-md-footnote-format
+               ;; :md-footnotes-section org-md-footnotes-section
+               ;; :md-headline-style org-md-headline-style
                ;; }}
 
                ;; {{
@@ -389,13 +408,13 @@
                :table-of-contents t
                ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
                ;; }}
-               :auto-sitemap t
-               :exclude "node_modules"
-               :sitemap-title "Hurricane"
-               :sitemap-sort-files anti-chronologically
-               :sitemap-function hurricane/org-publish-sitemap
-               :sitemap-format-entry sitemap-format-entry
-               :sitemap-filename "index.org"
+               ;; :auto-sitemap nil
+               ;; :exclude "node_modules"
+               ;; :sitemap-title "Hurricane"
+               ;; :sitemap-sort-files anti-chronologically
+               ;; :sitemap-function hurricane/org-publish-sitemap
+               ;; :sitemap-format-entry sitemap-format-entry
+               ;; :sitemap-filename "index.org"
                )
 
               ;; Static assets.
@@ -411,6 +430,48 @@
               ("website" :components ("orgfiles" "images"))
               ("statics" :components ("images"))
               ))
+
+      ;; {{
+      ;; @see: https://github.com/vascoferreira25/org-mode-incremental-reading
+      ;; org-protocol support for opening a file - needed for ‘my-anki-editor-backlink’.
+      (add-to-list
+       'org-protocol-protocol-alist
+       '("org-open-file" :protocol "open-file" :function org-protocol-open-file))
+
+      (defun org-protocol-open-file (fname)
+        "Process an org-protocol://open-file?url= style URL with FNAME.
+      Change a filename by mapping URLs to local filenames as set
+      in `org-protocol-project-alist'.
+      The location for a browser's bookmark should look like this:
+      javascript:location.href = \\='org-protocol://open-file?url=\\=' + \\
+        encodeURIComponent(location.href)"
+        ;; As we enter this function for a match on our protocol, the return value
+        ;; defaults to nil.
+        (let ((f (org-protocol-sanitize-uri
+                  (plist-get (org-protocol-parse-parameters fname nil '(:file))
+                             :file))))
+          f))
+      ;; }}
+
+      ;; {{
+      ;; @see: https://discourse.devontechnologies.com/t/org-mode-emacs-support/22396/6
+      (defun hurricane//org-dtp-open (record-location)
+        "Visit the dtp message with the given Message-ID."
+        (eshell-command (concat "open x-devonthink-item:" record-location)))
+
+      (org-link-set-parameters
+       "x-devonthink-item"
+       :follow 'hurricane//org-dtp-open
+       :export (lambda (path desc backend)
+                 (cond
+                  ((eq 'html backend)
+                   (format "<font color=\"red\"> <a href=\"x-devonthink-item:%s\">%s </a> </font>"
+                           path
+                           desc))))
+       :face '(:foreground "red")
+       :help-echo "Click me for devonthink link.")
+
+      ;; }}
       )))
 
 (defun hurricane-org/init-org-mac-link ()
@@ -420,31 +481,24 @@
     :init
     (progn
       (add-hook 'org-mode-hook
-                (lambda ()
+                #'(lambda ()
                   (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))))
 
 ;; FIXME:
 (defun hurricane-org/post-init-ox-reveal ()
-  (setq org-reveal-root "file:///Users/guanghui/.emacs.d/reveal-js"))
+  (setq org-reveal-root "file:///Users/c/.emacs.d/reveal-js"))
 
 (defun hurricane-org/init-org-tree-slide ()
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'org-tree-slide)
-    (spacemacs/set-leader-keys "oto" 'org-tree-slide-mode)))
+    (spacemacs/set-leader-keys "oto" #'org-tree-slide-mode)))
 
 (defun hurricane-org/init-worf ()
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'worf)
-    (add-hook 'org-mode-hook 'worf-mode)))
-
-(defun hurricane-org/post-init-deft ()
-  (progn
-    (setq deft-use-filter-string-for-file-name t)
-    (setq deft-recursive t)
-    (setq deft-extension "org")
-    (setq deft-directory deft-dir)))
+    (add-hook 'org-mode-hook #'worf-mode)))
 
 (defun hurricane-org/init-org-protocol ()
   (use-package org-protocol))
@@ -661,35 +715,148 @@
   (setq org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
   (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
   (setq org-roam-capture-templates
-   '(("d" "default" plain (function org-roam-capture--get-point)
-      "%?"
-      :file-name "${slug}"
-      :head "#+DATE: %T\n#+TITLE: ${title}\n"
-      :unnarrowed t)))
-  (progn
-    (spacemacs/declare-prefix "ar" "org-roam")
-    (spacemacs/set-leader-keys
-      "arl" 'org-roam
-      "art" 'org-roam-dailies-today
-      "arf" 'org-roam-find-file
-      "arg" 'org-roam-graph))
+    '(
+      ("d" "default" plain "%?"
+       :target (file+head "${slug}.org"
+                          "#+DATE: %T\n#+TITLE: ${title}\n#+ROAM_ALIAS:\n#+ROAM_KEY:\n#+ROAM_TAGS:\n\n")
+       :unnarrowed t)
+      ))
+  (setq org-roam-capture-ref-templates
+    '(
+      ("a" "Annotation" plain
+       "%U ${body}\n"
+       :target (file+head "${slug}.org"
+                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n\n")
+       ;; :immediate-finish t
+       :unnarrowed t
+       )
+      ("r" "ref" plain ""
+       :target (file+head "${slug}.org"
+                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n\n")
+       :unnarrowed t)))
   :post-config
-  (defun org-roam--title-to-slug (title)
-    "Convert TITLE to a file-name-suitable slug.
-  Use hyphens rather than underscores."
-    (cl-flet* ((nonspacing-mark-p (char)
-                                  (eq 'Mn (get-char-code-property char 'general-category)))
-               (strip-nonspacing-marks (s)
-                                       (apply #'string (seq-remove #'nonspacing-mark-p
-                                                                   (ucs-normalize-NFD-string s))))
-               (cl-replace (title pair)
-                           (replace-regexp-in-string (car pair) (cdr pair) title)))
-      (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . " ")  ;; convert anything not alphanumeric
-                      ;; ("__*" . "_")  ;; remove sequential underscores
-                      ("^_" . "")  ;; remove starting underscore
-                      ("_$" . "")))  ;; remove ending underscore
-             (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-        slug)))))
+  (defun hurricane//display-line-numbers-customize ()
+    (setq display-line-numbers 't)
+    (org-display-inline-images))
+
+  (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
+
+  (advice-add 'org-roam-buffer-persistent-redisplay :before
+			        #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+  (advice-add 'org-roam-buffer-persistent-redisplay :after
+			        #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+
+  (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+    "Return the hierarchy for the node."
+    (let ((title (org-roam-node-title node))
+          (olp (org-roam-node-olp node))
+          (level (org-roam-node-level node))
+          (filetitle (org-roam-node-file-title node)))
+      (concat
+       (if (> level 0) (concat filetitle " > "))
+       (if (> level 1) (concat (string-join olp " > ") " > "))
+       title))
+    )
+
+  (setq org-roam-node-display-template "${hierarchy:*} ${tags:20}")
+
+  (cl-defmethod org-roam-node-slug ((node org-roam-node))
+    "Return the slug of NODE."
+    (let ((title (org-roam-node-title node))
+          (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
+                             768 ; U+0300 COMBINING GRAVE ACCENT
+                             769 ; U+0301 COMBINING ACUTE ACCENT
+                             770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
+                             771 ; U+0303 COMBINING TILDE
+                             772 ; U+0304 COMBINING MACRON
+                             774 ; U+0306 COMBINING BREVE
+                             775 ; U+0307 COMBINING DOT ABOVE
+                             776 ; U+0308 COMBINING DIAERESIS
+                             777 ; U+0309 COMBINING HOOK ABOVE
+                             778 ; U+030A COMBINING RING ABOVE
+                             780 ; U+030C COMBINING CARON
+                             795 ; U+031B COMBINING HORN
+                             803 ; U+0323 COMBINING DOT BELOW
+                             804 ; U+0324 COMBINING DIAERESIS BELOW
+                             805 ; U+0325 COMBINING RING BELOW
+                             807 ; U+0327 COMBINING CEDILLA
+                             813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
+                             814 ; U+032E COMBINING BREVE BELOW
+                             816 ; U+0330 COMBINING TILDE BELOW
+                             817 ; U+0331 COMBINING MACRON BELOW
+                             )))
+      (cl-flet* ((nonspacing-mark-p (char)
+                                    (memq char slug-trim-chars))
+                 (strip-nonspacing-marks (s)
+                                         (ucs-normalize-NFC-string
+                                          (apply #'string (seq-remove #'nonspacing-mark-p
+                                                                      (ucs-normalize-NFD-string s)))))
+                 (cl-replace (title pair)
+                             (replace-regexp-in-string (car pair) (cdr pair) title)))
+        (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
+                        ;; ("--*" . "-")                   ;; remove sequential underscores
+                        ("^-" . "")                     ;; remove starting underscore
+                        ("-$" . "")))                   ;; remove ending underscore
+               (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
+           slug))))
+
+  (defun hurricane//org-roam-strip-ANKI-CARD-drawers (s)
+    (with-temp-buffer
+      (insert s)
+      (goto-char (point-min))
+      (org-element-map (org-element-parse-buffer) 'drawer
+        (lambda (drawer)
+          (if (string= "ANKI-CARD" (org-element-property :drawer-name drawer))
+              (let* ((begin (org-element-property :begin drawer))
+                     (end (org-element-property :end drawer)))
+                (delete-region begin end)))))
+      (buffer-string)))
+
+  (add-to-list 'org-roam-preview-postprocess-functions
+               #'hurricane//org-roam-strip-ANKI-CARD-drawers)
+
+  (defun hurricane//org-roam-strip-property-drawers (s)
+    (with-temp-buffer
+      (insert s)
+      (goto-char (point-min))
+      (org-element-map (org-element-parse-buffer) 'property-drawer
+        (lambda (property-drawer)
+          (let* ((begin (org-element-property :begin property-drawer))
+                 (end (org-element-property :end property-drawer)))
+            (delete-region begin end))))
+      (buffer-string)))
+
+  (add-to-list 'org-roam-preview-postprocess-functions
+               #'hurricane//org-roam-strip-property-drawers)
+
+  (dolist (func org-roam-mode-section-functions)
+    (advice-add func :after #'(lambda (node) (org-display-inline-images))))
+
+  ;; @See: https://github.com/org-roam/org-roam/issues/2029
+  (defun hurricane//org-roam-db-map-links (fns)
+    "Run FNS over all links in the current buffer."
+    (org-with-point-at 1
+      (while (re-search-forward org-link-any-re nil :no-error)
+        ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
+        ;; make the point be on the link.
+        (backward-char)
+        (let* ((element (org-element-context))
+               (type (org-element-type element))
+               link bounds)
+          (cond
+           ;; Links correctly recognized by Org Mode
+           ((eq type 'link)
+            (setq link element))
+           ;; Prevent self-referencing links in ROAM_REFS
+           ((and (eq type 'node-property)
+                 (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
+            nil))
+          (when link
+            (dolist (fn fns)
+              (funcall fn link)))))))
+
+  (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
+  ))
 
 (defun hurricane-org/init-org-transclusion ()
   (use-package org-transclusion
@@ -699,40 +866,20 @@
 
 (defun hurricane-org/init-anki-editor ()
   (use-package anki-editor
-    :defer t))
+    :diminish anki-editor-mode))
 
 (defun hurricane-org/init-org-media-note ()
   (use-package org-media-note
     :defer t
     :hook (after-init . org-media-note-mode)
     :init
-    (spacemacs/set-leader-keys "av" 'org-media-note-hydra/body)
+    (spacemacs/set-leader-keys "av" #'org-media-note-hydra/body)
     :config
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)))
 
 (defun hurricane-org/init-mpv ()
   (use-package mpv
     :defer t))
-
-(defun hurricane-org/init-org-fc ()
-  (use-package org-fc
-    :config
-    (require 'org-fc-hydra)
-    (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-flip-mode
-      (kbd "RET") 'org-fc-review-flip
-      (kbd "n") 'org-fc-review-flip
-      (kbd "s") 'org-fc-review-suspend-card
-      (kbd "q") 'org-fc-review-quit)
-
-    (evil-define-minor-mode-key '(normal insert emacs) 'org-fc-review-rate-mode
-      (kbd "a") 'org-fc-review-rate-again
-      (kbd "h") 'org-fc-review-rate-hard
-      (kbd "g") 'org-fc-review-rate-good
-      (kbd "e") 'org-fc-review-rate-easy
-      (kbd "s") 'org-fc-review-suspend-card
-      (kbd "q") 'org-fc-review-quit)
-    :custom
-    (setq org-fc-directories `(,@(concat deft-dir (file-name-as-directory "notes"))))))
 
 (defun hurricane-org/init-shrface ()
   (use-package shrface
@@ -743,11 +890,110 @@
     (shrface-default-keybindings) ; setup default keybindings
     (setq shrface-href-versatile t)))
 
-(defun hurricane-org/init-nroam ()
-  (use-package nroam
-    :after org-roam
-    :config
-    (add-hook 'org-mode-hook #'nroam-setup-maybe)))
-
 (defun hurricane-org/init-e2ansi ()
   (use-package e2ansi))
+
+(defun hurricane-org/init-org-super-links ()
+  (use-package org-super-links))
+
+(defun hurricane-org/init-org-super-links-peek ()
+  (use-package org-super-links-peek))
+
+(defun hurricane-org/init-incremental-reading ()
+  (use-package incremental-reading
+    :diminish incremental-reading-mode
+    :init
+    (defvar incremental-reading-map
+      (let ((map (make-sparse-keymap)))
+        (define-key map (kbd "c") #'anki-editor-cloze-region)
+        (define-key map (kbd "C") #'anki-editor-cloze-dwim)
+        (define-key map (kbd "C-c C-c") #'incremental-reading-parse-cards)
+        map))
+
+    (defvar incremental-reading-extract-functions
+      '(incremental-reading-extract-basic
+        incremental-reading-extract-basic-no-back
+        incremental-reading-extract-cloze
+        incremental-reading-extract-cloze-no-back))
+
+    (defun hurricane//add-incremental-reading-keymap ()
+      (interactive)
+      (org-element-map (org-element-parse-buffer) 'special-block
+        (lambda (special-block)
+          (when (string= "ANKI" (s-upcase (org-element-property :type special-block)))
+            (let ((context-bg-eds (list))
+                  (produce-list (list)))
+              (org-element-map special-block 'special-block
+                (lambda (field)
+                  (when (string= "FIELD" (s-upcase (org-element-property :type field)))
+                    ;; Get the each field's context begin and end position list.
+                    (push (org-element-property :contents-begin field) context-bg-eds)
+                    (push (org-element-property :contents-end field) context-bg-eds))))
+              (while context-bg-eds
+                (push (pop context-bg-eds) produce-list))
+              (while produce-list
+                (let ((begin (pop produce-list))
+                      (end (pop produce-list)))
+                  (if (and begin end)
+                   (add-text-properties begin end
+                                       `(local-map ,incremental-reading-map))))
+                ))))))
+
+    (dolist (func incremental-reading-extract-functions)
+      (advice-add func :after #'hurricane//add-incremental-reading-keymap))
+
+    (add-hook 'incremental-reading-mode-hook #'anki-editor-mode)
+    (add-hook 'incremental-reading-mode-hook #'hurricane//add-incremental-reading-keymap)
+    (add-hook 'after-save-hook #'hurricane//add-incremental-reading-keymap)
+    :hook (org-mode . incremental-reading-mode)
+    :custom
+    (incremental-reading--basic-template ":ANKI-CARD:
+#+ATTR_DECK: %s
+#+ATTR_TYPE: Basic
+#+ATTR_TAGS: %s
+#+BEGIN_ANKI org
+#+ATTR_FIELD: Front
+#+BEGIN_FIELD
+#+END_FIELD
+
+#+ATTR_FIELD: Back
+#+BEGIN_FIELD
+%s
+#+END_FIELD
+#+END_ANKI
+:END:
+\n")))
+
+;; /usr/bin/env python3 -m pip install PyQt5 PyQtWebEngine epc
+(defun hurricane-org/init-popweb ()
+  (use-package popweb
+    :ensure t
+    :load-path ("elpa/27.2/develop/popweb-20220127.350" "elpa/27.2/develop/popweb-20220127.350/extension/latex" "elpa/27.2/develop/popweb-20220127.350/extension/dict" "elpa/27.2/develop/popweb-20220127.350/extension/org-roam")
+    :config
+    (setq popweb-org-roam-link-popup-window-height-scale 1.0)
+    (setq popweb-org-roam-link-popup-window-width-scale 1.0)
+    (require 'popweb-dict-youdao)
+    (require 'popweb-org-roam-link)))
+
+;; npm install mathjax-node-cli
+(defun hurricane-org/init-org-latex-impatient ()
+  (use-package org-latex-impatient
+    :defer t
+    :hook (org-mode . org-latex-impatient-mode)
+    :init
+    (setq org-latex-impatient-tex2svg-bin
+          ;; location of tex2svg executable
+          "~/node_modules/mathjax-node-cli/bin/tex2svg")))
+
+(defun hurricane-org/init-org-roam-ui ()
+  (use-package org-roam-ui
+    :after org-roam
+    ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+    ;;         a hookable mode anymore, you're advised to pick something yourself
+    ;;         if you don't care about startup time, use
+     :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t)))

@@ -1,0 +1,8 @@
+# key: equation
+# name: equation
+# --
+
+\begin{equation}
+\label{$1}
+$0
+\end{equation}

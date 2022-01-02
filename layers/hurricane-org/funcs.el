@@ -11,6 +11,7 @@
 
 (setq buffer-replace-string-rule-lists '(("，" . ",")
                                          ("。" . "\\.")
+                                         ("：" . ":")
                                          ("！" . "!")
                                          ("？" . "?")
                                          ("【" . "\\[")
@@ -36,7 +37,8 @@
                                          ("“" . "\"")
                                          ;; ("”" . "\"")
                                          ("：" . ":")
-                                         ("“" . "`")))
+                                         ("“" . "`")
+                                         ("；" . ";")))
 
 (defun org-dot-image-dir ()
   (or org-dot-image-dir-name "."))
@@ -102,7 +104,7 @@
   (interactive)
   (image-to-base64-handler file-full-path))
 
-(defun org-image-to-base64-converter ()
+(defun hurricane/org-image-to-base64-converter ()
   (interactive)
   (let* ((img-dir (if (file-directory-p org-screenshot-image-dir-name)
                       (org-screenshot-image-dir)
@@ -112,14 +114,14 @@
       (setq full-file-path (concat default-directory img-dir "/" temp-name))
       (image-to-base64-handler full-file-path))))
 
-(defun org-download-images-to-base64-converter ()
+(defun hurricane/org-download-images-to-base64-converter ()
   (interactive)
   (cl-loop for image-file in (delete ".." (delete "." (directory-files (concat default-directory "screenshotImg"))))
            do (progn
                 (setq full-file-path (concat default-directory "screenshotImg" "/" image-file))
                 (image-to-base64-handler full-file-path))))
 
-(defun org-screenshot ()
+(defun hurricane/org-screenshot ()
   "Take a screenshot into a user specified file in the current
 buffer file directory and insert a link to this file."
   (interactive)
@@ -141,7 +143,7 @@ buffer file directory and insert a link to this file."
         (insert (concat "[[file:" full-file-path "]]"))
         (image-to-base64-converter full-file-path)))))
 
-(defun find-org-link-begin-and-end (plist string)
+(defun hurricane//find-org-link-begin-and-end (plist string)
   "Find link from plist whose link is equal to STRING, return a
 list just like `((name begin-position end-position))'"
   (let ((return-list '()))
@@ -154,7 +156,7 @@ list just like `((name begin-position end-position))'"
           (setq plist (cdr plist))))
       return-list)))
 
-(defun do-delete-link-function (be-list)
+(defun hurricane//do-delete-link-function (be-list)
   "Goto the begining of link and delete it, BE-LIST is a list
 just like `((name begin-position end-position))'"
   (while be-list
@@ -164,7 +166,7 @@ just like `((name begin-position end-position))'"
                       (car (car be-list))))
       (setq be-list (cdr be-list)))))
 
-(defun delete-image-file-and-link (img-dir)
+(defun hurricane//delete-image-file-and-link (img-dir)
   (let* ((relative-img-dir (concat img-dir "/" (file-name-sans-extension (buffer-name)) "/"))
          (link-list (org-element-map (org-element-parse-buffer) 'link
                       (lambda (link)
@@ -177,25 +179,25 @@ just like `((name begin-position end-position))'"
                               (delete ".."
                                       (delete "." (directory-files relative-img-dir)))))
          (file-full-path (concat absolute-img-dir temp-name))
-         (begin-end-list (find-org-link-begin-and-end link-list (concat relative-img-dir temp-name))))
+         (begin-end-list (hurricane//find-org-link-begin-and-end link-list (concat relative-img-dir temp-name))))
     (progn
       (if (yes-or-no-p "Do you want to delete the image link?")
-        (do-delete-link-function begin-end-list))
+        (hurricane//do-delete-link-function begin-end-list))
       (if (yes-or-no-p
            "Do you really want to delete the image file? This can't be revert!")
         (progn
           (delete-file file-full-path)
           )))))
 
-(defun org-delete-screenshot-image-file-and-link ()
+(defun hurricane/org-delete-screenshot-image-file-and-link ()
   (interactive)
-  (delete-image-file-and-link org-screenshot-image-dir-name))
+  (hurricane//delete-image-file-and-link org-screenshot-image-dir-name))
 
-(defun org-delete-image-file-and-link ()
+(defun hurricane/org-delete-image-file-and-link ()
   (interactive)
-  (delete-image-file-and-link (or org-screenshot-image-dir-name org-dot-image-dir-name)))
+  (hurricane//delete-image-file-and-link (or org-screenshot-image-dir-name org-dot-image-dir-name)))
 
-(defun create-graphviz ()
+(defun hurricane/create-graphviz ()
   (interactive)
   (let* ((img-dir org-dot-image-dir-name))
     (setq absolute-img-dir (concat default-directory org-screenshot-image-dir-name "/" (file-name-base (spacemacs--file-path)) "/" img-dir "/"))
@@ -323,7 +325,7 @@ just like `((name begin-position end-position))'"
             ((equal src-code-type "call")
              (insert "#+CALL: createTree(toInclude=\"*.*\", toExclude=\"\", directory=\"\", createLink=\"true\")"))
             ((equal src-code-type "graphviz")
-              (create-graphviz)
+              (hurricane/create-graphviz)
             (throw 'return-catch "I will not going any where else."))
             (t (insert (format "#+BEGIN_SRC %s :results raw drawer values list :exports no-eval\n" src-code-type))))
     (newline-and-indent)
@@ -362,7 +364,7 @@ remove the expected function from the relevant varibale."
 
 (defun kill-useless-buffer (useless-buffer-name)
   "`(require 'cl)' brings in Emacs's Common Lisp Package,
-which is where the 'loop' macro lives."
+which is where the `loop' macro lives."
   (require 'cl)
   (interactive)
   (loop for buffer being the buffers
@@ -388,7 +390,7 @@ should only be used in org-mode."
 
 (defun add-file-to-killed-file-list ()
   "If buffer is associated with a file name, add that file to the
-'killed-file-list' when killing the buffer."
+`killed-file-list' when killing the buffer."
   (when buffer-file-name
     (push buffer-file-name killed-file-list)))
 
@@ -399,7 +401,7 @@ should only be used in org-mode."
   (when killed-file-list
     (find-file (pop killed-file-list))))
 
-(defun hurricane/filter-by-tags ()
+(defun hurricane//filter-by-tags ()
   (let ((head-tags (org-get-tags-at)))
     (member current-tag head-tags)))
 
@@ -412,9 +414,9 @@ should only be used in org-mode."
          (tags-time-alist (mapcar (lambda (tag) `(,tag . 0)) include-tags))
          (output-string "")
          (tstart (or tstart
-                     (and timerange (equal timerange-numeric-value 4) (- (org-time-today) 86400))
+                     (and timerange (equal timerange-numeric-value 4) (- (hurricane//org-time-today) 86400))
                      (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "Start Date/Time:"))
-                     (org-time-today)))
+                     (hurricane//org-time-today)))
          (tend (or tend
                    (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "End Date/Time:"))
                    (+ tstart 86400)))
@@ -425,7 +427,7 @@ should only be used in org-mode."
                                 (error "No such file %s" file)))
       (with-current-buffer org-agenda-buffer
         (dolist (current-tag include-tags)
-          (org-clock-sum tstart tend 'hurricane/filter-by-tags)
+          (org-clock-sum tstart tend 'hurricane//filter-by-tags)
           (setcdr (assoc current-tag tags-time-alist)
                   (+ org-clock-file-total-minutes (cdr (assoc current-tag tags-time-alist)))))))
     (while (setq item (pop tags-time-alist))
@@ -440,7 +442,7 @@ should only be used in org-mode."
       (insert output-string))
     output-string))
 
-(defun hurricane/notify-osx (title message)
+(defun hurricane//notify-osx (title message)
   (call-process "terminal-notifier"
                 nil 0 nil
                 "-group" "Emacs"
@@ -449,7 +451,7 @@ should only be used in org-mode."
                 "-activate" "oeg.gnu.Emacs"
                 "-sound" "default"))
 
-(defun image-save-to-file (file-name)
+(defun hurricane//image-save-to-file (file-name)
   "Save the image under point."
   (let ((image (get-text-property (point) 'display)))
     (when (or (not (consp image))
@@ -472,7 +474,7 @@ should only be used in org-mode."
 ;; @see: https://imageoptim.com/mac
 ;; @see: https://pngmini.com/
 ;; Download & install.
-(defun org-image-save ()
+(defun hurricane/org-image-save ()
   (interactive)
   (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (buffer-name)) "/")))
     (progn
@@ -484,7 +486,7 @@ should only be used in org-mode."
         (setq name-base (file-name-base temp-name))
         (setq file-name (concat name-base ".png"))
         (setq full-file-path (concat relative-img-dir file-name))
-        (image-save-to-file full-file-path)
+        (hurricane//image-save-to-file full-file-path)
         (setq absolute-full-file-path (concat absolute-img-dir file-name))
         (defun callback-imageoptim()
           (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
@@ -494,7 +496,7 @@ should only be used in org-mode."
         (evil-normal-state)))))
 ;; }}
 
-(defun org-screenshot-and-ocr ()
+(defun hurricane/org-screenshot-and-ocr ()
   "Take a screenshot into a user specified file in the current buffer file directory
 and insert a link to this file."
   (interactive)
@@ -519,9 +521,9 @@ and insert a link to this file."
             (eshell-command cmd)))
         (install-monitor-file-exists absolute-full-file-path 1 #'callback-BaiduOcr)))))
 
-(defun org-insert-caption-and-target ()
+(defun hurricane/org-insert-caption-and-target ()
   (interactive)
-  (let* ((current-symbol (hurricane/pointer-string))
+  (let* ((current-symbol (hurricane//pointer-string))
          (input-string
           (string-trim
            (read-string
@@ -534,28 +536,28 @@ and insert a link to this file."
     (newline-and-indent)
     (insert (format "<<%s>>" input-string))))
 
-(defun save-and-publish-website()
-    "Save all buffers and publish."
+(defun hurricane/save-and-publish-website()
+  "Save all buffers and publish."
   (interactive)
   (when (yes-or-no-p "Really save and publish current project?")
     (save-some-buffers t)
     (org-publish-project "website" t)
     (message "Site published done.")))
 
-(defun save-and-publish-statics ()
+(defun hurricane/save-and-publish-statics ()
   "Just copy statics like js, css, and image file .etc."
   (interactive)
   (org-publish-project "statics" t)
   (message "Copy statics done."))
 
-(defun save-and-publish-file ()
-    "Save current buffer and publish."
+(defun hurricane/save-and-publish-file ()
+  "Save current buffer and publish."
   (interactive)
   (save-buffer t)
   ;; (blog-site-project-setup)
   (org-publish-current-file t))
 
-(defun delete-org-and-html ()
+(defun hurricane/delete-org-and-html ()
   "Delete current org and the relative html when it exists."
   (interactive)
   (when (yes-or-no-p "Really delete current org and the relative html?")
@@ -566,7 +568,7 @@ and insert a link to this file."
       (kill-this-buffer)
       (message "Delete org and the relative html done."))))
 
-(defun just-delete-relative-html ()
+(defun hurricane/just-delete-relative-html ()
   "Just delete the relative html when it exists."
   (interactive)
   (when (yes-or-no-p "Really delete the relative html?")
@@ -578,15 +580,15 @@ and insert a link to this file."
             )
         (message "None relative html.")))))
 
-(defun preview-current-buffer-in-browser ()
+(defun hurricane/preview-current-buffer-in-browser ()
   "Open current buffer as html."
   (interactive)
   (let ((fileurl (concat "http://127.0.0.1:8080/" (file-relative-name (file-name-directory buffer-file-name) (concat deft-dir "notes/")) (file-name-base (buffer-file-name)) ".html")))
-    (save-and-publish-file)
+    (hurricane/save-and-publish-file)
     (unless (httpd-running-p) (httpd-start))
     (browse-url fileurl)))
 
-(defun blog-site-project-setup ()
+(defun hurricane/blog-site-project-setup ()
   (interactive)
   (set (make-local-variable 'org-publish-project-alist)
        `(("orgfiles"
@@ -611,110 +613,110 @@ and insert a link to this file."
 
          ;; {{
          ;; Generic properties.
-         ;; :archived-trees	org-export-with-archived-trees
-         ;; :exclude-tags	org-export-exclude-tags
+         ;; :archived-trees org-export-with-archived-trees
+         ;; :exclude-tags org-export-exclude-tags
          ;; org-export-headline-levels.
          :headline-levels 4
-         ;; :language	org-export-default-language
-         ;; :preserve-breaks	org-export-preserve-breaks
+         ;; :language org-export-default-language
+         ;; :preserve-breaks org-export-preserve-breaks
          ;; org-export-with-section-numbers.
          :section-numbers nil
-         ;; :select-tags	org-export-select-tags
+         ;; :select-tags org-export-select-tags
          ;; org-export-with-author.
          ;; :with-author "Hurricane Chen"
-         ;; :with-broken-links	org-export-with-broken-links
+         ;; :with-broken-links org-export-with-broken-links
          ;; org-export-with-clocks.
-         ;; :with-clocks	t
+         ;; :with-clocks t
          ;; org-export-with-creator.
          ;; :with-creator nil
          ;; :with-date org-export-with-date
-         ;; :with-drawers	org-export-with-drawers
-         ;; :with-email	org-export-with-email
-         ;; :with-emphasize	org-export-with-emphasize
+         ;; :with-drawers org-export-with-drawers
+         ;; :with-email org-export-with-email
+         ;; :with-emphasize org-export-with-emphasize
          ;; :with-fixed-width org-export-with-fixed-width
-         ;; :with-footnotes	org-export-with-footnotes
-         ;; :with-latex	org-export-with-latex
-         ;; :with-planning	org-export-with-planning
+         :with-footnotes org-export-with-footnotes
+         ;; :with-latex org-export-with-latex
+         ;; :with-planning org-export-with-planning
          ;; org-export-with-priority.
          :with-priority t
-         ;; :with-properties	org-export-with-properties
-         ;; :with-special-strings	org-export-with-special-strings
-         ;; :with-sub-superscript	org-export-with-sub-superscripts
-         ;; :with-tables	org-export-with-tables
-         ;; :with-tags	org-export-with-tags
-         ;; :with-tasks	org-export-with-tasks
-         ;; :with-timestamps	org-export-with-timestamps
-         ;; :with-title	org-export-with-title
+         ;; :with-properties org-export-with-properties
+         ;; :with-special-strings org-export-with-special-strings
+         ;; :with-sub-superscript org-export-with-sub-superscripts
+         ;; :with-tables org-export-with-tables
+         ;; :with-tags org-export-with-tags
+         ;; :with-tasks org-export-with-tasks
+         ;; :with-timestamps org-export-with-timestamps
+         ;; :with-title org-export-with-title
          ;; org-export-with-toc.
          :with-toc t
-         ;; :with-todo-keywords	org-export-with-todo-keywords
+         ;; :with-todo-keywords org-export-with-todo-keywords
          ;; }}
 
          ;; {{
          ;;  HTML specific properties
-         ;; :html-allow-name-attribute-in-anchors	org-html-allow-name-attribute-in-anchors
-         ;; :html-checkbox-type	org-html-checkbox-type
+         ;; :html-allow-name-attribute-in-anchors org-html-allow-name-attribute-in-anchors
+         ;; :html-checkbox-type org-html-checkbox-type
          :html-container "section"
-         ;; :html-divs	org-html-divs
+         ;; :html-divs org-html-divs
          ;; org-html-doctype.
          :html-doctype "html5"
-         ;; :html-extension	org-html-extension
+         ;; :html-extension org-html-extension
          ;; org-html-footnote-format.
          ;; :html-footnote-format nil
-         ;; :html-footnote-separator	org-html-footnote-separator
-         ;; :html-footnotes-section	org-html-footnotes-section
-         ;; :html-format-drawer-function	org-html-format-drawer-function
-         ;; :html-format-headline-function	org-html-format-headline-function
-         ;; :html-format-inlinetask-function	org-html-format-inlinetask-function
-         :html-head-extra	,hurricane/head-extra
+         ;; :html-footnote-separator org-html-footnote-separator
+         ;; :html-footnotes-section org-html-footnotes-section
+         ;; :html-format-drawer-function org-html-format-drawer-function
+         ;; :html-format-headline-function org-html-format-headline-function
+         ;; :html-format-inlinetask-function org-html-format-inlinetask-function
+         :html-head-extra ,hurricane/head-extra
          ;; :html-head-include-default-style nil
          ;; :html-head-include-scripts nil
-         ;; :html-head	org-html-head
-         ;; :html-home/up-format	org-html-home/up-format
+         ;; :html-head org-html-head
+         ;; :html-home/up-format org-html-home/up-format
          ;; :html-html5-fancy t
-         ;; :html-indent	org-html-indent
-         ;; :html-infojs-options	org-html-infojs-options
-         ;; :html-infojs-template	org-html-infojs-template
-         ;; :html-inline-image-rules	org-html-inline-image-rules
-         ;; :html-inline-images	org-html-inline-images
-         ;; :html-link-home	org-html-link-home
-         ;; :html-link-org-files-as-html	org-html-link-org-files-as-html
-         ;; :html-link-up	org-html-link-up
-         ;; :html-link-use-abs-url	org-html-link-use-abs-url
-         ;; :html-mathjax-options	org-html-mathjax-options
-         ;; :html-mathjax-template	org-html-mathjax-template
-         ;; :html-metadata-timestamp-format	org-html-metadata-timestamp-format
+         ;; :html-indent org-html-indent
+         ;; :html-infojs-options org-html-infojs-options
+         ;; :html-infojs-template org-html-infojs-template
+         ;; :html-inline-image-rules org-html-inline-image-rules
+         ;; :html-inline-images org-html-inline-images
+         ;; :html-link-home org-html-link-home
+         ;; :html-link-org-files-as-html org-html-link-org-files-as-html
+         ;; :html-link-up org-html-link-up
+         ;; :html-link-use-abs-url org-html-link-use-abs-url
+         ;; :html-mathjax-options org-html-mathjax-options
+         ;; :html-mathjax-template org-html-mathjax-template
+         ;; :html-metadata-timestamp-format org-html-metadata-timestamp-format
          ;; org-html-postamble-format.
          ;; :html-postamble-format t
          ;; org-html-postamble.
          :html-postamble ,hurricane/postamble
-         ;; :html-preamble-format	org-html-preamble-format
+         ;; :html-preamble-format org-html-preamble-format
          ;; org-html-preamble.
-         ;; :html-preamble ,hurricane/preamble
-         ;; :html-self-link-headlines	org-html-self-link-headlines
-         ;; :html-table-align-individual-field	de{org-html-table-align-individual-fields
-         ;; :html-table-attributes	org-html-table-default-attributes
-         ;; :html-table-caption-above	org-html-table-caption-above
-         ;; :html-table-data-tags	org-html-table-data-tags
-         ;; :html-table-header-tags	org-html-table-header-tags
-         ;; :html-table-row-tags	org-html-table-row-tags
-         ;; :html-table-use-header-tags-for-first-column	org-html-table-use-header-tags-for-first-column
-         ;; :html-tag-class-prefix	org-html-tag-class-prefix
-         ;; :html-text-markup-alist	org-html-text-markup-alist
-         ;; :html-todo-kwd-class-prefix	org-html-todo-kwd-class-prefix
-         ;; :html-toplevel-hlevel	org-html-toplevel-hlevel
-         ;; :html-use-infojs	org-html-use-infojs
-         ;; :html-validation-link	org-html-validation-link
-         ;; :html-viewport	org-html-viewport
-         ;; :html-wrap-src-lines	org-html-wrap-src-lines
-         ;; :html-xml-declaration	org-html-xml-declaration
+         :html-preamble ,hurricane/preamble
+         ;; :html-self-link-headlines org-html-self-link-headlines
+         ;; :html-table-align-individual-field de{org-html-table-align-individual-fields
+         ;; :html-table-attributes org-html-table-default-attributes
+         ;; :html-table-caption-above org-html-table-caption-above
+         ;; :html-table-data-tags org-html-table-data-tags
+         ;; :html-table-header-tags org-html-table-header-tags
+         ;; :html-table-row-tags org-html-table-row-tags
+         ;; :html-table-use-header-tags-for-first-column org-html-table-use-header-tags-for-first-column
+         ;; :html-tag-class-prefix org-html-tag-class-prefix
+         ;; :html-text-markup-alist org-html-text-markup-alist
+         ;; :html-todo-kwd-class-prefix org-html-todo-kwd-class-prefix
+         ;; :html-toplevel-hlevel org-html-toplevel-hlevel
+         ;; :html-use-infojs org-html-use-infojs
+         ;; :html-validation-link org-html-validation-link
+         ;; :html-viewport org-html-viewport
+         ;; :html-wrap-src-lines org-html-wrap-src-lines
+         ;; :html-xml-declaration org-html-xml-declaration
          ;; }}
 
          ;; {{
          ;; Markdown specific properties.
-         ;; :md-footnote-format	org-md-footnote-format
-         ;; :md-footnotes-section	org-md-footnotes-section
-         ;; :md-headline-style	org-md-headline-style
+         ;; :md-footnote-format org-md-footnote-format
+         ;; :md-footnotes-section org-md-footnotes-section
+         ;; :md-headline-style org-md-headline-style
          ;; }}
 
          ;; {{
@@ -722,12 +724,12 @@ and insert a link to this file."
          :table-of-contents t
          ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
          ;; }}
-         :auto-sitemap t
+         :auto-sitemap nil
          :exclude "node_modules"
          :sitemap-title "Hurricane"
          :sitemap-sort-files anti-chronologically
-         :sitemap-function hurricane/org-publish-sitemap
-         :sitemap-format-entry sitemap-format-entry
+         ;; :sitemap-function hurricane/org-publish-sitemap
+         ;; :sitemap-format-entry sitemap-format-entry
          :sitemap-filename "index.org"
          )
 
@@ -747,11 +749,11 @@ and insert a link to this file."
 
 (add-to-list 'safe-local-eval-forms '(blog-site-project-setup))
 
-(defun connect-baiduyun ()
+(defun hurricane/connect-baiduyun ()
   (interactive)
   (find-file "/ssh:c@182.61.145.178:/home/c/site/public/"))
 
-(defun org-video-link-export (path desc backend)
+(defun hurricane//org-video-link-export (path desc backend)
   (let ((ext (file-name-extension path)))
     (cond
      ((eq 'html backend)
@@ -760,48 +762,89 @@ and insert a link to this file."
      (t
       path))))
 
-(defun org-time-today ()
+(defun hurricane//org-time-today ()
   "Time in seconds today at 0:00.
 Returns the float number of seconds since the beginning of the
 epoch to the beginning of today (00:00)."
   (float-time (apply 'encode-time
                      (append '(0 0 0) (nthcdr 3 (decode-time))))))
 
-
-(defadvice org-roam--find-file (after make-screenshotImg-directory-maybe
-                                      (file) activate)
-  "Create screenshot image directory if not exists while visiting file."
+(defadvice org-capture-target-buffer (after make-screenshotImg-directory-maybe (file) activate)
+  "Create screenshot image directory if not exists while visiting node."
   (unless (file-exists-p file)
-    (let ((dir (concat "screenshotImg/" (file-name-base (file-name-nondirectory file)))))
+    (let ((dir (concat org-roam-directory "screenshotImg/" (file-name-base (file-name-nondirectory file)))))
       (when dir
         (unless (file-exists-p dir)
           (make-directory dir t))))))
 
-(defadvice org-roam--format-link (after make-screenshotImg-directory-maybe
-                                        (target &optional description type) activate)
-  "Create screenshot image directory if not exists while insert new file."
-  (let ((dir (concat "screenshotImg/" (file-name-base (file-name-nondirectory target)))))
-    (when dir
-      (unless (file-exists-p dir)
-        (make-directory dir t)))))
+(defun hurricane//collect-backlinks-string (backend)
+  (when (org-roam-node-at-point)
+    (let* ((source-node (org-roam-node-at-point))
+           (source-file (org-roam-node-file source-node))
+           (nodes-in-file (--filter (s-equals? (org-roam-node-file it) source-file)
+                                    (org-roam-node-list)))
+           (nodes-start-position (-map 'org-roam-node-point nodes-in-file))
+           ;; Nodes don't store the last position, so get the next headline position
+           ;; and subtract one character (or, if no next headline, get point-max)
+           (nodes-end-position (-map (lambda (nodes-start-position)
+                                       (goto-char nodes-start-position)
+                                       (if (org-before-first-heading-p) ;; file node
+                                           (point-max)
+                                         (call-interactively
+                                          'org-forward-heading-same-level)
+                                         (if (> (point) nodes-start-position)
+                                             (- (point) 1) ;; successfully found next
+                                           (point-max)))) ;; there was no next
+                                     nodes-start-position))
+           ;; sort in order of decreasing end position
+           (nodes-in-file-sorted (->> (-zip nodes-in-file nodes-end-position)
+                                      (--sort (> (cdr it) (cdr other))))))
+      (dolist (node-and-end nodes-in-file-sorted)
+        (-when-let* (((node . end-position) node-and-end)
+                     (backlinks (--filter (->> (org-roam-backlink-source-node it)
+                                               (org-roam-node-file)
+                                               (s-contains? "private/") (not))
+                                          (org-roam-backlinks-get node)))
+                     (heading (format "\n\n%s Links to this node\n"
+                                      (s-repeat (+ (org-roam-node-level node) 1) "*")))
+                     (properties-drawer ":PROPERTIES:\n:HTML_CONTAINER_CLASS: references\n:END:\n"))
+          (goto-char end-position)
+          (insert heading)
+          (insert properties-drawer)
+          (dolist (backlink backlinks)
+            (let* ((source-node (org-roam-backlink-source-node backlink))
+                   (source-file (org-roam-node-file source-node))
+                   (properties (org-roam-backlink-properties backlink))
+                   (outline (when-let ((outline (plist-get properties :outline)))
+                              (when (> (length outline) 1)
+                                (mapconcat #'org-link-display-format outline " > "))))
+                   (point (org-roam-backlink-point backlink))
+                   (text (s-replace "\n" " " (org-roam-preview-get-contents
+                                              source-file
+                                              point)))
+                   (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
+                                      (s-repeat (+ (org-roam-node-level node) 2) "*")
+                                      (org-roam-node-id source-node)
+                                      (org-roam-node-title source-node)
+                                      (if outline (format "%s (/%s/)"
+                                                          (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
+                                      text))
+                   (label-list (with-temp-buffer
+                                 (insert text)
+                                 (org-element-map (org-element-parse-buffer) 'footnote-reference
+                                   (lambda (reference)
+                                     (org-element-property :label reference)))))
+                   (footnote-string-list
+                      (with-temp-buffer
+                        (insert-file-contents source-file)
+                        (-map (lambda (label) (buffer-substring-no-properties
+                                               (nth 1 (org-footnote-get-definition label))
+                                               (nth 2 (org-footnote-get-definition label))))
+                              label-list))))
+              (-map (lambda (footnote-string) (insert footnote-string)) footnote-string-list)
+              (insert reference))))))))
 
-(defun org-roam--backlinks-list (file)
-  (if (org-roam--org-roam-file-p file)
-      (--reduce-from
-       (concat acc (format "- [[file:%s][%s]]\n"
-                           (file-relative-name (car it) org-roam-directory)
-                           (org-roam-db--get-title (car it))))
-       "" (org-roam-db-query [:select [source] :from links :where (= dest $s1)] file))
-    ""))
-
-(defun org-export-preprocessor (backend)
-  (let ((links (org-roam--backlinks-list (buffer-file-name))))
-    (unless (string= links "")
-      (save-excursion
-        (goto-char (point-max))
-        (insert (concat "\n* Backlinks\n") links)))))
-
-(add-hook 'org-export-before-processing-hook 'org-export-preprocessor)
+(add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 
 (defun hurricane/publish ()
   (interactive)
@@ -814,20 +857,20 @@ epoch to the beginning of today (00:00)."
 ;; (for example, if you want backlinks to be regenerated).
 (defun hurricane/republish ()
   (interactive)
-	(let ((current-prefix-arg 4))
+ (let ((current-prefix-arg 4))
     (rassq-delete-all 'web-mode auto-mode-alist)
     (fset 'web-mode (symbol-function 'fundamental-mode))
     (call-interactively 'org-publish-all)))
 
-(defun hurricane/pointer-string ()
+(defun hurricane//pointer-string ()
   (if (use-region-p)
       ;; Get region string if mark is set.
       (buffer-substring-no-properties (region-beginning) (region-end))
     ;; Get current symbol or string, and remove prefix char before return.
-    (let* ((current-string (if (hurricane/in-string-p)
+    (let* ((current-string (if (hurricane//in-string-p)
                                (buffer-substring-no-properties
-                                (1+ (car (hurricane/string-start+end-points)))
-                                (cdr (hurricane/string-start+end-points)))
+                                (1+ (car (hurricane//string-start+end-points)))
+                                (cdr (hurricane//string-start+end-points)))
                              ""))
            (current-symbol (if (or (string-empty-p current-string)
                                    (string-match-p "[[:space:]]" current-string))
@@ -841,14 +884,14 @@ epoch to the beginning of today (00:00)."
              (string-remove-prefix "#" current-symbol))
             (t current-symbol)))))
 
-(defun hurricane/current-parse-state ()
+(defun hurricane//current-parse-state ()
   "Return parse state of point from beginning of defun."
   (let ((point (point)))
     (beginning-of-defun)
     (parse-partial-sexp (point) point)))
 
-(defun hurricane/in-string-p (&optional state)
-  (or (nth 3 (or state (hurricane/current-parse-state)))
+(defun hurricane//in-string-p (&optional state)
+  (or (nth 3 (or state (hurricane//current-parse-state)))
       (and
        (eq (get-text-property (point) 'face) 'font-lock-string-face)
        (eq (get-text-property (- (point) 1) 'face) 'font-lock-string-face))
@@ -856,36 +899,20 @@ epoch to the beginning of today (00:00)."
        (eq (get-text-property (point) 'face) 'font-lock-doc-face)
        (eq (get-text-property (- (point) 1) 'face) 'font-lock-doc-face))))
 
-(defun hurricane/string-start+end-points (&optional state)
+(defun hurricane//string-start+end-points (&optional state)
   "Return a cons of the points of open and close quotes of the string.
 The string is determined from the parse state STATE, or the parse state
-  from the beginning of the defun to the point.
-This assumes that `hurricane/in-string-p' has already returned true, i.e.
-  that the point is already within a string."
+from the beginning of the defun to the point.
+This assumes that `hurricane//in-string-p' has already returned true, i.e.
+that the point is already within a string."
   (save-excursion
-    (let ((start (nth 8 (or state (hurricane/current-parse-state)))))
+    (let ((start (nth 8 (or state (hurricane//current-parse-state)))))
       (goto-char start)
       (forward-sexp 1)
       (cons start (1- (point))))))
 
-(defun hurricane/navigate-note (arg &optional note choices)
-  "Navigate notes by link. With universal ARG tries to use only to navigate the tags of the current note. Optionally takes a selected NOTE and filepaths CHOICES."
-  (interactive "P")
-  (let* ((choices (or
-                   choices
-                   (when arg (org-roam-db--links-with-max-distance (buffer-file-name) 1))))
-         (all-notes (org-roam--get-title-path-completions))
-         (completions
-          (or (--filter (-contains-p choices (plist-get (cdr it) :path)) all-notes) all-notes))
-         (title-with-tags (org-roam-completion--completing-read "File: " completions))
-         (res (cdr (assoc title-with-tags completions)))
-         (next-note (plist-get res :path)))
-    (if (string= note next-note)
-        (find-file note)
-      (hurricane/navigate-note nil next-note (org-roam-db--links-with-max-distance next-note 1)))))
-
-(defun hurricane/org-html-wrap-blocks-in-code (src backend info)
-  "Wrap a source block in <pre><code class=\"lang\">.</code></pre>"
+(defun hurricane//org-html-wrap-blocks-in-code (src backend info)
+  "Wrap a source block in <pre><code class=\"lang\">.</code></pre>."
   (when (org-export-derived-backend-p backend 'html)
     (replace-regexp-in-string
      "\\(</pre>\\)" "</code>\n\\1"
@@ -894,4 +921,67 @@ This assumes that `hurricane/in-string-p' has already returned true, i.e.
 
 (with-eval-after-load 'ox-html
   (add-to-list 'org-export-filter-src-block-functions
-               'hurricane/org-html-wrap-blocks-in-code))
+               #'hurricane//org-html-wrap-blocks-in-code))
+
+(defun hurricane//string-starts-with (string prefix)
+  "Return t if STRING starts with prefix."
+  (and (string-match (rx-to-string `(: bos ,prefix) t) string) t))
+
+(defun hurricane//html-process-field-blocks (text backend info)
+  "Filter special blocks from latex export."
+  (when (eq backend 'html)
+    (if (hurricane//string-starts-with text "<div class=\"FIELD\"")
+        (make-string 0 ?x)
+      text)))
+
+(with-eval-after-load 'ox-html
+  (add-to-list 'org-export-filter-special-block-functions
+               #'hurricane//html-process-field-blocks))
+
+(defun hurricane//org-image-link-open (orgfn context &optional args)
+  (when-let ((link (plist-get context 'link))
+             (type (plist-get link ':type))
+             (path (plist-get link ':path)))
+    (if (string-match "\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)" path)
+	         (funcall
+	          (helm :sources
+		              `((name . "Action")
+		                (candidates . ,(append
+				                            (loop for f in '(find-file
+						                                         org-open-file)
+					                                collect (cons (symbol-name f) f))
+				                            '(
+                                      ("delete image file and link" . (lambda (path)
+                                                                        (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
+                                                                                            (lambda (link)
+                                                                                              (when (string= (org-element-property :type link) "file")
+                                                                                                (list (org-element-property :path link)
+                                                                                                      (org-element-property :begin link)
+                                                                                                      (org-element-property :end link))))))
+                                                                               (file-full-path (concat default-directory "/" path))
+                                                                               (begin-end-list (hurricane//find-org-link-begin-and-end link-list path)))
+                                                                          (progn
+                                                                            (if (yes-or-no-p "Do you want to delete the image link?")
+                                                                                (hurricane//do-delete-link-function begin-end-list))
+                                                                            (if (yes-or-no-p
+                                                                                 "Do you really want to delete the image file? This can't be revert!")
+                                                                                (progn
+                                                                                  (delete-file file-full-path)
+                                                                                  ))))))
+                                      ("copy file link" . (lambda (path)
+                                                            (kill-new (format "%s" (concat default-directory "/" path)))))
+                                      ("copy org link" . (lambda (path)
+							                                             (kill-new (format "[[file:%s]]" path))))
+                                      ("dired" . (lambda (path)
+						                                       (dired (file-name-directory path))
+						                                       (re-search-forward (file-name-nondirectory path)))))))
+		                (action . identity)))
+	          path)
+      (funcall orgfn context))
+      ))
+
+(advice-add 'org-link-open :around #'hurricane//org-image-link-open)
+
+(defun hurricane/html-table-to-org-table-converter ()
+  (interactive)
+  (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))

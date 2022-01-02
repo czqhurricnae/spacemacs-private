@@ -14,9 +14,9 @@
   (if auto-save-and-publish-file-mode
       ;; When the mode is enabled
       (progn
-        (add-hook 'after-save-hook #'save-and-publish-file :append :local))
+        (add-hook 'after-save-hook #'hurricane/save-and-publish-file :append :local))
     ;; When the mode is disabled
-    (remove-hook 'after-save-hook #'save-and-publish-file :local)))
+    (remove-hook 'after-save-hook #'hurricane/save-and-publish-file :local)))
 
 (setq org-link-file-path-type 'relative)
 
@@ -58,62 +58,75 @@
 ;; to add the required markup for grid-container, grid, and page.
 ;; Came across this here: https://github.com/ereslibre/ereslibre.es/blob/b28ea388e2ec09b1033fc7eed2d30c69ba3ee827/config/default.el
 ;; Perhaps an alternative here?  https://vicarie.in/posts/blogging-with-org.html
-(eval-after-load "ox-html"
-  '(defun org-html-template (contents info)
-     (concat (org-html-doctype info)
-             "<html lang=\"en\">
-            <head>"
-             (org-html--build-meta-info info)
-             (org-html--build-head info)
-             (org-html--build-mathjax-config info)
-             "</head>
-            <body>"
-             (org-html--build-pre/postamble 'preamble info)
-             "<div class='grid-container'><div class='ds-grid'>"
-             (unless (string= (org-export-data (plist-get info :title) info) "The Map")
-               "<div class='page'>")
-             ;; Document contents.
-             (let ((div (assq 'content (plist-get info :html-divs))))
-               (format "<%s id=\"%s\">\n" (nth 1 div) (nth 2 div)))
-             ;; Document title.
-             (when (plist-get info :with-title)
-               (let ((title (and (plist-get info :with-title)
-                                 (plist-get info :title)))
-                     (subtitle (plist-get info :subtitle))
-                     (html5-fancy (org-html--html5-fancy-p info)))
-                 (when title
-                   (format
-                    (if html5-fancy
-                        "<header>\n<h1 class=\"title\">%s</h1> <a class='rooter' href='%s'>*</a>\n%s</header>"
-                      "<h1 class=\"title\">%s<a class='rooter' href='%s'>*</a></h1>\n")
-                    (org-export-data title info)
-                    (file-name-nondirectory (plist-get info :output-file))
-                    (if subtitle
-                        (format
-                         (if html5-fancy
-                             "<p class=\"subtitle\">%s</p>\n"
-                           (concat "\n" (org-html-close-tag "br" nil info) "\n"
-                                   "<span class=\"subtitle\">%s</span>\n"))
-                         (org-export-data subtitle info))
-                      "")))))
-             ;; "<script type='text/javascript'>"
-             ;; (with-temp-buffer
-             ;;   (insert-file-contents "/home/shared/hurricane/graph.json")
-             ;;   (buffer-string))
-             ;; "</script>"
-             (if (string= (org-export-data (plist-get info :title) info) "The Map")
-                 (with-temp-buffer
-                   (insert-file-contents "/home/shared/hurricane/graph.svg")
-                   (buffer-string)))
-             contents
-             (format "</%s>\n" (nth 1 (assq 'content (plist-get info :html-divs))))
-             "<div id='temp-network' style='display:none'></div>"
-             "</div></div>"
-             (unless (string= (org-export-data (plist-get info :title) info) "The Map")
-               "</div>")
-             (org-html--build-pre/postamble 'postamble info)
-             "</body>
-          </html>")))
+;; (eval-after-load "ox-html"
+;;   '(defun org-html-template (contents info)
+;;      (concat (org-html-doctype info)
+;;              "<html lang=\"en\">
+;;             <head>"
+;;              (org-html--build-meta-info info)
+;;              (org-html--build-head info)
+;;              (org-html--build-mathjax-config info)
+;;              "</head>
+;;             <body>"
+;;              (org-html--build-pre/postamble 'preamble info)
+;;              "<div class='grid-container'><div class='ds-grid'>"
+;;              (unless (string= (org-export-data (plist-get info :title) info) "The Map")
+;;                "<div class='page'>")
+;;              ;; Document contents.
+;;              (let ((div (assq 'content (plist-get info :html-divs))))
+;;                (format "<%s id=\"%s\">\n" (nth 1 div) (nth 2 div)))
+;;              ;; Document title.
+;;              (when (plist-get info :with-title)
+;;                (let ((title (and (plist-get info :with-title)
+;;                                  (plist-get info :title)))
+;;                      (subtitle (plist-get info :subtitle))
+;;                      (html5-fancy (org-html--html5-fancy-p info)))
+;;                  (when title
+;;                    (format
+;;                     (if html5-fancy
+;;                         "<header>\n<h1 class=\"title\">%s</h1> <a class='rooter' href='%s'>*</a>\n%s</header>"
+;;                       "<h1 class=\"title\">%s<a class='rooter' href='%s'>*</a></h1>\n")
+;;                     (org-export-data title info)
+;;                     (file-name-nondirectory (plist-get info :output-file))
+;;                     (if subtitle
+;;                         (format
+;;                          (if html5-fancy
+;;                              "<p class=\"subtitle\">%s</p>\n"
+;;                            (concat "\n" (org-html-close-tag "br" nil info) "\n"
+;;                                    "<span class=\"subtitle\">%s</span>\n"))
+;;                          (org-export-data subtitle info))
+;;                       "")))))
+;;              ;; "<script type='text/javascript'>"
+;;              ;; (with-temp-buffer
+;;              ;;   (insert-file-contents "/home/shared/hurricane/graph.json")
+;;              ;;   (buffer-string))
+;;              ;; "</script>"
+;;              (if (string= (org-export-data (plist-get info :title) info) "The Map")
+;;                  (with-temp-buffer
+;;                    (insert-file-contents "/home/shared/hurricane/graph.svg")
+;;                    (buffer-string)))
+;;              "<div class='container-fluid'>
+;;                <div class='row'>
+;;                  <div class='col-xs-12 col-md-3'>
+;;                    <div id='filter' class='input-group'>
+;;                      <input type='text' id='filter-query' placeholder='Search file name or content.' class='form-control input-sm'>
+;;                      <a id='filter-clear-query' title='Clear current search...' class='input-group-addon input-sm'>
+;;                        <i class='glyphicon glyphicon-remove'>&#x274c;</i>
+;;                      </a>
+;;                    </div>
+;;                  </div>
+;;                </div>
+;;             </div>
+;;             <ul class='unstyled' id='filter-results'></ul>"
+;;              contents
+;;              (format "</%s>\n" (nth 1 (assq 'content (plist-get info :html-divs))))
+;;              "<div id='temp-network' style='display:none'></div>"
+;;              "</div></div>"
+;;              (unless (string= (org-export-data (plist-get info :title) info) "The Map")
+;;                "</div>")
+;;              (org-html--build-pre/postamble 'postamble info)
+;;              "</body>
+;;           </html>")))
 ;; }}
 
 ;;{{ @see https://vicarie.in/posts/blogging-with-org.html

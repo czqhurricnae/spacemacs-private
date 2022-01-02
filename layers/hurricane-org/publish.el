@@ -1,7 +1,7 @@
 (require 'package)
 (add-to-list 'load-path "~/.emacs.d/elpa/develop/org-roam-20210128.1341")
 (add-to-list 'load-path "~/.emacs.d/elpa/develop/s-20180406.808")
-(add-to-list 'load-path "~/.emacs.d/elpa/develop/dash-20210210.1449")
+(add-to-list 'load-path "~/.emacs.d/elpa/develop/dash-20210826.1449")
 (add-to-list 'load-path "~/.emacs.d/elpa/develop/f-20191110.1357")
 (add-to-list 'load-path "~/.emacs.d/elpa/develop/emacsql-20200714.828")
 (add-to-list 'load-path "~/.emacs.d/elpa/develop/emacsql-sqlite3-20200914.508")
@@ -164,7 +164,7 @@ representation for the files to include, as returned by
                ;; :with-email	org-export-with-email
                ;; :with-emphasize	org-export-with-emphasize
                ;; :with-fixed-width org-export-with-fixed-width
-               ;; :with-footnotes	org-export-with-footnotes
+               :with-footnotes	org-export-with-footnotes
                ;; :with-latex	org-export-with-latex
                ;; :with-planning	org-export-with-planning
                ;; org-export-with-priority.
@@ -254,13 +254,13 @@ representation for the files to include, as returned by
                :table-of-contents t
                ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
                ;; }}
-               :auto-sitemap t
-               :exclude "node_modules"
-               :sitemap-title "Hurricane"
-               :sitemap-sort-files anti-chronologically
-               :sitemap-function hurricane/org-publish-sitemap
-               :sitemap-format-entry hurricane/sitemap-format-entry
-               :sitemap-filename "index.org"
+               ;; :auto-sitemap nil
+               ;; :exclude "node_modules"
+               ;; :sitemap-title "Hurricane"
+               ;; :sitemap-sort-files anti-chronologically
+               ;; :sitemap-function hurricane/org-publish-sitemap
+               ;; :sitemap-format-entry hurricane/sitemap-format-entry
+               ;; :sitemap-filename "index.org"
                )
 
               ;; Static assets.
@@ -277,45 +277,77 @@ representation for the files to include, as returned by
               ("statics" :components ("images"))
               ))
 
-(defun hurricane/org-roam-title-to-slug (title)
-  "Convert TITLE to a filename-suitable slug.
-Use hyphens rather than underscores."
-  (cl-flet* ((nonspacing-mark-p (char)
-                                (eq 'Mn (get-char-code-property char 'general-category)))
-             (strip-nonspacing-marks (s)
-                                     (apply #'string (seq-remove #'nonspacing-mark-p
-                                                                 (ucs-normalize-NFD-string s))))
-             (cl-replace (title pair)
-                         (replace-regexp-in-string (car pair) (cdr pair) title)))
-    (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . " ")  ;; convert anything not alphanumeric
-                    ;; ("__*" . "_")  ;; remove sequential underscores
-                    ("^_" . "")  ;; remove starting underscore
-                    ("_$" . "")))  ;; remove ending underscore
-           (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-      slug)))
-
-(setq org-roam-title-to-slug-function 'hurricane/org-roam-title-to-slug)
-
 ;; org-roam backlinks
-;; see https://org-roam.readthedocs.io/en/master/org_export/
+;; @see: https://org-roam.discourse.group/t/export-backlinks-on-org-export/1756/19
 
-(defun hurricane/org-roam--backlinks-list (file)
-  (if (org-roam--org-roam-file-p file)
-      (--reduce-from
-       (concat acc (format "- [[file:%s][%s]]\n"
-                           (file-relative-name (car it) org-roam-directory)
-                           (org-roam-db--get-title (car it))))
-       "" (org-roam-db-query [:select [source] :from links :where (= dest $s1)] file))
-    ""))
+(defun hurricane//collect-backlinks-string (backend)
+  (when (org-roam-node-at-point)
+    (let* ((source-node (org-roam-node-at-point))
+           (source-file (org-roam-node-file source-node))
+           (nodes-in-file (--filter (s-equals? (org-roam-node-file it) source-file)
+                                    (org-roam-node-list)))
+           (nodes-start-position (-map 'org-roam-node-point nodes-in-file))
+           ;; Nodes don't store the last position, so get the next headline position
+           ;; and subtract one character (or, if no next headline, get point-max)
+           (nodes-end-position (-map (lambda (nodes-start-position)
+                                       (goto-char nodes-start-position)
+                                       (if (org-before-first-heading-p) ;; file node
+                                           (point-max)
+                                         (call-interactively
+                                          'org-forward-heading-same-level)
+                                         (if (> (point) nodes-start-position)
+                                             (- (point) 1) ;; successfully found next
+                                           (point-max)))) ;; there was no next
+                                     nodes-start-position))
+           ;; sort in order of decreasing end position
+           (nodes-in-file-sorted (->> (-zip nodes-in-file nodes-end-position)
+                                      (--sort (> (cdr it) (cdr other))))))
+      (dolist (node-and-end nodes-in-file-sorted)
+        (-when-let* (((node . end-position) node-and-end)
+                     (backlinks (--filter (->> (org-roam-backlink-source-node it)
+                                               (org-roam-node-file)
+                                               (s-contains? "private/") (not))
+                                          (org-roam-backlinks-get node)))
+                     (heading (format "\n\n%s Links to this node\n"
+                                      (s-repeat (+ (org-roam-node-level node) 1) "*")))
+                     (properties-drawer ":PROPERTIES:\n:HTML_CONTAINER_CLASS: references\n:END:\n"))
+          (goto-char end-position)
+          (insert heading)
+          (insert properties-drawer)
+          (dolist (backlink backlinks)
+            (let* ((source-node (org-roam-backlink-source-node backlink))
+                   (source-file (org-roam-node-file source-node))
+                   (properties (org-roam-backlink-properties backlink))
+                   (outline (when-let ((outline (plist-get properties :outline)))
+                              (when (> (length outline) 1)
+                                (mapconcat #'org-link-display-format outline " > "))))
+                   (point (org-roam-backlink-point backlink))
+                   (text (s-replace "\n" " " (org-roam-preview-get-contents
+                                              source-file
+                                              point)))
+                   (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
+                                      (s-repeat (+ (org-roam-node-level node) 2) "*")
+                                      (org-roam-node-id source-node)
+                                      (org-roam-node-title source-node)
+                                      (if outline (format "%s (/%s/)"
+                                                          (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
+                                      text))
+                   (label-list (with-temp-buffer
+                                 (insert text)
+                                 (org-element-map (org-element-parse-buffer) 'footnote-reference
+                                   (lambda (reference)
+                                     (org-element-property :label reference)))))
+                   (footnote-string-list
+                      (with-temp-buffer
+                        (insert-file-contents source-file)
+                        (-map (lambda (label) (buffer-substring-no-properties
+                                               (nth 1 (org-footnote-get-definition label))
+                                               (nth 2 (org-footnote-get-definition label))))
+                              label-list))))
+              (-map (lambda (footnote-string) (insert footnote-string)) footnote-string-list)
+              (insert reference))))))))
 
-(defun hurricane/org-export-preprocessor (backend)
-  (let ((links (hurricane/org-roam--backlinks-list (buffer-file-name))))
-    (unless (string= links "")
-      (save-excursion
-        (goto-char (point-max))
-        (insert (concat "\n* Backlinks\n") links)))))
-
-(add-hook 'org-export-before-processing-hook 'hurricane/org-export-preprocessor)
+(add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 
 (eval-after-load "ox-html"
   '(defun org-html-template (contents info)
@@ -392,7 +424,7 @@ Use hyphens rather than underscores."
 ;; Graph-related ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(defvar hurricane/graph-node-extra-config
+(defvar hurricane//graph-node-extra-config
         '(("shape"      . "rectangle")
           ("style"      . "rounded,filled")
           ("fillcolor"  . "#EEEEEE")
@@ -403,15 +435,15 @@ Use hyphens rather than underscores."
           ("fontcolor"  . "#111111")))
 
 ;; Change the look of the graphviz graph a little.
-(setq org-roam-graph-node-extra-config hurricane/graph-node-extra-config)
+(setq org-roam-graph-node-extra-config hurricane//graph-node-extra-config)
 
-(defun hurricane/web-graph-builder (file)
+(defun hurricane//web-graph-builder (file)
   (concat (url-hexify-string (file-name-sans-extension (file-name-nondirectory file))) ".html"))
 
 ;; `org-roam-graph-node-url-builder` is not in master org-roam, I've added it to my local version.
 ;; see: https://github.com/ngm/org-roam/commit/82f40c122c836684a24a885f044dcc508212a17d
 ;; It's to allow setting a different URL for nodes on the graph.
-(setq org-roam-graph-node-url-builder 'hurricane/web-graph-builder)
+(setq org-roam-graph-node-url-builder 'hurricane//web-graph-builder)
 
 (setq org-roam-graph-exclude-matcher '("sitemap" "index" "recentchanges"))
 
@@ -437,13 +469,13 @@ Use hyphens rather than underscores."
     (copy-file temp-graph (concat hurricane/project-dir "/graph.svg") 't)))
 
 
-(defun hurricane/external-link-format (text backend info)
+(defun hurricane//external-link-format (text backend info)
   (when (org-export-derived-backend-p backend 'html)
     (when (string-match-p (regexp-quote "http") text)
       (s-replace "<a" "<a target='_blank' rel='noopener noreferrer'" text))))
 
 (add-to-list 'org-export-filter-link-functions
-             'hurricane/external-link-format)
+             'hurricane//external-link-format)
 
 (setq org-roam-server-network-label-wrap-length 20)
 (setq org-roam-server-network-label-truncate t)
@@ -540,9 +572,9 @@ Use hyphens rather than underscores."
                 (cdr (elt graph 1)))))
       (json-encode graph))))
 
-(org-link-set-parameters "video" :export 'org-video-link-export)
+(org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
 
-(defun org-video-link-export (path desc backend)
+(defun hurricane//org-video-link-export (path desc backend)
   (let ((ext (file-name-extension path)))
     (cond
      ((eq 'html backend)
@@ -551,7 +583,7 @@ Use hyphens rather than underscores."
      (t
       path))))
 
-(defun hurricane/org-html-wrap-blocks-in-code (src backend info)
+(defun hurricane//org-html-wrap-blocks-in-code (src backend info)
   "Wrap a source block in <pre><code class=\"lang\">.</code></pre>"
   (when (org-export-derived-backend-p backend 'html)
     (replace-regexp-in-string
@@ -561,4 +593,4 @@ Use hyphens rather than underscores."
 
 (with-eval-after-load 'ox-html
   (add-to-list 'org-export-filter-src-block-functions
-               'hurricane/org-html-wrap-blocks-in-code))
+               'hurricane//org-html-wrap-blocks-in-code))

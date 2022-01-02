@@ -2,8 +2,6 @@
   '(
     (doom-themes :location (recipe :fetcher
                             github :repo "hlissner/emacs-doom-themes"))
-    ;; (doom-modeline :location (recipe :fetcher
-    ;;                           github :repo "seagle0128/doom-modeline"))
     (hide-mode-line :location (recipe :fetcher
                                github :repo "hlissner/emacs-hide-mode-line"))
     pangu-spacing
@@ -15,7 +13,7 @@
                              github :repo "tumashu/ivy-posframe"))
     pretty-hydra
     (good-scroll :location (recipe :fetcher
-                                   github :repo "io12/good-scroll.el"))
+                            github :repo "io12/good-scroll.el"))
     ))
 
 ;; {{
@@ -28,14 +26,15 @@
     (doom-themes-enable-italic t)
     (doom-themes-enable-bold t)
     :config
-    (doom-themes-neotree-config)
-    (doom-themes-org-config)
+    ;; (doom-themes-neotree-config)
+    ;; (doom-themes-org-config)
     ;; Enable flashing mode-line on errors.
-    (doom-themes-visual-bell-config)
-    (set-face-attribute 'doom-visual-bell nil
-                        :background (face-foreground 'error)
-                        :foreground (face-background 'default)
-                        :inverse-video nil)))
+    ;; (doom-themes-visual-bell-config)
+    ;; (set-face-attribute 'doom-visual-bell nil
+    ;;                     :background (face-foreground 'error)
+    ;;                     :foreground (face-background 'default)
+    ;;                     :inverse-video nil)))
+    ))
 ;; }}
 
 (defun hurricane-ui/pre-init-doom-modeline ()
@@ -55,7 +54,6 @@
       minimap-mode
       ibuffer-mode
       help-mode
-      deft-text-mode
       ) . hide-mode-line-mode)))
 ;; }}
 
@@ -75,7 +73,7 @@
 
 ;; {{
 ;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
-(defun hurricane/define-evil-normal-keybinding (key def &rest bindings)
+(defun hurricane//define-evil-normal-keybinding (key def &rest bindings)
   "Binding keys and func for normal state map and motion state map."
   (while key
     (define-key evil-normal-state-map (kbd key) def)
@@ -123,8 +121,7 @@
         ;; Misc.
         ("C-k" kill-current-buffer)
         ("C-S-k" awesome-tab-kill-other-buffers-in-current-group)
-        ("q" nil :exit t))
-      (hurricane/define-evil-normal-keybinding "C-t" 'spacemacs/awesometab-transient-state/body))
+        ("q" nil :exit t)))
     :config
     (setq awesome-tab-style "bar")
     ))
@@ -249,9 +246,14 @@
   (use-package ivy-posframe
     :ensure t
     :after (ivy)
+    :diminish ivy-posframe-mode
     :config
     (setq ivy-posframe-display-functions-alist
-        '((swiper . ivy-posframe-display-at-frame-center)
+        '((swiper . ivy-display-function-fallback)
+          (spacemacs/counsel-search . ivy-display-function-fallback)
+          (counsel-rg . ivy-display-function-fallback)
+          (counsel-ag . ivy-display-function-fallback)
+          (counsel-git-grep . ivy-display-function-fallback)
           (complete-symbol . ivy-posframe-display-at-point)
           (counsel-M-x . ivy-posframe-display-at-frame-center)
           (counsel-find-file . ivy-posframe-display-at-frame-center)

@@ -24,7 +24,7 @@
 ;; Delete the selection with a key press.
 (delete-selection-mode t)
 
-;;Add auto format paste code.
+;; Add auto format paste code.
 (dolist (command '(yank yank-pop))
   (eval
    `(defadvice ,command (after indent-region activate)
@@ -186,20 +186,6 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 ;; (setq counsel-ag-base-command  "ag --vimgrep --nocolor --nogroup %s")
 
 ;; {{
-;; `--line-number' forces line numbers (disabled by default on windows).
-;; No `--vimgrep' because it adds column numbers that wgrep can't handle.
-;; @see: https://github.com/syl20bnr/spacemacs/pull/8065
-(defvar spacemacs--counsel-commands
-  '(
-    ("rg" . "rg  --smart-case --ignore-file '.rgignore' --no-heading --color never --line-number --max-columns 220 %s %S .")
-    ("ag" . "ag --nocolor --nogroup %s %S .")
-    ("pt" . "pt -e --nocolor --nogroup %s %S .")
-    ("ack" . "ack --nocolor --nogroup %s %S .")
-    ("grep" . "grep -nrP %s %S ."))
-  "An alist of search commands and their corresponding commands with options to run in the shell.")
-;; }}
-
-;; {{
 ;; Search chinse must add this line.
 ;; @see: https://emacs-china.org/t/emacs-helm-ag/6764
 (if (spacemacs/system-is-mswindows)
@@ -209,7 +195,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 
 ;; {{
 ;; @see: https://emacs-china.org/t/advice/7566
-(defun advice-remove-button (function)
+(defun hurricane//advice-remove-button (function)
   "Add a button to remove advice."
   (when (get-buffer "*Help*")
     (with-current-buffer "*Help*"
@@ -231,17 +217,8 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
                     (revert-buffer nil t))
                  'follow-link t)))))))))
 
-(advice-add 'describe-function-1 :after #'advice-remove-button)
+(advice-add 'describe-function-1 :after #'hurricane//advice-remove-button)
 ;; }}
-
-(defun hurricane-edit-ag (function)
-  (when (get-buffer "*helm-ag-edit*")
-    (kill-buffer "*helm-ag-edit*"))
-  (if (not (= (count-windows) 2))
-      (progn
-        (split-window-right))))
-
-(advice-add 'helm-ag--edit :before #'hurricane-edit-ag)
 
 ;; 使用 `counsel-git' 查找文件的时候，忽略指定后缀的文件.
 (when (spacemacs/system-is-mswindows)

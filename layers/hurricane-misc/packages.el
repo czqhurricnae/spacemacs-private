@@ -1,7 +1,6 @@
 (setq hurricane-misc-packages
       '(
         helm-github-stars
-        helm
         helm-ag
         expand-region
         projectile
@@ -15,7 +14,6 @@
         discover-my-major
         ace-window
         avy
-        4clojure
         tiny
         flyspell-correct
         peep-dired
@@ -39,9 +37,10 @@
         atomic-chrome
         dired-rsync
         (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
-        (anki :location (recipe :fetcher github :repo "chenyanming/anki.el"))
         (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
-        (iscroll :location local)))
+        (mybigword :location local)
+        emacs-everywhere
+        command-log-mode))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -369,45 +368,7 @@
       ;; Evilify the helm-grep buffer.
       (evilified-state-evilify helm-grep-mode helm-grep-mode-map
         (kbd "RET") 'helm-grep-mode-jump-other-window
-        (kbd "q") 'quit-window)
-
-      (spacemacs/set-leader-keys
-        ;; Helm-ag marks.
-        "s`"  'helm-ag-pop-stack
-        ;; Opened buffers scope.
-        "sb"  'spacemacs/helm-buffers-smart-do-search
-        "sB"  'spacemacs/helm-buffers-smart-do-search-region-or-symbol
-        "sab" 'helm-do-ag-buffers
-        "saB" 'spacemacs/helm-buffers-do-ag-region-or-symbol
-        "skb" 'spacemacs/helm-buffers-do-ack
-        "skB" 'spacemacs/helm-buffers-do-ack-region-or-symbol
-        "stb" 'spacemacs/helm-buffers-do-pt
-        "stB" 'spacemacs/helm-buffers-do-pt-region-or-symbol
-        ;; Current file scope.
-        "ss"  'spacemacs/helm-file-smart-do-search
-        "sS"  'spacemacs/helm-file-smart-do-search-region-or-symbol
-        "saa" 'helm-ag-this-file
-        "saA" 'spacemacs/helm-file-do-ag-region-or-symbol
-        ;; Files scope.
-        "sf"  'spacemacs/helm-files-smart-do-search
-        "sF"  'spacemacs/helm-files-smart-do-search-region-or-symbol
-        "saf" 'helm-do-ag
-        "saF" 'spacemacs/helm-files-do-ag-region-or-symbol
-        "skf" 'spacemacs/helm-files-do-ack
-        "skF" 'spacemacs/helm-files-do-ack-region-or-symbol
-        "stf" 'spacemacs/helm-files-do-pt
-        "stF" 'spacemacs/helm-files-do-pt-region-or-symbol
-        ;; Current project scope.
-        "/"   'spacemacs/helm-project-smart-do-search
-        "*"   'spacemacs/helm-project-smart-do-search-region-or-symbol
-        "sp"  'spacemacs/helm-project-smart-do-search
-        "sP"  'spacemacs/helm-project-smart-do-search-region-or-symbol
-        "sap" 'spacemacs/helm-project-do-ag
-        "saP" 'spacemacs/helm-project-do-ag-region-or-symbol
-        "skp" 'spacemacs/helm-project-do-ack
-        "skP" 'spacemacs/helm-project-do-ack-region-or-symbol
-        "stp" 'spacemacs/helm-project-do-pt
-        "stP" 'spacemacs/helm-project-do-pt-region-or-symbol))
+        (kbd "q") 'quit-window))
     :config
     (progn
       (advice-add 'helm-ag--save-results :after 'spacemacs//gne-init-helm-ag)
@@ -467,7 +428,7 @@
       ("g" customize-apropos-groups "groups")
       ("o" customize-apropos-options "options"))
 
-    (define-key global-map (kbd "<f1>") 'hydra-hotspots/body)
+    ;; (define-key global-map (kbd "<f1>") 'hydra-hotspots/body)
     (spacemacs/set-leader-keys "oo" 'hydra-hotspots/body)
     ;; (bind-key*  "<f4>" 'hydra-apropos/body)
     (spacemacs/set-leader-keys "oh" 'hydra-apropos/body)
@@ -527,7 +488,7 @@
 (defun hurricane-misc/post-init-smartparens ()
   (progn
     (smartparens-global-mode t)
-    (global-set-key (kbd "C-(") 'wrap-sexp-with-new-round-parens)
+    (global-set-key (kbd "C-(") 'hurricane/wrap-sexp-with-new-round-parens)
     ;; 写 lisp 时不成对补全 "'" 和 "`".
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
@@ -544,23 +505,12 @@
     :init
     (spacemacs/set-leader-keys "oe" 'tiny-expand)))
 
-(defun hurricane-misc/post-init-helm ()
-  (with-eval-after-load 'helm
-    (progn
-      ;; Limit max number of matches displayed for speed.
-      (setq helm-candidate-number-limit 100)
-      ;; Ignore boring files like .o and .a.
-      (setq helm-ff-skip-boring-files t)
-      ;; Replace locate with spotlight on macOS.
-      (setq helm-locate-command "mdfind -name %s %s")
-      (push "\\.emlx$" helm-boring-file-regexp-list))))
-
 (defun hurricane-misc/init-helm-github-stars ()
   (use-package helm-github-stars
     :defer t
     :commands (helm-github-stars)
     :init
-    (setq helm-github-stars-username "hurricane")))
+    (setq helm-github-stars-username "czqhurricnae")))
 
 (defun hurricane-misc/post-init-command-log ()
   (with-eval-after-load 'global-command-log-mode
@@ -577,18 +527,7 @@
     :init
     (progn
       (evilified-state-evilify osx-dictionary-mode osx-dictionary-mode-map)
-      (setq osx-dictionary-use-chinese-text-segmentation t)
-      (global-set-key (kbd "C-c d") 'osx-dictionary-search-pointer))))
-
-(defun hurricane-misc/init-4clojure ()
-  (use-package 4clojure
-    :init
-    (progn
-      (spacemacs/declare-prefix "o4" "4clojure")
-      (spacemacs/set-leader-keys "o4q" '4clojure-open-question)
-      (spacemacs/set-leader-keys "o4n" '4clojure-next-question)
-      (spacemacs/set-leader-keys "o4p" '4clojure-previous-question)
-      (spacemacs/set-leader-keys "o4c" '4clojure-check-answers))))
+      (setq osx-dictionary-use-chinese-text-segmentation t))))
 
 (defun hurricane-misc/post-init-avy ()
   (progn
@@ -606,54 +545,6 @@
       (spacemacs/set-leader-keys (kbd "mhm") 'discover-my-major)
       (evilified-state-evilify makey-key-mode makey-key-mode-get-key-map))))
 
-(defun hurricane-misc/post-init-elfeed ()
-  (use-package elfeed
-    :init
-    (global-set-key (kbd "C-x w") 'elfeed)
-    :defer t
-    :config
-    (progn
-      (setq elfeed-feeds
-            '("http://nullprogram.com/feed/"
-              "http://z.caudate.me/rss/"
-              "http://irreal.org/blog/?feed=rss2"
-              "http://feeds.feedburner.com/LostInTheTriangles"
-              "http://tonybai.com/feed/"
-              "http://planet.emacsen.org/atom.xml"
-              "http://feeds.feedburner.com/emacsblog"
-              "http://blog.binchen.org/rss.xml"
-              "http://oremacs.com/atom.xml"
-              "http://blog.gemserk.com/feed/"
-              "http://www.masteringemacs.org/feed/"
-              "http://t-machine.org/index.php/feed/"
-              "http://gameenginebook.blogspot.com/feeds/posts/default"
-              "http://feeds.feedburner.com/ruanyifeng"
-              "http://coolshell.cn/feed"
-              "http://blog.devtang.com/atom.xml"
-              "http://emacsist.com/rss"
-              "http://puntoblogspot.blogspot.com/feeds/2507074905876002529/comments/default"
-              "http://angelic-sedition.github.io/atom.xml"))
-
-      ;; (Evilify elfeed-search-mode elfeed-search-mode-map)
-      (evilified-state-evilify-map elfeed-search-mode-map
-        :mode elfeed-search-mode
-        :bindings
-        "G" 'elfeed-update
-        "g" 'elfeed-search-update--force)
-
-      (defun hurricane/elfeed-mark-all-as-read ()
-        (interactive)
-        (mark-whole-buffer)
-        (elfeed-search-untag-all-unread))
-
-      (define-key elfeed-search-mode-map (kbd "R") 'hurricane/elfeed-mark-all-as-read)
-
-      (defadvice elfeed-show-yank (after elfeed-show-yank-to-kill-ring activate compile)
-        "Insert the yanked text from x-selection to kill ring."
-        (kill-new (x-get-selection)))
-
-      (ad-activate 'elfeed-show-yank))))
-
 (defun hurricane-misc/post-init-evil ()
   (progn
     (require 'cl)
@@ -668,7 +559,7 @@
     (adjust-major-mode-keymap-with-evil "git-timemachine")
     (adjust-major-mode-keymap-with-evil "tabulated-list")
 
-    (define-key evil-visual-state-map "p" 'evil-paste-after-from-0)
+    (define-key evil-visual-state-map "p" 'hurricane//evil-paste-after-from-0)
     (define-key evil-insert-state-map (kbd "C-r") 'evil-paste-from-register)
 
     ;; Change evil initial mode state.
@@ -685,13 +576,13 @@
 
     (define-key evil-normal-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
 
-    (defun my-evil-yank ()
+    (defun hurricane//evil-yank ()
       (interactive)
       (save-excursion
         (call-interactively 'evil-yank))
       (backward-char))
 
-    (define-key evil-visual-state-map (kbd "y") 'my-evil-yank)
+    (define-key evil-visual-state-map (kbd "y") 'hurricane//evil-yank)
 
     (define-key evil-normal-state-map
       (kbd "Y") 'hurricane/yank-to-end-of-line)
@@ -733,7 +624,7 @@
     (define-key minibuffer-local-map (kbd "C-w") 'evil-delete-backward-word)
 
     (define-key evil-visual-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
-    (define-key evil-visual-state-map (kbd "C-r") 'hurricane/evil-quick-replace)
+    (define-key evil-visual-state-map (kbd "C-r") 'hurricane//evil-quick-replace)
     (define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
     (define-key evil-visual-state-map (kbd "mp") 'mc/mark-previous-like-this)
     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
@@ -807,7 +698,7 @@
     (setq mc/cmds-to-run-once
           '(
             counsel-M-x
-            hurricane/my-mc-mark-next-like-this))
+            hurricane//my-mc-mark-next-like-this))
     (setq mc/cmds-to-run-for-all
           '(
             electric-newline-and-maybe-indent
@@ -889,7 +780,7 @@
 
     (defvar my-simple-todo-regex "\\<\\(FIXME\\|TODO\\|BUG\\):")
 
-    (defun my-simple-todo ()
+    (defun hurricane/simple-todo ()
       "When in a project, create a `multi-occur' buffer matching the
     regex in `my-simple-todo-regex' across all buffers in the
     current project. Otherwise do `occur' in the current file."
@@ -933,14 +824,14 @@
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
-    (prodigy-define-service
-      :name "Blog pull"
-      :command "rsync"
-      :args '("-avzt" "-vvvv" "c@182.61.145.178:/home/c/site/public/" "." )
-      :cwd blog-dir
-      :tags '(blog pull)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
+    ;; (prodigy-define-service
+    ;;   :name "Blog pull"
+    ;;   :command "rsync"
+    ;;   :args '("-avzt" "-vvvv" "c@182.61.145.178:/home/c/site/public/" "." )
+    ;;   :cwd blog-dir
+    ;;   :tags '(blog pull)
+    ;;   :kill-signal 'sigkill
+    ;;   :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
       :name "Blog preview"
@@ -952,11 +843,11 @@
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
-    (defun refresh-chrome-current-tab (beg end length-before)
-      (call-interactively 'hurricane/browser-refresh--chrome-applescript))
+    (defun hurricane//refresh-chrome-current-tab (beg end length-before)
+      (call-interactively 'hurricane//browser-refresh--chrome-applescript))
       ;; Add watch for prodigy-view-mode buffer change event.
       (add-hook 'prodigy-view-mode-hook
-                #'(lambda() (set (make-local-variable 'after-change-functions) #'refresh-chrome-current-tab)))))
+                #'(lambda() (set (make-local-variable 'after-change-functions) #'hurricane//refresh-chrome-current-tab)))))
 
 (defun hurricane-misc/init-moz-controller ()
   (use-package moz-controller
@@ -971,7 +862,7 @@
 
 (defun hurricane-misc/post-init-erc ()
   (progn
-    (add-hook 'erc-text-matched-hook 'my-erc-hook)
+    (add-hook 'erc-text-matched-hook 'hurricane//erc-hook)
     (spaceline-toggle-erc-track-off)))
 
 (defun hurricane-misc/init-wrap-region ()
@@ -1003,40 +894,7 @@
   "Initialize `swiper' package"
   (progn
     (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-
-    (evilified-state-evilify ivy-occur-mode ivy-occur-mode-map)
-
-    (use-package ivy
-      :defer t
-      :config
-      (progn
-        (spacemacs|hide-lighter ivy-mode)
-
-        (ivy-set-actions
-         t
-         '(("f" my-find-file-in-git-repo "@ Find files")
-           ("!" my-open-file-in-external-app "@ Open file in external app")
-           ("I" ivy-insert-action "@ Insert")
-           ("C" ivy-kill-new-action "@ Copy")
-           ("S" ivy-ff-checksum-action "@ Checksum")))
-
-        (spacemacs/set-leader-keys "fad" 'counsel-goto-recent-directory)
-        (spacemacs/set-leader-keys "faf" 'counsel-find-file-recent-directory)
-
-        (setq ivy-initial-inputs-alist nil)
-        (setq ivy-wrap t)
-        (setq confirm-nonexistent-file-or-buffer t)
-
-        (define-key ivy-minibuffer-map (kbd "TAB") 'ivy-call)
-        (define-key ivy-minibuffer-map (kbd "C-M-m") 'ivy-partial-or-done)
-        (define-key ivy-minibuffer-map (kbd "C-c s") 'ivy-ff-checksum)
-        (define-key ivy-minibuffer-map (kbd "C-c C-e") 'spacemacs//counsel-edit)
-        (define-key ivy-minibuffer-map (kbd "<f3>") 'ivy-occur)
-        (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
-        (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line)))
-
-    (define-key global-map (kbd "C-s") 'my-swiper-search)))
+    (setq ivy-display-style 'fancy)))
 
 (defun hurricane-misc/post-init-magit ()
   (progn
@@ -1057,12 +915,12 @@
     ;; Prefer two way ediff.
     (setq magit-ediff-dwim-show-on-hunks t)
 
-    (setq magit-repository-directories '("~/Python/"))
+    ;; (setq magit-repository-directories '("~/Python/"))
     (setq magit-push-always-verify nil)
 
     (eval-after-load 'magit
       '(define-key magit-mode-map (kbd "C-c g")
-         #'hurricane/magit-visit-pull-request))
+         #'hurricane//magit-visit-pull-request))
 
     (setq magit-process-popup-time 10)))
 
@@ -1084,9 +942,9 @@
       (progn
         (setq markdown-command "pandoc -s -f markdown -t html5 --mathjax --highlight-style pygments --standalone")
         (spacemacs/set-leader-keys-for-major-mode 'gfm-mode-map
-          "p" 'hurricane/markdown-to-html)
+          "p" 'hurricane//markdown-to-html)
         (spacemacs/set-leader-keys-for-major-mode 'markdown-mode
-          "p" 'hurricane/markdown-to-html)
+          "p" 'hurricane//markdown-to-html)
         (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
         ))))
 ;; }}
@@ -1219,7 +1077,7 @@
           (cl-pushnew
            '("H" (lambda ()
                    (call-interactively
-                    'hurricane/highlight-dwim)))
+                    'symbol-highlight)))
            new-bindings)
           (cl-pushnew
            '("/" (lambda ()
@@ -1246,9 +1104,9 @@
     (setq auto-insert-query nil)
     (add-hook 'find-file-hook 'auto-insert)
     (setq auto-insert-directory auto-insert-dir)
-    (define-auto-insert "\\.html?$" ["default-html.html" hurricane/autoinsert-yas-expand])
-    (define-auto-insert "\\.el?$" ["default-lisp.el" hurricane/autoinsert-yas-expand])
-    (define-auto-insert "\\.org?$" ["default-org.org" hurricane/autoinsert-yas-expand])))
+    (define-auto-insert "\\.html?$" ["default-html.html" hurricane//autoinsert-yas-expand])
+    (define-auto-insert "\\.el?$" ["default-lisp.el" hurricane//autoinsert-yas-expand])
+    (define-auto-insert "\\.org?$" ["default-org.org" hurricane//autoinsert-yas-expand])))
 
 (defun hurricane-misc/init-use-package-ensure-system-package ()
   (use-package use-package-ensure-system-package
@@ -1284,6 +1142,7 @@
 (defun hurricane-misc/init-rime ()
   (use-package rime
     :ensure t
+    :requires core-themes-support
     :init
     (setq default-input-method "rime")
     (setq rime-show-candidate 'posframe)
@@ -1293,7 +1152,9 @@
      '(rime-predicate-evil-mode-p
        rime-predicate-prog-in-code-p
        rime-predicate-ace-window-p
-       rime-predicate-hydra-p))
+       rime-predicate-hydra-p
+       rime-predicate-which-key-activate-p
+       rime-predicate-local-map-p))
 
     (defun +rime-force-enable ()
       "强制 `rime' 使用中文输入状态。
@@ -1338,6 +1199,12 @@
                                unread-command-events))))
               (t (message "`+rime-convert-string-at-point' did nothing.")))))
 
+    (defun rime-predicate-which-key-activate-p ()
+      which-key--automatic-display)
+
+    (defun rime-predicate-local-map-p ()
+      (get-text-property (point) 'local-map))
+
     (defun dispatching-enchancer (origin-func)
       (defadvice origin-func (before rime-disable-predicate-maybe
                                      () activate)
@@ -1346,8 +1213,7 @@
 
     (mapc #'dispatching-enchancer '(ivy-dispatching-done
                                         ivy-dispatching-call
-                                        hydra-ivy/body
-                                        which-key-C-h-dispatch))
+                                        hydra-ivy/body))
 
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")
@@ -1367,64 +1233,17 @@
     :config
     (setq with-proxy-http-server "127.0.0.1:8118")))
 
-(defun hurricane-misc/init-thing-edit ()
-  (use-package thing-edit
-    :config
-    (with-eval-after-load 'hydra
-      (defhydra hydra-thing-edit (:color pink :hint nil)
-        "
-                               ^Thing edit^
------------------------------------------------------------------------
-^file^    ^sentence^  ^buffer^ ^line^ ^parenthese^ ^sexp^   ^paragrap^
-_f_ copy     _s_      _b_      _r_       _p_           _s_  _a_
-_F_ cut      _S_      _B_      _R_       _P_           _S_  _A_
-_1_ replace  _2_      _3_      _4_       _5_           _6_  _7_
-"
-        ("f" thing-copy-filename)
-        ("F" thing-cut-filename)
-        ("1" thing-replace-filename)
-        ("s" thing-copy-sentence)
-        ("S" thing-cut-sentence)
-        ("2" thing-replace-sentence)
-        ("b" thing-copy-whole-buffer)
-        ("B" thing-cut-whole-buffer)
-        ("3" thing-replace-whole-buffer)
-        ("r" thing-copy-line)
-        ("R" thing-cut-line)
-        ("4" thing-replace-line)
-        ("p" thing-copy-parentheses)
-        ("P" thing-cut-parentheses)
-        ("5" thing-replace-parentheses)
-        ("s" thing-copy-sexp)
-        ("S" thing-cut-sexp)
-        ("6" thing-replace-sexp)
-        ("a" thing-copy-paragrap)
-        ("A" thing-cut-paragrap)
-        ("7" thing-replace-paragrap)
-        ;; quit
-        ("q" nil)
-        ("." nil :color blue)))
-    :bind ("M-s k" . hydra-thing-edit/body)))
-
-(defun hurricane-misc/init-anki ()
-  (use-package anki
-    :defer t
-    :load-path "~/.emacs.d/elpa/develop/anki-20201013.2241/"
-    :init
-    (add-hook 'anki-mode-hook #'shrface-mode)
-    (add-hook 'anki-card-mode-hook #'shrface-mode)
-    (autoload 'anki "anki")
-    (autoload 'anki-browser "anki")
-    (autoload 'anki-list-decks "anki")
-    :config
-    (require 'shrface)
-    (setq anki-shr-rendering-functions (append anki-shr-rendering-functions shr-external-rendering-functions))
-    (setq sql-sqlite-program "/usr/bin/sqlite3")
-    (setq anki-collection-dir "/Users/c/Library/Application Support/Anki2/User 1")))
-
 (defun hurricane-misc/init-emacsql ()
   (use-package emacsql))
 
-(defun hurricane-misc/init-iscroll ()
-  (use-package iscroll
-    :defer t))
+(defun hurricane-misc/init-mybigword ()
+  (use-package mybigword))
+
+(defun hurricane-misc/init-emacs-everywhere ()
+  (use-package emacs-everywhere
+    :requires org-roam
+    :init
+    (setq emacs-everywhere-markdown-apps '("MarginNote 3"))))
+
+(defun hurricane-misc/init-command-log-mode ()
+  (use-package command-log-mode))

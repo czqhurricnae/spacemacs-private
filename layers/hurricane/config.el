@@ -97,7 +97,7 @@
  virtualenv-dir "~/.virtualenvs/"
  auto-insert-dir "~/.spacemacs.d/templates/"
  rime-dir "~/.spacemacs.d/rime/"
- jupyter-bin "~/.virtualenvs/ipy3/bin/jupyter"
+ jupyter-bin "~/.virtualenvs/ipy/bin/jupyter"
  eslintfmt-configuration-file "~/.spacemacs.d/.eslintrc.js"
  Baidu-OCR-Python-file "~/.spacemacs.d/BaiduOcr.py"
  scripts-file "~/.spacemacs.d/scripts.org"

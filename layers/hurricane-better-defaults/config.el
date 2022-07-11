@@ -134,7 +134,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 
 (add-hook 'find-file-hook 'spacemacs/check-large-file)
 
-(defadvice find-file (before make-directory-maybe
+(defadvice find-file (before make-static-directory-maybe
                              (file-name &optional wildcards) activate)
   "Create parent directory if not exists while visiting file."
   (unless (file-exists-p file-name)

@@ -219,7 +219,8 @@ After this command has been run, any buffers it's modified will remain open and 
 (defun hurricane//find-file-in-git-repo (repo)
   (if (file-directory-p repo)
       (let* ((default-directory repo)
-             (files (split-string (shell-command-to-string (format "cd %s && git ls-files" repo)) "\n" t)))
+             (files (split-string (shell-command-to-string (format "cd %s && git ls-files" (replace-regexp-in-string " " "\\\\ " repo))) "\n" t)))
+        (shell-command "git config --global core.quotepath false")
         (ivy-read "files:" files
                   :action 'find-file
                   :caller 'hurricane//find-file-in-git-repo))

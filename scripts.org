@@ -1,4 +1,4 @@
-# -*- eval: (setq org-download-image-dir (concat default-directory "screenshotImg/")); -*-
+# -*- eval: (setq org-download-image-dir (concat default-directory "./static/")); -*-
 #+LATEX_CLASS: my_article
 @see: https://stackoverflow.com/questions/47891892/org-mode-how-to-automatically-generate-nice-file-hierarchy-trees-with-well-form
 $ brew install tree

@@ -5,7 +5,7 @@
   "Default directory name for org dot image."
   :type 'string)
 
-(defcustom org-screenshot-image-dir-name "screenshotImg"
+(defcustom org-screenshot-image-dir-name "./static"
   "Default directory name for org dot image."
   :type 'string)
 
@@ -116,9 +116,9 @@
 
 (defun hurricane/org-download-images-to-base64-converter ()
   (interactive)
-  (cl-loop for image-file in (delete ".." (delete "." (directory-files (concat default-directory "screenshotImg"))))
+  (cl-loop for image-file in (delete ".." (delete "." (directory-files (concat default-directory "./static"))))
            do (progn
-                (setq full-file-path (concat default-directory "screenshotImg" "/" image-file))
+                (setq full-file-path (concat default-directory "./static" "/" image-file))
                 (image-to-base64-handler full-file-path))))
 
 (defun hurricane/org-screenshot ()
@@ -130,7 +130,7 @@ buffer file directory and insert a link to this file."
       (if (file-exists-p img-dir)
           (print (format "Screenshot image directory: '%s' already exists." img-dir))
         (mkdir img-dir))
-      ;; 统一将截图和下载图片存放的文件夹, 为以文件的同一目录下的'screenshotImg'文件夹.
+      ;; 统一将截图和下载图片存放的文件夹, 为以文件的同一目录下的'./static'文件夹.
       ;; (setq absolute-img-dir (concat default-directory img-dir))
       ;; (let ((temp-name (select-or-enter-file-name absolute-img-dir)))
       (let ((temp-name (select-or-enter-file-name img-dir)))
@@ -505,7 +505,7 @@ and insert a link to this file."
       (if (file-exists-p img-dir)
           (print (format "Screnshot image directory: '%s' already exists." img-dir))
         (mkdir img-dir))
-      ;; 统一将截图和下载图片存放的文件夹，为以文件的同一目录下的 `screenshotImg' 文件夹。
+      ;; 统一将截图和下载图片存放的文件夹，为以文件的同一目录下的 `./static' 文件夹。
       (setq absolute-img-dir (concat default-directory img-dir))
       ;; (let ((temp-name (select-or-enter-file-name absolute-img-dir)))
       (let ((temp-name (select-or-enter-file-name img-dir)))
@@ -735,9 +735,9 @@ and insert a link to this file."
 
         ;; Static assets.
         ("images"
-         :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "screenshotImg"))
+         :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "./static"))
          :base-extension "css\\|js\\|png\\|jpg\\|gif\\|svg\\|svg\\|json\\|pdf"
-         :publishing-directory ,(concat blog-dir (file-name-as-directory "screenshotImg"))
+         :publishing-directory ,(concat blog-dir (file-name-as-directory "./static"))
          :exclude "node_modules"
          :recursive t
          :publishing-function org-publish-attachment
@@ -769,10 +769,10 @@ epoch to the beginning of today (00:00)."
   (float-time (apply 'encode-time
                      (append '(0 0 0) (nthcdr 3 (decode-time))))))
 
-(defadvice org-capture-target-buffer (after make-screenshotImg-directory-maybe (file) activate)
+(defadvice org-capture-target-buffer (after make-static-directory-maybe (file) activate)
   "Create screenshot image directory if not exists while visiting node."
   (unless (file-exists-p file)
-    (let ((dir (concat org-roam-directory "screenshotImg/" (file-name-base (file-name-nondirectory file)))))
+    (let ((dir (concat org-roam-directory "./static/" (file-name-base (file-name-nondirectory file)))))
       (when dir
         (unless (file-exists-p dir)
           (make-directory dir t))))))
@@ -809,6 +809,12 @@ epoch to the beginning of today (00:00)."
                                       (s-repeat (+ (org-roam-node-level node) 1) "*")))
                      (properties-drawer ":PROPERTIES:\n:HTML_CONTAINER_CLASS: references\n:END:\n"))
           (goto-char end-position)
+          (insert "#+BEGIN_EXPORT html
+<details>
+  <summary>Click to expand!</summary>
+
+<div class=\"bl-section\"><aside class=\"bl-aside\"><blockquote>
+#+END_EXPORT")
           (insert heading)
           (insert properties-drawer)
           (dolist (backlink backlinks)
@@ -841,8 +847,13 @@ epoch to the beginning of today (00:00)."
                                                (nth 1 (org-footnote-get-definition label))
                                                (nth 2 (org-footnote-get-definition label))))
                               label-list))))
-              (-map (lambda (footnote-string) (insert footnote-string)) footnote-string-list)
-              (insert reference))))))))
+              (-map (lambda (footnote-string) (progn (insert footnote-string))) footnote-string-list)
+              (insert reference)
+              (insert "#+BEGIN_EXPORT html
+  </blockquote></aside></div>
+</details>
+
+#+END_EXPORT"))))))))
 
 (add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 
@@ -985,3 +996,43 @@ that the point is already within a string."
 (defun hurricane/html-table-to-org-table-converter ()
   (interactive)
   (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
+
+(defvar org-roam-node-ivy-read-result nil)
+
+(defun org-roam-node--ivy-read-1 (&optional prompt initial-input filter-fn sort-fn require-match action caller)
+  (ivy-read prompt (org-roam-node-read--completions filter-fn sort-fn)
+            :require-match require-match
+            :initial-input initial-input
+            :action action
+            :history 'org-roam-node-history
+            :caller caller)
+  org-roam-node-ivy-read-result)
+
+(defun popweb-org-roam-node-preview-select ()
+  (interactive)
+  (org-roam-node--ivy-read-1 "Select a node to preview: " nil nil nil nil
+                             #'(lambda (x) (popweb-org-roam-link-show (get-org-context-from-org-id-link (org-roam-node-id (cdr x)))))
+                             'popweb-org-roam-node-preview-select))
+
+(with-eval-after-load 'ivy
+ (ivy-set-actions
+  'popweb-org-roam-node-preview-select
+ '(("I" (lambda (x)
+          (let* ((node (cdr x))
+                (note-id (org-roam-node-id node))
+                (note-title (org-roam-node-title node)))
+            (insert
+             (format
+              "[[id:%s][%s]]"
+              note-id
+              note-title)))) "Insert link")
+   ("i" (lambda (x)
+         (let* ((node (cdr x))
+                (note-id (org-roam-node-id node))
+                (note-title (org-roam-node-title node)))
+           (insert
+            (format
+             "#+transclude: [[id:%s][%s]] :only-contents\n\n"
+             note-id
+             note-title)))) "Insert links with transclusions")
+   )))

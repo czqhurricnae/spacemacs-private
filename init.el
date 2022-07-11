@@ -101,7 +101,8 @@ This function should only modify configuration layer settings."
           org-enable-roam-protocol t
           org-enable-roam-server t
           org-roam-v2-ack t
-          org-enable-valign t)
+          org-enable-valign t
+          org-enable-hugo-support t)
      ;; Must ensure fasd installed first.
      ;; brew install fasd
      fasd

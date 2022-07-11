@@ -55,11 +55,10 @@
     (org-latex-impatient (recipe
                           :fetcher github
                           :repo "yangsheng6810/org-latex-impatient"))
-    (org-roam-ui (recipe
-                  :fetcher github
-                  :repo "org-roam/org-roam-ui"
-                  :branch "main"
-                  :files ("*.el" "out")))
+    (org-ql (recipe
+             :fetcher github
+             :repo "alphapapa/org-ql"
+             :exclude "helm-org-ql.le"))
     )
   )
 
@@ -270,9 +269,10 @@
       (org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
 
       (define-key evil-normal-state-map (kbd "C-c C-w") #'org-refile)
-      (define-key global-map (kbd "<f9>") #'popweb-org-roam-link-preview-select)
-      (define-key global-map (kbd "<f11>") #'org-transclusion-make-from-link)
-      (define-key global-map (kbd "<f12>") #'org-transclusion-mode)
+      (define-key global-map (kbd "<f9>") #'popweb-org-roam-node-preview-select)
+      (define-key org-mode-map (kbd "<f9>") #'popweb-org-roam-link-preview-select)
+      (define-key org-mode-map (kbd "<f11>") #'org-transclusion-make-from-link)
+      (define-key org-mode-map (kbd "<f12>") #'org-transclusion-mode)
 
       (setq org-publish-project-alist
             `(("orgfiles"
@@ -419,9 +419,9 @@
 
               ;; Static assets.
               ("images"
-               :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "screenshotImg"))
+               :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "./static"))
                :base-extension "css\\|js\\|png\\|jpg\\|gif\\|png\\|svg\\|gif\\|jpeg"
-               :publishing-directory ,(concat blog-dir (file-name-as-directory "screenshotImg"))
+               :publishing-directory ,(concat blog-dir (file-name-as-directory "./static"))
                :exclude "node_modules"
                :recursive t
                :publishing-function org-publish-attachment
@@ -718,7 +718,7 @@
     '(
       ("d" "default" plain "%?"
        :target (file+head "${slug}.org"
-                          "#+DATE: %T\n#+TITLE: ${title}\n#+ROAM_ALIAS:\n#+ROAM_KEY:\n#+ROAM_TAGS:\n\n")
+                          "#+ROAM_KEY:\n\n")
        :unnarrowed t)
       ))
   (setq org-roam-capture-ref-templates
@@ -726,13 +726,13 @@
       ("a" "Annotation" plain
        "%U ${body}\n"
        :target (file+head "${slug}.org"
-                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n\n")
+                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
        ;; :immediate-finish t
        :unnarrowed t
        )
       ("r" "ref" plain ""
        :target (file+head "${slug}.org"
-                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n#+ROAM_ALIAS:\n#+ROAM_TAGS:\n\n")
+                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
        :unnarrowed t)))
   :post-config
   (defun hurricane//display-line-numbers-customize ()
@@ -759,6 +759,7 @@
     )
 
   (setq org-roam-node-display-template "${hierarchy:*} ${tags:20}")
+  (setq org-roam-extract-new-file-path "${slug}.org")
 
   (cl-defmethod org-roam-node-slug ((node org-roam-node))
     "Return the slug of NODE."
@@ -968,12 +969,14 @@
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/27.2/develop/popweb-20220127.350" "elpa/27.2/develop/popweb-20220127.350/extension/latex" "elpa/27.2/develop/popweb-20220127.350/extension/dict" "elpa/27.2/develop/popweb-20220127.350/extension/org-roam")
+    :load-path ("elpa/27.2/develop/popweb-20220208.1830" "elpa/27.2/develop/popweb-20220208.1830/extension/latex" "elpa/27.2/develop/popweb-20220208.1830/extension/dict" "elpa/27.2/develop/popweb-20220208.1830/extension/org-roam" "elpa/27.2/develop/popweb-20220208.1830/extension/url-preview")
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)
+    (setq gnus-button-url-regexp "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+([-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]*)\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)?\\|[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)\\)")
     (require 'popweb-dict-youdao)
-    (require 'popweb-org-roam-link)))
+    (require 'popweb-org-roam-link)
+    (require 'popweb-url)))
 
 ;; npm install mathjax-node-cli
 (defun hurricane-org/init-org-latex-impatient ()
@@ -985,15 +988,5 @@
           ;; location of tex2svg executable
           "~/node_modules/mathjax-node-cli/bin/tex2svg")))
 
-(defun hurricane-org/init-org-roam-ui ()
-  (use-package org-roam-ui
-    :after org-roam
-    ;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
-    ;;         a hookable mode anymore, you're advised to pick something yourself
-    ;;         if you don't care about startup time, use
-     :hook (after-init . org-roam-ui-mode)
-    :config
-    (setq org-roam-ui-sync-theme t
-          org-roam-ui-follow t
-          org-roam-ui-update-on-save t
-          org-roam-ui-open-on-start t)))
+(defun hurricane-org/init-org-ql ()
+  (use-package org-ql))

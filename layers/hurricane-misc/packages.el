@@ -807,15 +807,6 @@
       :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
-      :name "Blog segment"
-      :command "grunt"
-      :args '("pre-segment")
-      :cwd blog-dir
-      :tags '(blog segment)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
-
-    (prodigy-define-service
       :name "Blog push"
       :command "rsync"
       :args '("-avzt" "--exclude=\"./.DS_Store\"" "." "c@182.61.145.178:/home/c/site/public/")
@@ -824,22 +815,13 @@
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
-    ;; (prodigy-define-service
-    ;;   :name "Blog pull"
-    ;;   :command "rsync"
-    ;;   :args '("-avzt" "-vvvv" "c@182.61.145.178:/home/c/site/public/" "." )
-    ;;   :cwd blog-dir
-    ;;   :tags '(blog pull)
-    ;;   :kill-signal 'sigkill
-    ;;   :kill-process-buffer-on-stop t)
-
     (prodigy-define-service
       :name "Blog preview"
-      :command "python"
-      :args '("-m" "SimpleHTTPServer" "8088")
-      :cwd blog-dir
+      :command "hugo"
+      :args '("serve")
+      :cwd deft-dir
       :tags '(blog preview)
-      :init (lambda () (browse-url "http://localhost:8088/index.html"))
+      :init (lambda () (browse-url "http://localhost:1313"))
       :kill-signal 'sigkill
       :kill-process-buffer-on-stop t)
 
@@ -1231,7 +1213,7 @@
 (defun hurricane-misc/init-with-proxy ()
   (use-package with-proxy
     :config
-    (setq with-proxy-http-server "127.0.0.1:8118")))
+    (setq with-proxy-http-server "127.0.0.1:1087")))
 
 (defun hurricane-misc/init-emacsql ()
   (use-package emacsql))

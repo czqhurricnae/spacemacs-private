@@ -2,6 +2,5 @@
 # name: sheader
 # key: sheader
 # --
-#+SETUPFILE: ../theme-rose.setup
 #+DATE: `(format-time-string "<%Y-%m-%d %a %H:%M>")`
 #+TITLE: `(file-name-nondirectory (file-name-sans-extension buffer-file-name))`

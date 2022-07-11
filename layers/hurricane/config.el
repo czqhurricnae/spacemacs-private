@@ -86,12 +86,12 @@
   "scripts can be used in org mode.")
 
 (setq-default
- org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/"
+ org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/"
  deft-dir (cond
-           (sys/macp "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/")
-           (sys/win32p "~\org-notes\\"))
+           (sys/macp "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/")
+           (sys/win32p "~\braindump\\"))
  blog-dir (cond
-           (sys/macp "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org-notes/public/")
+           (sys/macp "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/public/")
            (sys/win32p "~\public\\"))
  snippet-dir "~/.spacemacs.d/snippets/"
  virtualenv-dir "~/.virtualenvs/"

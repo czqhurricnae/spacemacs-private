@@ -776,7 +776,6 @@ epoch to the beginning of today (00:00)."
       (when dir
         (unless (file-exists-p dir)
           (make-directory dir t))))))
-
 (defun hurricane//collect-backlinks-string (backend)
   (when (org-roam-node-at-point)
     (let* ((source-node (org-roam-node-at-point))
@@ -801,59 +800,53 @@ epoch to the beginning of today (00:00)."
                                       (--sort (> (cdr it) (cdr other))))))
       (dolist (node-and-end nodes-in-file-sorted)
         (-when-let* (((node . end-position) node-and-end)
-                     (backlinks (--filter (->> (org-roam-backlink-source-node it)
-                                               (org-roam-node-file)
-                                               (s-contains? "private/") (not))
+                     (backlinks (--filter (and (> (org-roam-node-level node) 0)
+                                               (->> (org-roam-backlink-source-node it)
+                                                    (org-roam-node-file)
+                                                    (s-contains? "private/") (not)))
                                           (org-roam-backlinks-get node)))
-                     (heading (format "\n\n%s Links to this node\n"
+                     (heading (format "\n\n%s Backlinks\n"
                                       (s-repeat (+ (org-roam-node-level node) 1) "*")))
-                     (properties-drawer ":PROPERTIES:\n:HTML_CONTAINER_CLASS: references\n:END:\n"))
+                     (details-tag-heading "#+BEGIN_EXPORT html\n<details>\n  <summary>Click to expand!</summary>\n\n<blockquote>\n#+END_EXPORT
+")
+                     (details-tag-ending "#+BEGIN_EXPORT html\n  </blockquote>\n</details>\n\n#+END_EXPORT")
+                     (reference-and-footnote-string-list
+                      (-map (lambda (backlink)
+                              (let* ((source-node (org-roam-backlink-source-node backlink))
+                                     (source-file (org-roam-node-file source-node))
+                                     (properties (org-roam-backlink-properties backlink))
+                                     (outline (when-let ((outline (plist-get properties :outline)))
+                                                (when (> (length outline) 1)
+                                                  (mapconcat #'org-link-display-format outline " > "))))
+                                     (point (org-roam-backlink-point backlink))
+                                     (text (s-replace "\n" " " (org-roam-preview-get-contents
+                                                                source-file
+                                                                point)))
+                                     (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
+                                                        (s-repeat (+ (org-roam-node-level node) 2) "*")
+                                                        (org-roam-node-id source-node)
+                                                        (org-roam-node-title source-node)
+                                                        (if outline (format "%s (/%s/)"
+                                                                            (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
+                                                        text))
+                                     (label-list (with-temp-buffer
+                                                   (insert-file-contents source-file)
+                                                   (org-element-map (org-element-parse-buffer) 'footnote-reference
+                                                     (lambda (reference)
+                                                       (org-element-property :label reference)))))
+                                     (footnote-list
+                                      (with-temp-buffer
+                                        (insert-file-contents source-file)
+                                        (-map (lambda (label) (buffer-substring-no-properties
+                                                               (nth 1 (org-footnote-get-definition label))
+                                                               (nth 2 (org-footnote-get-definition label))))
+                                              label-list)))
+                                     (footnote-string-list (string-join footnote-list "\n"))
+                                     (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
+                                reference-and-footnote-string)
+                              ) backlinks)))
           (goto-char end-position)
-          (insert "#+BEGIN_EXPORT html
-<details>
-  <summary>Click to expand!</summary>
-
-<div class=\"bl-section\"><aside class=\"bl-aside\"><blockquote>
-#+END_EXPORT")
-          (insert heading)
-          (insert properties-drawer)
-          (dolist (backlink backlinks)
-            (let* ((source-node (org-roam-backlink-source-node backlink))
-                   (source-file (org-roam-node-file source-node))
-                   (properties (org-roam-backlink-properties backlink))
-                   (outline (when-let ((outline (plist-get properties :outline)))
-                              (when (> (length outline) 1)
-                                (mapconcat #'org-link-display-format outline " > "))))
-                   (point (org-roam-backlink-point backlink))
-                   (text (s-replace "\n" " " (org-roam-preview-get-contents
-                                              source-file
-                                              point)))
-                   (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
-                                      (s-repeat (+ (org-roam-node-level node) 2) "*")
-                                      (org-roam-node-id source-node)
-                                      (org-roam-node-title source-node)
-                                      (if outline (format "%s (/%s/)"
-                                                          (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
-                                      text))
-                   (label-list (with-temp-buffer
-                                 (insert text)
-                                 (org-element-map (org-element-parse-buffer) 'footnote-reference
-                                   (lambda (reference)
-                                     (org-element-property :label reference)))))
-                   (footnote-string-list
-                      (with-temp-buffer
-                        (insert-file-contents source-file)
-                        (-map (lambda (label) (buffer-substring-no-properties
-                                               (nth 1 (org-footnote-get-definition label))
-                                               (nth 2 (org-footnote-get-definition label))))
-                              label-list))))
-              (-map (lambda (footnote-string) (progn (insert footnote-string))) footnote-string-list)
-              (insert reference)
-              (insert "#+BEGIN_EXPORT html
-  </blockquote></aside></div>
-</details>
-
-#+END_EXPORT"))))))))
+          (insert (format "%s\n%s\n%s\n%s" heading details-tag-heading (string-join reference-and-footnote-string-list "\n")  details-tag-ending)))))))
 
 (add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 (add-hook 'org-export-before-processing-hook 'org-transclusion-add-all)

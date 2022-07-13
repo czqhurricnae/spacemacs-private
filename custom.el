@@ -41,6 +41,8 @@
      ("flagged" :foreground "#0a9dff")
      ("deleted" :foreground "#ff2c4b" :bold t)))
  '(objed-cursor-color "#dc322f")
+ '(org-html-table-default-attributes
+   '(:border "2" :cellspacing "0" :cellpadding "6" :rules "groups" :frame "border"))
  '(org-pomodoro-length 45)
  '(org-roam-link-popup-window-width-scale 0.8)
  '(org2ctex-latex-commands

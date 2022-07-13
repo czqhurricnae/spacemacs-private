@@ -856,6 +856,7 @@ epoch to the beginning of today (00:00)."
 #+END_EXPORT"))))))))
 
 (add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
+(add-hook 'org-export-before-processing-hook 'org-transclusion-add-all)
 
 (defun hurricane/publish ()
   (interactive)
@@ -997,42 +998,10 @@ that the point is already within a string."
   (interactive)
   (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
 
-(defvar org-roam-node-ivy-read-result nil)
 
-(defun org-roam-node--ivy-read-1 (&optional prompt initial-input filter-fn sort-fn require-match action caller)
-  (ivy-read prompt (org-roam-node-read--completions filter-fn sort-fn)
-            :require-match require-match
-            :initial-input initial-input
-            :action action
-            :history 'org-roam-node-history
-            :caller caller)
-  org-roam-node-ivy-read-result)
 
-(defun popweb-org-roam-node-preview-select ()
-  (interactive)
-  (org-roam-node--ivy-read-1 "Select a node to preview: " nil nil nil nil
-                             #'(lambda (x) (popweb-org-roam-link-show (get-org-context-from-org-id-link (org-roam-node-id (cdr x)))))
-                             'popweb-org-roam-node-preview-select))
 
-(with-eval-after-load 'ivy
- (ivy-set-actions
-  'popweb-org-roam-node-preview-select
- '(("I" (lambda (x)
-          (let* ((node (cdr x))
-                (note-id (org-roam-node-id node))
-                (note-title (org-roam-node-title node)))
-            (insert
-             (format
-              "[[id:%s][%s]]"
-              note-id
-              note-title)))) "Insert link")
-   ("i" (lambda (x)
-         (let* ((node (cdr x))
-                (note-id (org-roam-node-id node))
-                (note-title (org-roam-node-title node)))
-           (insert
-            (format
-             "#+transclude: [[id:%s][%s]] :only-contents\n\n"
-             note-id
-             note-title)))) "Insert links with transclusions")
-   )))
+
+
+
+

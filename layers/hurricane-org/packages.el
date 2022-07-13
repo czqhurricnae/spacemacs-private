@@ -430,6 +430,7 @@
               ("website" :components ("orgfiles" "images"))
               ("statics" :components ("images"))
               ))
+      (setq org-hugo-base-dir "..")
 
       ;; {{
       ;; @see: https://github.com/vascoferreira25/org-mode-incremental-reading
@@ -470,8 +471,8 @@
                            desc))))
        :face '(:foreground "red")
        :help-echo "Click me for devonthink link.")
-
       ;; }}
+      (pixel-scroll-mode)
       )))
 
 (defun hurricane-org/init-org-mac-link ()
@@ -965,18 +966,43 @@
 :END:
 \n")))
 
-;; /usr/bin/env python3 -m pip install PyQt5 PyQtWebEngine epc
+;; /usr/bin/env python3 -m pip install PyQt6 PyQtWebEngine epc
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/27.2/develop/popweb-20220208.1830" "elpa/27.2/develop/popweb-20220208.1830/extension/latex" "elpa/27.2/develop/popweb-20220208.1830/extension/dict" "elpa/27.2/develop/popweb-20220208.1830/extension/org-roam" "elpa/27.2/develop/popweb-20220208.1830/extension/url-preview")
+    :load-path ("elpa/27.2/develop/popweb-20220712.1052" "elpa/27.2/develop/popweb-20220712.1052/extension/latex" "elpa/27.2/develop/popweb-20220712.1052/extension/dict" "elpa/27.2/develop/popweb-20220712.1052/extension/org-roam" "elpa/27.2/develop/popweb-20220712.1052/extension/url-preview")
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)
     (setq gnus-button-url-regexp "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+([-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]*)\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)?\\|[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)\\)")
     (require 'popweb-dict-youdao)
     (require 'popweb-org-roam-link)
-    (require 'popweb-url)))
+    (require 'popweb-url)
+    (with-eval-after-load 'ivy
+      (ivy-set-actions
+       'popweb-org-roam-node-preview-select
+       '(("I" (lambda (x)
+                (let* ((node (cdr x))
+                       (note-id (org-roam-node-id node))
+                       (note-title (org-roam-node-title node)))
+                  (insert
+                   (format
+                    "[[id:%s][%s]]\n\n"
+                    note-id
+                    note-title)))) "Insert link")
+         ("i" (lambda (x)
+                (let* ((node (cdr x))
+                       (note-id (org-roam-node-id node))
+                       (note-title (org-roam-node-title node)))
+                  (insert
+                   (format
+                    "#+transclude: [[id:%s][%s]]\n\n"
+                    note-id
+                    note-title)))) "Insert links with transclusions")
+         )))
+
+    (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
+    ))
 
 ;; npm install mathjax-node-cli
 (defun hurricane-org/init-org-latex-impatient ()

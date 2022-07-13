@@ -864,7 +864,7 @@
   (use-package org-transclusion
     :config
     (setq org-transclusion-include-first-section t)
-    (setq org-transclusion-exclude-elements '(property-drawer keyword))))
+    (setq org-transclusion-exclude-elements '(property-drawer org-drawer))))
 
 (defun hurricane-org/init-anki-editor ()
   (use-package anki-editor

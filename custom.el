@@ -68,6 +68,18 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 垂尾高频天线前缘风蚀的预防与修理/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/JavaScript-self-invoking_function/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/疫情影响下“客改货”国际航线空防安全风险识别及应对措施/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/bbbb/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Tool tips on text in Emacs/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737-800 再循环系统/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/逗号表达式/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/反引用表达式/"))

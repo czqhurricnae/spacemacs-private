@@ -558,7 +558,9 @@
     ;; Drag-and-drop to `dired`.
     (add-hook 'dired-mode-hook 'org-download-enable)
     ;; Disable DOWNLOADED attribute.
-    (setq org-download-annotate-function (lambda (_link) ""))))
+    (setq org-download-annotate-function (lambda (_link) ""))
+    (spacemacs/set-leader-keys-for-major-mode 'org-mode
+      "iDp" 'org-download-clipboard)))
 
 ;; {{
 ;; @see: https://github.com/tumashu/org2ctex

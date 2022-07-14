@@ -491,7 +491,7 @@ should only be used in org-mode."
         (defun callback-imageoptim()
           (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
             (eshell-command cmd)))
-        (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
+        ;; (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
         (insert (concat "[[file:" full-file-path "]]"))
         (evil-normal-state)))))
 ;; }}
@@ -772,10 +772,15 @@ epoch to the beginning of today (00:00)."
 (defadvice org-capture-target-buffer (after make-static-directory-maybe (file) activate)
   "Create screenshot image directory if not exists while visiting node."
   (unless (file-exists-p file)
-    (let ((dir (concat org-roam-directory "./static/" (file-name-base (file-name-nondirectory file)))))
-      (when dir
-        (unless (file-exists-p dir)
-          (make-directory dir t))))))
+    (let* ((local-variable-list nil)
+           (relative-img-dir (concat "./static/" (file-name-base (file-name-nondirectory file)) "/"))
+           (absolute-img-dir (concat org-roam-directory relative-img-dir)))
+      (add-to-list 'local-variable-list `(eval . (setq org-media-note-screenshot-image-dir (concat default-directory ,(format "%s" relative-img-dir)))))
+      (customize-push-and-save 'safe-local-variable-values local-variable-list)
+      (when absolute-img-dir
+        (unless (file-exists-p absolute-img-dir)
+          (make-directory absolute-img-dir t))))))
+
 (defun hurricane//collect-backlinks-string (backend)
   (when (org-roam-node-at-point)
     (let* ((source-node (org-roam-node-at-point))

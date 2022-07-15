@@ -855,6 +855,7 @@ epoch to the beginning of today (00:00)."
 
 (add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 (add-hook 'org-export-before-processing-hook 'org-transclusion-add-all)
+(add-hook 'org-export-before-processing-hook 'org-transclusion-inhibit-read-only)
 
 (defun hurricane/publish ()
   (interactive)

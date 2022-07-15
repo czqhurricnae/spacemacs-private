@@ -866,7 +866,51 @@
   (use-package org-transclusion
     :config
     (setq org-transclusion-include-first-section t)
-    (setq org-transclusion-exclude-elements '(property-drawer org-drawer))))
+    (setq org-transclusion-exclude-elements '(property-drawer org-drawer))
+
+    (defun hurricane//org-transclusion-add-org-id (link plist)
+      "Return a list for Org-ID LINK object and PLIST.
+Return nil if not found."
+      (when (string= "id" (org-element-property :type link))
+        ;; when type is id, the value of path is the id
+        (let* ((id (org-element-property :path link))
+               (mkr (or (ignore-errors (org-id-find id t))
+                        (with-current-buffer (find-file-noselect (aref (org-roam-node-from-id id) 1))
+                                             (goto-char (aref (org-roam-node-from-id id) 8))
+                                             (point-marker))))
+               (payload '(:tc-type "org-id"))
+               (content (org-transclusion-content-org-marker mkr plist))
+               (footnote-content))
+          (if mkr
+              (progn
+                (message "%s" mkr)
+                (let* ((footnote-label-list
+                        (with-temp-buffer
+                          (insert (plist-get (org-transclusion-content-org-marker mkr plist) :src-content))
+                          (org-element-map (org-element-parse-buffer) 'footnote-reference
+                            (lambda (reference)
+                              (org-element-property :label reference))))))
+                  (if (and mkr (marker-buffer mkr) (buffer-live-p (marker-buffer mkr)) footnote-label-list)
+                      (with-temp-buffer
+                        (insert-buffer (marker-buffer mkr))
+                        (-map (lambda (label)
+                                (setq footnote-content
+                                      (concat footnote-content (buffer-substring-no-properties
+                                                                (nth 1 (org-footnote-get-definition label))
+                                                                (nth 2 (org-footnote-get-definition label))))))
+                              footnote-label-list)
+                        ))
+                  (setq content (plist-put content ':src-content (concat (plist-get content :src-content) "\n" footnote-content)))
+                  )
+                (append payload content)
+                )
+            (message
+             (format "No transclusion done for this ID. Ensure it works at point %d, line %d"
+                     (point) (org-current-line)))
+            nil))))
+
+    (push 'hurricane//org-transclusion-add-org-id org-transclusion-add-functions)
+    ))
 
 (defun hurricane-org/init-anki-editor ()
   (use-package anki-editor

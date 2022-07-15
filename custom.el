@@ -68,6 +68,8 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/通过盖板号得到盖板图号，搜索 IPC 得到螺钉号/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/3M 8673/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/FP-200/"))

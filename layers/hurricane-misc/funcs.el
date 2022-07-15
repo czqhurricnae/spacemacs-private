@@ -439,6 +439,7 @@ If the buffer is currently not visible, makes it sticky."
                   ;; Fasd history.
                   (if (executable-find "fasd")
                       (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+    (shell-command "git config --global core.quotepath false")
     (ivy-read "directories:" collection
               :action 'hurricane//find-file-in-git-repo
               :caller 'hurricane/counsel-find-file-recent-directory)))

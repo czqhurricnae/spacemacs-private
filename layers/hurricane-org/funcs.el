@@ -995,11 +995,3 @@ that the point is already within a string."
 (defun hurricane/html-table-to-org-table-converter ()
   (interactive)
   (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
-
-
-
-
-
-
-
-

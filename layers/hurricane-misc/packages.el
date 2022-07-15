@@ -40,7 +40,8 @@
         (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
         (mybigword :location local)
         emacs-everywhere
-        command-log-mode))
+        command-log-mode
+        fasd))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1229,3 +1230,17 @@
 
 (defun hurricane-misc/init-command-log-mode ()
   (use-package command-log-mode))
+
+(defun hurricane-misc/post-init-fasd ()
+  (progn
+    (spacemacs/set-leader-keys
+      "fad" 'hurricane/counsel-goto-recent-directory
+      "faf" 'hurricane/counsel-find-file-recent-directory
+      "fah" 'hurricane/counsel-yank-bash-history
+      "fai" 'hurricane/counsel-imenu)
+
+    (when (configuration-layer/layer-used-p 'ivy)
+      (ivy-set-actions
+       'hurricane/counsel-goto-recent-directory
+       '(("o" fasd-find-file-action "find-file")
+         ("s" ivy-search-from-action "search-from"))))))

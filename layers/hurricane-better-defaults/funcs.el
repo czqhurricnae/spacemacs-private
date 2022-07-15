@@ -220,7 +220,6 @@ After this command has been run, any buffers it's modified will remain open and 
   (if (file-directory-p repo)
       (let* ((default-directory repo)
              (files (split-string (shell-command-to-string (format "cd %s && git ls-files" (replace-regexp-in-string " " "\\\\ " repo))) "\n" t)))
-        (shell-command "git config --global core.quotepath false")
         (ivy-read "files:" files
                   :action 'find-file
                   :caller 'hurricane//find-file-in-git-repo))
@@ -248,3 +247,11 @@ After this command has been run, any buffers it's modified will remain open and 
     (if (projectile-project-p)
         (projectile-find-file)
       (counsel-file-jump))))
+
+;; @see: https://emacs-china.org/t/topic/6119
+(defun set-image-mode-mwheel-scroll-function ()
+  (setq-local mwheel-scroll-down-function 'image-scroll-down)
+  (setq-local mwheel-scroll-up-function 'image-scroll-up))
+
+(add-hook 'image-mode-hook #'set-image-mode-mwheel-scroll-function)
+(add-hook 'org-mode-hook #'set-image-mode-mwheel-scroll-function)

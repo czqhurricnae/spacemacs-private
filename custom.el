@@ -68,6 +68,12 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/3M 8673/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/FP-200/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/BMS10-21/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 垂尾高频天线前缘风蚀的预防与修理/"))
      (eval setq org-download-image-dir
            (concat default-directory "./static/JavaScript-self-invoking_function/"))

@@ -303,7 +303,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(custom :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -623,7 +623,57 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; Fix startup message:
   ;;'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
-  (setq evil-want-C-w-delete t))
+  (setq evil-want-C-w-delete t)
+
+  (defun spaceline-custom-theme (&rest additional-segments)
+    "My custom spaceline theme."
+    (spaceline-compile
+      ;; left side
+      '(((evil-state
+          persp-name
+          workspace-number
+          window-number)
+         :fallback evil-state
+         :face highlight-face
+         :priority 100)
+        ,left
+        (anzu :priority 95)
+        auto-compile
+        ((buffer-modified buffer-size buffer-id remote-host)
+         :priority 98)
+        ,second-left
+        (major-mode :priority 79)
+        (process :when active)
+        ((flycheck-error flycheck-warning flycheck-info)
+         :when active
+         :priority 89)
+        (minor-modes :when active
+                     :priority 9)
+        (mu4e-alert-segment :when active)
+        (erc-track :when active)
+        (version-control :when active
+                         :priority 78)
+        (org-pomodoro :when active)
+        (org-clock :when active)
+        nyan-cat)
+      ;; right side
+      '(which-function
+        (python-pyvenv :fallback python-pyenv)
+        (purpose :priority 94)
+        (battery :when active)
+        (selection-info :priority 95)
+        input-method
+        ((buffer-encoding-abbrev
+          point-position
+          line-column)
+         :separator " | "
+         :priority 96)
+        (global :when active)
+        ,@additional-segments
+        (buffer-position :priority 99)
+        (hud :priority 99)))
+    (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
+  )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.

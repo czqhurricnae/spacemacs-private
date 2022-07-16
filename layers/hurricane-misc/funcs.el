@@ -764,9 +764,10 @@ If a change in `file-attributes' happended call FUNC."
             ""
             "    repeat with the_tab in tab_list"
             "      set tab_counter to tab_counter + 1"
-            "      set coordinate to window_counter & \" \" & tab_counter"
+            "      set coordinate to window_counter & \"⋙\" & tab_counter"
             "      set the_title to the title of the_tab"
-            "      set titleString to titleString & coordinate & \" \" & the_title & return"
+            "      set the_url to get URL of the_tab"
+            "      set titleString to titleString & coordinate & \"⋙\" & the_title & \"⋙\" & the_url & return"
             "    end repeat"
             "  end repeat"
             "end tell")
@@ -777,10 +778,11 @@ If a change in `file-attributes' happended call FUNC."
       (split-string "\n"))))
 
 ;; (hurricane//chrome-tabs)
-;; => ("1 1 Google" "1 2 Home - BBC News")
+;; => ("1⋙1⋙Google⋙www.google.com" "1⋙2⋙Home - BBC News⋙www.bbc.com")
 ;; 1 - 第一个窗口
 ;; 1 - 第一个标签
 ;; Google - 标题
+;; www.google.com - 地址
 
 (defun hurricane//chrome-switch-tab-1 (window-id tab-id)
   ;; FIXME: 不知道如何处理多余一个窗口的情况。
@@ -790,36 +792,71 @@ If a change in `file-attributes' happended call FUNC."
            "  activate\n"
            "end tell\n")))
 
-(defun hurricane/chrome-switch-tab (window-id tab-id)
-  (interactive
-   (let* ((tabs (hurricane//chrome-tabs))
-          (input
-           (completing-read
-            "Open Chrome Tab: "
-            (mapcar
-             (lambda (s)
-               (and (string-match
-                     (rx string-start
-                         (1+ num) " " (1+ num) " "
-                         (group (1+ not-newline))
-                         string-end)
-                     s)
-                    (match-string 1 s)))
-             tabs)
-            nil t)))
-     (seq-some (lambda (s)
-                 (and (string-match
-                       (rx-to-string
-                        `(and
-                          string-start
-                          (group (1+ num)) " " (group (1+ num)) " "
-                          ,input
-                          string-end))
-                       s)
-                      (list (match-string 1 s)
-                            (match-string 2 s))))
-               tabs)))
-  (hurricane//chrome-switch-tab-1 window-id tab-id))
+(defun hurricane//chrome-close-tab-1 (window-id tab-id)
+  (do-applescript
+   (concat (format "tell window %s of application \"Google Chrome\"\n" window-id)
+           (format "  close (tab index %s)\n" tab-id)
+           "end tell\n")))
+
+(defun hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x (x)
+  (let*
+      ((tabs (hurricane//chrome-tabs))
+       (window-id-and-tab-id-and-tab-url
+        (seq-some (lambda (s)
+                    (and (string-match
+                          (rx-to-string
+                           `(and
+                             string-start
+                             (group (1+ num)) "⋙" (group (1+ num)) "⋙"
+                             ,x "⋙" (group (1+ not-newline))
+                             string-end))
+                          s)
+                         (list (match-string 1 s)
+                               (match-string 2 s)
+                               (match-string 3 s)
+                               )))
+                  tabs)))
+    window-id-and-tab-id-and-tab-url))
+
+(defun hurricane//chrome-switch-tab-action (x)
+  (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
+    (hurricane//chrome-switch-tab-1 (nth 0 window-id-and-tab-id-and-tab-url) (nth 1 window-id-and-tab-id-and-tab-url))))
+
+(defun hurricane//chrome-close-tab-action (x)
+  (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
+    (hurricane//chrome-close-tab-1 (nth 0 window-id-and-tab-id-and-tab-url) (nth 1 window-id-and-tab-id-and-tab-url))))
+
+(defun hurricane//chrome-copy-tab-url-action (x)
+  (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
+    (kill-new (nth 2 window-id-and-tab-id-and-tab-url))))
+
+(defun hurricane//chrome-insert-tab-url-action (x)
+  (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
+    (insert (nth 2 window-id-and-tab-id-and-tab-url))))
+
+(defun hurricane/manage-chrome-tabs ()
+  (interactive)
+  (ivy-read "Chrome Tab (default activate): " (mapcar
+                                               (lambda (s)
+                                                 (and (string-match
+                                                       (rx string-start
+                                                           (1+ num) "⋙" (1+ num) "⋙"
+                                                           (group (1+ not-newline))
+                                                           "⋙" (1+ not-newline)
+                                                           string-end)
+                                                       s)
+                                                      (match-string 1 s)))
+                                               (hurricane//chrome-tabs))
+            :action 'hurricane//chrome-switch-tab-action
+            ))
+
+(with-eval-after-load 'ivy
+ (ivy-add-actions
+ 'hurricane/manage-chrome-tabs
+ '(("d" hurricane//chrome-close-tab-action "close tab(s)")
+   ("y" hurricane//chrome-copy-tab-url-action "copy tab(s) url")
+   ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url")
+   )))
 ;; }}
 
 (defun hurricane/open-link-in-chrome ()

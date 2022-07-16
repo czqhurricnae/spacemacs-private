@@ -69,7 +69,6 @@
     (progn
       (spacemacs/transient-state-register-add-bindings 'symbol-overlay
         '((">" symbol-overlay-jump-last)
-          ("s" spacemacs/swiper-region-or-symbol)
           ("<" symbol-overlay-jump-first))))))
 
 (defun hurricane-misc/post-init-golden-ratio ()

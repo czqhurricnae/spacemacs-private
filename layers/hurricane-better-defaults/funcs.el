@@ -255,3 +255,14 @@ After this command has been run, any buffers it's modified will remain open and 
 
 (add-hook 'image-mode-hook #'set-image-mode-mwheel-scroll-function)
 (add-hook 'org-mode-hook #'set-image-mode-mwheel-scroll-function)
+
+(defun hurricane//bookmark-search-from-action (x)
+  (cond ((and (member x (bookmark-all-names))
+              (file-directory-p (bookmark-location x)))
+         (ivy-search-from-action (bookmark-location x)))
+        ((member x (bookmark-all-names))
+         (progn (bookmark-jump x)
+                (funcall-interactively #'hurricane/swiper-search nil)))
+        (t
+         (error "Bookmark %s is not a directory or do not exists." (bookmark-location x)))
+        ))

@@ -165,4 +165,7 @@
        ("g" hurricane//find-file-in-git-repo "@ Find file in git repo")
        ("S" hurricane//ivy-ff-checksum-action "@ Checksum")
        ))
+    (ivy-add-actions
+     'counsel-bookmark
+     '(("s" hurricane//bookmark-search-from-action "search-from")))
     (setq ivy-initial-inputs-alist nil)))

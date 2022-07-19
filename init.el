@@ -114,6 +114,8 @@ This function should only modify configuration layer settings."
               chinese-default-input-method 'pinyin
               chinese-enable-youdao-dict t)
      tern
+     (eaf :variables
+          eaf-pdf-dark-mode nil)
      hurricane
      )
    ;; List of additional packages that will be installed without being

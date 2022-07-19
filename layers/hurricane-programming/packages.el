@@ -22,7 +22,7 @@
     (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
                                                                       org-mode-hook
                                                                       markdown-mode-hook))
-    (spacemacs/add-to-hooks 'hurricane/load-yasnippet '(prog-mode-hook
+    (spacemacs/add-to-hooks 'hurricane//load-yasnippet '(prog-mode-hook
                                                         org-mode-hook
                                                         markdown-mode-hook))))
 

@@ -134,7 +134,7 @@
         "E" 'dired-toggle-read-only
         "C" 'dired-do-copy
         "<mouse-2>" #'hurricane//dired-find-file
-        "`" 'hurricane/dired-open-terminal
+        "`" 'eaf-open-in-file-manager
         "p" 'peep-dired-prev-file
         "n" 'peep-dired-next-file
         "z" 'dired-get-size
@@ -156,7 +156,6 @@
               '(lambda ()
                  (switch-to-buffer-other-window "*Occur*"))))
 
-
 (defun hurricane-better-defaults/post-init-counsel ()
   (with-eval-after-load 'counsel
     (ivy-add-actions
@@ -164,8 +163,10 @@
      '(("!" hurricane//open-file-in-external-app "@ Open file in external app")
        ("g" hurricane//find-file-in-git-repo "@ Find file in git repo")
        ("S" hurricane//ivy-ff-checksum-action "@ Checksum")
+       ("e" eaf-open-in-file-manager "@ Open file in eaf file manager")
        ))
     (ivy-add-actions
      'counsel-bookmark
-     '(("s" hurricane//bookmark-search-from-action "search-from")))
+     '(("s" hurricane//bookmark-search-from-action "search-from")
+       ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")))
     (setq ivy-initial-inputs-alist nil)))

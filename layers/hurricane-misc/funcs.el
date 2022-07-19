@@ -764,10 +764,10 @@ If a change in `file-attributes' happended call FUNC."
             ""
             "    repeat with the_tab in tab_list"
             "      set tab_counter to tab_counter + 1"
-            "      set coordinate to window_counter & \"⋙\" & tab_counter"
+            "      set coordinate to window_counter & \"⋘⋙\" & tab_counter"
             "      set the_title to the title of the_tab"
             "      set the_url to get URL of the_tab"
-            "      set titleString to titleString & coordinate & \"⋙\" & the_title & \"⋙\" & the_url & return"
+            "      set titleString to titleString & coordinate & \"⋘⋙\" & the_title & \"⋘⋙\" & the_url & return"
             "    end repeat"
             "  end repeat"
             "end tell")
@@ -778,7 +778,7 @@ If a change in `file-attributes' happended call FUNC."
       (split-string "\n"))))
 
 ;; (hurricane//chrome-tabs)
-;; => ("1⋙1⋙Google⋙www.google.com" "1⋙2⋙Home - BBC News⋙www.bbc.com")
+;; => ("1⋘⋙1⋘⋙Google⋘⋙www.google.com" "1⋘⋙2⋘⋙Home - BBC News⋘⋙www.bbc.com")
 ;; 1 - 第一个窗口
 ;; 1 - 第一个标签
 ;; Google - 标题
@@ -807,8 +807,8 @@ If a change in `file-attributes' happended call FUNC."
                           (rx-to-string
                            `(and
                              string-start
-                             (group (1+ num)) "⋙" (group (1+ num)) "⋙"
-                             ,x "⋙" (group (1+ not-newline))
+                             (group (1+ num)) "⋘⋙" (group (1+ num)) "⋘⋙"
+                             ,x "⋘⋙" (group (1+ not-newline))
                              string-end))
                           s)
                          (list (match-string 1 s)
@@ -824,7 +824,7 @@ If a change in `file-attributes' happended call FUNC."
 
 (defun hurricane//chrome-close-tab-action (x)
   (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
-    (hurricane//chrome-close-tab-1 (nth 0 window-id-and-tab-id-and-tab-url) (nth 1 window-id-and-tab-id-and-tab-url))))
+    (run-with-idle-timer 0.5 nil #'hurricane//chrome-close-tab-1 (nth 0 window-id-and-tab-id-and-tab-url) (nth 1 window-id-and-tab-id-and-tab-url))))
 
 (defun hurricane//chrome-copy-tab-url-action (x)
   (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
@@ -840,9 +840,9 @@ If a change in `file-attributes' happended call FUNC."
                                                (lambda (s)
                                                  (and (string-match
                                                        (rx string-start
-                                                           (1+ num) "⋙" (1+ num) "⋙"
+                                                           (1+ num) "⋘⋙" (1+ num) "⋘⋙"
                                                            (group (1+ not-newline))
-                                                           "⋙" (1+ not-newline)
+                                                           "⋘⋙" (1+ not-newline)
                                                            string-end)
                                                        s)
                                                       (match-string 1 s)))
@@ -946,7 +946,7 @@ Work in macOS only."
   '("<img data-s=\"300,640\" data-type=\"png\" data-src=\"\\|data-s=\"300,640\" data-src=\"\\|<img data-s=\"300,640\" data-type=\"jpeg\" data-src=\"\\|data-src=\"" . "\""))
 
 (defvar official-accounts-content-pattern-list
-  '("<div class=\"rich_media_content                                                                     \" 
+  '("<div class=\"rich_media_content                                                                     \"
             id=\"js_content\" style=\"visibility: hidden;\">
 " . "</div>"))
 

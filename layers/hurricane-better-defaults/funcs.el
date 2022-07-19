@@ -74,43 +74,6 @@ Position the cursor at its beginning, according to the current mode."
          (re-search-backward "\\(^[ 0-9.,]+[A-Za-z]+\\).*total$")
          (match-string 1))))))
 
-(defun hurricane//dired-start-process (cmd &optional file-list)
-  (interactive
-   (let ((files (dired-get-marked-files
-                 t current-prefix-arg)))
-     (list
-      (dired-read-shell-command "& on %s: "
-                                current-prefix-arg files)
-      files)))
-  (let (list-switch)
-    (start-process
-     cmd nil shell-file-name
-     shell-command-switch
-     (format
-      "nohup 1>/dev/null 2>/dev/null %s \"%s\""
-      (if (and (> (length file-list) 1)
-               (setq list-switch
-                     (cadr (assoc cmd dired-filelist-cmd))))
-          (format "%s %s" cmd list-switch)
-        cmd)
-      (mapconcat #'expand-file-name file-list "\" \"")))))
-
-(defun hurricane/dired-open-terminal ()
-  "Open an `ansi-term' that corresponds to current directory."
-  (interactive)
-  (let* ((current-dir (dired-current-directory))
-         (buffer (if (get-buffer "*zshell*")
-                     (switch-to-buffer "*zshell*")
-                   (ansi-term "/bin/zsh" "zshell")))
-         (proc (get-buffer-process buffer)))
-    (term-send-string
-     proc
-     (if (file-remote-p current-dir)
-         (let ((v (tramp-dissect-file-name current-dir t)))
-           (format "ssh %s@%s\n"
-                   (aref v 1) (aref v 2)))
-       (format "cd '%s'\n" current-dir)))))
-
 (defun hurricane/dired-copy-file-here (file)
   "This command copies the file oldname to newname.
 An error is signaled if oldname is not a regular file.
@@ -263,6 +226,16 @@ After this command has been run, any buffers it's modified will remain open and 
         ((member x (bookmark-all-names))
          (progn (bookmark-jump x)
                 (funcall-interactively #'hurricane/swiper-search nil)))
+        (t
+         (error "Bookmark %s is not a directory or do not exists." (bookmark-location x)))
+        ))
+
+(defun hurricane//bookmark-open-in-file-manager-action (x)
+  (cond ((and (member x (bookmark-all-names))
+              (file-directory-p (bookmark-location x)))
+         (eaf-open-in-file-manager (bookmark-location x)))
+        ((member x (bookmark-all-names))
+         (eaf-open-in-file-manager (bookmark-location x)))
         (t
          (error "Bookmark %s is not a directory or do not exists." (bookmark-location x)))
         ))

@@ -1,9 +1,4 @@
-(defun hurricane/vcs-project-root ()
-  "Return the project root for current buffer."
-  (let ((directory default-directory))
-    (locate-dominating-file directory ".git")))
-
-(defun hurricane/load-yasnippet ()
+(defun hurricane//load-yasnippet ()
   (progn
     (setq my-snippet-dir (expand-file-name snippet-dir))
     (setq yas-snippet-dirs '(my-snippet-dir))
@@ -12,19 +7,6 @@
     (setq yas-indent-line 'fixed)
     (setq yas-verbosity 0)
     (yas-minor-mode)))
-
-(defun my-project-name-contains-substring (regex)
-  (let ((dir (if (buffer-file-name)
-                (file-name-directory (buffer-file-name))
-              "")))
-    (string-match-p regex dir)))
-
-(defvar my-tags-update-time nil)
-
-(defun my-create-tags-if-needed (src-dir &optional force)
-  "Return the full path of tags file."
-  (let ((dir (file-name-as-directory (file-truename SRC-DIR)))))
-  )
 
 ;; {{
 ;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea

@@ -41,7 +41,9 @@
         (mybigword :location local)
         emacs-everywhere
         command-log-mode
-        fasd))
+        fasd
+        (auto-save :location (recipe :fetcher github :repo "manateelazycat/auto-save"))
+        ))
 
 (defconst sys/macp
   (eq system-type 'darwin)
@@ -1242,4 +1244,12 @@
       (ivy-set-actions
        'hurricane/counsel-goto-recent-directory
        '(("o" fasd-find-file-action "find-file")
-         ("s" ivy-search-from-action "search-from"))))))
+         ("s" ivy-search-from-action "search-from")
+         ("e" eaf-open-in-file-manager "@ Open file in eaf file manager"))))))
+
+(defun hurricane-misc/init-auto-save ()
+  (use-package auto-save
+    :config
+    (auto-save-enable)
+    (setq auto-save-silent t)
+    (setq auto-save-delete-trailing-whitespace t)))

@@ -192,9 +192,9 @@ variables such as `exec-path'."
     (add-hook 'js-mode-hook #'eslintfmt-mode)
     (add-hook 'js2-mode-hook #'eslintfmt-mode)))
 
-(defun hurricane-programming/init-pythonfmt ()
-  (use-package pythonfmt
-    :config
-    (setq pythonfmt-command "yapf")
-    (setq pythonfmt-command-args "-i")
-    (add-hook 'python-mode-hook #'pythonfmt-mode)))
+;; (defun hurricane-programming/init-pythonfmt ()
+;;   (use-package pythonfmt
+;;     :config
+;;     (setq pythonfmt-command "yapf")
+;;     (setq pythonfmt-command-args "-i")
+;;     (add-hook 'python-mode-hook #'pythonfmt-mode)))

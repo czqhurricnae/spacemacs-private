@@ -68,6 +68,24 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/航空安全评估理论与方法/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/航空维修管理/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/New link features in org 9/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Adding keymaps to src blocks via org-font-lock-hook/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/运行种类的分类/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/航空维修质量与安全管理/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/民航安全管理体系实施/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/PyMuPDF 抽取 PDF 中的图片/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/维修基本技能/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/145 AC/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/内部审核标准项目单（航线维修分布 LM Dept.）/"))

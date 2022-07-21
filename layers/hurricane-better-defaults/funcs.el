@@ -160,12 +160,12 @@ After this command has been run, any buffers it's modified will remain open and 
 
 (advice-add 'org-insert-link :after #'org-display-inline-images)
 
-(define-advice show-paren-function (:around (fn) fix-show-paren-function)
-  "Highlight enclosing parens."
-  (cond ((looking-at-p "\\s(") (funcall fn))
-        (t (save-excursion
-             (ignore-errors (backward-up-list))
-             (funcall fn)))))
+;; (define-advice show-paren-function (:around (fn) fix-show-paren-function)
+;;   "Highlight enclosing parens."
+;;   (cond ((looking-at-p "\\s(") (funcall fn))
+;;         (t (save-excursion
+;;              (ignore-errors (backward-up-list))
+;;              (funcall fn)))))
 
 (defun hurricane//open-file-in-external-app (file)
   "Open `file' in external application."

@@ -59,15 +59,6 @@
              :fetcher github
              :repo "alphapapa/org-ql"
              :exclude "helm-org-ql.le"))
-    (org-noter (recipe
-                :fetcher github
-                :repo "weirdNox/org-noter"))
-    (org-pdftools (recipe
-                   :fetcher github
-                   :repo "fuxialexander/org-pdftools"))
-    (org-noter-pdftools (recipe
-                         :fetcher github
-                         :repo "fuxialexander/org-pdftools"))
     )
   )
 
@@ -730,7 +721,7 @@
     '(
       ("d" "default" plain "%?"
        :target (file+head "${slug}.org"
-                          "#+ROAM_KEY:\n\n")
+                          "#+ROAM_KEY:\n#+PDF_KEY:\n#+PAGE_KEY:\n\n")
        :unnarrowed t)
       ))
   (setq org-roam-capture-ref-templates
@@ -875,7 +866,7 @@
   (use-package org-transclusion
     :config
     (setq org-transclusion-include-first-section t)
-    (setq org-transclusion-exclude-elements '(property-drawer org-drawer))
+    (setq org-transclusion-exclude-elements '(property-drawer org-drawer keyword))
 
     (defun hurricane//org-transclusion-add-org-id (link plist)
       "Return a list for Org-ID LINK object and PLIST.
@@ -1071,49 +1062,3 @@ Return nil if not found."
 
 (defun hurricane-org/init-org-ql ()
   (use-package org-ql))
-
-(defun hurricane-org/init-org-noter ()
-  (use-package org-noter
-    :ensure t
-    :config
-    (require 'org-noter-pdftools)))
-
-(defun hurricane-org/init-org-pdftools ()
-  (use-package org-pdftools
-    :hook
-    (org-mode . org-pdftools-setup-link)))
-
-(defun hurricane-org/org-noter-pdftools ()
-  (use-package org-noter-pdftools
-    :after org-noter
-    :config
-    ;; Add a function to ensure precise note is inserted
-    (defun org-noter-pdftools-insert-precise-note (&optional toggle-no-questions)
-      (interactive "P")
-      (org-noter--with-valid-session
-       (let ((org-noter-insert-note-no-questions (if toggle-no-questions
-                                                     (not org-noter-insert-note-no-questions)
-                                                   org-noter-insert-note-no-questions))
-             (org-pdftools-use-isearch-link t)
-             (org-pdftools-use-freepointer-annot t))
-         (org-noter-insert-note (org-noter--get-precise-info)))))
-
-    ;; fix https://github.com/weirdNox/org-noter/pull/93/commits/f8349ae7575e599f375de1be6be2d0d5de4e6cbf
-    (defun org-noter-set-start-location (&optional arg)
-      "When opening a session with this document, go to the current location.
-With a prefix ARG, remove start location."
-      (interactive "P")
-      (org-noter--with-valid-session
-       (let ((inhibit-read-only t)
-             (ast (org-noter--parse-root))
-             (location (org-noter--doc-approx-location (when (called-interactively-p 'any) 'interactive))))
-         (with-current-buffer (org-noter--session-notes-buffer session)
-           (org-with-wide-buffer
-            (goto-char (org-element-property :begin ast))
-            (if arg
-                (org-entry-delete nil org-noter-property-note-location)
-              (org-entry-put nil org-noter-property-note-location
-                             (org-noter--pretty-print-location location))))))))
-    (with-eval-after-load 'pdf-annot
-      (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note))
-    ))

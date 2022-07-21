@@ -43,6 +43,7 @@
         command-log-mode
         fasd
         (auto-save :location (recipe :fetcher github :repo "manateelazycat/auto-save"))
+        eaf
         ))
 
 (defconst sys/macp
@@ -1253,3 +1254,8 @@
     (auto-save-enable)
     (setq auto-save-silent t)
     (setq auto-save-delete-trailing-whitespace t)))
+
+(defun hurricane-misc/post-init-eaf ()
+  (with-eval-after-load 'eaf-pdf-viewer
+    (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)))

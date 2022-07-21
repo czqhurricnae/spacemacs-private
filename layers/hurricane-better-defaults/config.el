@@ -81,12 +81,12 @@
             kill-buffer-query-functions))
 
 ;; Cleanup recent files.
-(defun czqhuricane/cleanup-recentf ()
+(defun czqhuricane//cleanup-recentf ()
   (progn
     (and (fboundp 'recentf-cleanup)
          (recentf-cleanup))))
 
-(add-hook 'kill-emacs-hook #'czqhuricane/cleanup-recentf)
+(add-hook 'kill-emacs-hook #'czqhuricane//cleanup-recentf)
 
 ;; Change evil initial mode state.
 (menu-bar-mode t)
@@ -164,7 +164,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 ;; {{
 ;; @see: https://www.reddit.com/r/emacs/comments/4xhxfw/how_to_tune_the_behavior_of_eletricpairmode/
 (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-(show-paren-mode t)
+;; (show-paren-mode t)
 ;; }}
 
 ;; {{
@@ -222,7 +222,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 
 ;; 使用 `counsel-git' 查找文件的时候，忽略指定后缀的文件.
 (when (spacemacs/system-is-mswindows)
-  (setq counsel-git-cmd "git ls-files --full-name -- \":!:*.js.meta\" \":!:*.meta\""))
+  (setq counsel-git-cmd "git ls-files --full-name -- \":!:*.js.meta\" \":!:*.meta\" \":!:.DS_Store\""))
 
 ;; Auto switch to `occur buffer`.
 (add-hook 'occur-hook

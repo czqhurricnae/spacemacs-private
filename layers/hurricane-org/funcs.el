@@ -996,3 +996,9 @@ that the point is already within a string."
 (defun hurricane/html-table-to-org-table-converter ()
   (interactive)
   (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
+
+(defun extract-value-from-keyword (key)
+  (nth 0 (org-element-map (org-element-parse-buffer) 'keyword
+           (lambda (element)
+             (when (string= key (org-element-property :key element))
+               (org-element-property :value element))))))

@@ -68,6 +68,12 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/审核项目单 internal audit check list（工装设备保障中心）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/审核项目单 internal audit check list（ndt 审核项目单）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/审核项目单 internal audit check list（培训中心）/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/航空安全评估理论与方法/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/航空维修管理/"))

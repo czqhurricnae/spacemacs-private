@@ -146,7 +146,7 @@
 
 (with-eval-after-load 'ox-html
   (add-to-list 'org-export-filter-src-block-functions
-               'hurricane//org-html-wrap-blocks-in-code))
+               #'hurricane//org-html-wrap-blocks-in-code))
 
 (defun batch-export-org-files-to-md (dir)
   "Export all org files in directory DIR to markdown."

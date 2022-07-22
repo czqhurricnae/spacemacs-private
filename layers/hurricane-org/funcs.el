@@ -1001,4 +1001,8 @@ that the point is already within a string."
   (nth 0 (org-element-map (org-element-parse-buffer) 'keyword
            (lambda (element)
              (when (string= key (org-element-property :key element))
-               (org-element-property :value element))))))
+               (let ((link (org-element-property :value element)))
+                 (cond ((string-match "\\[\\[\\(.+?\\)\\]" link)
+                        (match-string 1 link))
+                       (t
+                        link))))))))

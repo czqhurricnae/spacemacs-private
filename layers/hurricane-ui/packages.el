@@ -9,8 +9,6 @@
                             github :repo "manateelazycat/awesome-tab"))
     (shackle :location (recipe :fetcher
                         github :repo "wasamasa/shackle"))
-    (ivy-posframe :location (recipe :fetcher
-                             github :repo "tumashu/ivy-posframe"))
     pretty-hydra
     (good-scroll :location (recipe :fetcher
                             github :repo "io12/good-scroll.el"))
@@ -59,6 +57,7 @@
 
 (defun hurricane-ui/post-init-pangu-spacing ()
   (progn
+    (add-to-list 'pangu-spacing-inhibit-mode-alist 'EAF/file-manager-rename-mode)
     ;; Add toggle options.
     (spacemacs|add-toggle pangu-spaceing
       :status pangu-spacing-mode
@@ -241,26 +240,6 @@
   (and hurricane-icon
        (display-graphic-p)
        (require 'all-the-icons nil t)))
-
-(defun hurricane-ui/init-ivy-posframe ()
-  (use-package ivy-posframe
-    :ensure t
-    :after (ivy)
-    :diminish ivy-posframe-mode
-    :config
-    (setq ivy-posframe-display-functions-alist
-        '((swiper . ivy-display-function-fallback)
-          (spacemacs/counsel-search . ivy-display-function-fallback)
-          (counsel-rg . ivy-display-function-fallback)
-          (counsel-ag . ivy-display-function-fallback)
-          (counsel-git-grep . ivy-display-function-fallback)
-          (complete-symbol . ivy-posframe-display-at-point)
-          (counsel-M-x . ivy-posframe-display-at-frame-center)
-          (counsel-find-file . ivy-posframe-display-at-frame-center)
-          (ivy-switch-buffer . ivy-posframe-display-at-frame-center)
-          (t . ivy-posframe-display-at-frame-center)))
-    (setq ivy-posframe-hide-minibuffer nil)
-    (ivy-posframe-mode)))
 
 (defun hurricane-ui/init-pretty-hydra ()
   (use-package pretty-hydra

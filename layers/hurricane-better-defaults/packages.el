@@ -167,11 +167,26 @@
        ("g" hurricane//find-file-in-git-repo "@ Find file in git repo")
        ("S" hurricane//ivy-ff-checksum-action "@ Checksum")
        ("e" eaf-open-in-file-manager "@ Open file in eaf file manager")
+       ("c" hurricane//find-file-copy-filename-as-kill "@ Copy filename")
+       ("W" hurricane//find-file-copy-full-filename-as-kill "@ Copy full filename")
        ))
+
     (ivy-add-actions
      'counsel-bookmark
      '(("s" hurricane//bookmark-search-from-action "search-from")
        ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")))
+
+    (ivy-add-actions
+     'counsel-file-jump
+     '(("c" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
+       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename")))
+
+    (ivy-add-actions
+     'counsel-git
+     '(("c" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
+       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename"
+        )))
+
     (setq ivy-initial-inputs-alist nil)))
 
 (defun hurricane-better-defaults/post-init-image-mode ()

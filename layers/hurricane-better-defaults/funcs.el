@@ -241,3 +241,35 @@ After this command has been run, any buffers it's modified will remain open and 
 (defun hurricane//dired-copy-filename-as-kill ()
   (interactive)
   (dired-copy-filename-as-kill 0))
+
+(defun hurricane//find-file-copy-full-filename-as-kill (x &optional arg)
+  (interactive "P")
+  (let ((string (if arg
+                    (cond ((zerop (prefix-numeric-value arg))
+                           (file-name-nondirectory x))
+                          (t
+                           x))
+                  x)))
+    (unless (string= string "")
+      (if (eq last-command 'kill-region)
+          (kill-append string nil)
+        (kill-new string))
+      (message "%s" string))))
+
+(defun hurricane//find-file-copy-filename-as-kill (x)
+  (hurricane//find-file-copy-full-filename-as-kill x 0))
+
+(defun hurricane//file-jump-copy-full-filename-as-kill (x)
+  (let ((full-filename (concat default-directory x)))
+    (unless (string= full-filename "")
+      (if (eq last-command 'kill-region)
+        (kill-append full-filename nil)
+      (kill-new full-filename))
+    (message "%s" full-filename))))
+
+(defun hurricane//file-jump-copy-filename-as-kill (x)
+  (unless (string= x "")
+    (if (eq last-command 'kill-region)
+        (kill-append x nil)
+      (kill-new x))
+    (message "%s" x)))

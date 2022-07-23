@@ -207,9 +207,7 @@ After this command has been run, any buffers it's modified will remain open and 
   (interactive)
   (if (hurricane//git-project-root)
       (counsel-git)
-    (if (projectile-project-p)
-        (projectile-find-file)
-      (counsel-file-jump))))
+    (counsel-file-jump)))
 
 ;; ;; @see: https://emacs-china.org/t/topic/6119
 ;; (defun set-image-mode-mwheel-scroll-function ()

@@ -5,7 +5,8 @@
     (recentf :location elpa)
     (occur-mode :location local)
     (dired :location local)
-    counsel))
+    counsel
+    (image-mode :location built-in)))
 
 (defun hurricane-better-defaults/pre-init-youdao-dictionary ()
   (use-package youdao-dictionary
@@ -127,6 +128,7 @@
       '(("vlc" "-L")))
 
     (evil-define-key 'normal dired-mode-map (kbd "W") #'hurricane//dired-copy-filename-as-kill)
+    (evil-define-key 'normal dired-mode-map (kbd "/") #'hurricane/open-file-with-projectile-or-counsel-git)
 
     ;; FIXME: Evilify dired mode will lead to startup warnings.
     (evilified-state-evilify-map dired-mode-map
@@ -140,8 +142,7 @@
       "n" #'peep-dired-next-file
       "z" #'dired-get-size
       "c" #'hurricane/dired-copy-file-here
-      "J" #'spacemacs/counsel-find-file
-      "f" #'hurricane/open-file-with-projectile-or-counsel-git
+      "/" #'hurricane/open-file-with-projectile-or-counsel-git
       ")" #'dired-omit-mode
       "W" #'hurricane//dired-copy-filename-as-kill
       )))
@@ -172,3 +173,12 @@
      '(("s" hurricane//bookmark-search-from-action "search-from")
        ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")))
     (setq ivy-initial-inputs-alist nil)))
+
+(defun hurricane-better-defaults/post-init-image-mode ()
+  (use-package image-mode
+    :defer t
+    :config
+    (evilified-state-evilify-map image-mode-map
+      :mode image-mode
+      :bindings
+      "n" #'image-next-file)))

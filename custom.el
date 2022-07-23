@@ -68,6 +68,34 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 乘务员工作灯/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 入口灯/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 天空内饰天花板灯/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/SSM 33-22-15/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/SSM 33-22-14/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/SSM 33-22-13/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/SSM 33-22-12/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/737NG 客舱窗户的检查标准/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/05MC-目次/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/05 应急反应手册/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/NEF/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 窗户组件/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/MySQL/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/RDR/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/审核项目单 internal audit check list（工装设备保障中心）/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/审核项目单 internal audit check list（ndt 审核项目单）/"))

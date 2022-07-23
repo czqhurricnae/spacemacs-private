@@ -1002,7 +1002,7 @@ that the point is already within a string."
            (lambda (element)
              (when (string= key (org-element-property :key element))
                (let ((link (org-element-property :value element)))
-                 (cond ((string-match "\\[\\[\\(.+?\\)\\]" link)
-                        (match-string 1 link))
+                 (cond ((string-match "\\[\\[file:\\(.+?\\)\\]" link)
+                        (replace-regexp-in-string "///" "/" (match-string 1 link)))
                        (t
                         link))))))))

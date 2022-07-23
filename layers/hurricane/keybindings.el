@@ -23,8 +23,6 @@
 (define-key evil-insert-state-map  (kbd "<escape>") #'hurricane//evil-keyboard-quit)
 (define-key evil-window-map (kbd "<escape>") #'hurricane//evil-keyboard-quit)
 (define-key evil-operator-state-map (kbd "<escape>") #'hurricane//evil-keyboard-quit)
-(define-key dired-mode-map (kbd "e") #'ora-ediff-files)
-(define-key dired-mode-map (kbd "f") #'hurricane/open-file-with-projectile-or-counsel-git)
 (global-set-key (kbd "<escape>") 'hurricane//evil-keyboard-quit)
 (global-set-key (kbd "C-c i r") 'hurricane/org-screenshot-and-ocr)
 (global-set-key (kbd "C-c i c") 'hurricane/org-insert-caption-and-target)

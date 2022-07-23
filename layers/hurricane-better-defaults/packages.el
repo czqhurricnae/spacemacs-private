@@ -4,7 +4,7 @@
     (mic-paren :location elpa)
     (recentf :location elpa)
     (occur-mode :location local)
-    (dired-mode :location local)
+    (dired :location local)
     counsel))
 
 (defun hurricane-better-defaults/pre-init-youdao-dictionary ()
@@ -70,78 +70,80 @@
         ".*png$"))
     (setq recentf-max-saved-items 2048)))
 
-(defun hurricane-better-defaults/init-dired-mode ()
-  (use-package dired-mode
+(defun hurricane-better-defaults/post-init-dired ()
+  (use-package dired
     :defer t
-    :init
-    (progn
-      (require 'dired-x)
-      (require 'dired-aux)
-      (setq dired-dwin-target 1)
-      (setq dired-listing-switches "-alh")
-      (setq dired-guess-shell-alist-user
-            '(("\\.pdf\\'" "open")
-              ("\\.docx\\'" "open")
-              ("\\.\\(?:djvu\\|eps\\)\\'" "open")
-              ("\\.\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)\\'" "open")
-              ("\\.\\(?:xcf\\)\\'" "open")
-              ("\\.csv\\'" "open")
-              ("\\.tex\\'" "open")
-              ("\\.\\(?:mp4\\|mkv\\|avi\\|flv\\|ogv\\)\\(?:\\.part\\)?\\'"
-               "open")
-              ("\\.\\(?:mp3\\|flac\\)\\'" "open")
-              ("\\.html?\\'" "open")
-              ("\\.md\\'" "open")))
+    :config
+    (require 'dired-x)
+    (require 'dired-aux)
+    (setq dired-dwin-target 1)
+    (setq dired-listing-switches "-alh")
+    (setq dired-guess-shell-alist-user
+          '(("\\.pdf\\'" "open")
+            ("\\.docx\\'" "open")
+            ("\\.\\(?:djvu\\|eps\\)\\'" "open")
+            ("\\.\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)\\'" "open")
+            ("\\.\\(?:xcf\\)\\'" "open")
+            ("\\.csv\\'" "open")
+            ("\\.tex\\'" "open")
+            ("\\.\\(?:mp4\\|mkv\\|avi\\|flv\\|ogv\\)\\(?:\\.part\\)?\\'"
+             "open")
+            ("\\.\\(?:mp3\\|flac\\)\\'" "open")
+            ("\\.html?\\'" "open")
+            ("\\.md\\'" "open")))
 
-      (setq dired-omit-files
-            (concat dired-omit-files "\\|^.DS_Store$\\|^.projectile$\\|\\.js\\.meta$\\|\\.meta$"))
+    (setq dired-omit-files
+          (concat dired-omit-files "\\|^.DS_Store$\\|^.projectile$\\|\\.js\\.meta$\\|\\.meta$"))
 
-      ;; Always delete and copy recursively.
-      (setq dired-recursive-deletes 'always)
-      (setq dired-recursive-copies 'always)
+    ;; Always delete and copy recursively.
+    (setq dired-recursive-deletes 'always)
+    (setq dired-recursive-copies 'always)
 
-      ;; {{
-      ;; @see: https://oremacs.com/2017/03/18/dired-ediff/
-      (defun ora-ediff-files ()
-        (interactive)
-        (let ((files (dired-get-marked-files))
-              (wnd (current-window-configuration)))
-          (if (<= (length files) 2)
-              (let ((file1 (car files))
-                    (file2 (if (cdr files)
-                               (cadr files)
-                             (read-file-name
-                              "file: "
-                              (dired-dwim-target-directory)))))
-                (if (file-newer-than-file-p file1 file2)
-                    (ediff-files file2 file1)
-                  (ediff-files file1 file2))
-                (add-hook 'ediff-after-quit-hook-internal
-                          (lambda ()
-                            (setq ediff-after-quit-hook-internal nil)
-                            (if wnd
-                                (set-window-configuration wnd)))))
-            (error "No more than 2 files should be marked"))))
-      ;; }}
+    ;; {{
+    ;; @see: https://oremacs.com/2017/03/18/dired-ediff/
+    (defun ora-ediff-files ()
+      (interactive)
+      (let ((files (dired-get-marked-files))
+            (wnd (current-window-configuration)))
+        (if (<= (length files) 2)
+            (let ((file1 (car files))
+                  (file2 (if (cdr files)
+                             (cadr files)
+                           (read-file-name
+                            "file: "
+                            (dired-dwim-target-directory)))))
+              (if (file-newer-than-file-p file1 file2)
+                  (ediff-files file2 file1)
+                (ediff-files file1 file2))
+              (add-hook 'ediff-after-quit-hook-internal
+                        (lambda ()
+                          (setq ediff-after-quit-hook-internal nil)
+                          (if wnd
+                              (set-window-configuration wnd)))))
+          (error "No more than 2 files should be marked"))))
+    ;; }}
 
-      (defvar dired-filelist-cmd
-        '(("vlc" "-L")))
+    (defvar dired-filelist-cmd
+      '(("vlc" "-L")))
 
-      ;; FIXME: Evilify dired mode will lead to startup warnings.
-      (evilified-state-evilify-map dired-mode-map
-        :mode dired-mode
-        :bindings
-        "E" 'dired-toggle-read-only
-        "C" 'dired-do-copy
-        "<mouse-2>" #'hurricane//dired-find-file
-        "`" 'eaf-open-in-file-manager
-        "p" 'peep-dired-prev-file
-        "n" 'peep-dired-next-file
-        "z" 'dired-get-size
-        "c" 'hurricane/dired-copy-file-here
-        "J" 'counsel-find-file
-        "f" 'hurricane/open-file-with-projectile-or-counsel-git
-        ")" 'dired-omit-mode)
+    (evil-define-key 'normal dired-mode-map (kbd "W") #'hurricane//dired-copy-filename-as-kill)
+
+    ;; FIXME: Evilify dired mode will lead to startup warnings.
+    (evilified-state-evilify-map dired-mode-map
+      :mode dired-mode
+      :bindings
+      "E" 'dired-toggle-read-only
+      "C" 'dired-do-copy
+      "<mouse-2>" #'hurricane//dired-find-file
+      "`" #'eaf-open-in-file-manager
+      "p" #'peep-dired-prev-file
+      "n" #'peep-dired-next-file
+      "z" #'dired-get-size
+      "c" #'hurricane/dired-copy-file-here
+      "J" #'spacemacs/counsel-find-file
+      "f" #'hurricane/open-file-with-projectile-or-counsel-git
+      ")" #'dired-omit-mode
+      "W" #'hurricane//dired-copy-filename-as-kill
       )))
 
 (defun hurricane-better-defaults/init-profiler ()

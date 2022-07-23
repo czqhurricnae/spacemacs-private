@@ -211,13 +211,13 @@ After this command has been run, any buffers it's modified will remain open and 
         (projectile-find-file)
       (counsel-file-jump))))
 
-;; @see: https://emacs-china.org/t/topic/6119
-(defun set-image-mode-mwheel-scroll-function ()
-  (setq-local mwheel-scroll-down-function 'image-scroll-down)
-  (setq-local mwheel-scroll-up-function 'image-scroll-up))
+;; ;; @see: https://emacs-china.org/t/topic/6119
+;; (defun set-image-mode-mwheel-scroll-function ()
+;;   (setq-local mwheel-scroll-down-function 'image-scroll-down)
+;;   (setq-local mwheel-scroll-up-function 'image-scroll-up))
 
-(add-hook 'image-mode-hook #'set-image-mode-mwheel-scroll-function)
-(add-hook 'org-mode-hook #'set-image-mode-mwheel-scroll-function)
+;; (add-hook 'image-mode-hook #'set-image-mode-mwheel-scroll-function)
+;; (add-hook 'org-mode-hook #'set-image-mode-mwheel-scroll-function)
 
 (defun hurricane//bookmark-search-from-action (x)
   (cond ((and (member x (bookmark-all-names))
@@ -239,3 +239,7 @@ After this command has been run, any buffers it's modified will remain open and 
         (t
          (error "Bookmark %s is not a directory or do not exists." (bookmark-location x)))
         ))
+
+(defun hurricane//dired-copy-filename-as-kill ()
+  (interactive)
+  (dired-copy-filename-as-kill 0))

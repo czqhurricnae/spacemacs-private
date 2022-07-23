@@ -728,6 +728,7 @@ you should place your code here."
   (evil-define-key 'motion 'evi-org-mode (kbd "0") 'evil-org-beginning-of-line)
   (global-page-break-lines-mode -1)
   (require 'org-protocol)
+  (savehist-mode -1)
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

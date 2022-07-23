@@ -948,7 +948,8 @@ Work in macOS only."
 (defvar official-accounts-content-pattern-list
   '("<div class=\"rich_media_content                                                                     \"
             id=\"js_content\" style=\"visibility: hidden;\">
-" . "</div>"))
+\\|<div class=\"rich_media_content                                       \"
+            id=\"js_content\" style=\"visibility: hidden;\">" . "</div>"))
 
 (defun hurricane//get-all-images-url (file image-url-pattern-list)
   "Return a image file name and image URL map list, extract from html FILE.

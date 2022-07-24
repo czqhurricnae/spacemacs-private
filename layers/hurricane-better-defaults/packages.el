@@ -6,7 +6,8 @@
     (occur-mode :location local)
     (dired :location local)
     counsel
-    (image-mode :location built-in)))
+    (image-mode :location built-in)
+    (dired+ :location (recipe :fetcher github :repo "emacsmirror/dired-plus"))))
 
 (defun hurricane-better-defaults/pre-init-youdao-dictionary ()
   (use-package youdao-dictionary
@@ -78,7 +79,7 @@
     (require 'dired-x)
     (require 'dired-aux)
     (setq dired-dwin-target 1)
-    (setq dired-listing-switches "-alh")
+    (setq dired-listing-switches "-alhR")
     (setq dired-guess-shell-alist-user
           '(("\\.pdf\\'" "open")
             ("\\.docx\\'" "open")
@@ -144,7 +145,7 @@
       "c" #'hurricane/dired-copy-file-here
       "/" #'hurricane/open-file-with-projectile-or-counsel-git
       ")" #'dired-omit-mode
-      "W" #'hurricane//dired-copy-filename-as-kill
+      ;; "W" #'hurricane//dired-copy-filename-as-kill
       )))
 
 (defun hurricane-better-defaults/init-profiler ()
@@ -179,13 +180,14 @@
     (ivy-add-actions
      'counsel-file-jump
      '(("c" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
-       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename")))
+       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename")
+       ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")))
 
     (ivy-add-actions
      'counsel-git
      '(("c" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
-       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename"
-        )))
+       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename")
+       ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")))
 
     (setq ivy-initial-inputs-alist nil)))
 
@@ -197,3 +199,22 @@
       :mode image-mode
       :bindings
       "n" #'image-next-file)))
+
+(defun hurricane-better-defaults/init-dired+ ()
+  (use-package dired+
+    :defer t
+    :init
+    (progn
+      (setq diredp-hide-details-initially-flag t)
+      (setq diredp-hide-details-propagate-flag t)
+      ;; use single buffer for all dired navigation
+      ;; disable font themeing from dired+
+      (setq font-lock-maximum-decoration (quote ((dired-mode . 1) (t . t))))
+      (toggle-diredp-find-file-reuse-dir 1)
+      )
+    :config
+    (evilified-state-evilify-map dired-mode-map
+      :mode dired-mode
+      :bindings
+      "W" #'diredp-copy-abs-filenames-as-kill
+      )))

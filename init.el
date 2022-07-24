@@ -45,8 +45,10 @@ This function should only modify configuration layer settings."
                       syntax-checking-enable-tooltips t)
      (spell-checking :variables
                      spell-checking-enable-by-default nil)
-     (vinegar :variables vinegar-reuse-dired-buffer t)
-     (spacemacs-layouts :variables layouts-enable-autosave nil
+     (vinegar :variables
+              vinegar-reuse-dired-buffer t)
+     (spacemacs-layouts :variables
+                        layouts-enable-autosave nil
                         layouts-autosave-delay 300)
      (git :variables
           git-magit-status-fullscreen t
@@ -55,7 +57,8 @@ This function should only modify configuration layer settings."
           magit-revert-buffers 'silent
           magit-refs-show-commit-count 'all
           magit-revision-show-gravatars nil)
-     (ibuffer :variables ibuffer-group-buffers-by 'projects)
+     (ibuffer :variables
+              ibuffer-group-buffers-by 'projects)
      (auto-completion :variables
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
@@ -72,7 +75,8 @@ This function should only modify configuration layer settings."
             latex
             python
             shell-scripts)
-     (shell :variables shell-default-shell 'eshell)
+     (shell :variables
+            shell-default-shell 'eshell)
      ;; docker
      latex
      (javascript :variables

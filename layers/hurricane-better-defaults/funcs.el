@@ -238,11 +238,11 @@ After this command has been run, any buffers it's modified will remain open and 
          (error "Bookmark %s is not a directory or do not exists." (bookmark-location x)))
         ))
 
-(defun hurricane//dired-copy-filename-as-kill ()
+(defun hurricane//dired-copy-abs-filename-as-kill ()
   (interactive)
   (dired-copy-filename-as-kill 0))
 
-(defun hurricane//find-file-copy-full-filename-as-kill (x &optional arg)
+(defun hurricane//find-file-copy-abs-filename-as-kill (x &optional arg)
   (interactive "P")
   (let ((string (if arg
                     (cond ((zerop (prefix-numeric-value arg))
@@ -257,15 +257,15 @@ After this command has been run, any buffers it's modified will remain open and 
       (message "%s" string))))
 
 (defun hurricane//find-file-copy-filename-as-kill (x)
-  (hurricane//find-file-copy-full-filename-as-kill x 0))
+  (hurricane//find-file-copy-abs-filename-as-kill x 0))
 
-(defun hurricane//file-jump-copy-full-filename-as-kill (x)
-  (let ((full-filename (concat default-directory x)))
-    (unless (string= full-filename "")
+(defun hurricane//file-jump-copy-abs-filename-as-kill (x)
+  (let ((abs-filename (concat default-directory x)))
+    (unless (string= abs-filename "")
       (if (eq last-command 'kill-region)
-        (kill-append full-filename nil)
-      (kill-new full-filename))
-    (message "%s" full-filename))))
+        (kill-append abs-filename nil)
+      (kill-new abs-filename))
+    (message "%s" abs-filename))))
 
 (defun hurricane//file-jump-copy-filename-as-kill (x)
   (unless (string= x "")
@@ -273,3 +273,8 @@ After this command has been run, any buffers it's modified will remain open and 
         (kill-append x nil)
       (kill-new x))
     (message "%s" x)))
+
+(defun hurricane//file-jump-open-file-in-external-app (x)
+  (unless (string= x "")
+    (hurricane//open-file-in-external-app x)
+    (message "Open file in external app: %s" x)))

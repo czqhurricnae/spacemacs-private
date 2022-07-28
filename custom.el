@@ -5,6 +5,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(custom-safe-themes
@@ -68,6 +70,44 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/0407-10-载重与平衡/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/04 运行手册/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/运行规范/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/0701-8 向局方报告/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/8202-17 适航信息报告管理程序/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CDL /"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/从一起 737-300 飞机的非典型故障谈老旧飞机的管理/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/MF:0301 安全管理体系/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/0305-1 风险管理方案/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/浅析 C 检生产线的现场质量审核/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/in_emacs_how_to_reference_latex_equation_in_text_by_its_number_dvi/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/in_emacs_how_to_reference_latex_equation_in_text_by_its_number_dvi/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Mac Homebrew 安装 Python@2/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/内部审核标准项目单（培训中心）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/内部审核标准项目单（ndt 审核项目单）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/内部审核标准项目单（工装设备保障中心）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Git 基础/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/2020 年国内民航发动机运行情况及典型技术问题分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/危险品航空运输从业人员资质评估体系/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 乘务员工作灯/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 入口灯/"))

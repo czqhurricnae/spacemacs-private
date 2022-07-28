@@ -260,21 +260,82 @@ After this command has been run, any buffers it's modified will remain open and 
   (hurricane//find-file-copy-abs-filename-as-kill x 0))
 
 (defun hurricane//file-jump-copy-abs-filename-as-kill (x)
-  (let ((abs-filename (concat default-directory x)))
+  (let ((abs-filename (expand-file-name (concat default-directory x))))
     (unless (string= abs-filename "")
       (if (eq last-command 'kill-region)
         (kill-append abs-filename nil)
       (kill-new abs-filename))
-    (message "%s" abs-filename))))
+    (message "Copy absolute filename: %s" abs-filename))))
 
 (defun hurricane//file-jump-copy-filename-as-kill (x)
   (unless (string= x "")
     (if (eq last-command 'kill-region)
         (kill-append x nil)
       (kill-new x))
-    (message "%s" x)))
+    (message "Copy filename: %s" x)))
 
 (defun hurricane//file-jump-open-file-in-external-app (x)
   (unless (string= x "")
     (hurricane//open-file-in-external-app x)
     (message "Open file in external app: %s" x)))
+
+(defun hurricane//file-jump-delete-file (x)
+  (let ((abs-filename (concat default-directory x)))
+    (unless (string= abs-filename "")
+      (dired-delete-file abs-filename)
+      (message "Delete file: %s" abs-filename))))
+
+(defun hurricane//find-file-copy-or-move-file-to (func x)
+  (unless (string= x "")
+    (cond
+     ((equal (concat ivy-mark-prefix x)
+             (car ivy-marked-candidates))
+      (kill-new (--reduce
+                 (format "%s %s" acc it)
+                 (mapcar
+                  #'(lambda (s) (string-trim s ">"))
+                  ivy-marked-candidates)))
+      (setq diredp-last-copied-filenames  (car kill-ring-yank-pointer))
+      (message "===> Will copy file(s): %S" ivy-marked-candidates)
+      (with-ivy-window (funcall func (counsel-dired))))
+     ((not ivy-marked-candidates)
+      (kill-new x)
+      (setq diredp-last-copied-filenames  (car kill-ring-yank-pointer))
+      (message "===> Will copy file: %S" x)
+      (with-ivy-window (funcall func (counsel-dired)))))))
+
+(defun hurricane//find-file-copy-file-to (x)
+  (hurricane//find-file-copy-or-move-file-to #'diredp-paste-files x))
+
+(defun hurricane//find-file-move-file-to (x)
+  (hurricane//find-file-copy-or-move-file-to #'diredp-move-files-named-in-kill-ring x))
+
+(defun hurricane//find-file-delete-file (x)
+  (unless (string= x "")
+    (dired-delete-file x)
+    (message "Delete file: %s" x)))
+
+(defun hurricane//dired-copy-or-move-file-to (func x)
+  (unless (string= x "")
+    (cond
+     ((equal (concat ivy-mark-prefix x)
+             (car ivy-marked-candidates))
+      (kill-new (--reduce
+                 (format "%s %s" acc it)
+                 (mapcar
+                  #'(lambda (s) (concat default-directory (string-trim s ">")))
+                  ivy-marked-candidates)))
+      (setq diredp-last-copied-filenames  (car kill-ring-yank-pointer))
+      (message "===> Will copy file(s): %S" ivy-marked-candidates)
+      (with-ivy-window (funcall func (counsel-dired))))
+     ((not ivy-marked-candidates)
+      (kill-new (concat default-directory x))
+      (setq diredp-last-copied-filenames  (car kill-ring-yank-pointer))
+      (message "===> Will copy file: %S" x)
+      (with-ivy-window (funcall func (counsel-dired)))))))
+
+(defun hurricane//dired-copy-file-to (x)
+  (hurricane//dired-copy-or-move-file-to #'diredp-paste-files x))
+
+(defun hurricane//dired-move-file-to (x)
+  (hurricane//dired-copy-or-move-file-to #'diredp-move-files-named-in-kill-ring x))

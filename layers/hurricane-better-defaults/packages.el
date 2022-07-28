@@ -79,7 +79,7 @@
     (require 'dired-x)
     (require 'dired-aux)
     (setq dired-dwin-target 1)
-    (setq dired-listing-switches "-alhR")
+    (setq dired-listing-switches "-alh")
     (setq dired-guess-shell-alist-user
           '(("\\.pdf\\'" "open")
             ("\\.docx\\'" "open")
@@ -128,7 +128,7 @@
     (defvar dired-filelist-cmd
       '(("vlc" "-L")))
 
-    (evil-define-key 'normal dired-mode-map (kbd "W") #'hurricane//dired-copy-filename-as-kill)
+    ;; (evil-define-key 'normal dired-mode-map (kbd "W") #'hurricane//dired-copy-filename-as-kill)
     (evil-define-key 'normal dired-mode-map (kbd "/") #'hurricane/open-file-with-projectile-or-counsel-git)
 
     ;; FIXME: Evilify dired mode will lead to startup warnings.
@@ -165,11 +165,14 @@
     (ivy-add-actions
      'counsel-find-file
      '(("!" hurricane//open-file-in-external-app "@ Open file in external app")
+       ("d" hurricane//find-file-delete-file "@ Delete file")
        ("g" hurricane//find-file-in-git-repo "@ Find file in git repo")
        ("S" hurricane//ivy-ff-checksum-action "@ Checksum")
        ("e" eaf-open-in-file-manager "@ Open file in eaf file manager")
-       ("c" hurricane//find-file-copy-filename-as-kill "@ Copy filename")
-       ("W" hurricane//find-file-copy-full-filename-as-kill "@ Copy full filename")
+       ("w" hurricane//find-file-copy-filename-as-kill "@ Copy filename")
+       ("W" hurricane//find-file-copy-abs-filename-as-kill "@ Copy absolute filename")
+       ("C" hurricane//find-file-copy-file-to "@ Copy to")
+       ("m" hurricane//find-file-move-file-to "@ Move to")
        ))
 
     (ivy-add-actions
@@ -179,15 +182,22 @@
 
     (ivy-add-actions
      'counsel-file-jump
-     '(("c" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
-       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename")
-       ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")))
+     '(("w" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
+       ("W" hurricane//file-jump-copy-abs-filename-as-kill "@ Copy absolute filename")
+       ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")
+       ("d" hurricane//file-jump-delete-file "@ Delete file")
+       ("C" hurricane//dired-copy-file-to "@ Copy to")
+       ("m" hurricane//dired-move-file-to "@ Move to")
+       ))
 
     (ivy-add-actions
      'counsel-git
-     '(("c" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
-       ("W" hurricane//file-jump-copy-full-filename-as-kill "@ Copy full filename")
-       ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")))
+     '(("w" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
+       ("W" hurricane//file-jump-copy-abs-filename-as-kill "@ Copy absolute filename")
+       ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")
+       ("d" hurricane//file-jump-delete-file "@ Delete file")
+       ("C" hurricane//dired-copy-file-to "@ Copy to")
+       ("m" hurricane//dired-move-file-to "@ Move to")))
 
     (setq ivy-initial-inputs-alist nil)))
 
@@ -213,6 +223,8 @@
       (toggle-diredp-find-file-reuse-dir 1)
       )
     :config
+    (evil-define-key 'normal dired-mode-map (kbd "W") #'diredp-copy-abs-filenames-as-kill)
+
     (evilified-state-evilify-map dired-mode-map
       :mode dired-mode
       :bindings

@@ -954,15 +954,14 @@ that the point is already within a string."
              (type (plist-get link ':type))
              (path (plist-get link ':path)))
     (if (string-match "\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)" path)
-	         (funcall
+	      (ignore-errors
+          (funcall
 	          (helm :sources
 		              `((name . "Action")
 		                (candidates . ,(append
-				                            (loop for f in '(find-file
-						                                         org-open-file)
-					                                collect (cons (symbol-name f) f))
 				                            '(
-                                      ("delete image file and link" . (lambda (path)
+                                      ("Preview file" . (lambda (path) (eaf-open path)))
+                                      ("Delete image file and link" . (lambda (path)
                                                                         (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
                                                                                             (lambda (link)
                                                                                               (when (string= (org-element-property :type link) "file")
@@ -979,15 +978,19 @@ that the point is already within a string."
                                                                                 (progn
                                                                                   (delete-file file-full-path)
                                                                                   ))))))
-                                      ("copy file link" . (lambda (path)
+                                      ("Copy file link" . (lambda (path)
                                                             (kill-new (format "%s" (concat default-directory "/" path)))))
-                                      ("copy org link" . (lambda (path)
+                                      ("Copy org link" . (lambda (path)
 							                                             (kill-new (format "[[file:%s]]" path))))
-                                      ("dired" . (lambda (path)
+                                      ("Eaf open in file manager" . (lambda (path) (eaf-open-in-file-manager path)))
+                                      ("Dired" . (lambda (path)
 						                                       (dired (file-name-directory path))
-						                                       (re-search-forward (file-name-nondirectory path)))))))
+						                                       (re-search-forward (file-name-nondirectory path)))))
+                                    (loop for f in '(find-file
+						                                         org-open-file)
+					                                collect (cons (symbol-name f) f))))
 		                (action . identity)))
-	          path)
+	          path))
       (funcall orgfn context))
       ))
 

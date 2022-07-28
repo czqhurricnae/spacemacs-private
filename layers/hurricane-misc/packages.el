@@ -492,7 +492,7 @@
   (progn
     (smartparens-global-mode t)
     (global-set-key (kbd "C-(") 'hurricane/wrap-sexp-with-new-round-parens)
-    ;; 写 lisp 时不成对补全 "'" 和 "`".
+    ;; 写 lisp 时不成对补全 "'" 和 "`"。
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (setq sp-highlight-pair-overlay t)

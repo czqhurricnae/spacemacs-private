@@ -58,6 +58,7 @@
 (defun hurricane-ui/post-init-pangu-spacing ()
   (progn
     (add-to-list 'pangu-spacing-inhibit-mode-alist 'EAF/file-manager-rename-mode)
+    (add-to-list 'pangu-spacing-inhibit-mode-alist 'eaf-pdf-outline-edit-mode)
     ;; Add toggle options.
     (spacemacs|add-toggle pangu-spaceing
       :status pangu-spacing-mode

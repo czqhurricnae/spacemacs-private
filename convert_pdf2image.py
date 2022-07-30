@@ -4,6 +4,7 @@ import fitz
 
 from typing import Tuple
 import os
+import re
 
 def convert_pdf2img(input_file: str, pages: Tuple = None, relative_dir: str = None, output_dir: str = None):
     """Converts pdf to image and generates a file by page"""
@@ -13,7 +14,7 @@ def convert_pdf2img(input_file: str, pages: Tuple = None, relative_dir: str = No
     # Iterate throughout the pages
     for page_index in range(1, pdf_file.page_count + 1):
         if str(pages) != str(None) and str(pages) != str(""):
-            if str(page_index) not in str(pages):
+            if page_index not in  [int(s) for s in re.findall(r"\b\d+\b", pages)]:
                 continue
         # Select a page
         page = pdf_file[page_index - 1]

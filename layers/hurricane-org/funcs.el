@@ -1025,3 +1025,30 @@ that the point is already within a string."
                         (replace-regexp-in-string "///" "/" (match-string 1 link)))
                        (t
                         link))))))))
+
+(defun hurricane/eaf-open-org-cited-pdf ()
+  (interactive)
+  (let* ((pdf-name (hurricane//extract-value-from-keyword "TITLE"))
+         (pdf-path (hurricane//extract-value-from-keyword "PDF_KEY"))
+         (buffer-id)
+         (buffer-name (current-buffer)))
+
+    (delete-other-windows)
+    (funcall #'split-window-right)
+    (if pdf-path (eaf-open pdf-path) (error "Cited PDF can not find!"))
+
+    (setq buffer-id
+          (car
+           (->> (eaf--get-eaf-buffers)
+                (-map
+                 (lambda (buffer) (with-current-buffer buffer
+                                    (when (string= (format "%s.pdf" pdf-name) (buffer-name))
+                                      eaf--buffer-id))))
+                (-filter (lambda (x) (not (equal x #'nil)))))))
+
+
+    (with-current-buffer (get-buffer-create buffer-name)
+      (eaf-pdf-outline-edit-mode)
+      (set (make-local-variable 'eaf--buffer-id) buffer-id))
+
+    (pop-to-buffer buffer-name)))

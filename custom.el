@@ -70,6 +70,12 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/HFACS/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Search and extract property in Org mode buffer/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Get property of current headline in Org mode buffer/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/合规依据文件清单/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/0407-10-载重与平衡/"))

@@ -139,7 +139,7 @@ This function should only modify configuration layer settings."
                     holy-mode skewer-mode rainbow-delimiters
                     highlight-indentation vi-tilde-fringe eyebrowse
                     org-bullets smooth-scrolling org-repo-todo org-timer
-                    livid-mode git-gutter git-gutter-fringe  evil-escape
+                    livid-mode git-gutter git-gutter-fringe evil-escape
                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
                     ac-ispell ace-jump-mode auto-complete auto-dictionary
                     clang-format define-word google-translate disaster epic
@@ -149,7 +149,7 @@ This function should only modify configuration layer settings."
                     helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp
                     counsel-projectile highlight-parentheses org-pdfview
-                    doc-view org-projectile slime pyim smartparens)
+                    doc-view org-projectile slime pyim)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused

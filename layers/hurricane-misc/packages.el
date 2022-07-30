@@ -1257,6 +1257,7 @@
 
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf-pdf-viewer
+    (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
     (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)

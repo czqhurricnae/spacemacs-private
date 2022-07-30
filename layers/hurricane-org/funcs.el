@@ -9,6 +9,12 @@
   "Default directory name for org dot image."
   :type 'string)
 
+(defconst hurricane--pdf-prop "PDF_KEY"
+  "The pdf property string.")
+
+(defconst hurricane--page-prop "PAGE_KEY"
+  "The page property string.")
+
 (setq buffer-replace-string-rule-lists '(("，" . ",")
                                          ("。" . "\\.")
                                          ("：" . ":")
@@ -1000,7 +1006,17 @@ that the point is already within a string."
   (interactive)
   (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
 
-(defun extract-value-from-keyword (key)
+(defun hurricane//headline-property (prop &optional buffer)
+  "Return the PDF_KEY property of the current headline in BUFFER."
+  (with-current-buffer (or buffer (current-buffer))
+    (org-back-to-heading)
+    (save-excursion
+      (let ((headline (org-element-at-point)))
+        (when (and (equal (org-element-type headline) 'headline)
+                   (org-entry-get nil prop))
+          (org-entry-get nil prop))))))
+
+(defun hurricane//extract-value-from-keyword (key)
   (nth 0 (org-element-map (org-element-parse-buffer) 'keyword
            (lambda (element)
              (when (string= key (org-element-property :key element))

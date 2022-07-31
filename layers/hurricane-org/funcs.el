@@ -1048,7 +1048,7 @@ that the point is already within a string."
 
 
     (with-current-buffer (get-buffer-create buffer-name)
-      (eaf-pdf-outline-edit-mode)
+      (evil-emacs-state)
       (set (make-local-variable 'eaf--buffer-id) buffer-id))
 
     (pop-to-buffer buffer-name)))

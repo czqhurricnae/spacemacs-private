@@ -712,6 +712,7 @@
     :config
     (setq httpd-root blog-dir)))
 
+;; Version: 20220121.2350
 (defun hurricane-org/pre-init-org-roam ()
   (spacemacs|use-package-add-hook org-roam
   :post-init
@@ -761,7 +762,7 @@
        title))
     )
 
-  (setq org-roam-node-display-template "${hierarchy:*} ${tags:20}")
+  (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
   (setq org-roam-extract-new-file-path "${slug}.org")
 
   (cl-defmethod org-roam-node-slug ((node org-roam-node))

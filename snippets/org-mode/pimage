@@ -3,4 +3,4 @@
 # key: pimag
 # --
 
-#+transclude: [[~/.spacemacs.d/convert_pdf2image.py]] :disable-auto :src python :rest ":python python3 :var input_file=(or (hurricane//headline-property hurricane--pdf-prop) (hurricane//extract-value-from-keyword "PDF_KEY")) pages=(or (hurricane//headline-property hurricane--page-prop) (hurricane//extract-value-from-keyword "PAGE_KEY")) relative_dir=(concat "./static/" (file-name-sans-extension (buffer-name)) "/") output_dir=(concat default-directory "static/" (file-name-sans-extension (buffer-name)) "/") :results raw output :exporte no-eval"
+#+transclude: [[~/.spacemacs.d/convert_pdf2image.py]] :src python :rest ":python python3 :var input_file=(or (hurricane//headline-property hurricane--pdf-prop) (hurricane//extract-value-from-keyword "PDF_KEY")) pages=(or (hurricane//headline-property hurricane--page-prop) (hurricane//extract-value-from-keyword "PAGE_KEY")) relative_dir=(concat "./static/" (file-name-sans-extension (buffer-name)) "/") output_dir=(concat default-directory "static/" (file-name-sans-extension (buffer-name)) "/") :results raw output :exporte no-eval"

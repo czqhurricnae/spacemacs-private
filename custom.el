@@ -70,6 +70,14 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/AC-396-AS-2009-03 民航不安全事件信息填报规范/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/事件信息填报和处理规范（征求意见稿）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR-396 民用航空安全信息管理规定/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/航空公司安全管理系统（SMS）项目的建设与应用研究/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/HFACS/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Search and extract property in Org mode buffer/"))

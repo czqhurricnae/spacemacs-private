@@ -70,6 +70,14 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/8202-4 质量调查工作程序/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/0407-10 载重与平衡/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/飞机结构图纸识读与常用维修手册使用_第二版/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/AC-396-AS-2016-08 事件样例/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/AC-396-AS-2009-03 民航不安全事件信息填报规范/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/事件信息填报和处理规范（征求意见稿）/"))
@@ -1582,8 +1590,6 @@
  '(expand-region-reset-fast-key "r")
  '(helm-move-to-line-cycle-in-source t)
  '(set-face-attribute ((t ('sp-show-pair-match-face nil :foreground 'unspecified :background 'unspecified))))
- '(set-frame-parameter ((t (nil 'background-mode 'dark))))
- '(set-terminal-parameter ((t (nil 'background-mode 'dark))))
  '(spacemacs-iedit-face ((t (:background "firebrick1" :foreground "#2075c7" :inherit 'mode-line))))
  '(spacemacs-iedit-insert-face ((t (:background "firebrick1" :foreground "#2075c7" :inherit 'mode-line))))
  '(which-func ((t (:inherit modeline)))))

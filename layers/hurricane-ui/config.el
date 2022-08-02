@@ -1,5 +1,3 @@
-(set-terminal-parameter nil 'background-mode 'dark)
-(set-frame-parameter nil 'background-mode 'dark)
 (display-time-mode 1)
 (setq my-flycheck-mode-line
         '(:eval

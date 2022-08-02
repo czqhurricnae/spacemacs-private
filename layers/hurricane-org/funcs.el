@@ -1028,8 +1028,8 @@ that the point is already within a string."
 
 (defun hurricane/eaf-open-org-cited-pdf ()
   (interactive)
-  (let* ((pdf-name (hurricane//extract-value-from-keyword "TITLE"))
-         (pdf-path (hurricane//extract-value-from-keyword "PDF_KEY"))
+  (let* ((pdf-path (hurricane//extract-value-from-keyword "PDF_KEY"))
+         (pdf-name (or (and pdf-path (file-name-sans-extension (file-name-nondirectory pdf-path))) (hurricane//extract-value-from-keyword "TITLE")))
          (buffer-id)
          (buffer-name (current-buffer)))
 

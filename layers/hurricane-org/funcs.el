@@ -1009,7 +1009,7 @@ that the point is already within a string."
 (defun hurricane//headline-property (prop &optional buffer)
   "Return the PDF_KEY property of the current headline in BUFFER."
   (with-current-buffer (or buffer (current-buffer))
-    (org-back-to-heading)
+    (ignore-errors (org-back-to-heading))
     (save-excursion
       (let ((headline (org-element-at-point)))
         (when (and (equal (org-element-type headline) 'headline)

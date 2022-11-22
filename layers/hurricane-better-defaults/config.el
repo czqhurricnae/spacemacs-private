@@ -73,7 +73,7 @@
 ;; Don't ask me when close emacs with process is running.
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   "Prevent annoying `Active processes exist' query when you quit Emacs."
-  (cl-letf (((symbol-function #'process-list) (lambda ())))  ad-do-it))
+  (cl-letf (((symbol-function 'process-list) (lambda ())))  ad-do-it))
 
 ;; Don't ask me when kill process buffer.
 (setq kill-buffer-query-functions
@@ -86,7 +86,7 @@
     (and (fboundp 'recentf-cleanup)
          (recentf-cleanup))))
 
-(add-hook 'kill-emacs-hook #'czqhuricane//cleanup-recentf)
+(add-hook 'kill-emacs-hook 'czqhuricane//cleanup-recentf)
 
 ;; Change evil initial mode state.
 (menu-bar-mode t)
@@ -120,8 +120,8 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
   :init-value nil
   :lighter (" DC")
   (if dubcaps-mode
-      (add-hook 'post-self-insert-hook #'dcaps-to-scaps nil 'local)
-    (remove-hook 'post-self-insert-hook #'dcaps-to-scaps 'local)))
+      (add-hook 'post-self-insert-hook 'dcaps-to-scaps nil 'local)
+    (remove-hook 'post-self-insert-hook 'dcaps-to-scaps 'local)))
 
 (defun spacemacs/check-large-file ()
   (when (> (buffer-size) 5000000)
@@ -144,7 +144,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
           (make-directory dir t))))))
 
 (add-hook 'minibuffer-inactive-mode-hook
-          #'(lambda() (set (make-local-variable 'semantic-mode) nil)
+          '(lambda() (set (make-local-variable 'semantic-mode) nil)
               (set (make-local-variable 'electric-pair-mode) nil)))
 
 ;; {{
@@ -213,11 +213,11 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
                  ;; In case lexical-binding is off.
                  `(lambda (_)
                     (message "Removing %s of advice from %s" ',function ',advice)
-                    (advice-remove ',function #',advice)
+                    (advice-remove ',function ',advice)
                     (revert-buffer nil t))
                  'follow-link t)))))))))
 
-(advice-add 'describe-function-1 :after #'hurricane//advice-remove-button)
+(advice-add 'describe-function-1 :after 'hurricane//advice-remove-button)
 ;; }}
 
 ;; 使用 `counsel-git' 查找文件的时候，忽略指定后缀的文件.

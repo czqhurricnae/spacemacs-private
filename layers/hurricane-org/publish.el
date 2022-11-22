@@ -102,7 +102,7 @@
                    (properties (org-roam-backlink-properties backlink))
                    (outline (when-let ((outline (plist-get properties :outline)))
                               (when (> (length outline) 1)
-                                (mapconcat #'org-link-display-format outline " > "))))
+                                (mapconcat 'org-link-display-format outline " > "))))
                    (point (org-roam-backlink-point backlink))
                    (text (s-replace "\n" " " (org-roam-preview-get-contents
                                               source-file
@@ -146,7 +146,7 @@
 
 (with-eval-after-load 'ox-html
   (add-to-list 'org-export-filter-src-block-functions
-               #'hurricane//org-html-wrap-blocks-in-code))
+               'hurricane//org-html-wrap-blocks-in-code))
 
 (defun batch-export-org-files-to-md (dir)
   "Export all org files in directory DIR to markdown."

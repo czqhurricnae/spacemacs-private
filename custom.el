@@ -59,7 +59,7 @@
 %%% 设置页面边距 %%%
 \\usepackage[top=2.54cm, bottom=2.54cm, left=3.17cm, right=3.17cm]{geometry}"))
  '(package-selected-packages
-   '(eaf helm-org-rifle helm-gtags company-lua lua-mode wrap-region visual-regexp-steroids visual-regexp use-package-ensure-system-package system-packages cfrs pfuture tiny string-edit standardfmt sphinx-doc spaceline-all-the-icons memoize language-detection shell-pop shackle rjsx-mode rainbow-identifiers quickrun pydoc prodigy prettier-js poetry pippel pipenv peep-dired password-generator overseer osx-clipboard orgit-forge org-rich-yank pretty-hydra org-contrib org org-cliplink ob-restclient ob-http npm-mode nose nameless multi-term multi-line shut-up mpv json-navigator hierarchy ivy-xref ivy-rtags ivy-purpose window-purpose imenu-list ivy-avy inspector importmagic epc ctable concurrent highlight-global helm-github-stars graphviz-dot-mode google-c-style good-scroll gitignore-templates git-modes ggtags gendoxy forge yaml closql treepy flycheck-rtags flycheck-package flycheck-elsa find-by-pinyin-dired evil-textobj-line evil-lion evil-goggles evil-easymotion evil-collection annalist evil-cleverparens eslintfmt eshell-z eshell-prompt-extras esh-help emr paredit list-utils emacsql emacs-everywhere e2ansi face-explorer drag-stuff discover-my-major makey dired-rsync dired-quick-sort cpp-auto-include counsel-css company-rtags company-restclient know-your-http-well company-reftex company-math math-symbol-lists chinese-conv centered-cursor-mode ht auctex-latexmk atomic-chrome ace-pinyin 4clojure org-media-note org-xournal emacsql-sqlite shrface anki-editor thing-edit with-proxy yasnippet-snippets xterm-color writeroom-mode visual-fill-column vterm treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil treemacs tide typescript-mode terminal-here symbol-overlay string-inflection rime ranger rainbow-mode org-tree-slide org-superstar org-roam org-re-reveal org-brain magit-section ivy-yasnippet ivy-posframe posframe impatient-mode ibuffer-projectile evil-org transient engine-mode polymode editorconfig doom-themes counsel-gtags company-auctex color-identifiers-mode browse-at-remote blacken awesome-tab auctex pinyinlib restclient rtags package-lint all-the-icons hide-mode-line pythonfmt doom-modeline shrink-path latex-preview-pane org2ctex color-rg doom-todo-ivy pangu-spacing org-protocol-capture-html pandoc-mode elpy find-file-in-project dash-at-point org-plus-contrib ghub org-mime nodejs-repl slime ob-ipython virtualenvwrapper ox-reveal ox-gfm ein websocket flycheck-ycmd company-ycmd ycmd request-deferred let-alist deferred company-quickhelp vimish-fold origami web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode haml-mode emmet-mode company-web web-completion-data reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl color-theme-solarized color-theme mic-paren pyim pyim-basedict fasd youdao-dictionary names chinese-word-at-point wgrep smex pdf-tools tablist org-category-capture ivy-hydra flyspell-correct-ivy disaster counsel-projectile counsel swiper company-c-headers cmake-mode clang-format ivy unfill smeargle orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit git-commit with-editor company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))
+   '(blink-search dupan eaf helm-org-rifle helm-gtags company-lua lua-mode wrap-region visual-regexp-steroids visual-regexp use-package-ensure-system-package system-packages cfrs pfuture tiny string-edit standardfmt sphinx-doc spaceline-all-the-icons memoize language-detection shell-pop shackle rjsx-mode rainbow-identifiers quickrun pydoc prodigy prettier-js poetry pippel pipenv peep-dired password-generator overseer osx-clipboard orgit-forge org-rich-yank pretty-hydra org-contrib org org-cliplink ob-restclient ob-http npm-mode nose nameless multi-term multi-line shut-up mpv json-navigator hierarchy ivy-xref ivy-rtags ivy-purpose window-purpose imenu-list ivy-avy inspector importmagic epc ctable concurrent highlight-global helm-github-stars graphviz-dot-mode google-c-style good-scroll gitignore-templates git-modes ggtags gendoxy forge yaml closql treepy flycheck-rtags flycheck-package flycheck-elsa find-by-pinyin-dired evil-textobj-line evil-lion evil-goggles evil-easymotion evil-collection annalist evil-cleverparens eslintfmt eshell-z eshell-prompt-extras esh-help emr paredit list-utils emacsql emacs-everywhere e2ansi face-explorer drag-stuff discover-my-major makey dired-rsync dired-quick-sort cpp-auto-include counsel-css company-rtags company-restclient know-your-http-well company-reftex company-math math-symbol-lists chinese-conv centered-cursor-mode ht auctex-latexmk atomic-chrome ace-pinyin 4clojure org-media-note org-xournal emacsql-sqlite shrface anki-editor thing-edit with-proxy yasnippet-snippets xterm-color writeroom-mode visual-fill-column vterm treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil treemacs tide typescript-mode terminal-here symbol-overlay string-inflection rime ranger rainbow-mode org-tree-slide org-superstar org-roam org-re-reveal org-brain magit-section ivy-yasnippet ivy-posframe posframe impatient-mode ibuffer-projectile evil-org transient engine-mode polymode editorconfig doom-themes counsel-gtags company-auctex color-identifiers-mode browse-at-remote blacken awesome-tab auctex pinyinlib restclient rtags package-lint all-the-icons hide-mode-line pythonfmt doom-modeline shrink-path latex-preview-pane org2ctex color-rg doom-todo-ivy pangu-spacing org-protocol-capture-html pandoc-mode elpy find-file-in-project dash-at-point org-plus-contrib ghub org-mime nodejs-repl slime ob-ipython virtualenvwrapper ox-reveal ox-gfm ein websocket flycheck-ycmd company-ycmd ycmd request-deferred let-alist deferred company-quickhelp vimish-fold origami web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc company-tern dash-functional tern coffee-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode less-css-mode haml-mode emmet-mode company-web web-completion-data reveal-in-osx-finder pbcopy osx-trash osx-dictionary launchctl color-theme-solarized color-theme mic-paren pyim pyim-basedict fasd youdao-dictionary names chinese-word-at-point wgrep smex pdf-tools tablist org-category-capture ivy-hydra flyspell-correct-ivy disaster counsel-projectile counsel swiper company-c-headers cmake-mode clang-format ivy unfill smeargle orgit org-projectile org-present org-pomodoro alert log4e gntp org-download mwim mmm-mode markdown-toc markdown-mode magit-gitflow htmlize helm-gitignore helm-company helm-c-yasnippet gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit git-commit with-editor company-statistics company-anaconda company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))
  '(pangu-spacing-inhibit-mode-alist
    '(eshell-mode shell-mode term-mode dired-mode fundamental-mode text-mode))
  '(paradox-github-token t)
@@ -70,6 +70,104 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 前起落架转弯系统/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/飞机发动机磁堵监控检查/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/关于民航机务维修无后果违章排查治理方案的研究/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 上显示组件显示异常故障分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/发动机滑油消耗监控的新方法/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/维修单位质量审核的类型和侧重点分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/问题处理平台（FPP）在民航维修质量管理过程中的应用/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/基于 ACARS 数据的民航发动机状态监控研究/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/ACARS/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/机务维修中的质量审核方法分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR-145/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CFM56-7B 发动机起动活门的监控方式/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 高级调节器（HSR）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/引气渗漏/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 发动机引气系统健康状况监控/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/航空发动机状态监控/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR-39 民用航空器适航指令规定/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Oracle 字符集之中文乱码分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/基于 QAR 的 CFM56-5B 发动机高高原冷发启动困难研究/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/民航发动机送修方案制定及其应用系统开发/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Docker 上 Oracle  字符集乱码问题解决/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Mac 查询 java 版本/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/maven 构建/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Docker 上 Oracle 字符集乱码问题解决/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/cascade constraints/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/cascade constraints /"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Mac 安装 oracle/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/放气活门故障在开位对 EGT 的影响/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG EGT/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/发动机性能监控/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/IDG/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 接线盒位置/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG APU gen off bus/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/卸载继电器/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/双电瓶远程控制断路器/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG GCB/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG gen off bus 灯亮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG source off 灯亮处置预案/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/如何对付飞机上的老鼠"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG APB/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG source off 灯亮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG GCU/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/工程安全健康状态管理（ManagementEngineering Safety Health，MESH）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/关键事件评定技术（Critical Incident Technique，CIT）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/主动的安全分析方法/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/违章/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/ABC 分类法/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/员工主动报告的激励机制不足/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/维修方案的优化/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/8202-4 质量调查工作程序/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/0407-10 载重与平衡/"))
@@ -1574,7 +1672,8 @@
     (cons 320 "#dfb0a5")
     (cons 340 "#D6D6D6")
     (cons 360 "#D6D6D6")))
- '(vc-annotate-very-old-color nil))
+ '(vc-annotate-very-old-color nil)
+ '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

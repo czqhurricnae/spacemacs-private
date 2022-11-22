@@ -130,5 +130,5 @@
         (hurricane/better-font))))
 
 (if (and (fboundp 'daemonp) (daemonp))
-    (add-hook 'after-make-frame-functions #'hurricane/init-font)
+    (add-hook 'after-make-frame-functions 'hurricane/init-font)
   (hurricane/better-font))

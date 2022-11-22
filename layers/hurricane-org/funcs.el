@@ -400,7 +400,7 @@ should only be used in org-mode."
   (when buffer-file-name
     (push buffer-file-name killed-file-list)))
 
-(add-hook 'kill-buffer-hook #'add-file-to-killed-file-list)
+(add-hook 'kill-buffer-hook 'add-file-to-killed-file-list)
 
 (defun reopen-killed-file ()
   "Reopen the most recently killed file, if one exists."
@@ -447,7 +447,7 @@ should only be used in org-mode."
     (unless noinsert
       (insert output-string))
     output-string))
-
+;; $ brew install terminal-notifier
 (defun hurricane//notify-osx (title message)
   (call-process "terminal-notifier"
                 nil 0 nil
@@ -497,7 +497,7 @@ should only be used in org-mode."
         (defun callback-imageoptim()
           (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
             (eshell-command cmd)))
-        ;; (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
+        ;; (install-monitor-file-exists absolute-full-file-path 1 'callback-imageoptim)
         (insert (concat "[[file:" full-file-path "]]"))
         (evil-normal-state)))))
 ;; }}
@@ -525,7 +525,7 @@ and insert a link to this file."
           (let* ((cmd (format "python %s \"%s\"" Baidu-OCR-Python-file absolute-full-file-path)))
             (eshell-command "workon ipy3")
             (eshell-command cmd)))
-        (install-monitor-file-exists absolute-full-file-path 1 #'callback-BaiduOcr)))))
+        (install-monitor-file-exists absolute-full-file-path 1 'callback-BaiduOcr)))))
 
 (defun hurricane/org-insert-caption-and-target ()
   (interactive)
@@ -828,7 +828,7 @@ epoch to the beginning of today (00:00)."
                                      (properties (org-roam-backlink-properties backlink))
                                      (outline (when-let ((outline (plist-get properties :outline)))
                                                 (when (> (length outline) 1)
-                                                  (mapconcat #'org-link-display-format outline " > "))))
+                                                  (mapconcat 'org-link-display-format outline " > "))))
                                      (point (org-roam-backlink-point backlink))
                                      (text (s-replace "\n" " " (org-roam-preview-get-contents
                                                                 source-file
@@ -938,7 +938,7 @@ that the point is already within a string."
 
 (with-eval-after-load 'ox-html
   (add-to-list 'org-export-filter-src-block-functions
-               #'hurricane//org-html-wrap-blocks-in-code))
+               'hurricane//org-html-wrap-blocks-in-code))
 
 (defun hurricane//string-starts-with (string prefix)
   "Return t if STRING starts with prefix."
@@ -953,7 +953,7 @@ that the point is already within a string."
 
 (with-eval-after-load 'ox-html
   (add-to-list 'org-export-filter-special-block-functions
-               #'hurricane//html-process-field-blocks))
+               'hurricane//html-process-field-blocks))
 
 (defun hurricane//org-image-link-open (orgfn context &optional args)
   (when-let ((link (plist-get context 'link))
@@ -1000,7 +1000,7 @@ that the point is already within a string."
       (funcall orgfn context))
       ))
 
-(advice-add 'org-link-open :around #'hurricane//org-image-link-open)
+(advice-add 'org-link-open :around 'hurricane//org-image-link-open)
 
 (defun hurricane/html-table-to-org-table-converter ()
   (interactive)
@@ -1034,7 +1034,7 @@ that the point is already within a string."
          (buffer-name (current-buffer)))
 
     (delete-other-windows)
-    (funcall #'split-window-right)
+    (funcall 'split-window-right)
     (if pdf-path (eaf-open pdf-path) (error "Cited PDF can not find!"))
 
     (setq buffer-id
@@ -1044,7 +1044,7 @@ that the point is already within a string."
                  (lambda (buffer) (with-current-buffer buffer
                                     (when (string= (format "%s.pdf" pdf-name) (buffer-name))
                                       eaf--buffer-id))))
-                (-filter (lambda (x) (not (equal x #'nil)))))))
+                (-filter (lambda (x) (not (equal x 'nil)))))))
 
 
     (with-current-buffer (get-buffer-create buffer-name)
@@ -1052,3 +1052,4 @@ that the point is already within a string."
       (set (make-local-variable 'eaf--buffer-id) buffer-id))
 
     (pop-to-buffer buffer-name)))
+

@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(lua
+   '(sql
+     lua
      ivy
      better-defaults
      ranger
@@ -106,7 +107,8 @@ This function should only modify configuration layer settings."
           org-enable-roam-server t
           org-roam-v2-ack t
           org-enable-valign t
-          org-enable-hugo-support t)
+          org-enable-hugo-support t
+          org-enable-transclusion-support t)
      ;; Must ensure fasd installed first.
      ;; brew install fasd
      fasd
@@ -115,11 +117,12 @@ This function should only modify configuration layer settings."
                         layouts-autosave-delay 300)
      theming
      (chinese :variables
-              chinese-default-input-method 'pinyin
+              chinese-default-input-method nil
               chinese-enable-youdao-dict t)
      tern
      (eaf :variables
-          eaf-pdf-dark-mode nil)
+          eaf-pdf-dark-mode nil
+          browse-url-browser-function 'browse-url-default-browser)
      hurricane
      )
    ;; List of additional packages that will be installed without being
@@ -171,7 +174,7 @@ It should only modify the values of Spacemacs settings."
    ;; to compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
    ;; (default nil)
-   dotspacemacs-enable-emacs-pdumper t
+   dotspacemacs-enable-emacs-pdumper nil
 
    ;; Name of executable file pointing to emacs 27+. This executable must be
    ;; in your PATH.
@@ -733,6 +736,14 @@ you should place your code here."
   (global-page-break-lines-mode -1)
   (require 'org-protocol)
   (savehist-mode -1)
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (require 'helm)
+  (setq helm-pdfgrep-default-read-command 'eaf-pdf-jump-to-page)
+  (defun helm-pdfgrep-action-1 (_split pageno fname)
+    (print fname)
+    (let* ((pdf-file-name (substring-no-properties fname)))
+      (run-hook-with-args-until-success 'helm-pdfgrep-default-read-command pdf-file-name pageno)))
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

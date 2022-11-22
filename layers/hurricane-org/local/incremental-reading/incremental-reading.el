@@ -160,7 +160,7 @@ and return a list with the field-name and the parsed-contents."
           ;; Transform all the separate paragraphs and elements to a single
           ;; string.
           (cl-reduce (lambda (a b) (format "%s\n%s" a b))
-                     (mapcar #'incremental-reading--transform-field-content
+                     (mapcar 'incremental-reading--transform-field-content
                              field-contents))))
     `(,field-name . ,parsed-contents)))
 
@@ -245,7 +245,7 @@ send them to Anki through http to the anki-connect addon."
                                    (b-begin (org-element-property :begin b)))
                               (> a-begin b-begin)))))
   ;; Process each anki-block
-  (mapcar #'incremental-reading-parse-card
+  (mapcar 'incremental-reading-parse-card
           anki-blocks))
 
 (defun incremental-reading-parse-card (anki-block)
@@ -271,7 +271,7 @@ send them to Anki through http to the anki-connect addon."
                   (url-hexify-string current-file)
                   (org-html-encode-plain-text current-file)))
          (field (assoc field-name anki-card-fields)))
-        (setf (alist-get field-name anki-card-fields nil nil #'equal)
+        (setf (alist-get field-name anki-card-fields nil nil 'equal)
               (concat (cdr field) source-string))
       (nconc anki-card-fields `((,field-name . ,source-string))))
     (if id
@@ -282,13 +282,11 @@ send them to Anki through http to the anki-connect addon."
                                              tags
                                              anki-block))))
 
-
 (defun incremental-reading--extract-text (selection-start selection-end)
   "Extract the substring on region with SELECTION-START and
   SELECTION-END and return a substring without properties."
   (buffer-substring-no-properties selection-start
                                   selection-end))
-
 
 (defun incremental-reading-get-tags ()
   "Get the tags of the current heading."
@@ -300,7 +298,6 @@ send them to Anki through http to the anki-connect addon."
                          (org-roam-node-tags (org-roam-node-at-point)) " ")
             (mapconcat 'identity (split-string (org-get-tags-string) ":" t) " ")
             )))
-
 
 ;;;###autoload
 (defun incremental-reading-extract-basic ()
@@ -316,7 +313,6 @@ send them to Anki through http to the anki-connect addon."
                     tags
                     (incremental-reading--extract-text selection-start
                                                        selection-end)))))
-
 
 ;;;###autoload
 (defun incremental-reading-extract-basic-no-back ()
@@ -334,7 +330,6 @@ field."
                     (incremental-reading--extract-text selection-start
                                                        selection-end)))))
 
-
 ;;;###autoload
 (defun incremental-reading-extract-cloze ()
 "Extract current region into a cloze anki card."
@@ -349,7 +344,6 @@ field."
                   tags
                   (incremental-reading--extract-text selection-start
                                                      selection-end)))))
-
 
 ;;;###autoload
 (defun incremental-reading-extract-cloze-no-back ()

@@ -8,7 +8,7 @@
      '(progn
         (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
         ;; Force update evil keymaps after git-timemachine-mode loaded.
-        (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
+        (add-hook (quote ,(intern (concat m "-mode-hook"))) 'evil-normalize-keymaps))))
 
 (defun hurricane/insert-semicolon-at-the-end-of-this-line ()
   "Insert `;' at the end of current line."
@@ -120,7 +120,7 @@
              (progn (setq this-command nil)
                     (point-max))
            fill-column)))
-    (call-interactively #'fill-paragraph)))
+    (call-interactively 'fill-paragraph)))
 
 (defun hurricane//unwind-git-timemachine ()
   (if (not (eq last-command-event 13))
@@ -137,7 +137,7 @@
                   (git-timemachine--revisions)))
     (ivy-read "commits:"
               collection
-              :unwind #'hurricane//unwind-git-timemachine
+              :unwind 'hurricane//unwind-git-timemachine
               :action (lambda (rev)
                         (git-timemachine-show-revision (cdr rev))))))
 
@@ -147,7 +147,7 @@ Based on ivy-mode."
   (interactive)
   (unless (featurep 'git-timemachine)
     (require 'git-timemachine))
-  (git-timemachine--start #'hurricane//git-timemachine-show-selected-revision))
+  (git-timemachine--start 'hurricane//git-timemachine-show-selected-revision))
 
 (defun hurricane/helm-hotspots ()
   "Helm interface to my hotspots, which includes my locations,
@@ -412,8 +412,8 @@ If the buffer is currently not visible, makes it sticky."
   (interactive "P")
   (let ((current-prefix-arg nil))
     (call-interactively
-     (if p #'swiper-thing-at-point
-       #'counsel-grep-or-swiper))))
+     (if p 'swiper-thing-at-point
+       'counsel-grep-or-swiper))))
 
 (defun hurricane/counsel-goto-recent-directory ()
   "Recent directories."
@@ -687,7 +687,7 @@ If a change in `file-attributes' happended call FUNC."
     (defun callback-replace-unexpected-string-in-file ()
       (replace-unexpected-string-in-file org-file-name org-replace-string-rule-lists))
 
-    (install-monitor-file-exists org-file-name 1 #'callback-replace-unexpected-string-in-file)
+    (install-monitor-file-exists org-file-name 1 'callback-replace-unexpected-string-in-file)
     (insert-header-to-org-content file-name))
 
 (defun hurricane//org-as-mac-iTerm2-get-link ()
@@ -713,7 +713,7 @@ If a change in `file-attributes' happended call FUNC."
 ;;   (let ((script
 ;;          (format
 ;;            (mapconcat
-;;              #'identity
+;;              'identity
 ;;              '("tell application \"System Events\" to tell process \"SystemUIServer\""
 ;;                "set result to get the value of the first menu bar item of menu bar 1 whose description is \"text input\""
 ;;                "set englishInputSourceIsSelected to result is \"%s\""
@@ -750,7 +750,7 @@ If a change in `file-attributes' happended call FUNC."
   "Return `Chrome' tabs."
   (let ((script
          (mapconcat
-          #'identity
+          'identity
           '("set titleString to return"
             ""
             "tell application \"Google Chrome\""
@@ -824,7 +824,7 @@ If a change in `file-attributes' happended call FUNC."
 
 (defun hurricane//chrome-close-tab-action (x)
   (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
-    (run-with-idle-timer 0.5 nil #'hurricane//chrome-close-tab-1 (nth 0 window-id-and-tab-id-and-tab-url) (nth 1 window-id-and-tab-id-and-tab-url))))
+    (run-with-idle-timer 0.5 nil 'hurricane//chrome-close-tab-1 (nth 0 window-id-and-tab-id-and-tab-url) (nth 1 window-id-and-tab-id-and-tab-url))))
 
 (defun hurricane//chrome-copy-tab-url-action (x)
   (let ((window-id-and-tab-id-and-tab-url (hurricane//chrome-get-window-id-and-tab-id-and-tab-url-from-x x)))
@@ -1033,7 +1033,7 @@ Image file name is generated from `match-end' position string."
     (defun callback-insert-header-to-org-content ()
       (insert-header-to-org-content file-name))
 
-    (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content))
+    (install-monitor-file-exists org-file-name 1 'callback-insert-header-to-org-content))
 
 (defvar hurricane-proxy  "127.0.0.1:1087")
 

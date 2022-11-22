@@ -277,7 +277,7 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 
     (when (file-exists-p file)
       ;; initialize hash table whose key is from a...z
-      (setq content (make-hash-table :test #'equal))
+      (setq content (make-hash-table :test 'equal))
 
       ;; read content of file
       (setq raw-content (mybigword-read-file file))
@@ -381,8 +381,8 @@ FILE is the file path."
 ;;;###autoload
 (defun mybigword-extract-words (text)
   "Words whose usage frequency is below `mybigword-upper-limit' in TEXT."
-  (let* ((raw-words (mapcar #'downcase (split-string text "[^A-Za-z]+")))
-         (words (delq nil (delete-dups (sort raw-words #'string<))))
+  (let* ((raw-words (mapcar 'downcase (split-string text "[^A-Za-z]+")))
+         (words (delq nil (delete-dups (sort raw-words 'string<))))
          h str
          rlt)
 
@@ -458,7 +458,7 @@ FILE is the file path."
 
 (defun mybigword-adjust-start-time (start-time)
   "Rewind back START-TIME a few seconds."
-  (let* ((a (mapcar #'string-to-number (split-string start-time ":")))
+  (let* ((a (mapcar 'string-to-number (split-string start-time ":")))
          h m s)
     (setq s (- (nth 2 a) mybigword-mplayer-rewind-time))
     (setq m (nth 1 a))
@@ -676,8 +676,8 @@ If QUIET is t, no message output."
   (let* ((video-files (and directory
                            (find-lisp-find-files-internal
                             directory
-                            #'mybigword-find-file-predicate
-                            #'mybigword-find-directory-predicate)))
+                            'mybigword-find-file-predicate
+                            'mybigword-find-directory-predicate)))
          (cnt (length video-files))
          (i 0))
     (when (> cnt 0)

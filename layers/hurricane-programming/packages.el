@@ -19,7 +19,7 @@
     (yas-global-mode 1)
     (set-face-background 'secondary-selection "gray")
     (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
-    (mapc '(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
+    (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
                                                                       org-mode-hook
                                                                       markdown-mode-hook))
     (spacemacs/add-to-hooks 'hurricane//load-yasnippet '(prog-mode-hook
@@ -172,10 +172,10 @@ variables such as `exec-path'."
 ;;       (if (buffer-file-name)
 ;;           (if (string-match (car my-pair) buffer-file-name)
 ;;               (funcall (cdr my-pair)))))
-;;     (add-hook 'web-mode-hook '(lambda ()
+;;     (add-hook 'web-mode-hook #'(lambda ()
 ;;                                  (enable-minor-mode
 ;;                                   '("\\.js?\\'" . prettier-js-mode))))
-;;     (add-hook 'web-mode-hook '(lambda ()
+;;     (add-hook 'web-mode-hook #'(lambda ()
 ;;                                  (enable-minor-mode
 ;;                                   '("\\.jsx?\\'" . prettier-js-mode))))))
 ;; }}
@@ -183,18 +183,18 @@ variables such as `exec-path'."
 (defun hurricane-programming/init-standardfmt ()
   (use-package standardfmt
     :config
-    (add-hook 'rjsx-mode-hook 'standardfmt-mode)))
+    (add-hook 'rjsx-mode-hook #'standardfmt-mode)))
 
 (defun hurricane-programming/init-eslintfmt ()
   (use-package eslintfmt
     :config
     (setq eslintfmt-command-args (list "--config" eslintfmt-configuration-file))
-    (add-hook 'js-mode-hook 'eslintfmt-mode)
-    (add-hook 'js2-mode-hook 'eslintfmt-mode)))
+    (add-hook 'js-mode-hook #'eslintfmt-mode)
+    (add-hook 'js2-mode-hook #'eslintfmt-mode)))
 
-(defun hurricane-programming/init-pythonfmt ()
-  (use-package pythonfmt
-    :config
-    (setq pythonfmt-command "yapf")
-    (setq pythonfmt-command-args "-i")
-    (add-hook 'python-mode-hook 'pythonfmt-mode)))
+;; (defun hurricane-programming/init-pythonfmt ()
+;;   (use-package pythonfmt
+;;     :config
+;;     (setq pythonfmt-command "yapf")
+;;     (setq pythonfmt-command-args "-i")
+;;     (add-hook 'python-mode-hook #'pythonfmt-mode)))

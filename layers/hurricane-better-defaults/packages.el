@@ -40,7 +40,7 @@
     (add-hook 'youdao-dictionary-mode-hook
               (lambda ()
                 (define-key evil-normal-state-local-map
-                  (kbd "h") 'youdao-dictionary-hydra/body)))))
+                  (kbd "h") #'youdao-dictionary-hydra/body)))))
 
 (defun hurricane-better-defaults/init-mic-paren ()
   (use-package mic-paren
@@ -128,8 +128,8 @@
     (defvar dired-filelist-cmd
       '(("vlc" "-L")))
 
-    ;; (evil-define-key 'normal dired-mode-map (kbd "W") 'hurricane//dired-copy-filename-as-kill)
-    (evil-define-key 'normal dired-mode-map (kbd "/") 'hurricane/open-file-with-projectile-or-counsel-git)
+    ;; (evil-define-key 'normal dired-mode-map (kbd "W") #'hurricane//dired-copy-filename-as-kill)
+    (evil-define-key 'normal dired-mode-map (kbd "/") #'hurricane/open-file-with-projectile-or-counsel-git)
 
     ;; FIXME: Evilify dired mode will lead to startup warnings.
     (evilified-state-evilify-map dired-mode-map
@@ -137,23 +137,22 @@
       :bindings
       "E" 'dired-toggle-read-only
       "C" 'dired-do-copy
-      "<mouse-2>" 'hurricane//dired-find-file
-      "`" 'eaf-open-in-file-manager
-      "p" 'peep-dired-prev-file
-      "n" 'peep-dired-next-file
-      "z" 'dired-get-size
-      "c" 'hurricane/dired-copy-file-here
-      "/" 'hurricane/open-file-with-projectile-or-counsel-git
-      ")" 'dired-omit-mode
-      ;; "W" 'hurricane//dired-copy-filename-as-kill
+      "<mouse-2>" #'hurricane//dired-find-file
+      "`" #'eaf-open-in-file-manager
+      "p" #'peep-dired-prev-file
+      "n" #'peep-dired-next-file
+      "z" #'dired-get-size
+      "c" #'hurricane/dired-copy-file-here
+      "/" #'hurricane/open-file-with-projectile-or-counsel-git
+      ")" #'dired-omit-mode
+      ;; "W" #'hurricane//dired-copy-filename-as-kill
       )))
 
 (defun hurricane-better-defaults/init-profiler ()
   (use-package profiler
     :defer t
     :init
-    (evilified-state-evilify-map profiler-report-mode-map
-      :mode profiler-report-mode)))
+    (evilified-state-evilify profiler-report-mode profiler-report-mode-map)))
 
 (defun hurricane-better-defaults/post-init-occur-mode ()
   "Auto switch to `occur buffer'."
@@ -209,7 +208,7 @@
     (evilified-state-evilify-map image-mode-map
       :mode image-mode
       :bindings
-      "n" 'image-next-file)))
+      "n" #'image-next-file)))
 
 (defun hurricane-better-defaults/init-dired+ ()
   (use-package dired+
@@ -224,10 +223,10 @@
       (toggle-diredp-find-file-reuse-dir 1)
       )
     :config
-    (evil-define-key 'normal dired-mode-map (kbd "W") 'diredp-copy-abs-filenames-as-kill)
+    (evil-define-key 'normal dired-mode-map (kbd "W") #'diredp-copy-abs-filenames-as-kill)
 
     (evilified-state-evilify-map dired-mode-map
       :mode dired-mode
       :bindings
-      "W" 'diredp-copy-abs-filenames-as-kill
+      "W" #'diredp-copy-abs-filenames-as-kill
       )))

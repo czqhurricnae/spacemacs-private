@@ -546,14 +546,14 @@
     (global-set-key (kbd "M-'") 'avy-goto-char-2)))
 
 (defun hurricane-misc/post-init-ace-window ()
-  (global-set-key (kbd "C-x C-o") 'ace-window))
+  (global-set-key (kbd "C-x C-o") #'ace-window))
 
 (defun hurricane-misc/init-discover-my-major ()
   (use-package discover-my-major
     :defer t
     :init
     (progn
-      (spacemacs/set-leader-keys (kbd "mhm") 'discover-my-major))))
+      (spacemacs/set-leader-keys (kbd "mhm") #'discover-my-major))))
 
 (defun hurricane-misc/post-init-evil ()
   (progn
@@ -690,19 +690,19 @@
       (define-key ctl-x-map "m" 'endless/mc-map)
 
       ;; Really really nice.
-      (define-key endless/mc-map "i" 'mc/insert-numbers)
-      (define-key endless/mc-map "h" 'mc-hide-unmatched-lines-mode)
-      (define-key endless/mc-map "a" 'mc/mark-all-like-this)
-      (define-key endless/mc-map "t" 'set-rectangular-region-anchor)
+      (define-key endless/mc-map "i" #'mc/insert-numbers)
+      (define-key endless/mc-map "h" #'mc-hide-unmatched-lines-mode)
+      (define-key endless/mc-map "a" #'mc/mark-all-like-this)
+      (define-key endless/mc-map "t" #'set-rectangular-region-anchor)
 
       ;; Occasionally useful.
-      (define-key endless/mc-map "d" 'mc/mark-all-dwim)
-      (define-key endless/mc-map "f" 'mc/mark-all-symbols-like-this-in-defun)
-      (define-key endless/mc-map "r" 'mc/reverse-regions)
-      (define-key endless/mc-map "s" 'mc/sort-regions)
-      (define-key endless/mc-map "l" 'mc/edit-lines)
-      (define-key endless/mc-map "\C-a" 'mc/edit-beginnings-of-lines)
-      (define-key endless/mc-map "\C-e" 'mc/edit-ends-of-lines)
+      (define-key endless/mc-map "d" #'mc/mark-all-dwim)
+      (define-key endless/mc-map "f" #'mc/mark-all-symbols-like-this-in-defun)
+      (define-key endless/mc-map "r" #'mc/reverse-regions)
+      (define-key endless/mc-map "s" #'mc/sort-regions)
+      (define-key endless/mc-map "l" #'mc/edit-lines)
+      (define-key endless/mc-map "\C-a" #'mc/edit-beginnings-of-lines)
+      (define-key endless/mc-map "\C-e" #'mc/edit-ends-of-lines)
       )
     :config
     (setq mc/cmds-to-run-once
@@ -839,7 +839,7 @@
       (call-interactively 'hurricane//browser-refresh--chrome-applescript))
       ;; Add watch for prodigy-view-mode buffer change event.
       (add-hook 'prodigy-view-mode-hook
-                '(lambda() (set (make-local-variable 'after-change-functions) 'hurricane//refresh-chrome-current-tab)))))
+                #'(lambda() (set (make-local-variable 'after-change-functions) #'hurricane//refresh-chrome-current-tab)))))
 
 (defun hurricane-misc/init-moz-controller ()
   (use-package moz-controller
@@ -912,7 +912,7 @@
 
     (eval-after-load 'magit
       '(define-key magit-mode-map (kbd "C-c g")
-         'hurricane//magit-visit-pull-request))
+         #'hurricane//magit-visit-pull-request))
 
     (setq magit-process-popup-time 10)))
 
@@ -964,8 +964,8 @@
       (add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
 
       ;; Shell completion with a nice menu.
-      (add-hook 'shell-mode-hook 'company-mode)
-      (define-key shell-mode-map (kbd "TAB" 'company-manual-begin))
+      (add-hook 'shell-mode-hook #'company-mode)
+      (define-key shell-mode-map (kbd "TAB" #'company-manual-begin))
 
       ;; @see: https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
       ;; Change directory with ido.
@@ -1122,7 +1122,7 @@
              "Edit Chrome text area.  Finish \
 `\\[atomic-chrome-close-current-buffer]'.")))
 
-    (add-hook 'atomic-chrome-edit-mode-hook 'hurricane-atomic-chrome-mode-setup)
+    (add-hook 'atomic-chrome-edit-mode-hook #'hurricane-atomic-chrome-mode-setup)
 
     (atomic-chrome-start-server)))
 
@@ -1203,22 +1203,22 @@
         "Disable predicate if Ivy dispatch action is activated."
         (rime-inline-ascii)))
 
-    (mapc 'dispatching-enchancer '(ivy-dispatching-done
+    (mapc #'dispatching-enchancer '(ivy-dispatching-done
                                         ivy-dispatching-call
                                         hydra-ivy/body))
 
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")
     :bind
-    ("C-\\" . '+rime-force-enable)
-    ("M-g" . '+rime-convert-string-at-point)
+    ("C-\\" . #'+rime-force-enable)
+    ("M-g" . #'+rime-convert-string-at-point)
     (:map rime-mode-map
-          ("C-M-g" . 'rime-inline-ascii)
-          ("C-M-`" . 'rime-send-keybinding)
+          ("C-M-g" . #'rime-inline-ascii)
+          ("C-M-`" . #'rime-send-keybinding)
           :map rime-active-mode-map
-          ("C-M-g" . 'rime-inline-ascii)
+          ("C-M-g" . #'rime-inline-ascii)
           :map ivy-minibuffer-map
-          ("C-M-g" . 'rime-inline-ascii))))
+          ("C-M-g" . #'rime-inline-ascii))))
 
 (defun hurricane-misc/init-with-proxy ()
   (use-package with-proxy
@@ -1264,11 +1264,11 @@
 
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf-pdf-viewer
-    (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") 'eaf-pdf-outline-edit-jump)
-    (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)))
+    (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
+    (eaf-bind-key #'extract_page_images "e" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key #'eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key #'select_left_tab "J" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key #'select_right_tab "K" eaf-pdf-viewer-keybinding)))
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan
@@ -1278,6 +1278,5 @@
   (use-package blink-search
     :ensure t
     :config
-    (setq blink-search-grep-pdf-backend 'eaf-pdf-viewer)
     (setq blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads" "/Users/c/Downloads"))
     ))

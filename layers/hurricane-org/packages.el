@@ -58,10 +58,10 @@
 
 (defun hurricane-org/post-init-org-pomodoro ()
   (progn
-    (add-hook 'org-pomodoro-finished-hook '(lambda () (hurricane//notify-osx "Pomodoro Finished" "Have a break!")))
-    (add-hook 'org-pomodoro-short-break-finished-hook '(lambda () (hurricane//notify-osx "Short Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-long-break-finished-hook '(lambda () (hurricane//notify-osx "Long Break" "Ready to Go?")))
-    (add-hook 'org-pomodoro-kill-hook '(lambda () (hurricane//notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
+    (add-hook 'org-pomodoro-finished-hook #'(lambda () (hurricane//notify-osx "Pomodoro Finished" "Have a break!")))
+    (add-hook 'org-pomodoro-short-break-finished-hook #'(lambda () (hurricane//notify-osx "Short Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-long-break-finished-hook #'(lambda () (hurricane//notify-osx "Long Break" "Ready to Go?")))
+    (add-hook 'org-pomodoro-kill-hook #'(lambda () (hurricane//notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
 
 ;; In order to export pdf to support Chinese, I should install Latex in here:
 ;; @see: https://www.tug.org/mactex/
@@ -133,8 +133,8 @@
 
       (setq org-image-actual-width '(350))
 
-      (add-hook 'org-mode-hook '(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
-      (add-hook 'org-mode-hook '(lambda ()
+      (add-hook 'org-mode-hook #'(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
+      (add-hook 'org-mode-hook #'(lambda ()
                                   ;; Keybinding for inserting code blocks.
                                   (local-set-key (kbd "C-c s i")
                                                  'hurricane/org-insert-src-block)
@@ -262,11 +262,11 @@
 
       (org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
 
-      (define-key evil-normal-state-map (kbd "C-c C-w") 'org-refile)
-      (define-key global-map (kbd "<f9>") 'popweb-org-roam-node-preview-select)
-      (define-key org-mode-map (kbd "<f9>") 'popweb-org-roam-link-preview-select)
-      (define-key org-mode-map (kbd "<f11>") 'org-transclusion-make-from-link)
-      (define-key org-mode-map (kbd "<f12>") 'org-transclusion-mode)
+      (define-key evil-normal-state-map (kbd "C-c C-w") #'org-refile)
+      (define-key global-map (kbd "<f9>") #'popweb-org-roam-node-preview-select)
+      (define-key org-mode-map (kbd "<f9>") #'popweb-org-roam-link-preview-select)
+      (define-key org-mode-map (kbd "<f11>") #'org-transclusion-make-from-link)
+      (define-key org-mode-map (kbd "<f12>") #'org-transclusion-mode)
 
       (setq org-publish-project-alist
             `(("orgfiles"
@@ -476,7 +476,7 @@
     :init
     (progn
       (add-hook 'org-mode-hook
-                '(lambda ()
+                #'(lambda ()
                   (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))))
 
 ;; FIXME:
@@ -487,13 +487,13 @@
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'org-tree-slide)
-    (spacemacs/set-leader-keys "oto" 'org-tree-slide-mode)))
+    (spacemacs/set-leader-keys "oto" #'org-tree-slide-mode)))
 
 (defun hurricane-org/init-worf ()
   (spacemacs|use-package-add-hook org
     :post-config
     (require 'worf)
-    (add-hook 'org-mode-hook 'worf-mode)))
+    (add-hook 'org-mode-hook #'worf-mode)))
 
 (defun hurricane-org/init-org-protocol ()
   (use-package org-protocol))
@@ -732,17 +732,21 @@
        :target (file+head "${slug}.org"
                           "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
        :unnarrowed t)))
-  :post-config
+  ))
+
+(defun hurricane-org/post-init-org-roam ()
+  (with-eval-after-load 'org-roam
+   (progn
   (defun hurricane//display-line-numbers-customize ()
     (setq display-line-numbers 't)
     (org-display-inline-images))
 
-  (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)
+  (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
 
   (advice-add 'org-roam-buffer-persistent-redisplay :before
-			        '(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+			        #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
   (advice-add 'org-roam-buffer-persistent-redisplay :after
-			        '(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+			        #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
 
   (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
     "Return the hierarchy for the node."
@@ -784,19 +788,18 @@
                              816 ; U+0330 COMBINING TILDE BELOW
                              817 ; U+0331 COMBINING MACRON BELOW
                              )))
-      (cl-flet* ((nonspacing-mark-p (char)
-                                    (memq char slug-trim-chars))
+        (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
                  (strip-nonspacing-marks (s)
-                                         (ucs-normalize-NFC-string
-                                          (apply 'string (seq-remove 'nonspacing-mark-p
-                                                                      (ucs-normalize-NFD-string s)))))
-                 (cl-replace (title pair)
-                             (replace-regexp-in-string (car pair) (cdr pair) title)))
+                                           (string-glyph-compose
+                                            (apply #'string
+                                                   (seq-remove #'nonspacing-mark-p
+                                                               (string-glyph-decompose s)))))
+                   (cl-replace (title pair) (replace-regexp-in-string (car pair) (cdr pair) title)))
         (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
                         ;; ("--*" . "-")                   ;; remove sequential underscores
                         ("^-" . "")                     ;; remove starting underscore
                         ("-$" . "")))                   ;; remove ending underscore
-               (slug (-reduce-from 'cl-replace (strip-nonspacing-marks title) pairs)))
+               (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
            slug))))
 
   (defun hurricane//org-roam-strip-ANKI-CARD-drawers (s)
@@ -812,7 +815,7 @@
       (buffer-string)))
 
   (add-to-list 'org-roam-preview-postprocess-functions
-               'hurricane//org-roam-strip-ANKI-CARD-drawers)
+               #'hurricane//org-roam-strip-ANKI-CARD-drawers)
 
   (defun hurricane//org-roam-strip-property-drawers (s)
     (with-temp-buffer
@@ -826,10 +829,10 @@
       (buffer-string)))
 
   (add-to-list 'org-roam-preview-postprocess-functions
-               'hurricane//org-roam-strip-property-drawers)
+               #'hurricane//org-roam-strip-property-drawers)
 
   (dolist (func org-roam-mode-section-functions)
-    (advice-add func :after '(lambda (node) (org-display-inline-images))))
+    (advice-add func :after #'(lambda (node) (org-display-inline-images))))
 
   ;; @See: https://github.com/org-roam/org-roam/issues/2029
   (defun hurricane//org-roam-db-map-links (fns)
@@ -854,8 +857,9 @@
             (dolist (fn fns)
               (funcall fn link)))))))
 
-  (advice-add 'org-roam-db-map-links :override 'hurricane//org-roam-db-map-links)
+  (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
   ))
+)
 
 (defun hurricane-org/post-init-org-transclusion ()
   (progn
@@ -915,7 +919,7 @@ Return nil if not found."
     :defer t
     :hook (after-init . org-media-note-mode)
     :init
-    (spacemacs/set-leader-keys "av" 'org-media-note-hydra/body)
+    (spacemacs/set-leader-keys "av" #'org-media-note-hydra/body)
     :config
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)))
 
@@ -944,9 +948,9 @@ Return nil if not found."
     :init
     (defvar incremental-reading-map
       (let ((map (make-sparse-keymap)))
-        (define-key map (kbd "c") 'anki-editor-cloze-region)
-        (define-key map (kbd "C") 'anki-editor-cloze-dwim)
-        (define-key map (kbd "C-c C-c") 'incremental-reading-parse-cards)
+        (define-key map (kbd "c") #'anki-editor-cloze-region)
+        (define-key map (kbd "C") #'anki-editor-cloze-dwim)
+        (define-key map (kbd "C-c C-c") #'incremental-reading-parse-cards)
         map))
 
     (defvar incremental-reading-extract-functions
@@ -979,11 +983,11 @@ Return nil if not found."
                 ))))))
 
     (dolist (func incremental-reading-extract-functions)
-      (advice-add func :after 'hurricane//add-incremental-reading-keymap))
+      (advice-add func :after #'hurricane//add-incremental-reading-keymap))
 
-    (add-hook 'incremental-reading-mode-hook 'anki-editor-mode)
-    (add-hook 'incremental-reading-mode-hook 'hurricane//add-incremental-reading-keymap)
-    (add-hook 'after-save-hook 'hurricane//add-incremental-reading-keymap)
+    (add-hook 'incremental-reading-mode-hook #'anki-editor-mode)
+    (add-hook 'incremental-reading-mode-hook #'hurricane//add-incremental-reading-keymap)
+    (add-hook 'after-save-hook #'hurricane//add-incremental-reading-keymap)
     :hook (org-mode . incremental-reading-mode)
     :custom
     (incremental-reading--basic-template ":ANKI-CARD:
@@ -1040,7 +1044,7 @@ Return nil if not found."
                     note-title)))) "Insert links with transclusions")
          )))
 
-    (advice-add 'org-roam-node-read :override 'popweb-org-roam-node-preview-select)
+    (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     ))
 
 ;; npm install mathjax-node-cli
@@ -1055,6 +1059,3 @@ Return nil if not found."
 
 (defun hurricane-org/init-org-ql ()
   (use-package org-ql))
-
-(defun hurricane-org/init-org-transclusion ()
-  (use-package org-transclusion))

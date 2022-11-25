@@ -70,6 +70,8 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/MTBUR/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 前起落架转弯系统/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/飞机发动机磁堵监控检查/"))

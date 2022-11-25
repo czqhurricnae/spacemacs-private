@@ -122,7 +122,9 @@ This function should only modify configuration layer settings."
      tern
      (eaf :variables
           eaf-pdf-dark-mode nil
-          browse-url-browser-function 'browse-url-default-browser)
+          browse-url-browser-function 'browse-url-default-browser
+          eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz"))
+     pdf
      hurricane
      )
    ;; List of additional packages that will be installed without being

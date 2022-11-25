@@ -14,9 +14,9 @@
   (if auto-save-and-publish-file-mode
       ;; When the mode is enabled
       (progn
-        (add-hook 'after-save-hook 'hurricane/save-and-publish-file :append :local))
+        (add-hook 'after-save-hook #'hurricane/save-and-publish-file :append :local))
     ;; When the mode is disabled
-    (remove-hook 'after-save-hook 'hurricane/save-and-publish-file :local)))
+    (remove-hook 'after-save-hook #'hurricane/save-and-publish-file :local)))
 
 (setq org-link-file-path-type 'relative)
 

@@ -181,11 +181,11 @@
                 (pop shackle--popup-window-list))
                 )))))
 
-    (advice-add 'keyboard-quit :before 'shackle-close-popup-window-hack)
-    (advice-add 'shackle-display-buffer :around 'shackle-display-buffer-hack))
+    (advice-add #'keyboard-quit :before #'shackle-close-popup-window-hack)
+    (advice-add #'shackle-display-buffer :around #'shackle-display-buffer-hack))
 
   ;; HACK: Compatibility issuw with `org-switch-to-buffer-other-window'.
-  (advice-add 'org-switch-to-buffer-other-window :override 'switch-to-buffer-other-window)
+  (advice-add #'org-switch-to-buffer-other-window :override #'switch-to-buffer-other-window)
 
   ;; Rules.
   (setq shackle-default-size 0.4

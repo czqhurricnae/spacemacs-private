@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(sql
+   '(yaml
+     sql
      lua
      ivy
      better-defaults
@@ -123,7 +124,11 @@ This function should only modify configuration layer settings."
      (eaf :variables
           eaf-pdf-dark-mode nil
           browse-url-browser-function 'browse-url-default-browser
-          eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz"))
+          ;; eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")
+          eaf-proxy-type "http"
+          eaf-proxy-host "127.0.0.1"
+          eaf-proxy-port "8118"
+          )
      pdf
      hurricane
      )
@@ -746,6 +751,7 @@ you should place your code here."
     (print fname)
     (let* ((pdf-file-name (substring-no-properties fname)))
       (run-hook-with-args-until-success 'helm-pdfgrep-default-read-command pdf-file-name pageno)))
+  (require 'pdf-tools)
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

@@ -1265,10 +1265,10 @@
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf-pdf-viewer
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
-    (eaf-bind-key #'extract_page_images "e" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key #'eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key #'select_left_tab "J" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key #'select_right_tab "K" eaf-pdf-viewer-keybinding)))
+    (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)))
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan
@@ -1277,6 +1277,17 @@
 (defun hurricane-misc/init-blink-search ()
   (use-package blink-search
     :ensure t
+    :init
+    (setq blink-search-quick-keys
+          '("h" "l" "u" "i" "y"
+            "," "." ";" "'"
+            "r" "v" "t" "c"
+            "7" "8" "9" "0"
+            "H" "L" "U" "I" "Y"
+            "s" "a" "e" "q"
+            "1" "2" "3" "4"
+            "[" "]"))
     :config
-    (setq blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads" "/Users/c/Downloads"))
+    (setq blink-search-grep-pdf-backend 'pdf-tools)
+    (setq blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads" "/Users/c/Downloads" "/Users/c/Documents/论文期刊/"))
     ))

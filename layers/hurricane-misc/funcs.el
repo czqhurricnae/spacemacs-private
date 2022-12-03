@@ -1035,7 +1035,7 @@ Image file name is generated from `match-end' position string."
 
     (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content))
 
-(defvar hurricane-proxy  "127.0.0.1:1087")
+(defvar hurricane-proxy  "127.0.0.1:1080")
 
 ;; Network Proxy
 (defun hurricane/proxy-http-show ()
@@ -1082,7 +1082,7 @@ Image file name is generated from `match-end' position string."
   (require 'socks)
   (setq url-gateway-method 'socks
         socks-noproxy '("localhost")
-        socks-server '("Default server" "127.0.0.1" 1086 5))
+        socks-server '("Default server" "127.0.0.1" 1080 5))
   (proxy-socks-show))
 
 (defun hurricane/proxy-socks-disable ()

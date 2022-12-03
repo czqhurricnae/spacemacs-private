@@ -44,7 +44,7 @@
     (incremental-reading :location local)
     (popweb :location (recipe
                        :fetcher github
-                       :repo "czqhurricnae/popweb"
+                       :repo "manateelazycat/popweb"
                        :files ("*.*" "extension")))
     (org-latex-impatient (recipe
                           :fetcher github
@@ -1013,12 +1013,13 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.2/develop/popweb-20220716.60833" "elpa/28.2/develop/popweb-20220716.60833/extension/latex" "elpa/28.2/develop/popweb-20220716.60833/extension/dict" "elpa/28.2/develop/popweb-20220716.60833/extension/org-roam" "elpa/28.2/develop/popweb-20220716.60833/extension/url-preview")
+    :load-path ("elpa/28.2/develop/popweb-20221202.184840" "elpa/28.2/develop/popweb-20221202.184840/extension/latex" "elpa/28.2/develop/popweb-20221202.184840/extension/dict" "elpa/28.2/develop/popweb-20221202.184840/extension/org-roam" "elpa/28.2/develop/popweb-20221202.184840/extension/url-preview")
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)
     (setq gnus-button-url-regexp "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+([-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]*)\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)?\\|[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)\\)")
     (require 'popweb-dict-youdao)
+    (require 'popweb-dict-youglish)
     (require 'popweb-org-roam-link)
     (require 'popweb-url)
     (with-eval-after-load 'ivy
@@ -1045,6 +1046,10 @@ Return nil if not found."
          )))
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
+    :custom
+    (popweb-proxy-type "http")
+    (popweb-proxy-host "127.0.0.1")
+    (popweb-proxy-port "8118")
     ))
 
 ;; npm install mathjax-node-cli

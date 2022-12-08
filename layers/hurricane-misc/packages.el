@@ -1264,8 +1264,30 @@
 
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf-pdf-viewer
+
+    (defun eaf-pdf-open-with-Adobe-Acrobat ()
+      (interactive)
+      (let* ((page-number (or (eaf-call-sync "execute_function" eaf--buffer-id "current_page") "1")))
+        (do-applescript
+         (concat "tell application \"Adobe Acrobat\"\n"
+                 "	try\n"
+         (format "		open \"%s\" options \"page=%s\"\n" eaf--buffer-url page-number)
+                 "	on error\n"
+         (format "		display alert \"Cannot open the file\" & \"%s\" \n" eaf--buffer-url)
+                 "		return false\n"
+                 "	end try\n"
+                 "end tell\n"
+                 "\n"
+                 "tell application \"Adobe Acrobat\"\n"
+                 "	tell PDF Window 1\n"
+         (format "		goto page %s \n" page-number)
+                 "	end tell\n"
+                 "end tell\n"
+                 ))))
+
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
-    (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
+    ;; (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key eaf-pdf-open-with-Adobe-Acrobat "E" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)))

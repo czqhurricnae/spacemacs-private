@@ -834,30 +834,30 @@
   (dolist (func org-roam-mode-section-functions)
     (advice-add func :after #'(lambda (node) (org-display-inline-images))))
 
-  ;; @See: https://github.com/org-roam/org-roam/issues/2029
-  (defun hurricane//org-roam-db-map-links (fns)
-    "Run FNS over all links in the current buffer."
-    (org-with-point-at 1
-      (while (re-search-forward org-link-any-re nil :no-error)
-        ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
-        ;; make the point be on the link.
-        (backward-char)
-        (let* ((element (org-element-context))
-               (type (org-element-type element))
-               link bounds)
-          (cond
-           ;; Links correctly recognized by Org Mode
-           ((eq type 'link)
-            (setq link element))
-           ;; Prevent self-referencing links in ROAM_REFS
-           ((and (eq type 'node-property)
-                 (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
-            nil))
-          (when link
-            (dolist (fn fns)
-              (funcall fn link)))))))
+  ;; ;; @See: https://github.com/org-roam/org-roam/issues/2029
+  ;; (defun hurricane//org-roam-db-map-links (fns)
+  ;;   "Run FNS over all links in the current buffer."
+  ;;   (org-with-point-at 1
+  ;;     (while (re-search-forward org-link-any-re nil :no-error)
+  ;;       ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
+  ;;       ;; make the point be on the link.
+  ;;       (backward-char)
+  ;;       (let* ((element (org-element-context))
+  ;;              (type (org-element-type element))
+  ;;              link bounds)
+  ;;         (cond
+  ;;          ;; Links correctly recognized by Org Mode
+  ;;          ((eq type 'link)
+  ;;           (setq link element))
+  ;;          ;; Prevent self-referencing links in ROAM_REFS
+  ;;          ((and (eq type 'node-property)
+  ;;                (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
+  ;;           nil))
+  ;;         (when link
+  ;;           (dolist (fn fns)
+  ;;             (funcall fn link)))))))
 
-  (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
+  ;; (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
   ))
 )
 

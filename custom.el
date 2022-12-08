@@ -72,6 +72,52 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 方向舵/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/使用 AppleScript 运行 Acrobat Pro DC 打开 pdf 并跳转到指定页数/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/襟翼放下电门 S246/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/襟翼收上电门 S245/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/襟翼着陆警告电门 S138/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/PTU/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/备用电动泵/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/后缘襟翼电门 S1051/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/SMYD/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 减速板卸载系统/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/维修安全生产指标体系/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/现代民航飞机维修业手册管理及其重要性分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/AC-121-57 飞机地面勤务/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR-121/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/主管维修监察员（PMI）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 着陆音响警告/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 起落架手柄组件/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 前轮转弯跑偏/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 起落架位置指示灯故障排除/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 巡航时系好安全带灯常亮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 音响警告/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/数据分析/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Tampermonkey 插件/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 蓄压器压力下降快/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 安定面配平不一致导致 PSEU 灯亮/"))

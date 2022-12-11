@@ -555,6 +555,13 @@ If a change in `file-attributes' happended call FUNC."
       (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
     (write-file file-name)))
 
+(defun unshift-prefix-if-necessary (string prefix new-prefix)
+  "If STRING do not starts with PREFIX, concat NEW-PREFIX STRING.
+Else, returns NIL."
+  (if (not (string-prefix-p prefix string))
+      (browse-url-encode-url (concat new-prefix string))
+    string))
+
 (defun replace-url-with-file-path-in-org (file-name url-and-file-path-map-list)
   (with-temp-buffer
     (insert-file-contents (concat file-name ".org"))
@@ -562,7 +569,7 @@ If a change in `file-attributes' happended call FUNC."
       (dolist (url-file-path-map url-and-file-path-map-list)
       (progn
         (goto-char (point-min))
-        (replace-string (car url-file-path-map) (concat "file:" image-directory "/" (cdr url-file-path-map))))))
+        (replace-string (unshift-prefix-if-necessary (car url-file-path-map) "http" "file:") (concat "file:" image-directory "/" (cdr url-file-path-map))))))
     (write-file (concat file-name ".org"))))
 
 (defvar question-string-pattern-list
@@ -991,6 +998,37 @@ Image file name is generated from `match-end' position string."
       (insert (format "#+DATE: <%s>\n" (format-time-string "%Y-%m-%d %b %H:%M")))
       (insert (format "#+TITLE: %s\n" file-name))
       (write-file (concat file-name ".org")))))
+
+(defvar html-image-url-pattern-list
+  '("src=\"" . "\""))
+
+(defun hurricane/extract-content-from-html-to-org-file ()
+  (interactive)
+  (setq file-name "")
+  (while (string-equal file-name "")
+    (setq file-name (read-string "Please input the File name: "
+                                 nil nil "" nil)))
+  (setq org-file-name  (concat file-name ".org"))
+
+  (let* ((html-file-path (if (derived-mode-p 'dired-mode)
+                       (dired-get-file-for-visit)
+                     buffer-file-name))
+        (html-all-images-url-list (hurricane//get-all-images-url html-file-path html-image-url-pattern-list)))
+
+    (download-all-images html-all-images-url-list file-name)
+
+    (sleep-for 1)
+
+    (pandoc-converter html-file-path org-file-name "html" "org")
+
+    (replace-url-with-file-path-in-org file-name html-all-images-url-list)
+
+    (defun callback-insert-header-to-org-content ()
+      (insert-header-to-org-content file-name))
+
+    (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content)
+    )
+  )
 
 (defun hurricane/extract-content-from-official-accounts-to-org-file ()
   (interactive)

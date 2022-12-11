@@ -159,7 +159,7 @@ This function should only modify configuration layer settings."
                     helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp
                     counsel-projectile highlight-parentheses org-pdfview
-                    doc-view org-projectile slime pyim)
+                    doc-view org-projectile slime pyim undo-tree)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -755,6 +755,7 @@ you should place your code here."
     (interactive)
     (spacemacs//open-in-external-app eaf--buffer-url))
   (eaf-bind-key eaf-pdf-open-with-MarginNote "e" eaf-pdf-viewer-keybinding)
+  (setq eww-retrieve-command '("readable"))
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

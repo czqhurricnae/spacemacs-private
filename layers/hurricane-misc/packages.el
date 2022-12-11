@@ -1290,7 +1290,12 @@
     (eaf-bind-key eaf-pdf-open-with-Adobe-Acrobat "E" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)))
+    (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key insert_or_export_text "n" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_render_by_eww "N" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)
+    (eaf-bind-key insert_or_translate_text "." eaf-browser-keybinding)
+    (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)))
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan

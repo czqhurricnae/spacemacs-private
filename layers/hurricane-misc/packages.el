@@ -542,8 +542,8 @@
 
 (defun hurricane-misc/post-init-avy ()
   (progn
-    (global-set-key (kbd "C-s-'") 'avy-goto-char-2)
-    (global-set-key (kbd "M-'") 'avy-goto-char-2)))
+    (global-set-key (kbd "C-M-'") 'avy-goto-char-2)
+    (global-set-key (kbd "M-'") 'avy-goto-char)))
 
 (defun hurricane-misc/post-init-ace-window ()
   (global-set-key (kbd "C-x C-o") #'ace-window))

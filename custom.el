@@ -37,6 +37,9 @@
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
+ '(ignored-local-variable-values
+   '((eval setq org-download-image-dir
+           (concat default-directory "./static/2222/"))))
  '(jdee-db-active-breakpoint-face-colors (cons "#FFFBF0" "#268bd2"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#FFFBF0" "#859900"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#FFFBF0" "#E1DBCD"))
@@ -71,7 +74,65 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-media-note-screenshot-image-dir
+   '((eval setq org-download-image-dir
+           (concat default-directory "./static//Users/c/Downloads/Flask 响应类/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/flask 在客户端与服务端之间使用 AJAX 提交表格数据- 返回响应- 而导致在视图函数中 redirect 无法重定向跳转/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 响应类/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/flask_admin 使用笔记/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/>flask_admin 使用笔记/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/Flask 响应类/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python ThreadLocal/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/Python ThreadLocal 变量/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python 使用 virtualenv 创建新的虚拟环境/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/memset/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/Python 使用 virtualenv 创建新的虚拟环境/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/444/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/333/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/2222/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/使用 brew 升级 emacs 后 打开 org 文件出现错误/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/737NG 盖板紧固件件号查找/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737-800 空调制冷/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737-800 座舱高度速率指示摆动/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/emacs is compiled with imagemagick and has right path but still cannot use it/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 后缘襟翼系统/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 副翼钢索调节夹子/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 后缘/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 襟翼位置指示器故障导致襟翼不对称锁死/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 电气设备和导线的分布图查询/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 继电器的件号查询和安装/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/PSEU 灯亮与起落架转换活门作动"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/BACD2074/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/BAC5047/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 偏航阻尼系统/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/737NG 方向舵/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/使用 AppleScript 运行 Acrobat Pro DC 打开 pdf 并跳转到指定页数/"))

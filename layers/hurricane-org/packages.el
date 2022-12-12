@@ -46,13 +46,17 @@
                        :fetcher github
                        :repo "manateelazycat/popweb"
                        :files ("*.*" "extension")))
-    (org-latex-impatient (recipe
-                          :fetcher github
-                          :repo "yangsheng6810/org-latex-impatient"))
-    (org-ql (recipe
-             :fetcher github
-             :repo "alphapapa/org-ql"
-             :exclude "helm-org-ql.le"))
+    (org-latex-impatient :location (recipe
+                                    :fetcher github
+                                    :repo "yangsheng6810/org-latex-impatient"))
+    (org-ql :location (recipe
+                       :fetcher github
+                       :repo "alphapapa/org-ql"
+                       :exclude "helm-org-ql.le"))
+    (org-pandoc-import :location (recipe
+                                  :fetcher github
+                                  :repo "tecosaur/org-pandoc-import"
+                                  :files ("*.el" "filters" "preprocessors")))
     )
   )
 
@@ -1064,3 +1068,7 @@ Return nil if not found."
 
 (defun hurricane-org/init-org-ql ()
   (use-package org-ql))
+
+(defun hurricane-org/init-org-pandoc-import ()
+  (use-package org-pandoc-import
+    :ensure t))

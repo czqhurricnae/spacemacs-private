@@ -173,6 +173,8 @@
        ("W" hurricane//find-file-copy-abs-filename-as-kill "@ Copy absolute filename")
        ("C" hurricane//find-file-copy-file-to "@ Copy to")
        ("m" hurricane//find-file-move-file-to "@ Move to")
+       ("E" hurricane/find-file-html-or-markdown-to-org "@ Convert to org")
+       ("p" hurricane//find-file-org-pandoc-import-to-org "@ Import to org")
        ))
 
     (ivy-add-actions

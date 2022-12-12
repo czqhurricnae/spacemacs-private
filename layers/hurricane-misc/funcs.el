@@ -971,7 +971,7 @@ Image file name is generated from `match-end' position string."
           (goto-char search-origin)
           (setq image-url-start (re-search-forward (car image-url-pattern-list)))
           (setq image-url-end (re-search-forward (cdr image-url-pattern-list)))
-          (setq image-url (buffer-substring  image-url-start (- image-url-end 1)))
+          (setq image-url (buffer-substring image-url-start (- image-url-end 1)))
           (if image-url
               (progn
                 (push (cons image-url (concat (number-to-string (match-end 0)) ".jpeg")) image-url-list)
@@ -985,7 +985,7 @@ Image file name is generated from `match-end' position string."
            do (progn
                 (unless (file-exists-p image-directory)
                   (make-directory image-directory t))
-                (org-download--image (car url) (concat image-directory "/" (cdr url)))
+                (ignore-errors (org-download--image (car url) (concat image-directory "/" (cdr url))))
                 (message "Begin to download: %s" url)
                 (sleep-for 1)))))
 
@@ -999,34 +999,39 @@ Image file name is generated from `match-end' position string."
       (insert (format "#+TITLE: %s\n" file-name))
       (write-file (concat file-name ".org")))))
 
-(defvar html-image-url-pattern-list
-  '("src=\"" . "\""))
+(setq html-image-url-pattern-list
+  '("src=\"\\|\]\(" . "\"\\|)"))
 
-(defun hurricane/extract-content-from-html-to-org-file ()
+(defun hurricane/find-file-html-or-markdown-to-org (&optional in-file)
   (interactive)
-  (setq file-name "")
-  (while (string-equal file-name "")
-    (setq file-name (read-string "Please input the File name: "
-                                 nil nil "" nil)))
-  (setq org-file-name  (concat file-name ".org"))
+  (let* ((in-file-org (if (and in-file (file-exists-p in-file))
+                           (concat (file-name-sans-extension in-file) ".org")
+                          (concat (read-string "Please input the Org file name: "
+                                       nil nil "" t) ".org"))))
+    (setq in-file (if (not in-file)
+                     (if (derived-mode-p 'dired-mode)
+                         (dired-get-file-for-visit)
+                       buffer-file-name)
+                    in-file))
+    (setq in-file-extension (pcase (file-name-extension in-file)
+                              ("md" "markdown")
+                              ("html" "html")))
+    (setq html-all-images-url-list (hurricane//get-all-images-url in-file html-image-url-pattern-list))
 
-  (let* ((html-file-path (if (derived-mode-p 'dired-mode)
-                       (dired-get-file-for-visit)
-                     buffer-file-name))
-        (html-all-images-url-list (hurricane//get-all-images-url html-file-path html-image-url-pattern-list)))
-
-    (download-all-images html-all-images-url-list file-name)
+    (download-all-images html-all-images-url-list (file-name-sans-extension in-file-org))
 
     (sleep-for 1)
 
-    (pandoc-converter html-file-path org-file-name "html" "org")
+    (pandoc-converter in-file in-file-org in-file-extension "org")
 
-    (replace-url-with-file-path-in-org file-name html-all-images-url-list)
+    (sleep-for 1)
+
+    (replace-url-with-file-path-in-org (file-name-sans-extension in-file-org) html-all-images-url-list)
 
     (defun callback-insert-header-to-org-content ()
-      (insert-header-to-org-content file-name))
+      (insert-header-to-org-content (file-name-sans-extension in-file-org)))
 
-    (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content)
+    ;; (install-monitor-file-exists in-file-org 1 #'callback-insert-header-to-org-content)
     )
   )
 

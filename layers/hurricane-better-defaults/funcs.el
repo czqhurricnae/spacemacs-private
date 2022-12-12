@@ -315,6 +315,26 @@ After this command has been run, any buffers it's modified will remain open and 
     (dired-delete-file x)
     (message "Delete file: %s" x)))
 
+(defun hurricane//find-file-org-pandoc-import-to-org (x)
+  (unless (string= x "")
+    (let* ((in-file-org (concat (file-name-sans-extension x) ".org"))
+           (args nil)
+           (filters nil)
+           (filter-args nil))
+      (dolist (filter (append filters org-pandoc-import-global-filters))
+        (setq filter-args
+              (append filter-args
+                      (list (pcase (file-name-extension filter)
+                              ("lua" "--lua-filter")
+                              (_ "--filter"))
+                            (if (= ?/ (aref filter 0)) filter
+                              (expand-file-name filter org-pandoc-import-filters-folder))))))
+      (message "%s" x)
+      (org-pandoc-import-run-convert
+       (org-pandoc-import-generate-convert-arguments
+        x "markdown" in-file-org (append args filter-args))
+       x in-file-org nil))))
+
 (defun hurricane//dired-copy-or-move-file-to (func x)
   (unless (string= x "")
     (cond

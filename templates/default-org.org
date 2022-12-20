@@ -2,3 +2,6 @@
 #+LATEX_CLASS: my-article
 #+DATE: `(format-time-string "<%Y-%m-%d %a %H:%M>")`
 #+TITLE: `(file-name-sans-extension (buffer-name))`
+#+ROAM_KEY:
+#+PDF_KEY:
+#+PAGE_KEY:

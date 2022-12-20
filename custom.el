@@ -75,6 +75,86 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-download-image-dir
+           (concat default-directory "./static/test/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/RNP 进近及下降剖面/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/RNAV 和 RNP 的区别/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG TCAS FAIL/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 惯导 FAULT 灯亮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/“python3 -m pip” 和 pip3 的区别/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/121.133/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/安全属性检查单-维修人员培训大纲/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/自我质量审核项目单-云南空港飞机维修服务有限公司维修管理手册/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/手册规范化管理/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 空调组件非指令关闭/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 发动机起动慢/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 起动慢/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 引气健康测试/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 气源系统/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 设备冷却 OFF 灯无法点亮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/主测试继电器（R33）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/飞机退租检中常见结构问题的处理/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/RDAS/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG AUTOSLAT FAIL/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG PSEU 在舱门指示中的应用/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/重力放起落架/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 失速警告系统/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 前缘襟翼和缝翼控制系统/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/737NG 前缘襟翼过渡灯亮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/SWOT/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 使用 sqlalchemy 的编码错误/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Nginx connect to XXX.sock failed (permission denied)/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask-babel/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 博客评论输入框效果实现/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/新浪云容器部署/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/uWSGI 和 Nginx 配置 web 服务器/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CGI/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 使用 include 引入基模板中重复的内容/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 使用 block 进行模板继承/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 使用 Flask-Alchemy 配置 SQLite 文件夹路径问题/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/轮询 长轮询 长连接/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask 在客户端与服务端之间使用 AJAX 提交表格数据，返回响应，而导致在视图函数中 redirect 无法重定向跳转/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Flask-admin 使用笔记/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/在客户端与服务端之间使用 AJAX 提交表格数据，返回响应，而导致在视图函数中 redirect 无法重定向跳转/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static//Users/c/Downloads/Flask 响应类/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/flask 在客户端与服务端之间使用 AJAX 提交表格数据- 返回响应- 而导致在视图函数中 redirect 无法重定向跳转/"))
@@ -695,7 +775,7 @@
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/疲劳管理/"))
      (eval setq org-media-note-screenshot-image-dir
-           (concat defaut-directory "./static/737NG APU 引气系统/"))
+           (concat default-directory "./static/737NG APU 引气系统/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/风险/"))
      (eval setq org-media-note-screenshot-image-dir

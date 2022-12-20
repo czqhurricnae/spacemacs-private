@@ -124,11 +124,9 @@ This function should only modify configuration layer settings."
      (eaf :variables
           eaf-pdf-dark-mode nil
           browse-url-browser-function 'browse-url-default-browser
-          ;; eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")
           eaf-proxy-type "http"
           eaf-proxy-host "127.0.0.1"
-          eaf-proxy-port "8118"
-          )
+          eaf-proxy-port "8118")
      pdf
      hurricane
      )
@@ -756,6 +754,7 @@ you should place your code here."
     (spacemacs//open-in-external-app eaf--buffer-url))
   (eaf-bind-key eaf-pdf-open-with-MarginNote "e" eaf-pdf-viewer-keybinding)
   (setq eww-retrieve-command '("readable"))
+  (setq eww-download-directory (concat deft-dir (file-name-as-directory "notes")))
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

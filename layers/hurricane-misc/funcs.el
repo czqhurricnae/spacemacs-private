@@ -555,12 +555,24 @@ If a change in `file-attributes' happended call FUNC."
       (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
     (write-file file-name)))
 
+(defvar unhtml-string-pattern-list
+  '(("&amp;" . "&")
+    ("&lt;" . "<")
+    ("&gt;" . ">")
+    ))
+
 (defun unshift-prefix-if-necessary (string prefix new-prefix)
-  "If STRING do not starts with PREFIX, concat NEW-PREFIX STRING.
-Else, returns NIL."
+  "If STRING do not starts with PREFIX, concat NEW-PREFIX STRING and then encode.
+Else, returns STRING."
   (if (not (string-prefix-p prefix string))
       (browse-url-encode-url (concat new-prefix string))
-    string))
+    (progn
+      (with-temp-buffer
+        (insert string)
+        (dolist (replace-string-rule unhtml-string-pattern-list)
+          (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
+        (buffer-string))))
+  )
 
 (defun replace-url-with-file-path-in-org (file-name url-and-file-path-map-list)
   (with-temp-buffer
@@ -950,7 +962,7 @@ Work in macOS only."
 (defvar official-accounts-all-images-url-list)
 
 (defvar official-accounts-image-url-pattern-list
-  '("<img data-s=\"300,640\" data-type=\"png\" data-src=\"\\|data-s=\"300,640\" data-src=\"\\|<img data-s=\"300,640\" data-type=\"jpeg\" data-src=\"\\|data-src=\"" . "\""))
+  '("<img data-s=\"300,640\" data-type=\"png\" data-src=\"\\|data-s=\"300,640\" data-src=\"\\|<img data-s=\"300,640\" data-type=\"jpeg\" data-src=\"\\|data-src=\"\\|src=\"" . "\"\\|?"))
 
 (defvar official-accounts-content-pattern-list
   '("<div class=\"rich_media_content                                                                     \"
@@ -995,44 +1007,47 @@ Image file name is generated from `match-end' position string."
       (insert-file-contents (concat file-name ".org"))
       (goto-char (point-min))
       (insert (format "# -*- eval: (setq org-download-image-dir (concat default-directory \"./static/%s/\")); -*-\n" file-name))
+      (insert (format ":PROPERTIES:\n:ID:       %s\n:END:\n" (org-id-new)))
       (insert (format "#+DATE: <%s>\n" (format-time-string "%Y-%m-%d %b %H:%M")))
       (insert (format "#+TITLE: %s\n" file-name))
+      (insert "#+ROAM_KEY:\n#+PDF_KEY:\n#+PAGE_KEY:\n\n")
       (write-file (concat file-name ".org")))))
 
 (setq html-image-url-pattern-list
-  '("src=\"\\|\]\(" . "\"\\|)"))
+  '(" src=\"\\|\]\(" . "\"\\|)"))
 
 (defun hurricane/find-file-html-or-markdown-to-org (&optional in-file)
   (interactive)
-  (let* ((in-file-org (if (and in-file (file-exists-p in-file))
+  (setq in-file-org (if (and in-file (file-exists-p in-file))
                            (concat (file-name-sans-extension in-file) ".org")
                           (concat (read-string "Please input the Org file name: "
-                                       nil nil "" t) ".org"))))
-    (setq in-file (if (not in-file)
-                     (if (derived-mode-p 'dired-mode)
-                         (dired-get-file-for-visit)
-                       buffer-file-name)
-                    in-file))
-    (setq in-file-extension (pcase (file-name-extension in-file)
-                              ("md" "markdown")
-                              ("html" "html")))
-    (setq html-all-images-url-list (hurricane//get-all-images-url in-file html-image-url-pattern-list))
+                                       nil nil "" t) ".org")))
+  (setq in-file (if (not in-file)
+                   (if (derived-mode-p 'dired-mode)
+                       (dired-get-file-for-visit)
+                     buffer-file-name)
+                  in-file))
+  (setq in-file-extension (pcase (file-name-extension in-file)
+                            ("md" "markdown")
+                            ("html" "html")))
+  (setq html-all-images-url-list (hurricane//get-all-images-url in-file html-image-url-pattern-list))
 
-    (download-all-images html-all-images-url-list (file-name-sans-extension in-file-org))
+  (message "url-list %s" html-all-images-url-list)
 
-    (sleep-for 1)
+  (download-all-images html-all-images-url-list (file-name-nondirectory (file-name-sans-extension in-file-org)))
 
-    (pandoc-converter in-file in-file-org in-file-extension "org")
+  (sleep-for 1)
 
-    (sleep-for 1)
+  (pandoc-converter in-file in-file-org in-file-extension "org")
 
-    (replace-url-with-file-path-in-org (file-name-sans-extension in-file-org) html-all-images-url-list)
+  (sleep-for 1)
 
-    (defun callback-insert-header-to-org-content ()
-      (insert-header-to-org-content (file-name-sans-extension in-file-org)))
+  (replace-url-with-file-path-in-org (file-name-nondirectory (file-name-sans-extension in-file-org)) html-all-images-url-list)
 
-    ;; (install-monitor-file-exists in-file-org 1 #'callback-insert-header-to-org-content)
-    )
+  (defun callback-insert-header-to-org-content ()
+    (insert-header-to-org-content (file-name-sans-extension in-file-org)))
+
+  (install-monitor-file-exists in-file-org 1 #'callback-insert-header-to-org-content)
   )
 
 (defun hurricane/extract-content-from-official-accounts-to-org-file ()
@@ -1168,3 +1183,10 @@ Image file name is generated from `match-end' position string."
                  (org-match-string-no-properties 1))))
           (apply 'delete-region remove)
           (insert description)))))
+
+(defun rime-predicate-blink-search-p ()
+  "Whether a blink-search keymap is activated.
+
+Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
+  (and (featurep 'blink-search)
+       (bound-and-true-p blink-search-mode-map)))

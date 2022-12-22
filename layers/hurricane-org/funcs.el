@@ -147,7 +147,8 @@ buffer file directory and insert a link to this file."
         (call-process-shell-command "screencapture" nil nil nil nil "-i"
                                     (concat "\"" full-file-path "\"" ))
         (insert (concat "[[file:" full-file-path "]]"))
-        (image-to-base64-converter full-file-path)))))
+        ;; (image-to-base64-converter full-file-path)
+        ))))
 
 (defun hurricane//find-org-link-begin-and-end (plist string)
   "Find link from plist whose link is equal to STRING, return a

@@ -74,7 +74,15 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-download-image-dir
+   '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/EAF PDF-extract_page_images/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/8201-20 PMA 和 CTSOA 产品管理程序/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/8201-49 高原机场运行维修管理程序/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/8201-38 飞机 RVSM 运行管理程序/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static/test/"))
      (eval setq org-download-image-dir
            (concat default-directory "./static/RNP 进近及下降剖面/"))

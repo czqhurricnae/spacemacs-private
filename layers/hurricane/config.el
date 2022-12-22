@@ -85,6 +85,18 @@
 (defvar scripts-file ""
   "scripts can be used in org mode.")
 
+(defcustom eaf-screenshot-command (if (memq system-type '(cygwin windows-nt ms-dos)) "" "/usr/sbin/screencapture")
+  "The screenshot command used to by eaf.py.
+
+Absolute path is best."
+  :type 'string)
+
+(defcustom eaf-screenshot-args nil
+  "Arguments passed to 'screenshot.'
+
+For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
+  :type '(repeat string))
+
 (setq-default
  org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/"
  deft-dir (cond

@@ -1265,6 +1265,8 @@
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf-pdf-viewer
 
+    (setq eaf-screenshot-args (list "-i" "-x"))
+
     (defun eaf-pdf-open-with-Adobe-Acrobat ()
       (interactive)
       (let* ((page-number (or (eaf-call-sync "execute_function" eaf--buffer-id "current_page") "1")))
@@ -1287,10 +1289,18 @@
 
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
     ;; (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
+    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding)
+
+    (eaf-bind-key eaf-ocr-buffer "z" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key eaf-ocr-area "Z" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-pdf-open-with-Adobe-Acrobat "E" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
+
+    (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
+    (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)
     (eaf-bind-key insert_or_export_text "n" eaf-browser-keybinding)
     (eaf-bind-key insert_or_render_by_eww "N" eaf-browser-keybinding)
     (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)

@@ -75,6 +75,18 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR145/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR121/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/安全属性检查单-维修工程管理手册/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/高高原机场运行/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/121 AC/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/8201-57 执行 CPDLC 运行飞机的特殊维修要求管理程序/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/EAF PDF-extract_page_images/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/8201-20 PMA 和 CTSOA 产品管理程序/"))

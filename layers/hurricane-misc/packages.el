@@ -48,6 +48,10 @@
         (blink-search :location (recipe :fetcher github
                                         :repo "manateelazycat/blink-search"
                                         :files ("*.*" "backend" "core" "icons")))
+        (plisty :location local)
+        (org-tags-filter :location local)
+        (org-roam-dblocks :location local)
+        ;; engine-mode
         ))
 
 (defconst sys/macp
@@ -1328,3 +1332,13 @@
     (setq blink-search-grep-pdf-backend 'pdf-tools)
     (setq blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads" "/Users/c/Downloads" "/Users/c/Documents/论文期刊/"))
     ))
+
+(defun hurricane-misc/init-plisty ()
+  (use-package plisty))
+
+(defun hurricane-misc/init-org-tags-filter ()
+  (use-package org-tags-filter))
+
+(defun hurricane-misc/init-org-roam-dblocks ()
+  (use-package org-roam-dblocks
+    :hook (org-mode . org-roam-dblocks-autoupdate-mode)))

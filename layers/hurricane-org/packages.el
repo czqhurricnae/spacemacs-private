@@ -269,6 +269,7 @@
       (define-key evil-normal-state-map (kbd "C-c C-w") #'org-refile)
       (define-key global-map (kbd "<f9>") #'popweb-org-roam-node-preview-select)
       (define-key org-mode-map (kbd "<f9>") #'popweb-org-roam-link-preview-select)
+      (define-key org-mode-map (kbd "<f8>") #'popweb-org-roam-node-backlinks-preview)
       (define-key org-mode-map (kbd "<f11>") #'org-transclusion-make-from-link)
       (define-key org-mode-map (kbd "<f12>") #'org-transclusion-mode)
 

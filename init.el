@@ -40,7 +40,21 @@ This function should only modify configuration layer settings."
      ranger
      colors
      prodigy
-     search-engine
+     (search-engine :variables
+                    search-engine-config-list '((CAAC
+                                                 :name "CAAC"
+                                                 :url "http://www.caac.gov.cn/so/s?tab=all&qt=%s"
+                                                 :keywords (:keybinding "c" :docstring "中国民用航空局智能云搜索"))
+                                                (SOGOU
+                                                 :name "SOGOU"
+                                                 :url "https://weixin.sogou.com/weixin?type=2&s_from=input&query=%s"
+                                                 :keywords (:keybinding "s" :docstring "搜狗微信搜索" :browser 'eaf-open-browser))
+                                                (WEIXIN
+                                                 :name "WEIXIN"
+                                                 :url "https://weixin.sogou.com/weixin?type=2&s_from=input&query=%s"
+                                                 :keywords (:keybinding "w" :docstring "搜狗微信搜索"))
+                                                ))
+
      graphviz
      (syntax-checking :variables
                       syntax-checking-enable-by-default t

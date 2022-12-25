@@ -1030,7 +1030,10 @@ that the point is already within a string."
 (defun hurricane/eaf-open-org-cited-pdf ()
   (interactive)
   (let* ((pdf-path (hurricane//extract-value-from-keyword "PDF_KEY"))
-         (pdf-name (or (and pdf-path (file-name-sans-extension (file-name-nondirectory pdf-path))) (hurricane//extract-value-from-keyword "TITLE")))
+         (pdf-name (or
+                    (and pdf-path
+                         (file-name-sans-extension (file-name-nondirectory pdf-path)))
+                    (hurricane//extract-value-from-keyword "TITLE")))
          (buffer-id)
          (buffer-name (current-buffer)))
 
@@ -1042,11 +1045,11 @@ that the point is already within a string."
           (car
            (->> (eaf--get-eaf-buffers)
                 (-map
-                 (lambda (buffer) (with-current-buffer buffer
-                                    (when (string= (format "%s.pdf" pdf-name) (buffer-name))
-                                      eaf--buffer-id))))
+                 (lambda (buffer)
+                   (with-current-buffer buffer
+                     (when (string= (format "%s.pdf" pdf-name) (buffer-name))
+                       eaf--buffer-id))))
                 (-filter (lambda (x) (not (equal x #'nil)))))))
-
 
     (with-current-buffer (get-buffer-create buffer-name)
       (evil-emacs-state)

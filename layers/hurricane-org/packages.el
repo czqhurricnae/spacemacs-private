@@ -57,6 +57,7 @@
                                   :fetcher github
                                   :repo "tecosaur/org-pandoc-import"
                                   :files ("*.el" "filters" "preprocessors")))
+    (org-roam-backlink-collections :location local)
     )
   )
 
@@ -1073,3 +1074,6 @@ Return nil if not found."
 (defun hurricane-org/init-org-pandoc-import ()
   (use-package org-pandoc-import
     :ensure t))
+
+(defun hurricane-org/init-org-roam-backlink-collections ()
+  (use-package org-roam-backlink-collections))

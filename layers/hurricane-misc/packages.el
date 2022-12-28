@@ -1331,6 +1331,19 @@
     :config
     (setq blink-search-grep-pdf-backend 'pdf-tools)
     (setq blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads" "/Users/c/Downloads" "/Users/c/Documents/论文期刊/"))
+
+    (defun hurricane//blink-search-grep-pdf-do (file page submatches)
+      ;;highlight the matches
+      (cond
+       ((and (eq blink-search-grep-pdf-backend 'pdf-tools) (featurep 'pdf-tools))
+        (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
+          (blink-search-grep-pdf-pdftool-goto file page submatches)))
+       ((and (eq blink-search-grep-pdf-backend 'eaf-pdf-viewer) (featurep 'eaf-pdf-viewer))
+        (eaf-pdf-jump-to-page file page))
+       ;; TODO support other pdf backends
+       (t (message "Unknown backend %s" blink-search-grep-pdf-backend))))
+
+    (advice-add #'blink-search-grep-pdf-do :override #'hurricane//blink-search-grep-pdf-do)
     ))
 
 (defun hurricane-misc/init-plisty ()

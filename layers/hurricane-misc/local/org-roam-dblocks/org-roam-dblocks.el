@@ -157,6 +157,25 @@
   :group 'productivity
   :prefix "org-roam-dblocks-")
 
+(defvar-local org-roam-dblocks-remember-point nil
+  "This variable is used to remember the current just before `save-buffer'.
+It is meant to be used to remember and return to the current
+point after `before-save-hook' and `after-save-hook' pair;
+`org-roam-dblocks-before-save-buffer' and
+`org-roam-dblocks-after-save-buffer' use this variable.")
+
+(defvar-local org-roam-dblocks-remember-transclusions nil
+  "Remember the active transclusions before `save-buffer'.
+It is meant to be used to keep the file the current buffer is
+visiting clear of the transcluded text content.  Instead of
+blindly deactivate and activate all transclusions with t flag,
+this variable is meant to provide mechanism to
+deactivate/activate only the transclusions currently used to copy
+a text content.
+
+`org-roam-dblocks-before-save-buffer' and
+`org-roam-dblocks-after-save-buffer' use this variable.")
+
 (defcustom org-roam-dblocks-auto-refresh-tags nil
   "A list of tags (as strings) or nil.
 If non-nil, only org-roam nodes with the specified tags have
@@ -165,12 +184,7 @@ their blocks updated automatically."
   :type '(choice (const nil)
                  (repeat :tag "Tag" (string))))
 
-(defconst org-roam-dblocks-names '("notes" "backlinks" "collections"))
-
-(defvar org-roam-dblocks-map
-  (let ((map (make-sparse-keymap))))
-  map)
-
+(defconst org-roam-dblocks-names '("notes" "backlinks"))
 
 (plisty-define org-roam-dblocks-link
   :required (:id :desc))
@@ -359,8 +373,7 @@ and old content."
               (condition-case-unless-debug err
                   (pcase-exhaustive name
                     ("notes" (org-roam-dblocks-format-notes params))
-                    ("backlinks" (org-roam-dblocks-format-backlinks params))
-                    ("collections" (org-roam-dblocks-format-collections params)))
+                    ("backlinks" (org-roam-dblocks-format-backlinks params)))
                 (error
                  (error-message-string err))))
 
@@ -381,9 +394,7 @@ and old content."
     (insert "\n")
     (insert new-content)))
 
-
 ;;; Backlinks dblock type
-
 (defun org-roam-dblocks-format-backlinks (params)
   (org-roam-dblocks-args-assert params t)
 
@@ -412,9 +423,7 @@ and old content."
 
 (org-dynamic-block-define "backlinks" #'org-insert-dblock:backlinks)
 
-
 ;;; Roam notes search dblock type
-
 (defun org-roam-dblocks-format-notes (params)
   (org-roam-dblocks-args-assert params t)
   (cl-assert (or (org-roam-dblocks-args-match params)
@@ -457,207 +466,7 @@ and old content."
       (org-create-dblock (append '(:name "notes") args))))
   (org-update-dblock))
 
-
 (org-dynamic-block-define "notes" #'org-insert-dblock:notes)
-
-
-;;; Collecttions dblock type
-
-(defun org-roam-dblocks-format-collections (params)
-  (org-roam-dblocks-args-assert params t)
-
-  (setf (plist-get params :forbidden-ids)
-        (org-roam-dblocks--compute-forbidden-ids params))
-
-  (let* ((id (org-roam-dblocks-args-id params))
-         (node (if id (org-roam-node-from-id id) (org-roam-node-at-point t)))
-         (backlinks (--filter (and (> (org-roam-node-level node) 0)
-                                   (->> (org-roam-backlink-source-node it)
-                                        (org-roam-node-file)
-                                        (s-contains? "private/") (not)))
-                              (org-roam-backlinks-get node)))
-         (reference-and-footnote-string-list
-          (-map (lambda (backlink)
-                  (let* ((source-node (org-roam-backlink-source-node backlink))
-                         (source-file (org-roam-node-file source-node))
-                         (properties (org-roam-backlink-properties backlink))
-                         (outline (when-let ((outline (plist-get properties :outline)))
-                                    (when (> (length outline) 1)
-                                      (mapconcat #'org-link-display-format outline " > "))))
-                         (point (org-roam-backlink-point backlink))
-                         (text (s-replace "\n" " " (org-roam-preview-get-contents
-                                                    source-file
-                                                    point)))
-                         (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
-                                            (s-repeat (+ (org-roam-node-level node) 2) "*")
-                                            (org-roam-node-id source-node)
-                                            (org-roam-node-title source-node)
-                                            (if outline (format "%s (/%s/)"
-                                                                (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
-                                            text))
-                         (label-list (with-temp-buffer
-                                       (insert-file-contents source-file)
-                                       (org-element-map (org-element-parse-buffer) 'footnote-reference
-                                         (lambda (reference)
-                                           (org-element-property :label reference)))))
-                         (footnote-list
-                          (with-temp-buffer
-                            (insert-file-contents source-file)
-                            (-map (lambda (label) (buffer-substring-no-properties
-                                                   (nth 1 (org-footnote-get-definition label))
-                                                   (nth 2 (org-footnote-get-definition label))))
-                                  label-list)))
-                         (footnote-string-list (string-join footnote-list "\n"))
-                         (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
-                    reference-and-footnote-string)
-                  ) backlinks)))
-    (string-join reference-and-footnote-string-list "\n")))
-
-;;;###autoload
-(defalias 'org-dblock-write:collections #'org-roam-dblocks--write-content)
-
-;;;###autoload
-;; (defun org-insert-dblock:collections ()
-;;   "Insert a dynamic block backlinks at point."
-;;   (interactive)
-;;   (atomic-change-group
-;;     (org-create-dblock (list :name "collections")))
-;;   (org-update-dblock))
-
-(defun org-insert-dblock:collections ()
-  (interactive)
-  (atomic-change-group
-    (when (string-match "\\S-" (buffer-substring (point-at-bol) (point-at-eol)))
-      (end-of-line 1)
-      (newline)))
-  (let* ((beg (point))
-         (beg-mkr (set-marker (make-marker) beg))
-         (end)
-         (end-mkr)
-         (type "org-id")
-         (id (ignore-errors
-               (save-match-data
-                 (org-roam-node-id (org-roam-node-at-point)))))
-         (node (if id (org-roam-node-from-id id) (org-roam-node-at-point t)))
-         (backlinks (--filter (and (> (org-roam-node-level node) 0)
-                                   (->> (org-roam-backlink-source-node it)
-                                        (org-roam-node-file)
-                                        (s-contains? "private/") (not)))
-                              (org-roam-backlinks-get node)))
-         (reference-and-footnote-string-list
-          (-map (lambda (backlink)
-                  (let* ((source-node (org-roam-backlink-source-node backlink))
-                         (source-file (org-roam-node-file source-node))
-                         (properties (org-roam-backlink-properties backlink))
-                         (outline (when-let ((outline (plist-get properties :outline)))
-                                    (when (> (length outline) 1)
-                                      (mapconcat #'org-link-display-format outline " > "))))
-                         (point (org-roam-backlink-point backlink))
-                         (text (s-replace "\n" " " (org-roam-preview-get-contents
-                                                    source-file
-                                                    point)))
-                         (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
-                                            (s-repeat (+ (org-roam-node-level node) 2) "*")
-                                            (org-roam-node-id source-node)
-                                            (org-roam-node-title source-node)
-                                            (if outline (format "%s (/%s/)"
-                                                                (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
-                                            text))
-                         (label-list (with-temp-buffer
-                                       (insert-file-contents source-file)
-                                       (org-element-map (org-element-parse-buffer) 'footnote-reference
-                                         (lambda (reference)
-                                           (org-element-property :label reference)))))
-                         (footnote-list
-                          (with-temp-buffer
-                            (insert-file-contents source-file)
-                            (-map (lambda (label) (buffer-substring-no-properties
-                                                   (nth 1 (org-footnote-get-definition label))
-                                                   (nth 2 (org-footnote-get-definition label))))
-                                  label-list)))
-                         (footnote-string-list (string-join footnote-list "\n"))
-                         (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
-                    reference-and-footnote-string)
-                  ) backlinks)))
-    (insert (string-join reference-and-footnote-string-list "\n"))
-    (setq end (point))
-    (setq end-mkr (set-marker (make-marker) end))
-    (add-text-properties beg end
-                         `(local-map ,org-roam-dblocks-map
-                                     read-only t
-                                     front-sticky t
-                                     rear-nonsticky t
-                                     org-roam-dblocks-type ,type
-                                     org-roam-dblocks-beg-mkr
-                                     ,beg-mkr
-                                     org-roam-dblocks-end-mkr
-                                     ,end-mkr))
-    ))
-
-(org-dynamic-block-define "collections" #'org-insert-dblock:collections)
-
-(defun org-roam-dblocks-remove-all (&optional narrowed)
-  (interactive "P")
-  (save-restriction
-    (let ((marker (move-marker (make-marker) (point)))
-          match point list)
-      (unless narrowed (widen))
-      (goto-char (point-min))
-      (while (setq match (text-property-search-forward 'org-roam-dblocks-type))
-        (goto-char (prop-match-beginning match))
-        (setq point (org-roam-dblocks-remove))
-        (when point (push point list)))
-      (goto-char marker)
-      (move-marker marker nil) ; point nowhere for GC
-      list))
-  )
-
-(defun org-roam-dblocks-remove ()
-  "Remove transcluded text at point.
-When success, return the beginning point of the keyword re-inserted."
-  (interactive)
-  (if-let* ((beg (marker-position (get-char-property (point)
-                                                     'org-roam-dblocks-beg-mkr)))
-            (end (marker-position (get-char-property (point)
-                                                     'org-roam-dblocks-end-mkr))))
-      (progn
-        ;; Need to retain the markers of the other adjacent transclusions
-        ;; if any.  If their positions differ after insert, move them back
-        ;; beg or end
-        (let ((mkr-at-beg
-               ;; Check the points to look at exist in buffer.  Then look for
-               ;; adjacent transclusions' markers if any.
-               (when (>= (1- beg)(point-min))
-                 (get-text-property (1- beg) 'org-roam-dblocks-end-mkr))))
-          ;; If within live-sync, exit.  It's not absolutely
-          ;; required. delete-region below will evaporate the live-sync
-          ;; overlay, and text-clone's post-command correctly handles the
-          ;; overlay on the source.
-          (org-roam-dblocks-with-inhibit-read-only
-            (save-excursion
-              (delete-region beg end)
-              )
-            ;; Move markers of adjacent transclusions if any to their original
-            ;; potisions.  Some markers move if two transclusions are placed
-            ;; without any blank lines, and either of beg and end markers will
-            ;; inevitably have the same position (location "between" lines)
-            (when mkr-at-beg (move-marker mkr-at-beg beg))
-            ;; Go back to the beginning of the inserted keyword line
-            (goto-char beg))
-          beg))
-    (message "Nothing done. No transclusion exists here.") nil))
-
-(defmacro org-roam-dblocks-with-inhibit-read-only (&rest body)
-  "Run BODY with `'inhibit-read-only` t."
-  (declare (debug t) (indent 0))
-  (let ((modified (make-symbol "modified")))
-    `(let* ((,modified (buffer-modified-p))
-            (inhibit-read-only t))
-       (unwind-protect
-           (progn
-             ,@body)
-         (unless ,modified
-           (restore-buffer-modified-p nil))))))
 
 (defun org-roam-dblocks--update-block-at-point-p ()
   (or (null org-roam-dblocks-auto-refresh-tags)

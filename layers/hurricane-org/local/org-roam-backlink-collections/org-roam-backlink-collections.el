@@ -56,7 +56,7 @@ a text content.
 
 (defun org-roam-backlink-collections-within-collection-p ()
   "Return t if the current point is within a collection region."
-  (when (get-char-property (point) 'org-roam-backlink-collections-type) t))
+  (when (get-char-property (point) 'org-transclusion-type) t))
 
 (defun org-roam-backlink-collections-check-add ()
   "Return t if `org-roam-backlink-collections-add' should work on the point.
@@ -83,7 +83,7 @@ Error if collect is not allowed."
                                      read-only t
                                      front-sticky t
                                      rear-nonsticky t
-                                     org-roam-backlink-collections-type ,type
+                                     org-transclusion-type ,type
                                      org-roam-backlink-collections-beg-mkr
                                      ,beg-mkr
                                      org-roam-backlink-collections-end-mkr
@@ -207,7 +207,7 @@ Error if collect is not allowed."
           match point list)
       (unless narrowed (widen))
       (goto-char (point-min))
-      (while (setq match (text-property-search-forward 'org-roam-backlink-collections-type))
+      (while (setq match (text-property-search-forward 'org-transclusion-type))
         (goto-char (prop-match-beginning match))
         (setq point (org-roam-backlink-collections-remove))
         (when point (push point list)))
@@ -292,7 +292,7 @@ This function does not add collections; it merely sets up hooks
 and variables."
   (interactive)
   (add-hook 'before-save-hook #'org-roam-backlink-collections-before-save-buffer nil t)
-  (add-hook 'after-save-hook #'org-roam-backlink-collections-after-save-buffer nil t)
+  ;; (add-hook 'after-save-hook #'org-roam-backlink-collections-after-save-buffer nil t)
   (add-hook 'kill-buffer-hook #'org-roam-backlink-collections-before-kill nil t)
   (add-hook 'kill-emacs-hook #'org-roam-backlink-collections-before-kill nil t)
   (add-hook 'org-export-before-processing-hook
@@ -304,7 +304,7 @@ This function also removes all the collections in the current buffer."
   (interactive)
   (org-roam-backlink-collections-remove-all)
   (remove-hook 'before-save-hook #'org-roam-backlink-collections-before-save-buffer t)
-  (remove-hook 'after-save-hook #'org-roam-backlink-collections-after-save-buffer t)
+  ;; (remove-hook 'after-save-hook #'org-roam-backlink-collections-after-save-buffer t)
   (remove-hook 'kill-buffer-hook #'org-roam-backlink-collections-before-kill t)
   (remove-hook 'kill-emacs-hook #'org-roam-backlink-collections-before-kill t)
   (remove-hook 'org-export-before-processing-hook
@@ -331,6 +331,7 @@ set in `before-save-hook'.  It also move the point back to
         (dolist (p org-roam-backlink-collections-remember-collections)
           (save-excursion
             (goto-char p)
+            (message (format "after-save-buffer %s" p))
             (org-roam-backlink-collections-add)))
         ;; After save and adding all collections, the modified flag should be
         ;; set to nil

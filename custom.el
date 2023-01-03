@@ -75,6 +75,10 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CDL/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR396 民用航空安全信息管理规定/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/CCAR145/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/CCAR121/"))

@@ -66,14 +66,17 @@
            ;; Nodes don't store the last position, so get the next headline position
            ;; and subtract one character (or, if no next headline, get point-max)
            (nodes-end-position (-map (lambda (nodes-start-position)
+                                       (widen)
                                        (goto-char nodes-start-position)
                                        (if (org-before-first-heading-p) ;; file node
                                            (point-max)
                                          (call-interactively
-                                          'org-forward-heading-same-level)
+                                          'org-next-visible-heading)
                                          (if (> (point) nodes-start-position)
                                              (- (point) 1) ;; successfully found next
-                                           (point-max)))) ;; there was no next
+                                           (progn
+                                             (org-narrow-to-subtree)
+                                             (point-max))))) ;; there was no next
                                      nodes-start-position))
            ;; sort in order of decreasing end position
            (nodes-in-file-sorted (->> (-zip nodes-in-file nodes-end-position)
@@ -84,55 +87,46 @@
                                                (org-roam-node-file)
                                                (s-contains? "private/") (not))
                                           (org-roam-backlinks-get node)))
-                     (heading (format "\n\n%s Links to this node\n"
+                     (heading (format "\n%s Backlinks\n"
                                       (s-repeat (+ (org-roam-node-level node) 1) "*")))
-                     (properties-drawer ":PROPERTIES:\n:HTML_CONTAINER_CLASS: references\n:END:\n"))
+                     (details-tag-heading "\n@@html:<details>@@\n  @@html:<summary>@@Click to expand!@@html:</summary>@@\n    @@html:<blockquote>@@\n")
+                     (details-tag-ending "\n    @@html:</blockquote>@@\n@@html:</details>@@\n")
+                     (content-and-footnote-string-list
+                      (-map (lambda (backlink)
+                              (let* ((source-node (org-roam-backlink-source-node backlink))
+                                     (source-file (org-roam-node-file source-node))
+                                     (properties (org-roam-backlink-properties backlink))
+                                     (outline (if-let ((outline (plist-get properties :outline)))
+                                                  (mapconcat #'org-link-display-format outline " > ")))
+                                     (point (org-roam-backlink-point backlink))
+                                     (text (org-roam-preview-get-contents
+                                            source-file
+                                            point))
+                                     (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
+                                                        (s-repeat (+ (org-roam-node-level node) 2) "*")
+                                                        (org-roam-node-id source-node)
+                                                        (org-roam-node-title source-node)
+                                                        (if outline (format "%s (/%s/)"
+                                                                            (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
+                                                        text))
+                                     (label-list (with-temp-buffer
+                                                   (insert-file-contents source-file)
+                                                   (org-element-map (org-element-parse-buffer) 'footnote-reference
+                                                     (lambda (reference)
+                                                       (org-element-property :label reference)))))
+                                     (footnote-list
+                                      (with-temp-buffer
+                                        (insert-file-contents source-file)
+                                        (-map (lambda (label) (buffer-substring-no-properties
+                                                               (nth 1 (org-footnote-get-definition label))
+                                                               (nth 2 (org-footnote-get-definition label))))
+                                              label-list)))
+                                     (footnote-string-list (string-join footnote-list "\n"))
+                                     (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
+                                reference-and-footnote-string)
+                              ) backlinks)))
           (goto-char end-position)
-          (insert "#+BEGIN_EXPORT html
-<details>
-  <summary>Click to expand!</summary>
-
-<div class=\"bl-section\"><aside class=\"bl-aside\"><blockquote>
-#+END_EXPORT")
-          (insert heading)
-          (insert properties-drawer)
-          (dolist (backlink backlinks)
-            (let* ((source-node (org-roam-backlink-source-node backlink))
-                   (source-file (org-roam-node-file source-node))
-                   (properties (org-roam-backlink-properties backlink))
-                   (outline (when-let ((outline (plist-get properties :outline)))
-                              (when (> (length outline) 1)
-                                (mapconcat #'org-link-display-format outline " > "))))
-                   (point (org-roam-backlink-point backlink))
-                   (text (s-replace "\n" " " (org-roam-preview-get-contents
-                                              source-file
-                                              point)))
-                   (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
-                                      (s-repeat (+ (org-roam-node-level node) 2) "*")
-                                      (org-roam-node-id source-node)
-                                      (org-roam-node-title source-node)
-                                      (if outline (format "%s (/%s/)"
-                                                          (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
-                                      text))
-                   (label-list (with-temp-buffer
-                                 (insert text)
-                                 (org-element-map (org-element-parse-buffer) 'footnote-reference
-                                   (lambda (reference)
-                                     (org-element-property :label reference)))))
-                   (footnote-string-list
-                      (with-temp-buffer
-                        (insert-file-contents source-file)
-                        (-map (lambda (label) (buffer-substring-no-properties
-                                               (nth 1 (org-footnote-get-definition label))
-                                               (nth 2 (org-footnote-get-definition label))))
-                              label-list))))
-              (-map (lambda (footnote-string) (progn (insert footnote-string))) footnote-string-list)
-              (insert reference)
-              (insert "#+BEGIN_EXPORT html
-  </blockquote></aside></div>
-</details>
-
-#+END_EXPORT"))))))))
+          (insert (format "%s\n%s\n%s\n%s" heading details-tag-heading (string-join content-and-footnote-string-list "\n") details-tag-ending)))))))
 
 (add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 

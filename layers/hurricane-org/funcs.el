@@ -798,42 +798,42 @@ epoch to the beginning of today (00:00)."
            ;; Nodes don't store the last position, so get the next headline position
            ;; and subtract one character (or, if no next headline, get point-max)
            (nodes-end-position (-map (lambda (nodes-start-position)
+                                       (widen)
                                        (goto-char nodes-start-position)
                                        (if (org-before-first-heading-p) ;; file node
                                            (point-max)
                                          (call-interactively
-                                          'org-forward-heading-same-level)
+                                          'org-next-visible-heading)
                                          (if (> (point) nodes-start-position)
                                              (- (point) 1) ;; successfully found next
-                                           (point-max)))) ;; there was no next
+                                           (progn
+                                             (org-narrow-to-subtree)
+                                             (point-max))))) ;; there was no next
                                      nodes-start-position))
            ;; sort in order of decreasing end position
            (nodes-in-file-sorted (->> (-zip nodes-in-file nodes-end-position)
                                       (--sort (> (cdr it) (cdr other))))))
       (dolist (node-and-end nodes-in-file-sorted)
         (-when-let* (((node . end-position) node-and-end)
-                     (backlinks (--filter (and (> (org-roam-node-level node) 0)
-                                               (->> (org-roam-backlink-source-node it)
-                                                    (org-roam-node-file)
-                                                    (s-contains? "private/") (not)))
+                     (backlinks (--filter (->> (org-roam-backlink-source-node it)
+                                               (org-roam-node-file)
+                                               (s-contains? "private/") (not))
                                           (org-roam-backlinks-get node)))
-                     (heading (format "\n\n%s Backlinks\n"
+                     (heading (format "\n%s Backlinks\n"
                                       (s-repeat (+ (org-roam-node-level node) 1) "*")))
-                     (details-tag-heading "#+BEGIN_EXPORT html\n<details>\n  <summary>Click to expand!</summary>\n\n<blockquote>\n#+END_EXPORT
-")
-                     (details-tag-ending "#+BEGIN_EXPORT html\n  </blockquote>\n</details>\n\n#+END_EXPORT")
-                     (reference-and-footnote-string-list
+                     (details-tag-heading "\n@@html:<details>@@\n  @@html:<summary>@@Click to expand!@@html:</summary>@@\n    @@html:<blockquote>@@\n")
+                     (details-tag-ending "\n    @@html:</blockquote>@@\n@@html:</details>@@\n")
+                     (content-and-footnote-string-list
                       (-map (lambda (backlink)
                               (let* ((source-node (org-roam-backlink-source-node backlink))
                                      (source-file (org-roam-node-file source-node))
                                      (properties (org-roam-backlink-properties backlink))
-                                     (outline (when-let ((outline (plist-get properties :outline)))
-                                                (when (> (length outline) 1)
-                                                  (mapconcat #'org-link-display-format outline " > "))))
+                                     (outline (if-let ((outline (plist-get properties :outline)))
+                                                  (mapconcat #'org-link-display-format outline " > ")))
                                      (point (org-roam-backlink-point backlink))
-                                     (text (s-replace "\n" " " (org-roam-preview-get-contents
+                                     (text (org-roam-preview-get-contents
                                                                 source-file
-                                                                point)))
+                                                                point))
                                      (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
                                                         (s-repeat (+ (org-roam-node-level node) 2) "*")
                                                         (org-roam-node-id source-node)
@@ -858,7 +858,7 @@ epoch to the beginning of today (00:00)."
                                 reference-and-footnote-string)
                               ) backlinks)))
           (goto-char end-position)
-          (insert (format "%s\n%s\n%s\n%s" heading details-tag-heading (string-join reference-and-footnote-string-list "\n")  details-tag-ending)))))))
+          (insert (format "%s\n%s\n%s\n%s" heading details-tag-heading (string-join content-and-footnote-string-list "\n") details-tag-ending)))))))
 
 (add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
 (add-hook 'org-export-before-processing-hook 'org-transclusion-add-all)

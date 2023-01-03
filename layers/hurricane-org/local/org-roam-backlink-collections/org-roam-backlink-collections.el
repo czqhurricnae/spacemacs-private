@@ -106,14 +106,17 @@ Error if collect is not allowed."
                                         (org-roam-node-list)))
                (nodes-start-position (-map 'org-roam-node-point nodes-in-file))
                (nodes-end-position (-map (lambda (nodes-start-position)
+                                           (widen)
                                            (goto-char nodes-start-position)
                                            (if (org-before-first-heading-p) ;; file node
                                                (point-max)
                                              (call-interactively
-                                              'org-forward-heading-same-level)
+                                              'org-next-visible-heading)
                                              (if (> (point) nodes-start-position)
                                                  (- (point) 1) ;; successfully found next
-                                               (point-max)))) ;; there was no next
+                                               (progn
+                                                 (org-narrow-to-subtree)
+                                                 (point-max))))) ;; there was no next
                                          nodes-start-position))
                (nodes-in-file-sorted (->> (-zip nodes-in-file nodes-end-position)
                                           (--sort (> (cdr it) (cdr other))))))
@@ -123,8 +126,7 @@ Error if collect is not allowed."
               (unless (org-roam-backlink-collections-within-collection-p)
                 (with-demoted-errors
                     "Not collected. Continue to next: %S"
-                  (when
-                      (org-roam-backlink-collections-add node)
+                  (when (org-roam-backlink-collections-add node)
                     (message (format "Collected at point %d, line %d" (point) (org-current-line))))))))))
       (goto-char marker)
       (move-marker marker nil) ; point nowhere for GC
@@ -138,10 +140,9 @@ Error if collect is not allowed."
       (let ((org-roam-backlink-collections-add-all-on-activate nil))
         (org-roam-backlink-collections-mode +1)))
     (let* ((node (or node (org-roam-node-at-point)))
-           (backlinks (--filter (and (> (org-roam-node-level node) 0)
-                                     (->> (org-roam-backlink-source-node it)
-                                          (org-roam-node-file)
-                                          (s-contains? "private/") (not)))
+           (backlinks (--filter (->> (org-roam-backlink-source-node it)
+                                     (org-roam-node-file)
+                                     (s-contains? "private/") (not))
                                 (org-roam-backlinks-get node)))
            (content-and-footnote-string-list
             (-map (lambda (backlink)
@@ -149,8 +150,7 @@ Error if collect is not allowed."
                            (source-file (org-roam-node-file source-node))
                            (properties (org-roam-backlink-properties backlink))
                            (outline (if-let ((outline (plist-get properties :outline)))
-                                        (mapconcat #'org-link-display-format outline " > ")
-                                      "Top"))
+                                        (mapconcat #'org-link-display-format outline " > ")))
                            (point (org-roam-backlink-point backlink))
                            (text (org-roam-preview-get-contents
                                                       source-file
@@ -178,8 +178,8 @@ Error if collect is not allowed."
                            (content-and-footnote-string (format "%s\n%s" content footnote-string-list)))
                       content-and-footnote-string)
                     ) backlinks)))
-      (if (or (eq content-and-footnote-string-list nil)
-              (string= (string-join content-and-footnote-string-list "\n") ""))
+      (if (or (string= (string-join content-and-footnote-string-list "\n") "")
+              (eq content-and-footnote-string-list nil))
           ;; Keep going with program when no content `org-roam-backlink-collections-add-all'
           ;; should move to the next collection
           (progn (message
@@ -192,7 +192,8 @@ Error if collect is not allowed."
           (org-roam-backlink-collections-with-inhibit-read-only
             (when (save-excursion
                     (end-of-line) (insert-char ?\n)
-                    (org-roam-backlink-collections-content-insert (string-join content-and-footnote-string-list "\n"))
+                    (org-roam-backlink-collections-content-insert
+                     (string-join content-and-footnote-string-list "\n"))
                     (unless (eobp) (delete-char 1))
                     (setq end (point))
                     t)

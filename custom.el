@@ -75,6 +75,24 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/7203-2 机务维修严重差错及一般差错/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CCAR39 民用航空器适航指令规定/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/0809-8 维修记录与报告/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/安全管理体系在航空维修系统中的应用与实践/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/blink-search search_grep_pdf.py/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static//Users/c/Downloads/mx-wc/浅谈民航飞机重大运行影响机械故障管控对策/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/AC-145-04 维修记录与报告表格填写指南/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/安全属性检查单-可靠性方案/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/OEM/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/CDL/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/CCAR396 民用航空安全信息管理规定/"))

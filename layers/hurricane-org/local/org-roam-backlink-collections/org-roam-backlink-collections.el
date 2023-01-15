@@ -17,6 +17,14 @@
   (require 'org)
   (require 'org-roam))
 
+(defface org-roam-backlink-collections
+  '((((class color) (min-colors 88) (background light))
+     :background "#ebf6fa" :extend t)
+    (((class color) (min-colors 88) (background dark))
+     :background "#041529" :extend t)
+    (t ))
+  "Face for backlink region in the collections buffer.")
+
 (defcustom org-roam-backlink-collections-add-all-on-activate t
   "Define whether to add all the collections on activation.
 When non-nil, automatically add all on `org-roam-backlink-collections-activate'."
@@ -56,7 +64,7 @@ a text content.
 
 (defun org-roam-backlink-collections-within-collection-p ()
   "Return t if the current point is within a collection region."
-  (when (get-char-property (point) 'org-transclusion-type) t))
+  (when (get-char-property (point) 'org-roam-backlink-collections-type) t))
 
 (defun org-roam-backlink-collections-check-add ()
   "Return t if `org-roam-backlink-collections-add' should work on the point.
@@ -83,13 +91,13 @@ Error if collect is not allowed."
                                      read-only t
                                      front-sticky t
                                      rear-nonsticky t
-                                     org-transclusion-type ,type
+                                     org-roam-backlink-collections-type ,type
                                      org-roam-backlink-collections-beg-mkr
                                      ,beg-mkr
                                      org-roam-backlink-collections-end-mkr
                                      ,end-mkr))
     (overlay-put (make-overlay beg end)
-                 'face 'org-transclusion)
+                 'face 'org-roam-backlink-collections)
     t))
 
 ;;;###autoload
@@ -208,7 +216,7 @@ Error if collect is not allowed."
           match point list)
       (unless narrowed (widen))
       (goto-char (point-min))
-      (while (setq match (text-property-search-forward 'org-transclusion-type))
+      (while (setq match (text-property-search-forward 'org-roam-backlink-collections-type))
         (goto-char (prop-match-beginning match))
         (setq point (org-roam-backlink-collections-remove))
         (when point (push point list)))

@@ -164,11 +164,11 @@ Error if collect is not allowed."
                                                       source-file
                                                       point))
                            (content (format "%s [[id:%s][%s]]\n%s\n%s"
-                                              (s-repeat (+ (org-roam-node-level node) 2) "*")
+                                              (s-repeat (+ (org-roam-node-level node) 1) "*")
                                               (org-roam-node-id source-node)
                                               (org-roam-node-title source-node)
                                               (if outline (format "%s (%s)"
-                                                                  (s-repeat (+ (org-roam-node-level node) 3) "*") outline) "")
+                                                                  (s-repeat (+ (org-roam-node-level node) 2) "*") outline) "")
                                               text))
                            (label-list (with-temp-buffer
                                          (insert-file-contents source-file)

@@ -1190,3 +1190,33 @@ Image file name is generated from `match-end' position string."
 Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
   (and (featurep 'blink-search)
        (bound-and-true-p blink-search-mode-map)))
+
+(require 'request)
+
+(defvar anki-connect-host "127.0.0.1"
+  "Anki connect server host.")
+
+(defvar anki-connect-port "8765"
+  "Anki connect server port.")
+
+(defvar anki-deck-name "Words"
+  "Shengci in anki deck name.")
+
+(defun anki-add-card (deck front back)
+  "Add anki basic card which contains FRONT and BACK elements to the DECK."
+  (let* ((req-params (list `("note" . ,(list `("deckName" . ,deck)
+                                             '("modelName" . "Basic")
+                                             `("fields" . ,(list `("front" . ,front)
+                                                                 `("back" . ,back)))
+                                             `("options" . ,(list '("closeAfterAdding" . t)))
+                                             `("tags" . ,(list "Emacs")))))))
+    (request (format "%s:%s" anki-connect-host anki-connect-port)
+      :type "POST"
+      :data (json-encode (list '("action" . "addNote")
+                               '("version" . 6)
+                               `("params" . ,req-params)))
+      :headers '(("Content-Type" . "text/json"))
+      :parser 'json-read
+      :success (cl-function
+                (lambda (&key data &allow-other-keys)
+                  (message "result: %S" (assoc-default 'result data)))))))

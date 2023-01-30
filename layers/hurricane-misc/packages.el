@@ -1291,6 +1291,24 @@
                  "end tell\n"
                  ))))
 
+    (defun eaf-send-eudic-liju-to-anki (link)
+      (setq payload (split-string link "::" t))
+      (setq mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
+      (let* ((final-cmd (format "wget -O \"/Users/c/Library/Application Support/Anki2/用户1/collection.media/%s\" \"%s\"" mp3 (nth 1 payload)))
+             (proc
+              (start-process-shell-command
+               "eaf-send-eudic-liju-to-anki"
+               nil
+               final-cmd)))
+          (print final-cmd)
+          (set-process-sentinel
+           proc
+           (lambda (proc event)
+             (when (equal event "finished\n")
+               (anki-add-card anki-deck-name (format "[sound:%s]" mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)))
+               )))
+          t))
+
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
     ;; (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
@@ -1309,7 +1327,8 @@
     (eaf-bind-key insert_or_render_by_eww "N" eaf-browser-keybinding)
     (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)
     (eaf-bind-key insert_or_translate_text "." eaf-browser-keybinding)
-    (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)))
+    (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)
+    (eaf-bind-key send_eudic_liju "C-M-p" eaf-browser-keybinding)))
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan

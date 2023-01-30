@@ -75,6 +75,12 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/notes/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/0502-5 紧急事件描述及反应等级对照表/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/民用航空器维修的系列标准/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/7203-2 机务维修严重差错及一般差错/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/CCAR39 民用航空器适航指令规定/"))

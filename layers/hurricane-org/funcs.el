@@ -778,7 +778,7 @@ epoch to the beginning of today (00:00)."
 
 (defadvice org-capture-target-buffer (after make-static-directory-maybe (file) activate)
   "Create screenshot image directory if not exists while visiting node."
-  (unless (file-exists-p file)
+  (unless (file-exists-p (org-capture-expand-file file))
     (let* ((local-variable-list nil)
            (relative-img-dir (concat "./static/" (file-name-base (file-name-nondirectory file)) "/"))
            (absolute-img-dir (concat org-roam-directory relative-img-dir)))

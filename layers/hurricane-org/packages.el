@@ -58,6 +58,9 @@
                                   :repo "tecosaur/org-pandoc-import"
                                   :files ("*.el" "filters" "preprocessors")))
     (org-roam-backlink-collections :location local)
+    (org-imagine :location (recipe
+                            :fetcher github
+                            :repo "metaescape/org-imagine"))
     )
   )
 
@@ -194,7 +197,7 @@
       (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
-      (setq org-agenda-files (list org-agenda-dir (concat deft-dir (file-name-as-directory "notes"))))
+      (setq org-agenda-files (list org-agenda-dir (concat deft-dir (file-name-as-directory "notes")) org-agenda-file-note))
 
       (with-eval-after-load 'org-agenda
         (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
@@ -216,6 +219,9 @@
       ;; {{
       ;; The `%i' would copy the selected text into the template.
       ;; @see: http://www.howardism.org/Technical/Emacs/journaling-org.html
+      ;; %a          Annotation, normally the link created with org-store-link.
+      ;; %A          Like %a, but prompt for the description part.
+      ;; @see: https://stackoverflow.com/questions/28417026/org-mode-capture-templates
       ;; Add multi-file journal.
       ;; }}
       (setq org-capture-templates
@@ -238,6 +244,7 @@
                "* TODO [#C] %?\n  %i\n %a \n %U"
                :empty-lines 1)
               ("j" "Journal Entry"
+               ;; https://github.com/akirak/org-reverse-datetree
                entry (file+datetree org-agenda-file-journal)
                "* %U - %^{heading}\n %?"
                :empty-lines 1)
@@ -1077,3 +1084,6 @@ Return nil if not found."
 
 (defun hurricane-org/init-org-roam-backlink-collections ()
   (use-package org-roam-backlink-collections))
+
+(defun hurricane-org/init-org-imagine ()
+  (use-package org-imagine))

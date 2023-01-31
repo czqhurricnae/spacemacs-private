@@ -51,6 +51,11 @@
         (plisty :location local)
         (org-tags-filter :location local)
         (org-roam-dblocks :location local)
+        (subed :location (recipe :fetcher github
+                                 :repo "sachac/subed"
+                                 :files ("*.*" "subed")))
+        (youtube-sub-extractor (recipe :fetcher github
+                                       :repo "agzam/youtube-sub-extractor"))
         ;; engine-mode
         ))
 
@@ -1328,7 +1333,9 @@
     (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)
     (eaf-bind-key insert_or_translate_text "." eaf-browser-keybinding)
     (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)
-    (eaf-bind-key send_eudic_liju "C-M-p" eaf-browser-keybinding)))
+    (eaf-bind-key send_eudic_liju "C-M-p" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_download_youtube_video "y" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding)))
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan
@@ -1374,3 +1381,18 @@
 (defun hurricane-misc/init-org-roam-dblocks ()
   (use-package org-roam-dblocks
     :hook (org-mode . org-roam-dblocks-autoupdate-mode)))
+
+(defun hurricane-misc/init-subed ()
+  (use-package subed
+    :ensure t
+    :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20221230.110938/subed"
+    :init
+    (require 'subed-autoloads)
+    :config
+    (add-to-list 'subed-mpv-arguments "--stream-lavf-o-append=socks_proxy=socks5://127.0.0.1:7890")
+    ))
+
+(defun hurricane-misc/init-youtube-sub-extractor ()
+  (use-package youtube-sub-extractor
+    :ensure t
+    :commands (youtube-sub-extractor-extract-subs)))

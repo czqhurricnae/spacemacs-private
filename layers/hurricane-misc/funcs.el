@@ -1191,7 +1191,7 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
   (and (featurep 'blink-search)
        (bound-and-true-p blink-search-mode-map)))
 
-(require 'request)
+;; (require 'request)
 
 (defvar anki-connect-host "127.0.0.1"
   "Anki connect server host.")

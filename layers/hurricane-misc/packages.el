@@ -1389,11 +1389,13 @@
     (require 'subed-autoloads)
 
     (defun subed-send-sentence-to-Anki ()
+      (interactive)
       (setq sentence (substring-no-properties (subed-subtitle-text)))
       (setq subed-mp3 (format "subed_%s.mp3" (format-time-string "%-I_%M_%p")))
+      (setq subed-screenshot (format "subed_%s.png" (format-time-string "%-I_%M_%p")))
       (let* ((timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
              (timestamp-stop (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-stop))))
-             (final-cmd (format "ffmpeg -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s%s\"" subed-mpv-media-file timestamp-start timestamp-stop (expand-file-name Anki-media-dir) subed-mp3))
+             (final-cmd (format "ffmpeg -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s%s\" && ffmpeg -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" subed-mpv-media-file timestamp-start timestamp-stop (expand-file-name Anki-media-dir) subed-mp3 subed-mpv-media-file timestamp-stop (expand-file-name Anki-media-dir) subed-screenshot))
              (proc
               (start-process-shell-command
                "subed-send-sentence-to-Anki"
@@ -1403,14 +1405,16 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) sentence)
+             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) sentence (format "<img src=\"%s\">" subed-screenshot))
              )))
           t))
 
     :config
     (add-to-list 'subed-mpv-arguments "--stream-lavf-o-append=socks_proxy=socks5://127.0.0.1:7890")
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "RET") #'subed-forward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-p") #'subed-backward-subtitle-text)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "6") #'subed-backward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-a") #'subed-jump-to-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-e") #'subed-jump-to-subtitle-end)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-[") #'subed-decrease-start-time)
@@ -1432,6 +1436,7 @@
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-s") #'subed-sort)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-SPC") #'subed-mpv-toggle-pause)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-j") #'subed-mpv-jump-to-current-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "r") #'subed-mpv-jump-to-current-subtitle)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-d") #'subed-toggle-debugging)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-v") #'subed-mpv-play-from-file)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-u") #'subed-mpv-play-from-url)
@@ -1449,6 +1454,7 @@
                                                                              (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-b") #'subed-insert-html-tag-bold)
                                                                              html-tag-keymap))
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-s") #'subed-send-sentence-to-Anki)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "7") #'subed-send-sentence-to-Anki)
     ))
 
 (defun hurricane-misc/init-youtube-sub-extractor ()

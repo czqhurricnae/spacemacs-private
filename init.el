@@ -53,6 +53,10 @@ This function should only modify configuration layer settings."
                                                  :name "WEIXIN"
                                                  :url "https://weixin.sogou.com/weixin?type=2&s_from=input&query=%s"
                                                  :keywords (:keybinding "w" :docstring "搜狗微信搜索"))
+                                                (EUDIC
+                                                 :name "EUDIC"
+                                                 :url "https://dict.eudic.net/liju/en/%s"
+                                                 :keywords (:keybinding "e" :docstring "欧路词典原声例句" :browser 'eaf-open-browser))
                                                 ))
 
      graphviz

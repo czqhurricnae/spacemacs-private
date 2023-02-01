@@ -73,6 +73,9 @@
 (defvar rime-dir ""
   "Emacs-rime configuration location.")
 
+(defvar Anki-media-dir ""
+  "Anki media loaction.")
+
 (defvar jupyter-bin ""
   "Jupyter location.")
 
@@ -109,6 +112,9 @@ For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
  virtualenv-dir "~/.virtualenvs/"
  auto-insert-dir "~/.spacemacs.d/templates/"
  rime-dir "~/.spacemacs.d/rime/"
+ Anki-media-dir (cond
+                 (sys/mac-x-p "~/Library/Application Support/Anki2/用户1/collection.media/")
+                 t "")
  jupyter-bin "~/.virtualenvs/ipy/bin/jupyter"
  eslintfmt-configuration-file "~/.spacemacs.d/.eslintrc.js"
  Baidu-OCR-Python-file "~/.spacemacs.d/BaiduOcr.py"

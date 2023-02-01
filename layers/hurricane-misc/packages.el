@@ -1296,22 +1296,21 @@
                  "end tell\n"
                  ))))
 
-    (defun eaf-send-eudic-liju-to-anki (link)
+    (defun eaf-send-eudic-liju-to-Anki (link)
       (setq payload (split-string link "::" t))
-      (setq mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
-      (let* ((final-cmd (format "wget -O \"/Users/c/Library/Application Support/Anki2/用户1/collection.media/%s\" \"%s\"" mp3 (nth 1 payload)))
+      (setq eudic-mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
+      (let* ((final-cmd (format "wget -O \"%s%s\" \"%s\"" (expand-file-name Anki-media-dir) eudic-mp3 (nth 1 payload)))
              (proc
               (start-process-shell-command
-               "eaf-send-eudic-liju-to-anki"
+               "eaf-send-eudic-liju-to-Anki"
                nil
                final-cmd)))
-          (print final-cmd)
-          (set-process-sentinel
-           proc
-           (lambda (proc event)
-             (when (equal event "finished\n")
-               (anki-add-card anki-deck-name (format "[sound:%s]" mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)))
-               )))
+        (set-process-sentinel
+         proc
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (anki-add-card anki-deck-name (format "[sound:%s]" eudic-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)))
+             )))
           t))
 
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
@@ -1333,7 +1332,7 @@
     (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)
     (eaf-bind-key insert_or_translate_text "." eaf-browser-keybinding)
     (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)
-    (eaf-bind-key send_eudic_liju "C-M-p" eaf-browser-keybinding)
+    (eaf-bind-key send_eudic_liju "C-M-s" eaf-browser-keybinding)
     (eaf-bind-key insert_or_download_youtube_video "y" eaf-browser-keybinding)
     (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding)))
 
@@ -1388,8 +1387,68 @@
     :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20221230.110938/subed"
     :init
     (require 'subed-autoloads)
+
+    (defun subed-send-sentence-to-Anki ()
+      (setq sentence (substring-no-properties (subed-subtitle-text)))
+      (setq subed-mp3 (format "subed_%s.mp3" (format-time-string "%-I_%M_%p")))
+      (let* ((timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
+             (timestamp-stop (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-stop))))
+             (final-cmd (format "ffmpeg -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s%s\"" subed-mpv-media-file timestamp-start timestamp-stop (expand-file-name Anki-media-dir) subed-mp3))
+             (proc
+              (start-process-shell-command
+               "subed-send-sentence-to-Anki"
+               nil
+               final-cmd)))
+        (set-process-sentinel
+         proc
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) sentence)
+             )))
+          t))
+
     :config
     (add-to-list 'subed-mpv-arguments "--stream-lavf-o-append=socks_proxy=socks5://127.0.0.1:7890")
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-p") #'subed-backward-subtitle-text)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-a") #'subed-jump-to-subtitle-text)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-e") #'subed-jump-to-subtitle-end)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-[") #'subed-decrease-start-time)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-]") #'subed-increase-start-time)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-{") #'subed-decrease-stop-time)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-}") #'subed-increase-stop-time)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-n") #'subed-move-subtitle-forward)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-p") #'subed-move-subtitle-backward)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-f") #'subed-shift-subtitle-forward)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-b") #'subed-shift-subtitle-backward)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-x") #'subed-scale-subtitles-forward)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-S-x") #'subed-scale-subtitles-backward)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-i") #'subed-insert-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-i") #'subed-insert-subtitle-adjacent)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-k") #'subed-kill-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-m") #'subed-merge-dwim)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-M") #'subed-merge-with-previous)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-.") #'subed-split-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-s") #'subed-sort)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-SPC") #'subed-mpv-toggle-pause)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-j") #'subed-mpv-jump-to-current-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-d") #'subed-toggle-debugging)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-v") #'subed-mpv-play-from-file)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-u") #'subed-mpv-play-from-url)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-f") subed-mpv-frame-step-map)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-p") #'subed-toggle-pause-while-typing)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-l") #'subed-toggle-loop-over-current-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-r") #'subed-toggle-replay-adjusted-subtitle)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c [") #'subed-copy-player-pos-to-start-time)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c ]") #'subed-copy-player-pos-to-stop-time)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c .") #'subed-toggle-sync-point-to-player)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c ,") #'subed-toggle-sync-player-to-point)
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-t") (let ((html-tag-keymap (make-sparse-keymap)))
+                                                                             (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-t") #'subed-insert-html-tag)
+                                                                             (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-i") #'subed-insert-html-tag-italic)
+                                                                             (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-b") #'subed-insert-html-tag-bold)
+                                                                             html-tag-keymap))
+    (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-s") #'subed-send-sentence-to-Anki)
     ))
 
 (defun hurricane-misc/init-youtube-sub-extractor ()

@@ -25,7 +25,9 @@
       (interactive)
       (if (display-graphic-p)
           (if emacs/>=26p
-              (youdao-dictionary-search-at-point-posframe)
+              (progn
+                (youdao-dictionary-play-voice-at-point)
+                (youdao-dictionary-search-at-point-posframe))
             (youdao-dictionary-search-at-point-tooltip))
         (youdao-dictionary-search-at-point)))
     :config

@@ -1056,3 +1056,46 @@ that the point is already within a string."
       (set (make-local-variable 'eaf--buffer-id) buffer-id))
 
     (pop-to-buffer buffer-name)))
+
+;;{{
+(defun anki-editor-collect-content-from-result (notesinfo)
+  (mapcar
+   (lambda (x)
+     (let* ((noteid (cdr (assq 'noteId x)))
+            (fields (cdr (assq 'fields x)))
+            (transcription (cdar (cdr (assq 'transcription fields))))
+            (sound (cdar (cdr (assq 'sound fields)))))
+       (list
+        transcription
+        noteid
+        sound)))
+   notesinfo))
+
+(with-eval-after-load 'psearch
+      (psearch-patch anki-editor-find-notes
+        (psearch-replace '`(if ,p1 ,p2, p3)
+                         '`(if ,p1 (ivy-read "Select a card to preview: "
+                                             (anki-editor-collect-content-from-result
+                                              (anki-editor-api-call-result 'notesInfo :notes nids))
+                                             :action (lambda (content) (play-sound-file
+                                                                   (format "%s%s"
+                                                                           Anki-media-dir
+                                                                           (and
+                                                                             (string-match
+                                                                              (rx string-start
+                                                                                  "[sound:"
+                                                                                  (group (1+ not-newline))
+                                                                                  "]"
+                                                                                  string-end)
+                                                                              (elt content 2))
+                                                                             (match-string 1 (elt content 2)))))))
+                             ,p3))))
+
+(defun hurricane//anki-editor-gui-edit-note-action (x)
+  (anki-editor-api-call 'guiEditNote :note (nth 1 x)))
+
+(with-eval-after-load 'ivy
+  (ivy-add-actions
+   'anki-editor-find-notes
+   '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note"))))
+;;}}

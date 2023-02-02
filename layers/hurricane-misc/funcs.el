@@ -876,7 +876,6 @@ Else, returns STRING."
    ("y" hurricane//chrome-copy-tab-url-action "copy tab(s) url")
    ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url")
    )))
-;; }}
 
 (defun hurricane/open-link-in-chrome ()
   "Open `url' under cursor in Chrome.
@@ -885,7 +884,7 @@ Work in macOS only."
   (let* (($inputStr (if (use-region-p)
                         (buffer-substring-no-properties (region-beginning) (region-end))
                       (let ($p0 $p1 $p2
-                        ($pathStops "^  \t\n\"`'‘’“”|[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭〘〙·。\\"))
+                                ($pathStops "^  \t\n\"`'‘’“”|[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭〘〙·。\\"))
                         (setq $p0 (point))
                         (skip-chars-backward $pathStops)
                         (setq $p1 (point))
@@ -899,8 +898,10 @@ Work in macOS only."
            "^file:///" "/"
            (replace-regexp-in-string
             ":\\'" "" $inputStr))))
-  (shell-command
-   (format "open -a Google\\ Chrome.app \"%s\"" $path))))
+    (shell-command
+     (format "open -a Google\\ Chrome.app \"%s\"" $path))))
+;; }}
+
 
 (cond (sys/macp
    (progn
@@ -1093,6 +1094,7 @@ Image file name is generated from `match-end' position string."
 
     (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content))
 
+;;{{
 (defvar hurricane-proxy  "127.0.0.1:1080")
 
 ;; Network Proxy
@@ -1156,6 +1158,7 @@ Image file name is generated from `match-end' position string."
   (if (bound-and-true-p socks-noproxy)
       (hurricane/proxy-socks-disable)
     (hurricane/proxy-socks-enable)))
+;;}}
 
 (defun hurricane/dired-duplicate-this-file ()
   "Duplicate file on this line."

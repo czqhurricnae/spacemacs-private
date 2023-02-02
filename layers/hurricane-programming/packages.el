@@ -12,6 +12,7 @@
     (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
     (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
     ;; prettier-js
+    (psearch :location (recipe :fetcher github :repo "twlz0ne/psearch.el" :files ("psearch.el")))
 ))
 
 (defun hurricane-programming/post-init-yasnippet ()
@@ -25,14 +26,6 @@
     (spacemacs/add-to-hooks 'hurricane//load-yasnippet '(prog-mode-hook
                                                         org-mode-hook
                                                         markdown-mode-hook))))
-
-(defun hurricane-programming/init-exec-path-from-shell ()
-  (use-package exec-path-from-shell
-    :init
-    (when (memq window-system '(mac ns x))
-      (exec-path-from-shell-initialize)
-      (exec-path-from-shell-copy-envs '("LC_ALL"))
-      (message "Initialized PATH and other variables from SHELL."))))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
@@ -69,7 +62,7 @@
 (defun hurricane-programming/init-ycmd ()
   (use-package ycmd
     :init
-    (set-variable 'ycmd-global-config "/Users/c/.ycm_extra_conf.py")
+    (set-variable 'ycmd-global-config "~/.ycm_extra_conf.py")
     (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
     (setq ycmd-tag-files 'auto)
     (setq ycmd-force-semantic-completion t)
@@ -98,19 +91,9 @@
     (setq slime-contribs '(slime-fancy))))
 ;; }}
 
-(defun exec-path-from-shell-setenv (name value)
-  "Set the value of environment var NAME to VALUE.
-Additionally, if `name' is `path' then also set corresponding
-variables such as `exec-path'."
-  (setenv name value)
-  (when (string-equal "PATH" name)
-    (setq eshell-path-env value
-          exec-path (append (parse-colon-path value) (list exec-directory)))))
-
 (defun hurricane-programming/init-dash-at-point ()
   (use-package dash-at-point
     :config
-    (add-to-list 'load-path "/Users/c/.emacs.d/elpa/dash-at-point-20180710.1356")
     (autoload 'dash-at-point "dash-at-point"
       "Search the word at point with Dash." t nil)
     (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))))
@@ -198,3 +181,7 @@ variables such as `exec-path'."
 ;;     (setq pythonfmt-command "yapf")
 ;;     (setq pythonfmt-command-args "-i")
 ;;     (add-hook 'python-mode-hook #'pythonfmt-mode)))
+
+(defun hurricane-programming/init-psearch ()
+  (use-package psearch
+    :ensure t))

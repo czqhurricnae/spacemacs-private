@@ -74,7 +74,11 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-media-note-screenshot-image-dir
+   '((eval setq org-download-image-dir
+           (concat default-directory "./static/Elisp 学习笔记/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/AW_SAI_4.1.3 维修人员培训大纲_1/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/EAF PR-Send eudic liju/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/EAF PR-Support OCR area by customized command/"))

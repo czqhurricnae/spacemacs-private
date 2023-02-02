@@ -1309,7 +1309,7 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" eudic-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)))
+             (anki-add-card anki-deck-name (format "[sound:%s]" eudic-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" ""))
              )))
           t))
 
@@ -1395,7 +1395,7 @@
       (setq subed-screenshot (format "subed_%s.png" (format-time-string "%-I_%M_%p")))
       (let* ((timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
              (timestamp-stop (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-stop))))
-             (final-cmd (format "ffmpeg -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s%s\" && ffmpeg -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" subed-mpv-media-file timestamp-start timestamp-stop (expand-file-name Anki-media-dir) subed-mp3 subed-mpv-media-file timestamp-stop (expand-file-name Anki-media-dir) subed-screenshot))
+             (final-cmd (format "ffmpeg -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s%s\" && ffmpeg -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" subed-mpv-media-file timestamp-start timestamp-stop (expand-file-name Anki-media-dir) subed-mp3 subed-mpv-media-file timestamp-start (expand-file-name Anki-media-dir) subed-screenshot))
              (proc
               (start-process-shell-command
                "subed-send-sentence-to-Anki"

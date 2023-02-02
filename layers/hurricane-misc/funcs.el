@@ -1209,7 +1209,7 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
                                              '("modelName" . "Audio note (English)")
                                              `("fields" . ,(list `("sound" . ,front)
                                                                  `("transcription" . ,back)
-                                                                 `("image" . ,(or screenshot ""))))
+                                                                 `("image" . ,screenshot)))
                                              `("options" . ,(list '("closeAfterAdding" . t))))))))
     (request (format "%s:%s" anki-connect-host anki-connect-port)
       :type "POST"

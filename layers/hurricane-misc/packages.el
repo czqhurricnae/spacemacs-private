@@ -1390,7 +1390,7 @@
 
     (defun subed-send-sentence-to-Anki ()
       (interactive)
-      (setq sentence (substring-no-properties (subed-subtitle-text)))
+      (setq subed-sentence (substring-no-properties (subed-subtitle-text)))
       (setq subed-mp3 (format "subed_%s.mp3" (format-time-string "%-I_%M_%p")))
       (setq subed-screenshot (format "subed_%s.png" (format-time-string "%-I_%M_%p")))
       (let* ((timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
@@ -1405,11 +1405,12 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) sentence (format "<img src=\"%s\">" subed-screenshot))
+             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot))
              )))
           t))
 
     :config
+    (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
     (add-to-list 'subed-mpv-arguments (format "--stream-lavf-o-append=%s_proxy=%s://%s:%s" provixy-type provixy-type provixy-host provixy-port))
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
     (evil-define-key '(normal) subed-mode-map (kbd "RET") #'subed-forward-subtitle-text)

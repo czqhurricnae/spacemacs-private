@@ -98,7 +98,7 @@
   "Provixy listen port.")
 
 (defcustom eaf-screenshot-command (if (memq system-type '(cygwin windows-nt ms-dos)) "" "/usr/sbin/screencapture")
-  "The screenshot command used to by eaf.py.
+  "The screenshot command used by eaf.py.
 
 Absolute path is best."
   :type 'string)

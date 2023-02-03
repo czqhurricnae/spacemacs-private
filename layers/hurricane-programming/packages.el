@@ -5,7 +5,6 @@
     virtualenvwrapper
     web-mode
     slime
-    (exec-path-from-shell :location elpa)
     dumb-jump
     yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))

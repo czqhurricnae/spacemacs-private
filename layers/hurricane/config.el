@@ -88,6 +88,15 @@
 (defvar scripts-file ""
   "scripts can be used in org mode.")
 
+(defvar provixy-type "http"
+  "proxy type for EAF and popweb.")
+
+(defvar provixy-host "0.0.0.0"
+  "Provixy listen host.")
+
+(defvar provixy-port "8118"
+  "Provixy listen port.")
+
 (defcustom eaf-screenshot-command (if (memq system-type '(cygwin windows-nt ms-dos)) "" "/usr/sbin/screencapture")
   "The screenshot command used to by eaf.py.
 

@@ -1060,9 +1060,9 @@ Return nil if not found."
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
-    (popweb-proxy-type "http")
-    (popweb-proxy-host "127.0.0.1")
-    (popweb-proxy-port "8118")
+    (popweb-proxy-type provixy-type)
+    (popweb-proxy-host provixy-host)
+    (popweb-proxy-port provixy-port)
     ))
 
 ;; npm install mathjax-node-cli

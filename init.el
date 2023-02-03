@@ -143,7 +143,7 @@ This function should only modify configuration layer settings."
           eaf-pdf-dark-mode nil
           browse-url-browser-function 'browse-url-default-browser
           eaf-proxy-type "http"
-          eaf-proxy-host "127.0.0.1"
+          eaf-proxy-host "0.0.0.0"
           eaf-proxy-port "8118")
      pdf
      hurricane

@@ -308,7 +308,11 @@ z-index: 2140000001;\
             let word = document.URL.split("/").pop();
             let dataRel = 'http://api.frdic.com/api/v2/speech/speakweb?' + node.getAttribute('data-rel');
             let [, line] = /(?:\d+.)(.+)/.exec(node.parentElement.textContent);
-            let [, exp] = /(?:\d+.)(.+)/.exec(node.parentElement.nextElementSibling.textContent);
+            if (/(?:\d+.)(.+)/.exec(node.parentElement.nextElementSibling.textContent)){
+                let [, exp] = /(?:\d+.)(.+)/.exec(node.parentElement.nextElementSibling.textContent);
+            } else {
+                exp = node.parentElement.nextElementSibling.textContent;
+            }
             node.click();
             return word + "::" + dataRel + "::" + line + "::" + exp;
         }else if(node.nodeName.toLowerCase() === 'select'){

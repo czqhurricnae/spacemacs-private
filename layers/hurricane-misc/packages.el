@@ -54,7 +54,7 @@
         (subed :location (recipe :fetcher github
                                  :repo "sachac/subed"
                                  :files ("*.*" "subed")))
-        (youtube-sub-extractor (recipe :fetcher github
+        (youtube-sub-extractor :location (recipe :fetcher github
                                        :repo "agzam/youtube-sub-extractor"))
         ;; engine-mode
         ))

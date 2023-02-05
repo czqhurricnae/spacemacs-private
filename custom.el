@@ -74,7 +74,11 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-download-image-dir
+   '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Merge two or more lists into a list of lists/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/面向维修差错的民航不安全事件风险分析/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static/Elisp 学习笔记/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/AW_SAI_4.1.3 维修人员培训大纲_1/"))

@@ -1334,7 +1334,7 @@
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key popweb-dict-liju-input "C-c y" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key popweb-dict-eudic-liju-input "C-c y" eaf-pdf-viewer-keybinding)
 
     (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
     (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)
@@ -1367,8 +1367,7 @@
     :config
     (setq blink-search-search-backends '("Grep PDF" "Buffer List" "Find File" "Common Directory" "Recent File" "Grep File" "IMenu" "EAF Browser History")
           blink-search-grep-pdf-backend 'pdf-tools
-          blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/" "/Users/c/Downloads/" "/Users/c/Documents/论文期刊/")
-          blink-search-preview-pdf-idle-time 1)
+          blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/" "/Users/c/Downloads/" "/Users/c/Documents/论文期刊/"))
 
     (defun hurricane//blink-search-grep-pdf-do (file page submatches)
       ;;highlight the matches

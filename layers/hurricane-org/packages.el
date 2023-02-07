@@ -1026,7 +1026,7 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.2/develop/popweb-20230207.13957" "elpa/28.2/develop/popweb-20230207.13957/extension/latex" "elpa/28.2/develop/popweb-20230207.13957/extension/dict" "elpa/28.2/develop/popweb-20230207.13957/extension/org-roam" "elpa/28.2/develop/popweb-20230207.13957/extension/url-preview")
+    :load-path ("elpa/28.2/develop/popweb-20230208.13018" "elpa/28.2/develop/popweb-20230208.13018/extension/latex" "elpa/28.2/develop/popweb-20230208.13018/extension/dict" "elpa/28.2/develop/popweb-20230208.13018/extension/org-roam" "elpa/28.2/develop/popweb-20230208.13018/extension/url-preview")
     :init
     (require 'popweb-dict)
     (require 'popweb-latex)
@@ -1067,7 +1067,7 @@ Return nil if not found."
     (popweb-proxy-type provixy-type)
     (popweb-proxy-host provixy-host)
     (popweb-proxy-port provixy-port)
-    (popweb-enable-developer-tools t)
+    ;; (popweb-enable-developer-tools t)
     :bind
     (("C-c y" . my-popweb-dict-eudic-liju-search-at-point)
      ("C-c Y" . my-youdao-search-at-point))

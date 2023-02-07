@@ -1341,3 +1341,4 @@ Version 2019-02-12 2021-08-09"
       (setq sentence (thing-at-point 'sentence t))))
     sentence))
 ;; }}
+

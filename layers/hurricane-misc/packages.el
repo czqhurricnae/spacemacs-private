@@ -56,6 +56,13 @@
                                  :files ("*.*" "subed")))
         (youtube-sub-extractor :location (recipe :fetcher github
                                        :repo "agzam/youtube-sub-extractor"))
+        (websocket :location (recipe :fetcher github
+                                           :repo "ahyatt/emacs-websocket"))
+        (websocket-bridge :location (recipe :fetcher github
+                                            :repo "ginqi7/websocket-bridge"))
+        (dictionary-overlay :location (recipe :fetcher github
+                                              :repo "ginqi7/dictionary-overlay"
+                                              :files ("*.*" "resources")))
         ;; engine-mode
         ))
 
@@ -1227,7 +1234,10 @@
           :map rime-active-mode-map
           ("C-M-g" . #'rime-inline-ascii)
           :map ivy-minibuffer-map
-          ("C-M-g" . #'rime-inline-ascii))))
+          ("C-M-g" . #'rime-inline-ascii)
+          :map blink-search-mode-map
+          ("C-M-g" . #'rime-inline-ascii)
+          )))
 
 (defun hurricane-misc/init-with-proxy ()
   (use-package with-proxy
@@ -1324,6 +1334,7 @@
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key popweb-dict-liju-input "C-c y" eaf-pdf-viewer-keybinding)
 
     (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
     (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)
@@ -1354,8 +1365,10 @@
             "1" "2" "3" "4"
             "[" "]"))
     :config
-    (setq blink-search-grep-pdf-backend 'pdf-tools)
-    (setq blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/" "/Users/c/Downloads/" "/Users/c/Documents/论文期刊/"))
+    (setq blink-search-search-backends '("Grep PDF" "Buffer List" "Find File" "Common Directory" "Recent File" "Grep File" "IMenu" "EAF Browser History")
+          blink-search-grep-pdf-backend 'pdf-tools
+          blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/" "/Users/c/Downloads/" "/Users/c/Documents/论文期刊/")
+          blink-search-preview-pdf-idle-time 1)
 
     (defun hurricane//blink-search-grep-pdf-do (file page submatches)
       ;;highlight the matches
@@ -1462,3 +1475,64 @@
   (use-package youtube-sub-extractor
     :ensure t
     :commands (youtube-sub-extractor-extract-subs)))
+
+(defun hurricane-misc/init-dictionary-overlay ()
+  (use-package dictionary-overlay
+    :ensure t
+    :init
+    (require 'eww)
+    (with-eval-after-load 'eww
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "y") #'my-popweb-translate-and-mark-unknown-word)
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "<down-mouse-1>") #'my-popweb-translate-and-mark-unknown-word)
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "u") #'dictionary-overlay-mark-word-know)
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd ".") #'dictionary-overlay-render-buffer)
+      (define-key evil-normal-state-map (kbd "<down-mouse-1>") #'my-popweb-translate-and-mark-unknown-word)
+      (evilified-state-evilify-map eww-mode-map
+        :mode eww-mode
+        :bindings
+        "y" 'my-popweb-translate-and-mark-unknown-word
+        "<down-mouse-1>" 'my-popweb-translate-and-mark-unknown-word
+        "u" 'dictionary-overlay-mark-word-know
+        "." 'dictionary-overlay-render-buffer)
+      )
+    :commands
+    (dictionary-overlay-start)
+    :custom-face
+    (dictionary-overlay-unknownword ((t :inherit font-lock-keyword-face)))
+    (dictionary-overlay-translation ((t :inherit font-lock-comment-face)))
+    :config
+    (require 'websocket-bridge)
+
+    (setq dictionary-overlay-inihibit-keymap nil
+          dictionary-overlay-position 'after
+          dictionary-overlay-translation-format "(%s)"
+          dictionary-overlay-user-data-directory dictionary-overlay-dir
+          dictionary-overlay-auto-jump-after
+          '(mark-word-known         ; recommended
+            ;; mark-word-unknown ; not recommended
+            render-buffer           ; opinionated, but turn it on, why not
+            )
+          dictionary-overlay-recenter-after-mark-and-jump nil)
+
+    (defun my-popweb-translate-and-mark-unknown-word ()
+      (interactive)
+      (my-popweb-dict-eudic-liju-search-at-point)
+      (dictionary-overlay-mark-word-unknown))
+
+
+    :bind
+    ("C-c d" . dictionary-overlay-render-buffer)
+    (:map dictionary-overlay-map
+                ("y" . my-popweb-translate-and-mark-unknown-word)
+                ("u" . dictionary-overlay-mark-word-know)
+                )))
+
+(defun hurricane-misc/init-websocket ()
+  (use-package websocket
+    :ensure t))
+
+(defun hurricane-misc/init-websocket-bridge ()
+  (use-package websocket-bridge
+    :ensure t
+    :commands
+    (websocket-bridge-server-start)))

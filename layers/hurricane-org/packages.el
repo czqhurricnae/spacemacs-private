@@ -44,7 +44,7 @@
     (incremental-reading :location local)
     (popweb :location (recipe
                        :fetcher github
-                       :repo "manateelazycat/popweb"
+                       :repo "czqhurricnae/popweb"
                        :files ("*.*" "extension")))
     (org-latex-impatient :location (recipe
                                     :fetcher github
@@ -1026,11 +1026,16 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.2/develop/popweb-20230204.183410" "elpa/28.2/develop/popweb-20230204.183410/extension/latex" "elpa/28.2/develop/popweb-20230204.183410/extension/dict" "elpa/28.2/develop/popweb-20230204.183410/extension/org-roam" "elpa/28.2/develop/popweb-20230204.183410/extension/url-preview")
-    :config
+    :load-path ("elpa/28.2/develop/popweb-20230207.13957" "elpa/28.2/develop/popweb-20230207.13957/extension/latex" "elpa/28.2/develop/popweb-20230207.13957/extension/dict" "elpa/28.2/develop/popweb-20230207.13957/extension/org-roam" "elpa/28.2/develop/popweb-20230207.13957/extension/url-preview")
+    :init
     (require 'popweb-dict)
     (require 'popweb-latex)
     (require 'popweb-org-roam-link)
+    (defun my-popweb-dict-eudic-liju-search-at-point ()
+      (interactive)
+      (if (display-graphic-p)
+          (popweb-dict-eudic-liju-input nil (lc-corpus--sentence))))
+    :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)
     (setq gnus-button-url-regexp "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)\\(//[-a-z0-9_.]+:[0-9]*\\)?\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+([-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]*)\\(?:[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)?\\|[-a-z0-9_=#$@~%&*+\\/[:word:]!?:;.,]+[-a-z0-9_=#$@~%&*+\\/[:word:]]\\)\\)")
@@ -1058,19 +1063,14 @@ Return nil if not found."
          )))
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
-
-    (defun popweb-dict-send-eudict-liju-to-Anki ()
-      (interactive)
-      (popweb-call-async "call_module_method" popweb-dict-module-path
-                         "execute_js"
-                         (list "dict_liju"
-                               "console.log(\"Hellow world\");")))
-
     :custom
     (popweb-proxy-type provixy-type)
     (popweb-proxy-host provixy-host)
     (popweb-proxy-port provixy-port)
     (popweb-enable-developer-tools t)
+    :bind
+    (("C-c y" . my-popweb-dict-eudic-liju-search-at-point)
+     ("C-c Y" . my-youdao-search-at-point))
     ))
 
 ;; npm install mathjax-node-cli

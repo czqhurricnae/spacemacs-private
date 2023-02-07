@@ -76,6 +76,8 @@
 (defvar Anki-media-dir ""
   "Anki media loaction.")
 
+(defvar dictionary-overlay-dir "")
+
 (defvar jupyter-bin ""
   "Jupyter location.")
 
@@ -124,6 +126,7 @@ For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
  Anki-media-dir (cond
                  (sys/mac-x-p "~/Library/Application Support/Anki2/用户1/collection.media/")
                  t "")
+ dictionary-overlay-dir "~/.spacemacs.d/dictionary-overlay-user-data-directory/"
  jupyter-bin "~/.virtualenvs/ipy/bin/jupyter"
  eslintfmt-configuration-file "~/.spacemacs.d/.eslintrc.js"
  Baidu-OCR-Python-file "~/.spacemacs.d/BaiduOcr.py"

@@ -124,7 +124,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
     (remove-hook 'post-self-insert-hook #'dcaps-to-scaps 'local)))
 
 (defun spacemacs/check-large-file ()
-  (when (> (buffer-size) 5000000)
+  (when (and (not (equal (file-name-extension (buffer-file-name)) "pdf")) (> (buffer-size) 5000000))
     (progn (fundamental-mode)
            (hl-line-mode -1)))
   (if (and (executable-find "wc")

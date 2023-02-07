@@ -1225,3 +1225,119 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
                 (lambda (&key data &allow-other-keys)
                   (message "result: %S" (assoc-default 'result data)))))))
 ;; }}
+
+;; {{
+;; @See: http://xahlee.info/emacs/emacs/elisp_change_space-hyphen_underscore.html
+(defun xah-cycle-hyphen-lowline-space ( &optional @begin @end )
+  "Cycle hyphen/lowline/space chars in selection or inside quote/bracket or line, in that order.
+When this command is called, pressing t will repeat it. Press other key to exit.
+The region to work on is by this order:
+ 1. if there is a selection, use that.
+ 2. If cursor is string quote or any type of bracket, and is within current line, work on that region.
+ 3. else, work on current line.
+URL `http://xahlee.info/emacs/emacs/elisp_change_space-hyphen_underscore.html'
+Version 2019-02-12 2021-08-09"
+  (interactive)
+  ;; this function sets a property 'state. Possible values are 0 to length of $charArray.
+  (let ($p1 $p2)
+    (if (and @begin @end)
+        (setq $p1 @begin $p2 @end)
+      (if (use-region-p)
+          (setq $p1 (region-beginning) $p2 (region-end))
+        (if (nth 3 (syntax-ppss))
+            (save-excursion
+              (skip-chars-backward "^\"")
+              (setq $p1 (point))
+              (skip-chars-forward "^\"")
+              (setq $p2 (point)))
+          (let (($skipChars "^\"<>(){}[]“”‘’‹›«»「」『』【】〖〗《》〈〉〔〕（）"))
+            (skip-chars-backward $skipChars (line-beginning-position))
+            (setq $p1 (point))
+            (skip-chars-forward $skipChars (line-end-position))
+            (setq $p2 (point))
+            (set-mark $p1)))))
+    (let ( $charArray $length $regionWasActive-p $nowState $changeTo)
+      (setq $charArray ["-" "_" " "])
+      (setq $length (length $charArray))
+      (setq $regionWasActive-p (region-active-p))
+      (setq $nowState (if (eq last-command this-command) (get 'xah-cycle-hyphen-lowline-space 'state) 0 ))
+      (setq $changeTo (elt $charArray $nowState))
+      (save-excursion
+        (save-restriction
+          (narrow-to-region $p1 $p2)
+          (goto-char (point-min))
+          (while (re-search-forward (elt $charArray (% (+ $nowState 2) $length)) (point-max) "move")
+            (replace-match $changeTo t t))))
+      (when (or (string-equal $changeTo " ") $regionWasActive-p)
+        (goto-char $p2)
+        (set-mark $p1)
+        (setq deactivate-mark nil))
+      (put 'xah-cycle-hyphen-lowline-space 'state (% (+ $nowState 1) $length))))
+  (set-transient-map (let (($kmap (make-sparse-keymap))) (define-key $kmap (kbd "t") 'xah-cycle-hyphen-lowline-space ) $kmap)))
+;; }}
+
+;; {{
+(defcustom lc-corpus-eww-sentence-abbrevs '("i.e." "etc." "U.S.")
+  "Prevent to incorrectly determine sentence end."
+  :type '(repeat string)
+  :group 'language-chunk
+  )
+
+(defcustom lc-corpus-eww-sentence-ends (rx (or
+                                            (and "." (or " " eol))
+                                            (and "?" (or " " eol))
+                                            (and "!" (or " " eol))
+                                            (and ";" (or " " eol))
+                                            "\n\n"))
+  "A regexp used to determine where is the end of a sentence in eww."
+  :type 'string
+  :group 'language-chunk
+  )
+
+(defun lc-corpus--string-ends-with-any (str patterns)
+  (cl-dolist (p patterns)
+    (when (string-suffix-p p str t)
+      (cl-return t))))
+
+(defun lc-corpus--eww-sentence ()
+  (let ((sentence-ends lc-corpus-eww-sentence-ends)
+        (point (point))
+        (stop nil)
+        start end)
+    (save-excursion
+      (while (not stop)
+        (setq end (search-forward-regexp sentence-ends nil t))
+        ;; (message "end: %s" end)
+        (if (not end)
+            (setq end (point-max)
+                  stop t)
+          (unless (lc-corpus--string-ends-with-any (buffer-substring-no-properties point (- end 1)) lc-corpus-eww-sentence-abbrevs)
+            (setq stop t))))
+
+      (setq stop nil)
+      (goto-char point)
+      (while (not stop)
+        (setq start (search-backward-regexp sentence-ends nil t))
+        ;; (message "start: %s" start)
+        (if (not start)
+            (setq start (point-min)
+                  stop t)
+          (unless (lc-corpus--string-ends-with-any (buffer-substring-no-properties (point-at-bol) (1+ start)) lc-corpus-eww-sentence-abbrevs)
+            (setq stop t)
+            (setq start (1+ start))))))
+    (string-trim (buffer-substring-no-properties start end))))
+
+(defun lc-corpus-sentence ()
+  "Used to test `lc-corpus--sentence'."
+  (interactive)
+  (message "%s" (lc-corpus--sentence)))
+
+(defun lc-corpus--sentence ()
+  (let (sentence)
+    (cond
+     ((derived-mode-p 'eww-mode)
+      (setq sentence (lc-corpus--eww-sentence)))
+     (t
+      (setq sentence (thing-at-point 'sentence t))))
+    sentence))
+;; }}

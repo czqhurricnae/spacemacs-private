@@ -1064,9 +1064,11 @@ that the point is already within a string."
      (let* ((noteid (cdr (assq 'noteId x)))
             (fields (cdr (assq 'fields x)))
             (transcription (cdar (cdr (assq 'transcription fields))))
+            (notes (cdar (cdr (assq 'notes fields))))
+            (note )
             (sound (cdar (cdr (assq 'sound fields)))))
        (list
-        transcription
+        (format "%s %s" transcription notes)
         noteid
         sound)))
    notesinfo))

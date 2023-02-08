@@ -754,6 +754,8 @@ you should place your code here."
   ;; (set-face-attribute 'default nil :height 165)
   (set-face-background 'scroll-bar "transparent")
   (spacemacs/toggle-debug-on-error-off)
+  ;; 必须，否则 helm-ff-run-pdfgrep 无法正常搜索。
+  (exec-path-from-shell-setenv "LC_ALL" "en_US.UTF-8")
   (evil-define-key 'motion 'evi-org-mode (kbd "0") 'evil-org-beginning-of-line)
   (global-page-break-lines-mode -1)
   (require 'org-protocol)

@@ -359,3 +359,17 @@ After this command has been run, any buffers it's modified will remain open and 
 
 (defun hurricane//dired-move-file-to (x)
   (hurricane//dired-copy-or-move-file-to #'diredp-move-files-named-in-kill-ring x))
+
+;; {{
+;; @See: https://github.com/purcell/exec-path-from-shell/blob/dff9ce3577bf3f2938d9bde8ec8aa4fef3b061f3/exec-path-from-shell.el
+(defun exec-path-from-shell-setenv (name value)
+  "Set the value of environment var NAME to VALUE.
+Additionally, if NAME is \"PATH\" then also update the
+variables `exec-path' and `eshell-path-env'."
+  (setenv name value)
+  (when (string-equal "PATH" name)
+    (setq exec-path (append (parse-colon-path value) (list exec-directory)))
+    ;; `eshell-path-env' is a buffer local variable, so change its default
+    ;; value.
+    (setq-default eshell-path-env value)))
+;; }}

@@ -1031,7 +1031,7 @@ Return nil if not found."
     (require 'popweb-dict)
     (require 'popweb-latex)
     (require 'popweb-org-roam-link)
-    (defun my-popweb-dict-eudic-liju-search-at-point ()
+    (defun hurricane/popweb-dict-eudic-liju-search-at-point ()
       (interactive)
       (if (display-graphic-p)
           (popweb-dict-eudic-liju-input nil (lc-corpus--sentence))))
@@ -1069,7 +1069,7 @@ Return nil if not found."
     (popweb-proxy-port provixy-port)
     ;; (popweb-enable-developer-tools t)
     :bind
-    (("C-c y" . my-popweb-dict-eudic-liju-search-at-point)
+    (("C-c y" . hurricane/popweb-dict-eudic-liju-search-at-point)
      ("C-c Y" . my-youdao-search-at-point))
     ))
 

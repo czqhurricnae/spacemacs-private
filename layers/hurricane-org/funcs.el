@@ -1100,4 +1100,6 @@ that the point is already within a string."
   (ivy-add-actions
    'anki-editor-find-notes
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note"))))
+
+(define-key global-map (kbd "<f3>") #'anki-editor-find-notes)
 ;;}}

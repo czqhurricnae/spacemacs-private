@@ -1282,11 +1282,53 @@
     (setq auto-save-delete-trailing-whitespace t)))
 
 (defun hurricane-misc/post-init-eaf ()
-  (with-eval-after-load 'eaf-pdf-viewer
-
+  (with-eval-after-load 'eaf
     (setq eaf-screenshot-args (list "-i" "-x"))
 
-    (defun eaf-pdf-open-with-Adobe-Acrobat ()
+    ;; /eaf/eaf.py
+    ;; @PostGui
+    ;; def ocr_area(self, buffer_id)
+    (defun eaf-ocr-area ()
+      (interactive)
+      (eaf-call-async "ocr_area" eaf--buffer-id)))
+
+  (with-eval-after-load 'eaf-browser
+    (defun eaf-send-eudic-liju-to-Anki (link)
+      (interactive)
+      (setq payload (split-string link "::" t))
+      (setq eudic-mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
+      (let* ((final-cmd (format "wget -O \"%s%s\" \"%s\"" (expand-file-name Anki-media-dir) eudic-mp3 (nth 1 payload)))
+             (proc
+              (start-process-shell-command
+               "eaf-send-eudic-liju-to-Anki"
+               nil
+               final-cmd)))
+        (set-process-sentinel
+         proc
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (anki-add-card anki-deck-name (format "[sound:%s]" eudic-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" ""))
+             )))
+        t))
+
+    (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
+    (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_export_text "n" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_render_by_eww "N" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)
+    (eaf-bind-key insert_or_translate_text "." eaf-browser-keybinding)
+    (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)
+    ;; /eaf/core/webengine.py
+    ;; @interactive
+    ;; def send_eudic_liju(self):
+    ;;     self.buffer_widget.get_link_markers()
+    ;;     self.send_input_message("Copy link: ", "send_eudic_liju", "marker");
+    (eaf-bind-key send_eudic_liju "C-M-s" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_download_youtube_video "y" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding))
+
+  (with-eval-after-load 'eaf-pdf-viewer
+    (defun eaf-pdf-viewer-open-with-Adobe-Acrobat ()
       (interactive)
       (let* ((page-number (or (eaf-call-sync "execute_function" eaf--buffer-id "current_page") "1")))
         (do-applescript
@@ -1305,47 +1347,34 @@
                  "	end tell\n"
                  "end tell\n"
                  ))))
-
-    (defun eaf-send-eudic-liju-to-Anki (link)
-      (setq payload (split-string link "::" t))
-      (setq eudic-mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
-      (let* ((final-cmd (format "wget -O \"%s%s\" \"%s\"" (expand-file-name Anki-media-dir) eudic-mp3 (nth 1 payload)))
-             (proc
-              (start-process-shell-command
-               "eaf-send-eudic-liju-to-Anki"
-               nil
-               final-cmd)))
-        (set-process-sentinel
-         proc
-         (lambda (proc event)
-           (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" eudic-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" ""))
-             )))
-          t))
+    ;; def popweb_dict_search_select(self):
+    ;;     if self.buffer_widget.is_select_mode:
+    ;;         content = self.buffer_widget.parse_select_char_list()
+    ;;         eval_in_emacs('popweb-dict-eudic-liju-input', [content])
+    ;;         message_to_emacs(content)
+    ;;         self.buffer_widget_cleanup_select()
+    ;; 没有 @interactive @PostGui 装饰器，无法像 ocr_area 调用。
+    ;; 没有在 webengine.py 或 eaf.py 中定义，build_all_methods 无法获取。
+    ;; 无法在 evil-define-key 中调用。
+    ;; 只能先在 (setq eaf-pdf-viewer-keybinding) 定义，再调用。
+    ;; (defun eaf-pdf-viewer-popweb-dict-translate-select ()
+    ;;   (interactive)
+    ;;   (eaf-call-async "popweb_dict_search_select" eaf--buffer-id))
 
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
     ;; (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
-    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding)
 
     (eaf-bind-key eaf-ocr-buffer "z" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-ocr-area "Z" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key eaf-pdf-open-with-Adobe-Acrobat "E" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key eaf-pdf-viewer-open-with-Adobe-Acrobat "E" eaf-pdf-viewer-keybinding)
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key popweb-dict-eudic-liju-input "C-c y" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key popweb-dict-eudic-liju-input "C-c y" eaf-pdf-viewer-keybinding))
 
-    (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
-    (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)
-    (eaf-bind-key insert_or_export_text "n" eaf-browser-keybinding)
-    (eaf-bind-key insert_or_render_by_eww "N" eaf-browser-keybinding)
-    (eaf-bind-key insert_or_switch_to_reader_mode "," eaf-browser-keybinding)
-    (eaf-bind-key insert_or_translate_text "." eaf-browser-keybinding)
-    (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)
-    (eaf-bind-key send_eudic_liju "C-M-s" eaf-browser-keybinding)
-    (eaf-bind-key insert_or_download_youtube_video "y" eaf-browser-keybinding)
-    (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding)))
+  (with-eval-after-load 'eaf-image-viewer
+    (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
+    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding)))
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan
@@ -1481,16 +1510,16 @@
     :init
     (require 'eww)
     (with-eval-after-load 'eww
-      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "y") #'my-popweb-translate-and-mark-unknown-word)
-      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "<down-mouse-1>") #'my-popweb-translate-and-mark-unknown-word)
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "y") #'hurricane/popweb-translate-and-mark-unknown-word)
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "<down-mouse-1>") #'hurricane/popweb-translate-and-mark-unknown-word)
       (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "u") #'dictionary-overlay-mark-word-know)
       (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd ".") #'dictionary-overlay-render-buffer)
-      (define-key evil-normal-state-map (kbd "<down-mouse-1>") #'my-popweb-translate-and-mark-unknown-word)
+      (define-key evil-normal-state-map (kbd "<down-mouse-1>") #'hurricane/popweb-translate-and-mark-unknown-word)
       (evilified-state-evilify-map eww-mode-map
         :mode eww-mode
         :bindings
-        "y" 'my-popweb-translate-and-mark-unknown-word
-        "<down-mouse-1>" 'my-popweb-translate-and-mark-unknown-word
+        "y" 'hurricane/popweb-translate-and-mark-unknown-word
+        "<down-mouse-1>" 'hurricane/popweb-translate-and-mark-unknown-word
         "u" 'dictionary-overlay-mark-word-know
         "." 'dictionary-overlay-render-buffer)
       )
@@ -1513,16 +1542,15 @@
             )
           dictionary-overlay-recenter-after-mark-and-jump nil)
 
-    (defun my-popweb-translate-and-mark-unknown-word ()
+    (defun hurricane/popweb-translate-and-mark-unknown-word ()
       (interactive)
-      (my-popweb-dict-eudic-liju-search-at-point)
+      (hurricane/popweb-dict-eudic-liju-search-at-point)
       (dictionary-overlay-mark-word-unknown))
-
 
     :bind
     ("C-c d" . dictionary-overlay-render-buffer)
     (:map dictionary-overlay-map
-                ("y" . my-popweb-translate-and-mark-unknown-word)
+                ("y" . hurricane/popweb-translate-and-mark-unknown-word)
                 ("u" . dictionary-overlay-mark-word-know)
                 )))
 

@@ -1035,6 +1035,17 @@ Return nil if not found."
       (interactive)
       (if (display-graphic-p)
           (popweb-dict-eudic-liju-input nil (lc-corpus--sentence))))
+
+    (defun popweb-dict-join-dirs (root dir file)
+      (file-name-concat root dir file))
+
+    (defun popweb-dict-js-file-path (file)
+      (popweb-dict-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
+
+    (popweb-dict-create "eudic-liju"
+                        "https://dict.eudic.net/liju/en/%s"
+                        ""
+                        (popweb-dict-js-file-path "eudic-liju.js"))
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)

@@ -8,7 +8,7 @@ if (url.match(/http[s]?:\/\/*dict.eudic.net\/liju\/en\/*/)) {
       const audioUrl =
             "http://api.frdic.com/api/v2/speech/speakweb?" +
             $(this).attr("data-rel");
-      insertDownloadLink(audioUrl, $(this), true, text=args[0].join(""));
+    insertDownloadLink(audioUrl, $(this), true, text=args[0] ? args[0].join("") : "");
   });
 }}
 

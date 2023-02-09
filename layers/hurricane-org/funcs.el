@@ -1096,10 +1096,14 @@ that the point is already within a string."
 (defun hurricane//anki-editor-gui-edit-note-action (x)
   (anki-editor-api-call 'guiEditNote :note (nth 1 x)))
 
+(defun hurricane//anki-editor-popup-note-at-point-posframe (x)
+  (popweb-org-roam-link-show (nth 0 x)))
+
 (with-eval-after-load 'ivy
   (ivy-add-actions
    'anki-editor-find-notes
-   '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note"))))
+   '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
+     ("p" hurricane//anki-editor-popup-note-at-point-posframe "Popup note"))))
 
 (define-key global-map (kbd "<f3>") #'anki-editor-find-notes)
 ;;}}

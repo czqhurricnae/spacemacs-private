@@ -1020,7 +1020,7 @@ Image file name is generated from `match-end' position string."
 (defun hurricane/find-file-html-or-markdown-to-org (&optional in-file)
   (interactive)
   (setq in-file-org (if (and in-file (file-exists-p in-file))
-                           (concat (file-name-sans-extension in-file) ".org")
+                        (concat (file-name-nondirectory (file-name-sans-extension in-file)) ".org")
                           (concat (read-string "Please input the Org file name: "
                                        nil nil "" t) ".org")))
   (setq in-file (if (not in-file)
@@ -1341,4 +1341,3 @@ Version 2019-02-12 2021-08-09"
       (setq sentence (thing-at-point 'sentence t))))
     sentence))
 ;; }}
-

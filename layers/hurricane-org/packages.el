@@ -1031,10 +1031,17 @@ Return nil if not found."
     (require 'popweb-dict)
     (require 'popweb-latex)
     (require 'popweb-org-roam-link)
+    (require 'youdao-dictionary)
+    (require 'anki-editor)
+
     (defun hurricane/popweb-dict-eudic-liju-search-at-point ()
       (interactive)
       (if (display-graphic-p)
-          (popweb-dict-eudic-liju-input nil (lc-corpus--sentence))))
+          (popweb-dict-eudic-liju-input nil (lc-corpus--sentence) (org-export-string-as
+                                                                   (youdao-dictionary--format-result (youdao-dictionary--request (popweb-dict-region-or-word)))
+                                                                   anki-editor--ox-anki-html-backend
+                                                                   t
+                                                                   anki-editor--ox-export-ext-plist))))
 
     (defun popweb-dict-join-dirs (root dir file)
       (file-name-concat root dir file))

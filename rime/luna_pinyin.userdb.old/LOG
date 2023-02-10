@@ -1,0 +1,9 @@
+2020/12/01-05:19:13.569766 0x7000069b7000 Log #1265: 16 ops saved to Table #1266 OK
+2020/12/01-05:19:13.570086 0x7000069b7000 Archiving /Users/c/.spacemacs.d/rime/luna_pinyin.userdb/001265.log: OK
+2020/12/01-05:19:13.570337 0x7000069b7000 Table #1254: 4 entries OK
+2020/12/01-05:19:13.570604 0x7000069b7000 Table #1251: 36 entries OK
+2020/12/01-05:19:13.570696 0x7000069b7000 Table #1262: 12 entries OK
+2020/12/01-05:19:13.570912 0x7000069b7000 Table #1249: 1798 entries OK
+2020/12/01-05:19:13.570943 0x7000069b7000 Table #1266: 16 entries OK
+2020/12/01-05:19:13.571238 0x7000069b7000 Archiving /Users/c/.spacemacs.d/rime/luna_pinyin.userdb/MANIFEST-001264: OK
+2020/12/01-05:19:13.577174 0x7000069b7000 **** Repaired leveldb /Users/c/.spacemacs.d/rime/luna_pinyin.userdb; recovered 5 files; 72689 bytes. Some data may have been lost. ****

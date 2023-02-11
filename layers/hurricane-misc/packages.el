@@ -1452,7 +1452,8 @@
 
     :config
     (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
-    (add-to-list 'subed-mpv-arguments (format "--stream-lavf-o-append=%s_proxy=%s://%s:%s" provixy-type provixy-type provixy-host provixy-port))
+    ;; 如果是观看 B 站解析的视频链接，就不需要代理。
+    ;; (add-to-list 'subed-mpv-arguments (format "--stream-lavf-o-append=%s_proxy=%s://%s:%s" provixy-type provixy-type provixy-host provixy-port))
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
     (evil-define-key '(normal) subed-mode-map (kbd "RET") #'subed-forward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-p") #'subed-backward-subtitle-text)

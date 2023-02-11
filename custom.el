@@ -75,6 +75,16 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-download-image-dir
+           (concat default-directory "./static/使用 FFmpeg 下载视频 HLS M3U8 转 MP4/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/737 800 座舱高度速率指示摆动/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/Randomize a list in Emacs/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/MPV 剪辑在线视频/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/MPV 自定义快捷键/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static/CORS Error Connecting to Anki Or How to Stop and Think First/"))
      (eval setq org-download-image-dir
            (concat default-directory "./static/A Web Crawler With asyncio Coroutines/"))

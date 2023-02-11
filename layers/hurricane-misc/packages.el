@@ -1370,7 +1370,7 @@
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key popweb-dict-eudic-liju-input "C-c y" eaf-pdf-viewer-keybinding))
+    (eaf-bind-key popweb-dict-eudic-dicts-input "C-c y" eaf-pdf-viewer-keybinding))
 
   (with-eval-after-load 'eaf-image-viewer
     (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
@@ -1544,7 +1544,7 @@
 
     (defun hurricane/popweb-translate-and-mark-unknown-word ()
       (interactive)
-      (hurricane/popweb-dict-eudic-liju-search-at-point)
+      (hurricane/popweb-dict-eudic-dicts-search-at-point)
       (dictionary-overlay-mark-word-unknown))
 
     :bind

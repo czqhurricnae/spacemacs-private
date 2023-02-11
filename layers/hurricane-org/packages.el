@@ -1034,6 +1034,11 @@ Return nil if not found."
     (require 'youdao-dictionary)
     (require 'anki-editor)
 
+    (defun hurricane/popweb-dict-eudic-dicts-search-at-point ()
+      (interactive)
+      (if (display-graphic-p)
+          (popweb-dict-eudic-dicts-input nil (lc-corpus--sentence))))
+
     (defun hurricane/popweb-dict-eudic-liju-search-at-point ()
       (interactive)
       (if (display-graphic-p)
@@ -1042,12 +1047,16 @@ Return nil if not found."
                                                                    anki-editor--ox-anki-html-backend
                                                                    t
                                                                    anki-editor--ox-export-ext-plist))))
-
     (defun popweb-dict-join-dirs (root dir file)
       (file-name-concat root dir file))
 
     (defun popweb-dict-js-file-path (file)
       (popweb-dict-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
+
+    (popweb-dict-create "eudic-dicts"
+                        "https://dict.eudic.net/dicts/en/%s"
+                        ""
+                        (popweb-dict-js-file-path "eudic-dicts.js"))
 
     (popweb-dict-create "eudic-liju"
                         "https://dict.eudic.net/liju/en/%s"
@@ -1087,8 +1096,8 @@ Return nil if not found."
     (popweb-proxy-port provixy-port)
     ;; (popweb-enable-developer-tools t)
     :bind
-    (("C-c y" . hurricane/popweb-dict-eudic-liju-search-at-point)
-     ("C-c Y" . my-youdao-search-at-point))
+    (("C-c y" . hurricane/popweb-dict-eudic-dicts-search-at-point)
+     ("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point))
     ))
 
 ;; npm install mathjax-node-cli

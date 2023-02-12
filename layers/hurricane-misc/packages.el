@@ -1442,6 +1442,7 @@
                "subed-send-sentence-to-Anki"
                nil
                final-cmd)))
+        (print final-cmd)
         (set-process-sentinel
          proc
          (lambda (proc event)
@@ -1455,9 +1456,7 @@
     ;; 如果是观看 B 站解析的视频链接，就不需要代理。
     ;; (add-to-list 'subed-mpv-arguments (format "--stream-lavf-o-append=%s_proxy=%s://%s:%s" provixy-type provixy-type provixy-host provixy-port))
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
-    (evil-define-key '(normal) subed-mode-map (kbd "RET") #'subed-forward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-p") #'subed-backward-subtitle-text)
-    (evil-define-key '(normal) subed-mode-map (kbd "6") #'subed-backward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-a") #'subed-jump-to-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-e") #'subed-jump-to-subtitle-end)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-[") #'subed-decrease-start-time)
@@ -1479,7 +1478,6 @@
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-s") #'subed-sort)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-SPC") #'subed-mpv-toggle-pause)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-j") #'subed-mpv-jump-to-current-subtitle)
-    (evil-define-key '(normal) subed-mode-map (kbd "r") #'subed-mpv-jump-to-current-subtitle)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-d") #'subed-toggle-debugging)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-v") #'subed-mpv-play-from-file)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-u") #'subed-mpv-play-from-url)
@@ -1497,7 +1495,15 @@
                                                                              (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-b") #'subed-insert-html-tag-bold)
                                                                              html-tag-keymap))
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-s") #'subed-send-sentence-to-Anki)
+
+    ;; 该部分定义用于和软件 Enjoyable 配合，使用游戏手柄控制。
+    (evil-define-key '(normal) subed-mode-map (kbd "RET") #'subed-forward-subtitle-text)
+    (evil-define-key '(normal) subed-mode-map (kbd "6") #'subed-backward-subtitle-text)
+    (evil-define-key '(normal) subed-mode-map (kbd "3") #'subed-merge-dwim)
+    (evil-define-key '(normal) subed-mode-map (kbd "1") #'subed-merge-with-previous)
     (evil-define-key '(normal) subed-mode-map (kbd "7") #'subed-send-sentence-to-Anki)
+    (evil-define-key '(normal) subed-mode-map (kbd "r") #'subed-mpv-jump-to-current-subtitle)
+    (evil-define-key '(normal) subed-mode-map (kbd "p") #'subed-mpv-toggle-pause)
     ))
 
 (defun hurricane-misc/init-youtube-sub-extractor ()

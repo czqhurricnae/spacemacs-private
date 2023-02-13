@@ -1063,14 +1063,13 @@ that the point is already within a string."
    (lambda (x)
      (let* ((noteid (cdr (assq 'noteId x)))
             (fields (cdr (assq 'fields x)))
-            (transcription (cdar (cdr (assq 'transcription fields))))
+            (sentence (cdar (cdr (assq 'sentence fields))))
             (notes (cdar (cdr (assq 'notes fields))))
-            (note )
-            (sound (cdar (cdr (assq 'sound fields)))))
+            (audio (cdar (cdr (assq 'audio fields)))))
        (list
-        (format "%s %s" transcription notes)
+        (format "%s %s" sentence notes)
         noteid
-        sound)))
+        audio)))
    notesinfo))
 
 (with-eval-after-load 'psearch
@@ -1079,18 +1078,28 @@ that the point is already within a string."
                          '`(if ,p1 (ivy-read "Select a card to preview: "
                                              (anki-editor-collect-content-from-result
                                               (anki-editor-api-call-result 'notesInfo :notes nids))
-                                             :action (lambda (content) (play-sound-file
-                                                                   (format "%s%s"
-                                                                           Anki-media-dir
-                                                                           (and
-                                                                             (string-match
-                                                                              (rx string-start
-                                                                                  "[sound:"
-                                                                                  (group (1+ not-newline))
-                                                                                  "]"
-                                                                                  string-end)
-                                                                              (elt content 2))
-                                                                             (match-string 1 (elt content 2)))))))
+                                             :action (lambda (content) (-map (lambda (group-number)
+                                                                          (ignore-errors
+                                                                            (play-sound-file
+                                                                             (format "%s%s"
+                                                                                     Anki-media-dir
+                                                                                     (and
+                                                                                       (string-match
+                                                                                        (rx
+                                                                                            string-start
+                                                                                            "[sound:"
+                                                                                            (group (zero-or-more (not (any "]"))))
+                                                                                            "]" (zero-or-more blank)
+                                                                                            (zero-or-more
+                                                                                             "[sound:"
+                                                                                              (group (zero-or-more (not (any "]"))))
+                                                                                              "]"
+                                                                                            )
+                                                                                            string-end
+                                                                                            )
+                                                                                        (elt content 2))
+                                                                                       (match-string group-number (elt content 2)))))))
+                                                                        '(1 2))))
                              ,p3))))
 
 (defun hurricane//anki-editor-gui-edit-note-action (x)
@@ -1099,11 +1108,16 @@ that the point is already within a string."
 (defun hurricane//anki-editor-popup-note-at-point-posframe (x)
   (popweb-org-roam-link-show (nth 0 x)))
 
+(defun hurricane//anki-editor-gui-delete-note-action (x)
+  (anki-editor-api-call 'deleteNotes :notes (list (nth 1 x))))
+
 (with-eval-after-load 'ivy
   (ivy-add-actions
    'anki-editor-find-notes
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
-     ("p" hurricane//anki-editor-popup-note-at-point-posframe "Popup note"))))
+     ("p" hurricane//anki-editor-popup-note-at-point-posframe "Popup note")
+     ("d" hurricane//anki-editor-gui-delete-note-action "Delete note")
+     )))
 
 (define-key global-map (kbd "<f3>") #'anki-editor-find-notes)
 ;;}}

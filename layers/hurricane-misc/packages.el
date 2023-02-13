@@ -1296,8 +1296,8 @@
     (defun eaf-send-eudic-liju-to-Anki (link)
       (interactive)
       (setq payload (split-string link "::" t))
-      (setq eudic-mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
-      (let* ((final-cmd (format "wget -O \"%s%s\" \"%s\"" (expand-file-name Anki-media-dir) eudic-mp3 (nth 1 payload)))
+      (setq liju-mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
+      (let* ((final-cmd (format "wget -O \"%s%s\" \"%s\"" (expand-file-name Anki-media-dir) liju-mp3 (nth 1 payload)))
              (proc
               (start-process-shell-command
                "eaf-send-eudic-liju-to-Anki"
@@ -1307,7 +1307,7 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" eudic-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" ""))
+             (anki-add-card anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" ""))
              )))
         t))
 

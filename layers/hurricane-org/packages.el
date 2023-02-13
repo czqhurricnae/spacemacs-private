@@ -1055,12 +1055,18 @@ Return nil if not found."
 
     (popweb-dict-create "eudic-dicts"
                         "https://dict.eudic.net/dicts/en/%s"
-                        ""
+                        (concat
+                         "document.querySelectorAll('[title=\"Advertisement\"]')[0].style.display='none';"
+                         "Array.from(document.getElementsByClassName('adsbygoogle adsbygoogle-noablate')).forEach(e => { e.style.display = 'none' });"
+                         )
                         (popweb-dict-js-file-path "eudic-dicts.js"))
 
     (popweb-dict-create "eudic-liju"
                         "https://dict.eudic.net/liju/en/%s"
-                        ""
+                        (concat
+                         "document.querySelectorAll('[title=\"Advertisement\"]')[0].style.display='none';"
+                         "Array.from(document.getElementsByClassName('adsbygoogle adsbygoogle-noablate')).forEach(e => { e.style.display = 'none' });"
+                        )
                         (popweb-dict-js-file-path "eudic-liju.js"))
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)

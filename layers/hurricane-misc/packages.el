@@ -1442,12 +1442,11 @@
                "subed-send-sentence-to-Anki"
                nil
                final-cmd)))
-        (print final-cmd)
         (set-process-sentinel
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot))
+             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot) "适航认证")
              )))
           t))
 

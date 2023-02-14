@@ -1206,14 +1206,17 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
 (defvar anki-deck-name "English"
   "Shengci in anki deck name.")
 
-(defun anki-add-card (deck front back &optional screenshot)
+(defun anki-add-card (deck front back &optional screenshot tag)
   "Add anki basic card which contains FRONT and BACK elements to the DECK."
   (let* ((req-params (list `("note" . ,(list `("deckName" . ,deck)
-                                             '("modelName" . "Antimoon")
-                                             `("fields" . ,(list `("audio" . ,front)
-                                                                 `("sentence" . ,back)
-                                                                 `("image" . ,screenshot)))
-                                             `("options" . ,(list '("closeAfterAdding" . t))))))))
+                                             '("modelName" . "Antimoon without expression")
+                                             `("fields" . ,(list `("sentence" . ,back)
+                                                                 `("audio" . ,front)
+                                                                 `("image" . ,screenshot)
+                                                                 '("add-dw" . "1")))
+                                             `("options" . ,(list
+                                                                  '("allowDuplicate" . t)))
+                                             `("tags" . ,(list tag)))))))
     (request (format "%s:%s" anki-connect-host anki-connect-port)
       :type "POST"
       :data (json-encode (list '("action" . "addNote")
@@ -1221,6 +1224,10 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
                                `("params" . ,req-params)))
       :headers '(("Content-Type" . "text/json"))
       :parser 'json-read
+      :error
+      (cl-function
+       (lambda (&rest _args)
+         (debug "Error response in variable '_args'")))
       :success (cl-function
                 (lambda (&key data &allow-other-keys)
                   (message "result: %S" (assoc-default 'result data)))))))

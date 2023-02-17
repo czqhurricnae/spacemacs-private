@@ -74,7 +74,11 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-download-image-dir
+   '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/xiamenair pdf download/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/yt-dlp/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static/737NG EMDP 渗漏/"))
      (eval setq org-download-image-dir
            (concat default-directory "./static/Exploring Emacs rx Macro/"))

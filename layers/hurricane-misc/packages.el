@@ -1510,6 +1510,7 @@
     :ensure t
     :commands (youtube-sub-extractor-extract-subs)))
 
+;; python3 -m pip install pyobjc
 (defun hurricane-misc/init-dictionary-overlay ()
   (use-package dictionary-overlay
     :ensure t
@@ -1529,8 +1530,6 @@
         "u" 'dictionary-overlay-mark-word-know
         "." 'dictionary-overlay-render-buffer)
       )
-    :commands
-    (dictionary-overlay-start)
     :custom-face
     (dictionary-overlay-unknownword ((t :inherit font-lock-keyword-face)))
     (dictionary-overlay-translation ((t :inherit font-lock-comment-face)))
@@ -1562,10 +1561,10 @@
 
 (defun hurricane-misc/init-websocket ()
   (use-package websocket
-    :ensure t))
+    :ensure t
+    :defer t))
 
 (defun hurricane-misc/init-websocket-bridge ()
   (use-package websocket-bridge
     :ensure t
-    :commands
-    (websocket-bridge-server-start)))
+    :defer t))

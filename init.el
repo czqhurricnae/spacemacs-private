@@ -774,6 +774,8 @@ you should place your code here."
   (eaf-bind-key eaf-pdf-open-with-MarginNote "e" eaf-pdf-viewer-keybinding)
   (setq eww-retrieve-command '("readable"))
   (setq eww-download-directory (concat deft-dir (file-name-as-directory "notes")))
+  (with-eval-after-load 'dictionary-overlay
+    (dictionary-overlay-start))
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

@@ -43,7 +43,7 @@ function insertDownloadLink(
                 "fields": {
                     "expression"    : word || "",
                     "phonetic"      : phonetic || "",
-                    "pronunciation" : "[sound:" + pronunciationMp3 + "]",
+                    "pronunciation" : pronunciation ? "[sound:" + pronunciationMp3 + "]" : "",
                     "glossary"      : glossary || "",
                     "sentence"      : line + exp,
                     "notes"         : notes || "",
@@ -66,10 +66,12 @@ function insertDownloadLink(
         const result = invoke("addNote", 6, params);
         result.then(
             (v) => {
-                invoke("storeMediaFile", 6, {
-                    "url": pronunciation,
-                    "filename": pronunciationMp3
-                });
+                if (pronunciation) {
+                    invoke("storeMediaFile", 6, {
+                        "url": pronunciation,
+                        "filename": pronunciationMp3
+                    });
+                }
             },
             (e) => {alert(e);},
         );
@@ -141,15 +143,24 @@ function playSuccess() {
 }
 
 (function() {
-    const ExpFCChild = $("div#ExpFCChild").html();
-    const ExpSYNChild = $("div#ExpSYNChild").html() ? $("div#ExpSYNChild").html().replaceAll("/dicts/en", "https://dict.eudic.net/dicts/en") : "";
-    const voiceButtonEn = $("a.voice-button-en")[1];
+    var ExpFCChild = $("div#ExpFCChild").html();
+    var ExpSYNChild = $("div#ExpSYNChild").html() ? $("div#ExpSYNChild").html().replaceAll("/dicts/en", "https://dict.eudic.net/dicts/en") : "";
+    var voiceButtonEn = $("a.voice-button-en")[1];
 ;
-    const phonetic = $("span.Phonitic")[1].textContent;
-    const pronunciation = $(voiceButtonEn).attr("data-rel") ? "http://api.frdic.com/api/v2/speech/speakweb?" + $(voiceButtonEn).attr("data-rel") : "";
-    const glossary = ExpFCChild + ExpSYNChild;
-    const notes = arguments[0] ? arguments[0].join("") : "";
+    var spanPhonitic = $("span.Phonitic");
+    if (spanPhonitic.length == 2) {
+        var phonetic = spanPhonitic[1].textContent;
+    }
+    if (spanPhonitic.length == 1) {
+        var phonetic = spanPhonitic[0].textContent;
+    }
+    if (spanPhonitic.length == 0) {
+        var phonetic = "";
+    }
+    var pronunciation = $(voiceButtonEn).attr("data-rel") ? "http://api.frdic.com/api/v2/speech/speakweb?" + $(voiceButtonEn).attr("data-rel") : "";
+    var glossary = (ExpFCChild && ExpSYNChild) ? ExpFCChild + ExpSYNChild : "";
+    var notes = arguments[0] ? arguments[0].join("") : "";
 
-    $("a#ui-id-6").bind("click", function() { setTimeout(function() { mainJob(document.URL, glossary, notes, pronunciation, phonetic); }, "2000"); });
+    $("a:contains('英语例句库')").bind("click", function() { setTimeout(function() { mainJob(document.URL, glossary, notes, pronunciation, phonetic); }, "2000"); });
     Array.from(document.getElementsByClassName('adsbygoogle adsbygoogle-noablate')).forEach(e => { e.style.display = 'none' });
 })

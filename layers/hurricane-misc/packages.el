@@ -63,6 +63,7 @@
         (dictionary-overlay :location (recipe :fetcher github
                                               :repo "ginqi7/dictionary-overlay"
                                               :files ("*.*" "resources")))
+        ffmpeg-utils
         ;; engine-mode
         ))
 
@@ -1568,3 +1569,7 @@
   (use-package websocket-bridge
     :ensure t
     :defer t))
+
+(defun hurricane-misc/init-ffmpeg-utils ()
+  (use-package ffmpeg-utils
+    :ensure t))

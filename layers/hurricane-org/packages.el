@@ -27,7 +27,7 @@
                             :branch "develop"))
     (org-media-note :location (recipe
                                :fetcher github
-                               :repo "yuchen-lea/org-media-note"))
+                               :repo "stardiviner/org-media-note"))
     (mpv :location (recipe
                     :fetcher github
                     :repo "kljohann/mpv.el"))
@@ -61,6 +61,9 @@
     (org-imagine :location (recipe
                             :fetcher github
                             :repo "metaescape/org-imagine"))
+    (org-link-edit :location (recipe
+                              :fetcher github
+                              :repo "emacsmirror/org-link-edit"))
     )
   )
 
@@ -1128,3 +1131,6 @@ Return nil if not found."
 
 (defun hurricane-org/init-org-imagine ()
   (use-package org-imagine))
+
+(defun hurricane-org/init-org-link-edit ()
+  (use-package org-link-edit))

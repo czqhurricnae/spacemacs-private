@@ -1075,7 +1075,8 @@ that the point is already within a string."
 (with-eval-after-load 'psearch
       (psearch-patch anki-editor-find-notes
         (psearch-replace '`(if ,p1 ,p2, p3)
-                         '`(if ,p1 (ivy-read "Select a card to preview: "
+                         '`(if ,p1 (ignore-errors
+                                    (ivy-read "Select a card to preview: "
                                              (anki-editor-collect-content-from-result
                                               (anki-editor-api-call-result 'notesInfo :notes nids))
                                              :action (lambda (content) (-map (lambda (group-number)
@@ -1099,7 +1100,7 @@ that the point is already within a string."
                                                                                             )
                                                                                         (elt content 2))
                                                                                        (match-string group-number (elt content 2)))))))
-                                                                        '(1 2))))
+                                                                        '(1 2)))))
                              ,p3))))
 
 (defun hurricane//anki-editor-gui-edit-note-action (x)

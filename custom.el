@@ -75,6 +75,8 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/单词读音/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/一元机场/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/停机坪/"))
@@ -1974,6 +1976,7 @@
     (cons 340 "#D6D6D6")
     (cons 360 "#D6D6D6")))
  '(vc-annotate-very-old-color nil)
+ '(warning-suppress-log-types '((websocket) (use-package)))
  '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

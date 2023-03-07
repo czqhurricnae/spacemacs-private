@@ -1388,3 +1388,54 @@ Version 2019-02-12 2021-08-09"
   (dolist (replace-string-rule voicetube-subtitle-replace-string-rule-lists)
     (replace-region-or-buffer (cdr replace-string-rule) (car replace-string-rule) nil)))
 ;; }}
+
+(defun anki-clip-mp3 (timestamp-a timestamp-b)
+  (interactive)
+  (let* ((media-path (mpv-get-property "path"))
+         (processed-media-path (substring media-path 0 (string-match-p "?" media-path))))
+    (setq media-clip-file-name
+          (concat
+           (org-media-note--format-picture-file-name
+            (concat (file-name-base processed-media-path)
+                    " - clip - "
+                    ;; (org-media-note--get-current-timestamp)
+                    timestamp-a "--" timestamp-b))
+           "." "mp3"))
+    (setq media-clip-target-path
+          (cond
+           ((eq org-media-note-screenshot-save-method 'attach)
+            (expand-file-name media-clip-file-name (org-attach-dir t)))
+           ((eq org-media-note-screenshot-save-method 'directory)
+            (if (not (f-exists? Anki-media-dir))
+                (make-directory Anki-media-dir))
+            (expand-file-name media-clip-file-name Anki-media-dir))))
+    (setq media-clip-screenshot (format "media-clip_%s.png" (format-time-string "%-I_%M_%p")))
+    (setq media-clip-sentence (lc-corpus--sentence))
+    (when (not (file-exists-p media-clip-target-path))
+      (progn
+        ;; cut media clip with ffmpeg.
+        ;; (ffmpeg-utils-cut-clip media-path timestamp-a timestamp-b media-clip-target-path)
+        (let* ((timestamp-start timestamp-a)
+               (timestamp-stop timestamp-b)
+               (final-cmd (format "ffmpeg -headers Referer:https://www.bilivideo.com/ -user_agent \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 \" -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s\" && ffmpeg -headers Referer:https://www.bilivideo.com/ -user_agent \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 \" -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" media-path timestamp-start timestamp-stop media-clip-target-path media-path timestamp-start (expand-file-name Anki-media-dir) media-clip-screenshot))
+               (proc
+                (start-process-shell-command
+                 "media-clip"
+                 nil
+                 final-cmd)))
+          (set-process-sentinel
+           proc
+           (lambda (proc event)
+             (when (equal event "finished\n")
+               (anki-add-card anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
+               )))
+          t)
+        ;; (org-media-note--display-inline-images)
+        ;; display process indicator in mode-line and echo-area.
+        ;; (setq mode-line-process
+        ;;       (propertize
+        ;;        (format " [org-media-note] clip between A-B loop: %s--%s." timestamp-a timestamp-b)
+        ;;        'font-lock-face 'mode-line-highlight))
+        ;; (force-mode-line-update t)
+        ;; (message "[org-media-note] clip between timestamp A-B loop: %s--%s." timestamp-a timestamp-b)
+        ))))

@@ -63,7 +63,8 @@
         (dictionary-overlay :location (recipe :fetcher github
                                               :repo "ginqi7/dictionary-overlay"
                                               :files ("*.*" "resources")))
-        ffmpeg-utils
+        (ffmpeg-utils :location (recipe :fetcher github
+                                        :repo "czqhurricnae/ffmpeg-utils"))
         ;; engine-mode
         ))
 
@@ -1308,7 +1309,7 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" ""))
+             (anki-add-card anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" "") "subs2srs")
              )))
         t))
 
@@ -1351,7 +1352,7 @@
     ;; def popweb_dict_search_select(self):
     ;;     if self.buffer_widget.is_select_mode:
     ;;         content = self.buffer_widget.parse_select_char_list()
-    ;;         eval_in_emacs('popweb-dict-eudic-liju-input', [content])
+    ;;         eval_in_emacs('popweb-dict-eudic-dicts-input', [content])
     ;;         message_to_emacs(content)
     ;;         self.buffer_widget_cleanup_select()
     ;; 没有 @interactive @PostGui 装饰器，无法像 ocr_area 调用。
@@ -1447,7 +1448,7 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot) "适航认证")
+             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot) "subs2srs")
              )))
           t))
 

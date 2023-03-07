@@ -1005,7 +1005,8 @@ that the point is already within a string."
 
 (defun hurricane/html-table-to-org-table-converter ()
   (interactive)
-  (eshell-command "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
+  (let ((final-cmd "pandoc --from html --to org =(pbpaste) -o - | pbcopy"))
+    (start-process-shell-command "html-table-to-org-table-converter" nil final-cmd)))
 
 (defun hurricane//headline-property (prop &optional buffer)
   "Return the PDF_KEY property of the current headline in BUFFER."

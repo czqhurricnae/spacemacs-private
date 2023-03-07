@@ -937,7 +937,48 @@ Return nil if not found."
     :init
     (spacemacs/set-leader-keys "av" #'org-media-note-hydra/body)
     :config
-    (make-variable-buffer-local 'org-media-note-screenshot-image-dir)))
+    (make-variable-buffer-local 'org-media-note-screenshot-image-dir)
+    (require 'psearch)
+
+    (with-eval-after-load 'psearch
+      (psearch-patch org-media-note--mpv-play-online-video
+        (psearch-replace '`(if ,p1 ,p2 ,p3)
+                         '`(if ,p1
+                               (if (string-match-p (regexp-quote "bilibili") video-url)
+                                   (mpv-start video-url "--referrer=https://www.bilibili.com" "-v" "--no-resume-playback")
+                                 (mpv-start video-url))
+                               ,p3))))
+
+    (require 'pretty-hydra)
+
+    (with-eval-after-load 'pretty-hydra
+      (pretty-hydra-define+ org-media-note-hydra ()
+        ("Playback"
+         (("l"
+           (mpv-run-command "ab-loop")
+           (let ((time-a (mpv-get-property "ab-loop-a"))
+                 (time-b (mpv-get-property "ab-loop-b")))
+             (if (org-media-note--ab-loop-p)
+                 (format "Clear (%s - %s)"
+                         (org-media-note--seconds-to-timestamp time-a)
+                         (org-media-note--seconds-to-timestamp time-b))
+               (if (numberp time-a)
+                   (format "Set B (%s - )"
+                           (org-media-note--seconds-to-timestamp time-a))
+                 "Set A of A-B loop")))
+           :width 25
+           ))
+         "Note"
+         (("C"
+           (if (org-media-note--ab-loop-p)
+               (let* ((time-a (mpv-get-property "ab-loop-a"))
+                      (time-b (mpv-get-property "ab-loop-b"))
+                      (timestamp-a (org-media-note--seconds-to-timestamp time-a))
+                      (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
+                 (anki-clip-mp3 timestamp-a timestamp-b))
+             (user-error "[org-media-note] You need to finish setting A-B loop."))
+           "Clip Mp3 of A-B loop"
+           :width 25)))))))
 
 (defun hurricane-org/init-mpv ()
   (use-package mpv

@@ -75,6 +75,44 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/考试脑科学/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Anki 卡片显示发音按钮/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/file change monitor/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/使用 brew 升级 emacs 后，打开 org 文件出现错误/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/bootstrap 代码片段/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/中文编码/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/编码问题/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/黑苹果教程/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/React 部署/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/org-mode 转 latex，设置 block 的 latex 选项/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/“/usr/local/bin/python3” 和 “/usr/local/opt/python3” 的区别/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/在 Python 中，令 values=[0,1,2]; values[1]=values，为何结果是 [0,[...],2]/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/在 Python 中，令 values=[0,1,2]; values[1]=values，为何结果是[0,[...],2]/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/python3” 的区别/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/common-lisp 变量绑定和函数调用/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/common-lisp 变量绑定和函数调用/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/什么是 Unicode 和 utf-8 如何编码 Unicode/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/unipain/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/使用缓存加快递归运算速度/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/单词读音/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/一元机场/"))

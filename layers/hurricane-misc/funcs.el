@@ -1393,14 +1393,19 @@ Version 2019-02-12 2021-08-09"
   (interactive)
   (let* ((media-path (mpv-get-property "path"))
          (processed-media-path (substring media-path 0 (string-match-p "?" media-path))))
+    (if (string-match-p (regexp-quote "bilivideo") processed-media-path)
+        (setq header-and-agent "-headers Referer:https://www.bilivideo.com/ -user_agent \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 \"")
+      (setq header-and-agent ""))
     (setq media-clip-file-name
           (concat
-           (org-media-note--format-picture-file-name
-            (concat (file-name-base processed-media-path)
-                    " - clip - "
-                    ;; (org-media-note--get-current-timestamp)
-                    timestamp-a "--" timestamp-b))
-           "." "mp3"))
+           (replace-regexp-in-string "\\]" "_"
+            (replace-regexp-in-string "\\[" "_"
+                                      (org-media-note--format-picture-file-name
+                                       (concat (file-name-base processed-media-path)
+                                        " - clip - "
+                                        ;; (org-media-note--get-current-timestamp)
+                                        timestamp-a "--" timestamp-b (format-time-string "_%-I_%M_%p")))))
+                               "." "mp3"))
     (setq media-clip-target-path
           (cond
            ((eq org-media-note-screenshot-save-method 'attach)
@@ -1417,15 +1422,17 @@ Version 2019-02-12 2021-08-09"
         ;; (ffmpeg-utils-cut-clip media-path timestamp-a timestamp-b media-clip-target-path)
         (let* ((timestamp-start timestamp-a)
                (timestamp-stop timestamp-b)
-               (final-cmd (format "ffmpeg -headers Referer:https://www.bilivideo.com/ -user_agent \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 \" -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s\" && ffmpeg -headers Referer:https://www.bilivideo.com/ -user_agent \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 \" -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" media-path timestamp-start timestamp-stop media-clip-target-path media-path timestamp-start (expand-file-name Anki-media-dir) media-clip-screenshot))
+               (final-cmd (format "ffmpeg %s -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s\" && ffmpeg %s -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" header-and-agent media-path timestamp-start timestamp-stop media-clip-target-path header-and-agent media-path timestamp-start (expand-file-name Anki-media-dir) media-clip-screenshot))
                (proc
                 (start-process-shell-command
                  "media-clip"
                  nil
                  final-cmd)))
+          (print final-cmd)
           (set-process-sentinel
            proc
            (lambda (proc event)
+             (print event)
              (when (equal event "finished\n")
                (anki-add-card anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
                )))

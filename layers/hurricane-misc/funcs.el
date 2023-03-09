@@ -1212,8 +1212,7 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
                                              '("modelName" . "Antimoon without expression")
                                              `("fields" . ,(list `("sentence" . ,back)
                                                                  `("audio" . ,front)
-                                                                 `("image" . ,screenshot)
-                                                                 '("add-dw" . "1")))
+                                                                 `("image" . ,screenshot)))
                                              `("options" . ,(list
                                                                   '("allowDuplicate" . t)))
                                              `("tags" . ,(list tag)))))))

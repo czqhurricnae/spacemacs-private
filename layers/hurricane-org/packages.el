@@ -1182,7 +1182,7 @@ Return nil if not found."
       (file-name-concat root dir file))
 
     (defun popweb-dict-js-file-path (file)
-      (popweb-dict-join-dirs (file-name-directory popweb-dict-module-path) "js" file))
+      (popweb-dict-join-dirs (file-name-directory dotspacemacs-directory) "Backup" file))
 
     (popweb-dict-create "eudic-dicts"
                         "https://dict.eudic.net/dicts/en/%s"

@@ -113,13 +113,21 @@ function invoke(action, version, params={}) {
 function prepareContent(node) {
     let word = decodeURI(document.URL.split("/").pop());
     let dataRel = $(node).attr("href");
-    let [, line] = /(?:\d+.)(.+)/.exec(node.parentElement.textContent);
+    let line;
+    if (/(?:\d+.)(.+)/.exec(node.parentElement.textContent)){
+        [, line] = /(?:\d+.)(.+)/.exec(node.parentElement.textContent);
+    } else {
+        line = "";
+    }
     let exp;
     if (/(?:\d+.)(.+)/.exec(node.parentElement.nextElementSibling.textContent)){
         [, exp] = /(?:\d+.)(.+)/.exec(node.parentElement.nextElementSibling.textContent);
-    } else {
+    } else if (node.parentElement.nextElementSibling.textContent){
         exp = node.parentElement.nextElementSibling.textContent;
+    } else {
+        exp = "";
     }
+    exp = exp.replaceAll("全球发音：", "").replaceAll("发音", "");
     let { lijuMp3, pronunciationMp3 } = formatMp3Name(new Date(), word);
     return({ word, lijuMp3, pronunciationMp3, dataRel, line, exp });
 }
@@ -162,5 +170,6 @@ function playSuccess() {
     var notes = arguments[0] ? arguments[0].join("") : "";
 
     $("a:contains('英语例句库')").bind("click", function() { setTimeout(function() { mainJob(document.URL, glossary, notes, pronunciation, phonetic); }, "2000"); });
+    $("a:contains('词组搭配')").bind("click", function() { setTimeout(function() { mainJob(document.URL, glossary, notes, pronunciation, phonetic); }, "2000"); });
     Array.from(document.getElementsByClassName('adsbygoogle adsbygoogle-noablate')).forEach(e => { e.style.display = 'none' });
 })

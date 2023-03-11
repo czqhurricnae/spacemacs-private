@@ -90,6 +90,9 @@
 (defvar scripts-file ""
   "scripts can be used in org mode.")
 
+(defvar aspeak-profile-file ""
+  "Aspeak profile file location.")
+
 (defvar provixy-type "http"
   "proxy type for EAF and popweb.")
 
@@ -131,4 +134,5 @@ For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
  eslintfmt-configuration-file "~/.spacemacs.d/.eslintrc.js"
  Baidu-OCR-Python-file "~/.spacemacs.d/BaiduOcr.py"
  scripts-file "~/.spacemacs.d/scripts.org"
+ aspeak-profile-file "~/.spacemacs.d/Backup/.aspeak.toml"
 )

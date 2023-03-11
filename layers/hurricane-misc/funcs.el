@@ -1197,26 +1197,27 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
 ;; {{
 ;; Audio note (English) 用的是 knowclip.app 提供的模板。
 ;; @See: https://github.com/nicehiro/.emacs.d/blob/master/lisp/init-anki.el
-(defvar anki-connect-host "127.0.0.1"
+(defvar Anki-connect-host "127.0.0.1"
   "Anki connect server host.")
 
 (defvar anki-connect-port "8765"
   "Anki connect server port.")
 
-(defvar anki-deck-name "English"
+(defvar Anki-deck-name "English"
   "Shengci in anki deck name.")
 
 (defun anki-add-card (deck front back &optional screenshot tag)
   "Add anki basic card which contains FRONT and BACK elements to the DECK."
   (let* ((req-params (list `("note" . ,(list `("deckName" . ,deck)
                                              '("modelName" . "Antimoon without expression")
-                                             `("fields" . ,(list `("sentence" . ,back)
-                                                                 `("audio" . ,front)
+                                             `("fields" . ,(list `("audio" . ,front)
+                                                                 `("sentence" . ,back)
                                                                  `("image" . ,screenshot)))
                                              `("options" . ,(list
                                                                   '("allowDuplicate" . t)))
                                              `("tags" . ,(list tag)))))))
-    (request (format "%s:%s" anki-connect-host anki-connect-port)
+    (print req-params)
+    (request (format "%s:%s" Anki-connect-host anki-connect-port)
       :type "POST"
       :data (json-encode (list '("action" . "addNote")
                                '("version" . 6)
@@ -1229,7 +1230,9 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
          (debug "Error response in variable '_args'")))
       :success (cl-function
                 (lambda (&key data &allow-other-keys)
-                  (message "result: %S" (assoc-default 'result data)))))))
+                  ;; (message "result: %S" (assoc-default 'result data))
+                  (message "result: %S" data)
+                  )))))
 ;; }}
 
 ;; {{
@@ -1433,7 +1436,7 @@ Version 2019-02-12 2021-08-09"
            (lambda (proc event)
              (print event)
              (when (equal event "finished\n")
-               (anki-add-card anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
+               (anki-add-card Anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
                )))
           t)
         ;; (org-media-note--display-inline-images)

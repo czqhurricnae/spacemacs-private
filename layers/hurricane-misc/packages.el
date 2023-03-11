@@ -66,6 +66,10 @@
         (ffmpeg-utils :location (recipe :fetcher github
                                         :repo "czqhurricnae/ffmpeg-utils"))
         ;; engine-mode
+        (emacs-azure-tts :location (recipe :fetcher github
+                                     :repo "czqhurricnae/emacs-azure-tts"
+                                     :files ("*.*")))
+        ;; (emacs-azure-tts :location local)
         ))
 
 (defconst sys/macp
@@ -1309,7 +1313,7 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" "") "subs2srs")
+             (anki-add-card Anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" "") "subs2srs")
              )))
         t))
 
@@ -1349,6 +1353,7 @@
                  "	end tell\n"
                  "end tell\n"
                  ))))
+    ;; pdf-viewer -> eaf_pdf_buffer.py
     ;; def popweb_dict_search_select(self):
     ;;     if self.buffer_widget.is_select_mode:
     ;;         content = self.buffer_widget.parse_select_char_list()
@@ -1359,6 +1364,10 @@
     ;; 没有在 webengine.py 或 eaf.py 中定义，build_all_methods 无法获取。
     ;; 无法在 evil-define-key 中调用。
     ;; 只能先在 (setq eaf-pdf-viewer-keybinding) 定义，再调用。
+    ;; /layers/+tools/eaf/packages.el
+    ;; (setq eaf-pdf-viewer-keybinding
+    ;;  '(("y" . "popweb_dict_search_select")))
+    ;; 以下的写法，无法运行。
     ;; (defun eaf-pdf-viewer-popweb-dict-translate-select ()
     ;;   (interactive)
     ;;   (eaf-call-async "popweb_dict_search_select" eaf--buffer-id))
@@ -1448,7 +1457,7 @@
          proc
          (lambda (proc event)
            (when (equal event "finished\n")
-             (anki-add-card anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot) "subs2srs")
+             (anki-add-card Anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence (format "<img src=\"%s\">" subed-screenshot) "subs2srs")
              )))
           t))
 
@@ -1574,3 +1583,30 @@
 (defun hurricane-misc/init-ffmpeg-utils ()
   (use-package ffmpeg-utils
     :ensure t))
+
+(defun hurricane-misc/init-emacs-azure-tts ()
+  (use-package emacs-azure-tts
+    :ensure t
+    :init
+    (require 'anki-editor)
+
+    (with-eval-after-load 'anki-editor
+     (defun emacs-azure-tts-add-card (deck front back)
+      (let ((bytes (with-temp-buffer
+                     (insert-file-contents-literally front)
+                     (buffer-string))))
+       (thread-last
+        (anki-editor-api-with-multi
+         (anki-editor-api-enqueue 'storeMediaFile
+                                  :filename (file-name-nondirectory front)
+                                  :data (base64-encode-string bytes))
+         (anki-editor-api-enqueue 'addNote
+                                  :note (list `("deckName" . ,deck)
+                                               '("modelName" . "Antimoon without expression")
+                                               `("fields" . ,(list `("audio" . ,(format "[sound:%s]" (file-name-nondirectory front)))
+                                                                   `("sentence" . ,back)))
+                                               `("options" . ,(list
+                                                               '("allowDuplicate" . t))))))))))
+    :config
+    (add-to-list 'emacs-azure-tts-after-speak-functions (apply-partially #'emacs-azure-tts-add-card Anki-deck-name))
+    ))

@@ -316,7 +316,19 @@ z-index: 2140000001;\
             }
             node.click();
             return word + "::" + dataRel + "::" + line + "::" + exp;
-        }else if(node.nodeName.toLowerCase() === 'select'){
+        }else if(document.URL.startsWith('https://www.merriam-webster.com/dictionary/')){
+            let word = document.URL.split('/').pop();
+            let playPronV2Href = document.querySelector('a.play-pron-v2').getAttribute('href');
+            let playPronV2HrefUrl = new URL('https://www.merriam-webster.com/' + playPronV2Href);
+            let searchParamsLang = playPronV2HrefUrl.searchParams.get('lang').replace('_', '/');
+            let searchParamsDir = playPronV2HrefUrl.searchParams.get('dir');
+            let searchParamsFile = playPronV2HrefUrl.searchParams.get('file');
+            let dataRel = 'https://media.merriam-webster.com/audio/prons/' + searchParamsLang + '/mp3/' + searchParamsDir + '/' +searchParamsFile + '.mp3';
+            let line = node.textContent.trim();
+            let exp = '';
+            return word + "::" + dataRel + "::" + line + "::" + exp;
+        }
+        else if(node.nodeName.toLowerCase() === 'select'){
             action = "eaf::[select]focus";
             node.focus();
         }else if(node.nodeName.toLowerCase() === 'input' ||

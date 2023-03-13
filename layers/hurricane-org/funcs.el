@@ -1059,6 +1059,15 @@ that the point is already within a string."
     (pop-to-buffer buffer-name)))
 
 ;;{{
+(defun hurricane//region-or-word ()
+  "Return region or word around point.
+If `mark-active' on, return region string.
+Otherwise return word around point."
+  (if mark-active
+      (buffer-substring-no-properties (region-beginning)
+                                      (region-end))
+    (thing-at-point 'word t)))
+
 (defun anki-editor-collect-content-from-result (notesinfo)
   (mapcar
    (lambda (x)
@@ -1073,36 +1082,41 @@ that the point is already within a string."
         audio)))
    notesinfo))
 
-(with-eval-after-load 'psearch
-      (psearch-patch anki-editor-find-notes
-        (psearch-replace '`(if ,p1 ,p2, p3)
-                         '`(if ,p1 (ignore-errors
-                                    (ivy-read "Select a card to preview: "
-                                             (anki-editor-collect-content-from-result
-                                              (anki-editor-api-call-result 'notesInfo :notes nids))
-                                             :action (lambda (content) (-map (lambda (group-number)
-                                                                          (ignore-errors
-                                                                            (play-sound-file
-                                                                             (format "%s%s"
-                                                                                     Anki-media-dir
-                                                                                     (and
-                                                                                       (string-match
-                                                                                        (rx
-                                                                                            string-start
-                                                                                            "[sound:"
-                                                                                            (group (zero-or-more (not (any "]"))))
-                                                                                            "]" (zero-or-more blank)
-                                                                                            (zero-or-more
-                                                                                             "[sound:"
-                                                                                              (group (zero-or-more (not (any "]"))))
-                                                                                              "]"
-                                                                                            )
-                                                                                            string-end
-                                                                                            )
-                                                                                        (elt content 2))
-                                                                                       (match-string group-number (elt content 2)))))))
-                                                                        '(1 2)))))
-                             ,p3))))
+(defun hurricane/anki-editor-find-notes (&optional query)
+  "Find notes with QUERY."
+  (interactive (list (read-string "Query: " (hurricane//region-or-word))))
+  (let ((nids (anki-editor-api-call-result 'findNotes
+                                           :query (or query ""))))
+    (unless nids
+      (popweb-dict-eudic-dicts-input query))
+    (if (and nids (called-interactively-p 'interactive))
+        (ignore-errors
+          (ivy-read "Select a card to preview: "
+                    (anki-editor-collect-content-from-result
+                     (anki-editor-api-call-result 'notesInfo :notes nids))
+                    :action (lambda (content) (-map (lambda (group-number)
+                                                      (ignore-errors
+                                                        (play-sound-file
+                                                         (format "%s%s"
+                                                                 Anki-media-dir
+                                                                 (and
+                                                                  (string-match
+                                                                   (rx
+                                                                    string-start
+                                                                    "[sound:"
+                                                                    (group (zero-or-more (not (any "]"))))
+                                                                    "]" (zero-or-more blank)
+                                                                    (zero-or-more
+                                                                     "[sound:"
+                                                                     (group (zero-or-more (not (any "]"))))
+                                                                     "]"
+                                                                     )
+                                                                    string-end
+                                                                    )
+                                                                   (elt content 2))
+                                                                  (match-string group-number (elt content 2)))))))
+                                                    '(1 2)))))
+      nids)))
 
 (defun hurricane//anki-editor-gui-edit-note-action (x)
   (anki-editor-api-call 'guiEditNote :note (nth 1 x)))
@@ -1115,11 +1129,11 @@ that the point is already within a string."
 
 (with-eval-after-load 'ivy
   (ivy-add-actions
-   'anki-editor-find-notes
+   'hurricane/anki-editor-find-notes
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
      ("p" hurricane//anki-editor-popup-note-at-point-posframe "Popup note")
      ("d" hurricane//anki-editor-gui-delete-note-action "Delete note")
      )))
 
-(define-key global-map (kbd "<f3>") #'anki-editor-find-notes)
+(define-key global-map (kbd "<f3>") #'hurricane/anki-editor-find-notes)
 ;;}}

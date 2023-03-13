@@ -53,7 +53,7 @@ This function should only modify configuration layer settings."
                                                  :name "WEIXIN"
                                                  :url "https://weixin.sogou.com/weixin?type=2&s_from=input&query=%s"
                                                  :keywords (:keybinding "w" :docstring "搜狗微信搜索"))
-                                                (EUDIC
+                                                (MERRIAM-WEBSTER
                                                  :name "MERRIAM-WEBSTER"
                                                  :url "https://www.merriam-webster.com/dictionary/%s"
                                                  :keywords (:keybinding "m" :docstring "韦氏词典" :browser 'eaf-open-browser))

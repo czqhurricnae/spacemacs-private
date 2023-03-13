@@ -38,7 +38,9 @@
         dired-rsync
         (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
         (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
-        (mybigword :location local)
+        (mybigword :location (recipe :fetcher github
+                                     :repo "redguardtoo/mybigword"
+                                     :files ("*.*")))
         emacs-everywhere
         command-log-mode
         fasd
@@ -1254,7 +1256,8 @@
   (use-package emacsql))
 
 (defun hurricane-misc/init-mybigword ()
-  (use-package mybigword))
+  (use-package mybigword
+    :ensure t))
 
 (defun hurricane-misc/init-emacs-everywhere ()
   (use-package emacs-everywhere
@@ -1299,23 +1302,26 @@
       (eaf-call-async "ocr_area" eaf--buffer-id)))
 
   (with-eval-after-load 'eaf-browser
-    (defun eaf-send-eudic-liju-to-Anki (link)
+    (defun eaf-send-liju-to-Anki (link)
       (interactive)
       (setq payload (split-string link "::" t))
-      (setq liju-mp3 (format "eudic_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
-      (let* ((final-cmd (format "wget -O \"%s%s\" \"%s\"" (expand-file-name Anki-media-dir) liju-mp3 (nth 1 payload)))
-             (proc
-              (start-process-shell-command
-               "eaf-send-eudic-liju-to-Anki"
-               nil
-               final-cmd)))
-        (set-process-sentinel
-         proc
-         (lambda (proc event)
-           (when (equal event "finished\n")
-             (anki-add-card Anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s\n%s" (nth 2 payload) (nth 3 payload)) (format "%s" "") "subs2srs")
-             )))
-        t))
+      (python-bridge-call-async "tts" (nth 2 payload))
+      ;; (setq liju-mp3 (format "mw_%s_%s.mp3" (format-time-string "%-I_%M_%p") (nth 0 payload)))
+      ;; (let* ((final-cmd (format "aspeak --profile \"%s\" text \"%s\" -O \"%s%s\" -c mp3" aspeak-profile-file (nth 2 payload) (expand-file-name Anki-media-dir) liju-mp3 ))
+      ;;        (proc
+      ;;         (start-process-shell-command
+      ;;          "eaf-send-eudic-liju-to-Anki"
+      ;;          nil
+      ;;          final-cmd)))
+      ;;   (set-process-sentinel
+      ;;    proc
+      ;;    (lambda (proc event)
+      ;;      (print proc)
+      ;;      (when (equal event "finished\n")
+      ;;        (anki-add-card Anki-deck-name (format "[sound:%s]" liju-mp3) (format "%s" (nth 2 payload)) (format "%s" "") "subs2srs")
+      ;;        )))
+      ;;   t)
+      )
 
     (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
     (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)

@@ -558,8 +558,7 @@ If a change in `file-attributes' happended call FUNC."
 (defvar unhtml-string-pattern-list
   '(("&amp;" . "&")
     ("&lt;" . "<")
-    ("&gt;" . ">")
-    ))
+    ("&gt;" . ">")))
 
 (defun unshift-prefix-if-necessary (string prefix new-prefix)
   "If STRING do not starts with PREFIX, concat NEW-PREFIX STRING and then encode.
@@ -571,8 +570,7 @@ Else, returns STRING."
         (insert string)
         (dolist (replace-string-rule unhtml-string-pattern-list)
           (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
-        (buffer-string))))
-  )
+        (buffer-string)))))
 
 (defun replace-url-with-file-path-in-org (file-name url-and-file-path-map-list)
   (with-temp-buffer
@@ -719,10 +717,6 @@ Else, returns STRING."
     " return theUrl & \"::split::\" & theName\n"
     "end tell")))
 
-(defun hurricane//autoinsert-yas-expand ()
-  "Replace text in yasnippet template."
-  (yas-expand-snippet (buffer-string) (point-min) (point-max)))
-
 ;; {{
 ;; @see: https://emacs-china.org/t/macos/10219
 ;; (setq english-ID-map '("1" . "美国"))
@@ -753,6 +747,7 @@ Else, returns STRING."
 ;; (add-hook 'evil-insert-state-exit-hook (lambda () (hurricane//switch-input-source english-ID-map)))
 ;;}}
 
+;; {{
 (setq english-ID-map '("com.apple.keylayout.US" . "美国"))
 (setq chinese-ID-map '("com.sogou.inputmethod.sogou.pinyin" . "搜狗拼音"))
 
@@ -762,6 +757,7 @@ Else, returns STRING."
 
 ;; (add-hook 'evil-insert-state-entry-hook (lambda () (hurricane//switch-input-source chinese-ID-map)))
 (cond (sys/macp (add-hook 'evil-insert-state-exit-hook (lambda () (hurricane//switch-input-source english-ID-map)))))
+;; }}
 
 ;; {{
 ;; @see: https://emacs-china.org/t/topic/5518
@@ -1430,11 +1426,9 @@ Version 2019-02-12 2021-08-09"
                  "media-clip"
                  nil
                  final-cmd)))
-          (print final-cmd)
           (set-process-sentinel
            proc
            (lambda (proc event)
-             (print event)
              (when (equal event "finished\n")
                (anki-add-card Anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
                )))
@@ -1448,3 +1442,11 @@ Version 2019-02-12 2021-08-09"
         ;; (force-mode-line-update t)
         ;; (message "[org-media-note] clip between timestamp A-B loop: %s--%s." timestamp-a timestamp-b)
         ))))
+
+;; {{
+(defun aspeak-tts (&optional sentence)
+  (interactive (list (read-string "Speak: " (emacs-azure-tts-region-or-sentence))))
+  (let ((final-cmd (format "aspeak --profile \"%s\" text \"%s\"" (file-truename aspeak-profile-file) sentence)))
+    (shell-command final-cmd)
+    ))
+;; }}

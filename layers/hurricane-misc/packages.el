@@ -1120,6 +1120,11 @@
     (setq auto-insert-query nil)
     (add-hook 'find-file-hook 'auto-insert)
     (setq auto-insert-directory auto-insert-dir)
+
+    (defun hurricane//autoinsert-yas-expand ()
+      "Replace text in yasnippet template."
+      (yas-expand-snippet (buffer-string) (point-min) (point-max)))
+
     (define-auto-insert "\\.html?$" ["default-html.html" hurricane//autoinsert-yas-expand])
     (define-auto-insert "\\.el?$" ["default-lisp.el" hurricane//autoinsert-yas-expand])
     (define-auto-insert "\\.org?$" ["default-org.org" hurricane//autoinsert-yas-expand])))

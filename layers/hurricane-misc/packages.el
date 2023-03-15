@@ -1307,7 +1307,7 @@
       (eaf-call-async "ocr_area" eaf--buffer-id)))
 
   (with-eval-after-load 'eaf-browser
-    (defun eaf-send-liju-to-Anki (link)
+    (defun eaf-send-merriam-webster-liju-to-Anki (link)
       (interactive)
       (setq payload (split-string link "::" t))
       (python-bridge-call-async "tts" (nth 2 payload))
@@ -1315,7 +1315,7 @@
       ;; (let* ((final-cmd (format "aspeak --profile \"%s\" text \"%s\" -O \"%s%s\" -c mp3" aspeak-profile-file (nth 2 payload) (expand-file-name Anki-media-dir) liju-mp3 ))
       ;;        (proc
       ;;         (start-process-shell-command
-      ;;          "eaf-send-eudic-liju-to-Anki"
+      ;;          "eaf-send-merriam-webster-liju-to-Anki"
       ;;          nil
       ;;          final-cmd)))
       ;;   (set-process-sentinel
@@ -1328,6 +1328,12 @@
       ;;   t)
       )
 
+    (defun eaf-copy-merriam-webster-phonetic (link)
+      (interactive)
+      (setq payload (split-string link "::" t))
+      (print (nth 3 payload))
+      (kill-new (nth 4 payload)))
+
     (eaf-bind-key eaf-ocr-buffer "z" eaf-browser-keybinding)
     (eaf-bind-key eaf-ocr-area "Z" eaf-browser-keybinding)
     (eaf-bind-key insert_or_export_text "n" eaf-browser-keybinding)
@@ -1337,10 +1343,11 @@
     (eaf-bind-key insert_or_translate_page ";" eaf-browser-keybinding)
     ;; /eaf/core/webengine.py
     ;; @interactive
-    ;; def send_eudic_liju(self):
+    ;; def send_merriam_webster_liju(self):
     ;;     self.buffer_widget.get_link_markers()
-    ;;     self.send_input_message("Copy link: ", "send_eudic_liju", "marker");
-    (eaf-bind-key send_eudic_liju "C-M-s" eaf-browser-keybinding)
+    ;;     self.send_input_message("Copy link: ", "send_merriam_webster_liju", "marker");
+    (eaf-bind-key send_merriam_webster_liju "C-M-s" eaf-browser-keybinding)
+    (eaf-bind-key copy_merriam_webster_phonetic "C-M-p" eaf-browser-keybinding)
     (eaf-bind-key insert_or_download_youtube_video "y" eaf-browser-keybinding)
     (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding))
 

@@ -96,6 +96,7 @@ transatlant
 contractor
 munich
 thriving
+lambast
 bashisms
 occurr
 pummel
@@ -110,6 +111,7 @@ shipyard
 ears
 align
 reckoning
+mental
 intelligence
 interrogated
 dramatic
@@ -168,8 +170,11 @@ raid
 portuguese
 campus
 condemning
+scaling
 confer
+herald
 nautical
+heighten
 scrapped
 purveyor
 courtier
@@ -194,6 +199,7 @@ prestigious
 spillover
 sovereignti
 retain
+heightened
 intertwin
 selfi
 occurrence
@@ -211,6 +217,7 @@ qaeda
 congress
 hygiene
 numerical
+assertiveness
 rivalri
 republican
 engulf
@@ -239,6 +246,7 @@ soaring
 foe
 immateri
 brew
+scale
 ascletis
 discouraging
 fortifi
@@ -269,6 +277,7 @@ customari
 conference
 curat
 sceptic
+mentality
 influenc
 sentiment
 distrust
@@ -330,6 +339,7 @@ frame
 excessive
 regret
 smear
+assert
 antoni
 nautic
 worsen

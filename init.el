@@ -58,7 +58,6 @@ This function should only modify configuration layer settings."
                                                  :url "https://www.merriam-webster.com/dictionary/%s"
                                                  :keywords (:keybinding "m" :docstring "韦氏词典" :browser 'eaf-open-browser))
                                                 ))
-
      graphviz
      (syntax-checking :variables
                       syntax-checking-enable-by-default t
@@ -776,6 +775,7 @@ you should place your code here."
   (setq eww-download-directory (concat deft-dir (file-name-as-directory "notes")))
   (with-eval-after-load 'dictionary-overlay
     (dictionary-overlay-start))
+  (require 'engine-mode)
 )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)

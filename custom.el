@@ -74,7 +74,17 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-media-note-screenshot-image-dir
+   '((eval setq org-download-image-dir
+           (concat default-directory "./static/强化安全管理过程考核完善安全绩效管理体系/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/民航维修人员资格授权持续有效性管理/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/航空公司维修安全状况评价方法研究/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/民用航空器勤务工作的问题探究及改进策略/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/Anki 筛选/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/EAF PR-Support eval script file/"))
      (eval setq org-download-image-dir
            (concat default-directory "./static/problems_using_asyncio_in_thread/"))

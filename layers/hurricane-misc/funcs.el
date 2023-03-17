@@ -1212,7 +1212,6 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
                                              `("options" . ,(list
                                                                   '("allowDuplicate" . t)))
                                              `("tags" . ,(list tag)))))))
-    (print req-params)
     (request (format "%s:%s" Anki-connect-host anki-connect-port)
       :type "POST"
       :data (json-encode (list '("action" . "addNote")
@@ -1449,4 +1448,63 @@ Version 2019-02-12 2021-08-09"
   (let ((final-cmd (format "aspeak --profile \"%s\" text \"%s\"" (file-truename aspeak-profile-file) sentence)))
     (shell-command final-cmd)
     ))
+;; }}
+
+;; {{
+(defvar youtube-title-string-pattern-list
+  '("<meta name=\\\"title\\\" content=\\\"" . "\\\">"))
+
+(defun hurricane/download-youtube-transcript (url)
+  (interactive "MURL: ")
+  (let ((video-id (if eaf--buffer-url
+                      (cdr (string-split eaf--buffer-url "="))
+                    (if (string-match "v=\\([^&]+\\)" url) (match-string 1 url) url)
+                    ))
+        (buffer (generate-new-buffer "*youtube_transcript_api*")))
+
+    (with-current-buffer (url-retrieve-synchronously url)
+      (dos2unix)
+      (progn
+        (goto-char 0)
+        (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
+        (goto-char title-start)
+        (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
+        (setq title-string (buffer-substring title-start (- title-end 3)))
+        (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
+        ))
+
+    (make-process
+     :name "youtube_transcript_api"
+     :command (append '("youtube_transcript_api") `(,video-id "--languages" "en" "--format" "srt"))
+     :buffer buffer
+     :sentinel `(lambda (p e)
+                  (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))
+                  (set-buffer ',buffer)
+                  (goto-char (point-min))
+                  (append-string-to-file (buffer-string) ',youtube-transcript-filename)))
+
+    (let ((buf (find-file-noselect youtube-transcript-filename)))
+      (with-current-buffer buf
+        (set (make-local-variable 'youtube-transcript-url) url)))))
+
+(defun hurricane/mpv-play (&optional url)
+  (interactive)
+  (let* ((video-url (unless url
+                      (buffer-local-value 'youtube-transcript-url (current-buffer))))
+         (subtitle-file-path (spacemacs--file-path))
+         (mpv-argv (if subtitle-file-path (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal")))
+    (if video-url
+        (make-process
+         :name "you-get to mpv"
+         :command (append '("you-get") `("-p" ,mpv-argv ,video-url))
+         :buffer "*you-get to mpv*"
+         :sentinel `(lambda (p e)
+                      (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))))
+      (message "No variable url!")
+      )
+    ))
+
+(defun hurricane/mpv-jump ()
+  (interactive)
+  (python-bridge-call-async "mpv" (list "seek" (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))) "absolute+exact")))
 ;; }}

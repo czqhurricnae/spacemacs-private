@@ -74,7 +74,13 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-download-image-dir
+   '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Org mode: Insert YouTube video with separate captions/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/How I enqueue online videos in mpv with Emacs/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/CAR 和 CDR/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static/强化安全管理过程考核完善安全绩效管理体系/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/民航维修人员资格授权持续有效性管理/"))

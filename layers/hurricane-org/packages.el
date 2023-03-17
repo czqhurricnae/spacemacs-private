@@ -930,6 +930,7 @@ Return nil if not found."
   (use-package anki-editor
     :diminish anki-editor-mode))
 
+;; bilibili：必须使用猫抓获取真实视频地址。
 (defun hurricane-org/init-org-media-note ()
   (use-package org-media-note
     :defer t

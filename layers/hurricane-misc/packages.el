@@ -1454,7 +1454,7 @@
 (defun hurricane-misc/init-subed ()
   (use-package subed
     :ensure t
-    :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20221230.110938/subed"
+    :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20230311.23618/subed"
     :init
     (require 'subed-autoloads)
 
@@ -1483,6 +1483,24 @@
     ;; (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
     ;; 如果是观看 B 站解析的视频链接，就不需要代理。
     ;; (add-to-list 'subed-mpv-arguments (format "--stream-lavf-o-append=%s_proxy=%s://%s:%s" provixy-type provixy-type provixy-host provixy-port))
+    ;; Remember cursor position between sessions
+	  (add-hook 'subed-mode-hook 'save-place-local-mode)
+	  ;; Break lines automatically while typing
+	  (add-hook 'subed-mode-hook 'turn-on-auto-fill)
+	  ;; Break lines at 40 characters
+	  (add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40)))
+	  ;; Some reasonable defaults
+	  (add-hook 'subed-mode-hook 'subed-enable-pause-while-typing)
+	  ;; As the player moves, update the point to show the current subtitle
+	  (add-hook 'subed-mode-hook 'subed-enable-sync-point-to-player)
+	  ;; As your point moves in Emacs, update the player to start at the current subtitle
+	  (add-hook 'subed-mode-hook 'subed-enable-sync-player-to-point)
+	  ;; Replay subtitles as you adjust their start or stop time with M-[, M-], M-{, or M-}
+	  (add-hook 'subed-mode-hook 'subed-enable-replay-adjusted-subtitle)
+	  ;; Loop over subtitles
+	  (add-hook 'subed-mode-hook 'subed-enable-loop-over-current-subtitle)
+	  ;; Show characters per second
+	  (add-hook 'subed-mode-hook 'subed-enable-show-cps)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-p") #'subed-backward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-a") #'subed-jump-to-subtitle-text)
@@ -1537,7 +1555,28 @@
 (defun hurricane-misc/init-youtube-sub-extractor ()
   (use-package youtube-sub-extractor
     :ensure t
-    :commands (youtube-sub-extractor-extract-subs)))
+    :config
+    (defun hurricane//youtube-sub-extractor-copy-ts-link ()
+      "Get timestamp.
+Works only in youtube-sub-extractor-mode buffer."
+      (interactive)
+      (let ((ts (plist-get (text-properties-at (point)) 'timestamp)))
+        (when (and (boundp 'video-url) ts
+                   (bound-and-true-p youtube-sub-extractor-subtitles-mode)
+                   (string-match "\\([^?]+\\)\\(\\?\\|\\)\\(.*\\)" video-url))
+          (let* (
+                 (args (url-parse-query-string (match-string 3 video-url)))
+                 (tp (floor (youtube-sub-extractor--seconds ts)))
+                 (tpoint (when (numberp tp) (number-to-string tp)))
+                 (t-item (alist-get "t" args nil nil #'string-equal))
+                 (_ (if t-item (setf (car t-item) tpoint)
+                      (cl-pushnew (list "t" tpoint) args)))
+                 )
+            (message tpoint)
+            tpoint))))
+    :commands (youtube-sub-extractor-extract-subs)
+    :custom
+    (youtube-sub-extractor-timestamps 'left-side-text)))
 
 ;; python3 -m pip install pyobjc
 (defun hurricane-misc/init-dictionary-overlay ()

@@ -1454,57 +1454,117 @@ Version 2019-02-12 2021-08-09"
 (defvar youtube-title-string-pattern-list
   '("<meta name=\\\"title\\\" content=\\\"" . "\\\">"))
 
-(defun hurricane/download-youtube-transcript (url)
-  (interactive "MURL: ")
-  (let ((video-id (if eaf--buffer-url
-                      (cdr (string-split eaf--buffer-url "="))
-                    (if (string-match "v=\\([^&]+\\)" url) (match-string 1 url) url)
-                    ))
+(defun hurricane/download-youtube-transcript (&optional url)
+  (interactive (list (read-string (format "URL(%s): " (or eaf--buffer-url ""))
+                                  nil nil (or eaf--buffer-url ""))))
+  (let ((video-id (if (string-match "v=\\([^&]+\\)" url) (match-string 1 url) nil))
         (buffer (generate-new-buffer "*youtube_transcript_api*")))
-
-    (with-current-buffer (url-retrieve-synchronously url)
-      (dos2unix)
+    (if video-id
       (progn
-        (goto-char 0)
-        (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
-        (goto-char title-start)
-        (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
-        (setq title-string (buffer-substring title-start (- title-end 3)))
-        (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
-        ))
+        (with-current-buffer (url-retrieve-synchronously url)
+          (dos2unix)
+          (progn
+            (goto-char 0)
+            (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
+            (goto-char title-start)
+            (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
+            (setq title-string (buffer-substring title-start (- title-end 3)))
+            (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
+            ))
 
-    (make-process
-     :name "youtube_transcript_api"
-     :command (append '("youtube_transcript_api") `(,video-id "--languages" "en" "--format" "srt"))
-     :buffer buffer
-     :sentinel `(lambda (p e)
-                  (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))
-                  (set-buffer ',buffer)
-                  (goto-char (point-min))
-                  (append-string-to-file (buffer-string) ',youtube-transcript-filename)))
+       (make-process
+        :name "youtube_transcript_api"
+        :command (append '("youtube_transcript_api") `(,video-id "--languages" "en" "--format" "srt"))
+        :buffer buffer
+        :sentinel `(lambda (p e)
+                     (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))
+                     (set-buffer ',buffer)
+                     (goto-char (point-min))
+                     (append-string-to-file (buffer-string) ',youtube-transcript-filename)))
 
-    (let ((buf (find-file-noselect youtube-transcript-filename)))
-      (with-current-buffer buf
-        (set (make-local-variable 'youtube-transcript-url) url)))))
+        (let ((buf (find-file-noselect youtube-transcript-filename)))
+          (with-current-buffer buf
+            (set (make-local-variable 'youtube-transcript-url) url)))
+
+        (kill-buffer buffer))
+      (message (format "Unavailable URL: %s" url)))))
 
 (defun hurricane/mpv-play (&optional url)
-  (interactive)
-  (let* ((video-url (unless url
-                      (buffer-local-value 'youtube-transcript-url (current-buffer))))
+  (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))
+  (let* ((video-url url)
+         (buffer (generate-new-buffer "*you-get to mpv*"))
          (subtitle-file-path (spacemacs--file-path))
          (mpv-argv (if subtitle-file-path (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal")))
+    (while (string-equal video-url "")
+      (setq video-url (read-string "Please input the URL to play: "
+                                   nil nil "" nil)))
     (if video-url
         (make-process
          :name "you-get to mpv"
          :command (append '("you-get") `("-p" ,mpv-argv ,video-url))
-         :buffer "*you-get to mpv*"
+         :buffer buffer
          :sentinel `(lambda (p e)
                       (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))))
-      (message "No variable url!")
-      )
-    ))
+      (message "Unavariable URL!")
+      )))
 
 (defun hurricane/mpv-jump ()
   (interactive)
   (python-bridge-call-async "mpv" (list "seek" (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))) "absolute+exact")))
+
+(defun hurricane/ivy-you-get (&optional url)
+  (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))
+  (let ((video-url url)
+        (buffer (generate-new-buffer "*you-get formats*")))
+    (while (string-equal video-url "")
+      (setq video-url (read-string "Please input the URL to play: "
+                                   nil nil "" nil)))
+    (make-process :name "you-get formats"
+                  :buffer buffer
+                  :command (list "you-get" "-i" video-url)
+                  :connection-type 'pipe
+                  :sentinel `(lambda (p e)
+                               (set-buffer ',buffer)
+                               (goto-char (point-min))
+                               (unless (search-forward "streams" nil t)
+                                 (kill-buffer)
+                                 (error "url not supported"))
+                               (forward-line 1)
+                               (let (list)
+                                 (while (not (eobp))
+                                   (setq list (cons
+                                               (split-string
+                                                (buffer-substring-no-properties
+                                                 (point)
+                                                 (point-at-eol)) "\n" t nil)
+                                               list))
+                                   (forward-line 1))
+                                 (setq list (nreverse list))
+                                 (kill-buffer ,buffer)
+                                 (ivy-read "you-get formats (itag): " list
+                                           :action (lambda (x)
+                                                     (hurricane//you-get
+                                                      (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url))
+                                           :sort nil
+                                           :history 'youtube-dl
+                                           :re-builder #'regexp-quote
+                                           :preselect "best"))))))
+
+(defun hurricane//you-get (fmt video-url)
+  (let* ((buffer (generate-new-buffer "*you-get to mpv*"))
+         (subtitle-file-path (spacemacs--file-path))
+         (format-argv (if (string-match-p "bilibili" video-url) (format "dash-flv%s" fmt) fmt))
+         (mpv-argv (if subtitle-file-path (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal")))
+    (with-current-buffer buffer
+      (ansi-color-for-comint-mode-on)
+      (comint-mode))
+    (print (append '("you-get") `("-F" ,format-argv) `("-p" ,mpv-argv ,video-url)))
+    (make-process :name "you-get mpv"
+                  :buffer buffer
+                  :command (append '("you-get") `("-F" ,format-argv) `("-p" ,mpv-argv ,video-url))
+                  :connection-type 'pty
+                  :filter 'comint-output-filter
+                  :sentinel (lambda (p e)
+                              (message
+                               "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))))))
 ;; }}

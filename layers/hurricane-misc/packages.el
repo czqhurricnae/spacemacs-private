@@ -1255,7 +1255,7 @@
 (defun hurricane-misc/init-with-proxy ()
   (use-package with-proxy
     :config
-    (setq with-proxy-http-server "127.0.0.1:1087")))
+    (setq with-proxy-http-server (format "%s:%s" provixy-host provixy-port))))
 
 (defun hurricane-misc/init-emacsql ()
   (use-package emacsql))

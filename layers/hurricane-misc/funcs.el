@@ -1455,22 +1455,24 @@ Version 2019-02-12 2021-08-09"
   '("<meta name=\\\"title\\\" content=\\\"" . "\\\">"))
 
 (defun hurricane/download-youtube-transcript (&optional url)
-  (interactive (list (read-string (format "URL(%s): " (or eaf--buffer-url ""))
-                                  nil nil (or eaf--buffer-url ""))))
+  (interactive (list (read-string "URL: " (or eaf--buffer-url ""))))
   (let ((video-id (if (string-match "v=\\([^&]+\\)" url) (match-string 1 url) nil))
         (buffer (generate-new-buffer "*youtube_transcript_api*")))
     (if video-id
       (progn
-        (with-current-buffer (url-retrieve-synchronously url)
+        (with-proxy
+         (with-current-buffer (url-retrieve-synchronously url)
+           (print (buffer-string))
           (dos2unix)
           (progn
             (goto-char 0)
             (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
             (goto-char title-start)
             (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
-            (setq title-string (buffer-substring title-start (- title-end 3)))
+            (setq raw-title-string (buffer-substring title-start (- title-end 3)))
+            (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
             (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
-            ))
+            )))
 
        (make-process
         :name "youtube_transcript_api"
@@ -1484,9 +1486,7 @@ Version 2019-02-12 2021-08-09"
 
         (let ((buf (find-file-noselect youtube-transcript-filename)))
           (with-current-buffer buf
-            (set (make-local-variable 'youtube-transcript-url) url)))
-
-        (kill-buffer buffer))
+            (set (make-local-variable 'youtube-transcript-url) url))))
       (message (format "Unavailable URL: %s" url)))))
 
 (defun hurricane/mpv-play (&optional url)

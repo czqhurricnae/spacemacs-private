@@ -1530,9 +1530,10 @@ Version 2019-02-12 2021-08-09"
     (while (string-equal video-url "")
       (setq video-url (read-string "Please input the URL to play: "
                                    nil nil "" nil)))
+    (print (list "you-get" "-i" "-x" (format "%s:%s" provixy-host provixy-port) "--debug" video-url))
     (make-process :name "you-get formats"
                   :buffer buffer
-                  :command (list "you-get" "-i" video-url)
+                  :command (list "you-get" "-i" "-x" (format "%s:%s" provixy-host provixy-port) "--debug" video-url)
                   :connection-type 'pipe
                   :sentinel `(lambda (p e)
                                (set-buffer ',buffer)
@@ -1573,16 +1574,18 @@ Version 2019-02-12 2021-08-09"
   (let* ((buffer (generate-new-buffer "*you-get*"))
          (subtitle-file-path subtitle)
          (format-args (if (string-match-p "bilibili" video-url) (format "dash-flv%s" fmt) fmt))
-         (mpv-args (if (and (not (string-match-p "bilibili" video-url)) subtitle-file-path) (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal"))
+         (mpv-args (if (and (not (string-match-p "bilibili" video-url)) subtitle-file-path) (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal --referrer='https://www.bilibili.com' --user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 '" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal --referrer='https://www.bilibili.com' --user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 '"))
          (mpv-argv (list "-p" mpv-args))
          (output-dir-argv (list "-o" (file-truename mpv-storage-dir)))
-         (mpv-or-output-dir-argv (if play-now mpv-argv output-dir-argv)))
+         (mpv-or-output-dir-argv (if play-now mpv-argv output-dir-argv))
+         (proxy-argv (format "%s:%s" provixy-host provixy-port)))
     (with-current-buffer buffer
       (ansi-color-for-comint-mode-on)
       (comint-mode))
+    (print (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv `("-x" ,proxy-argv) '("--debug") `(,video-url)))
     (make-process :name "you-get"
                   :buffer buffer
-                  :command (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv '("--debug") `(,video-url))
+                  :command (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv `("-x" ,proxy-argv) '("--debug") `(,video-url))
                   :connection-type 'pty
                   :filter 'comint-output-filter
                   :sentinel (lambda (p e)

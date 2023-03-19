@@ -1525,7 +1525,7 @@ Version 2019-02-12 2021-08-09"
 (defun hurricane/ivy-you-get (&optional url)
   (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))
   (let ((video-url url)
-        (subtitle (file-truename (buffer-file-name)))
+        (subtitle (and buffer-file-name (file-truename (buffer-file-name))))
         (buffer (generate-new-buffer "*you-get formats*")))
     (while (string-equal video-url "")
       (setq video-url (read-string "Please input the URL to play: "
@@ -1553,26 +1553,36 @@ Version 2019-02-12 2021-08-09"
                                  (setq list (nreverse list))
                                  (kill-buffer ,buffer)
                                  (ivy-read "you-get formats (itag): " list
-                                           :action (lambda (x)
-                                                     (hurricane//you-get
-                                                      (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle))
+                                           :action '(1
+                                                     ("o"
+                                                      (lambda (x)
+                                                        (hurricane//you-get
+                                                         (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle t))
+                                                      "play")
+                                                     ("d"
+                                                      (lambda (x)
+                                                        (hurricane//you-get
+                                                         (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle nil))
+                                                      "download"))
                                            :sort nil
-                                           :history 'youtube-dl
+                                           :history 'hurricane//you-get
                                            :re-builder #'regexp-quote
                                            :preselect "best"))))))
 
-(defun hurricane//you-get (fmt video-url subtitle)
-  (let* ((buffer (generate-new-buffer "*you-get to mpv*"))
+(defun hurricane//you-get (fmt video-url subtitle &optional play-now)
+  (let* ((buffer (generate-new-buffer "*you-get*"))
          (subtitle-file-path subtitle)
-         (format-argv (if (string-match-p "bilibili" video-url) (format "dash-flv%s" fmt) fmt))
-         (mpv-argv (if subtitle-file-path (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal")))
+         (format-args (if (string-match-p "bilibili" video-url) (format "dash-flv%s" fmt) fmt))
+         (mpv-args (if (and (not (string-match-p "bilibili" video-url)) subtitle-file-path) (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal"))
+         (mpv-argv (list "-p" mpv-args))
+         (output-dir-argv (list "-o" (file-truename mpv-storage-dir)))
+         (mpv-or-output-dir-argv (if play-now mpv-argv output-dir-argv)))
     (with-current-buffer buffer
       (ansi-color-for-comint-mode-on)
       (comint-mode))
-    (print (append '("you-get") `("-F" ,format-argv) `("-p" ,mpv-argv ,video-url)))
-    (make-process :name "you-get mpv"
+    (make-process :name "you-get"
                   :buffer buffer
-                  :command (append '("you-get") `("-F" ,format-argv) `("-p" ,mpv-argv ,video-url))
+                  :command (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv '("--debug") `(,video-url))
                   :connection-type 'pty
                   :filter 'comint-output-filter
                   :sentinel (lambda (p e)

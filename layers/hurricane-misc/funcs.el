@@ -1341,6 +1341,8 @@ Version 2019-02-12 2021-08-09"
     (cond
      ((derived-mode-p 'eww-mode)
       (setq sentence (lc-corpus--eww-sentence)))
+     ((string-equal (buffer-name (current-buffer)) "*mybigword-list*")
+      (setq sentence nil))
      (t
       (setq sentence (thing-at-point 'sentence t))))
     sentence))
@@ -1512,9 +1514,18 @@ Version 2019-02-12 2021-08-09"
   (interactive)
   (python-bridge-call-async "mpv" (list "seek" (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))) "absolute+exact")))
 
+(defun hurricane/mpv-toggle-ontop ()
+  (interactive)
+  (python-bridge-call-async "mpv" (list "cycle" "ontop")))
+
+(defun hurricane/mpv-toggle-play ()
+  (interactive)
+  (python-bridge-call-async "mpv" (list "cycle" "pause")))
+
 (defun hurricane/ivy-you-get (&optional url)
   (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))
   (let ((video-url url)
+        (subtitle (file-truename (buffer-file-name)))
         (buffer (generate-new-buffer "*you-get formats*")))
     (while (string-equal video-url "")
       (setq video-url (read-string "Please input the URL to play: "
@@ -1544,15 +1555,15 @@ Version 2019-02-12 2021-08-09"
                                  (ivy-read "you-get formats (itag): " list
                                            :action (lambda (x)
                                                      (hurricane//you-get
-                                                      (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url))
+                                                      (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle))
                                            :sort nil
                                            :history 'youtube-dl
                                            :re-builder #'regexp-quote
                                            :preselect "best"))))))
 
-(defun hurricane//you-get (fmt video-url)
+(defun hurricane//you-get (fmt video-url subtitle)
   (let* ((buffer (generate-new-buffer "*you-get to mpv*"))
-         (subtitle-file-path (spacemacs--file-path))
+         (subtitle-file-path subtitle)
          (format-argv (if (string-match-p "bilibili" video-url) (format "dash-flv%s" fmt) fmt))
          (mpv-argv (if subtitle-file-path (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal")))
     (with-current-buffer buffer

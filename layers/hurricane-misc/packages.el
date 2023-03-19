@@ -1615,11 +1615,12 @@ Works only in youtube-sub-extractor-mode buffer."
             )
           dictionary-overlay-recenter-after-mark-and-jump nil)
 
+    ;; 该函数可以通过anki-editor-find-notes 替代，但是保留是为了获取文章中的句子至ANKI。
     (defun hurricane/popweb-translate-and-mark-unknown-word ()
       (interactive)
-      (hurricane/popweb-dict-eudic-dicts-search-at-point)
+      (if (display-graphic-p)
+          (popweb-dict-eudic-dicts-input nil (lc-corpus--sentence)))
       (dictionary-overlay-mark-word-unknown))
-
     :bind
     ("C-c d" . dictionary-overlay-render-buffer)
     (:map dictionary-overlay-map

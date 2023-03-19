@@ -1088,7 +1088,10 @@ Otherwise return word around point."
   (let ((nids (anki-editor-api-call-result 'findNotes
                                            :query (or query ""))))
     (unless nids
-      (popweb-dict-eudic-dicts-input query))
+      (if (display-graphic-p)
+       (progn
+         (popweb-dict-eudic-dicts-input query (lc-corpus--sentence))
+         (dictionary-overlay-mark-word-unknown))))
     (if (and nids (called-interactively-p 'interactive))
         (ignore-errors
           (ivy-read "Select a card to preview: "

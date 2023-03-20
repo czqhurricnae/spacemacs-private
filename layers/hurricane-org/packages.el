@@ -1166,6 +1166,11 @@ Return nil if not found."
     (require 'youdao-dictionary)
     (require 'anki-editor)
 
+    (defun hurricane/popweb-dict-eudic-dicts-search-at-point ()
+      (interactive)
+      (if (display-graphic-p)
+          (popweb-dict-eudic-dicts-input nil (lc-corpus--sentence))))
+
     (defun hurricane/popweb-dict-eudic-liju-search-at-point ()
       (interactive)
       (if (display-graphic-p)
@@ -1229,7 +1234,8 @@ Return nil if not found."
     (popweb-proxy-port provixy-port)
     ;; (popweb-enable-developer-tools t)
     :bind
-    (("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point))
+    (("C-c y" . hurricane/popweb-dict-eudic-dicts-search-at-point)
+     ("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point))
     ))
 
 ;; npm install mathjax-node-cli

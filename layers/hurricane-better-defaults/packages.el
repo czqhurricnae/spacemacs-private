@@ -12,16 +12,16 @@
 (defun hurricane-better-defaults/pre-init-youdao-dictionary ()
   (use-package youdao-dictionary
     :commands youdao-dictionary-play-voice-of-current-word
-    ;; :bind (("C-c y" . my-youdao-search-at-point)
-    ;;        ("C-c Y" . youdao-dictionary-search-at-point)
-    ;;        :map youdao-dictionary-mode-map
-    ;;        ("h" . youdao-dictionary-hydra/body)
-    ;;        ("?" . youdao-dictionary-hydra/body))
+    :bind (("C-c s" . hurricane/youdao-search-at-point)
+           ;; ("C-c Y" . youdao-dictionary-search-at-point)
+           :map youdao-dictionary-mode-map
+           ("h" . youdao-dictionary-hydra/body)
+           ("?" . youdao-dictionary-hydra/body))
     :init
     (setq url-automatic-caching t
           youdao-dictionary-use-chinese-word-segmentation t)
 
-    (defun my-youdao-search-at-point ()
+    (defun hurricane/youdao-search-at-point ()
       (interactive)
       (if (display-graphic-p)
           (if emacs/>=26p

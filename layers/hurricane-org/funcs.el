@@ -1075,9 +1075,10 @@ Otherwise return word around point."
             (fields (cdr (assq 'fields x)))
             (sentence (cdar (cdr (assq 'sentence fields))))
             (notes (cdar (cdr (assq 'notes fields))))
-            (audio (cdar (cdr (assq 'audio fields)))))
+            (audio (cdar (cdr (assq 'audio fields))))
+            (phonetic (or (cdar (cdr (assq 'phonetic fields))) "/ /")))
        (list
-        (format "%s %s" sentence notes)
+        (format "%s %s %s" sentence notes phonetic)
         noteid
         audio)))
    notesinfo))
@@ -1090,8 +1091,11 @@ Otherwise return word around point."
     (unless nids
       (if (display-graphic-p)
        (progn
+         (require 'dictionary-overlay)
+
          (popweb-dict-eudic-dicts-input query (lc-corpus--sentence))
-         (dictionary-overlay-mark-word-unknown))))
+         (ignore-errors
+          (dictionary-overlay-mark-word-unknown)))))
     (if (and nids (called-interactively-p 'interactive))
         (ignore-errors
           (ivy-read "Select a card to preview: "

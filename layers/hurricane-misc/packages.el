@@ -1626,6 +1626,7 @@ Works only in youtube-sub-extractor-mode buffer."
     (:map dictionary-overlay-map
                 ("y" . hurricane/popweb-translate-and-mark-unknown-word)
                 ("u" . dictionary-overlay-mark-word-know)
+                ("s" . hurricane/youdao-search-at-point)
                 )))
 
 (defun hurricane-misc/init-websocket ()

@@ -1465,16 +1465,16 @@ Version 2019-02-12 2021-08-09"
         (with-proxy
          (with-current-buffer (url-retrieve-synchronously url)
            (print (buffer-string))
-          (dos2unix)
-          (progn
-            (goto-char 0)
-            (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
-            (goto-char title-start)
-            (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
-            (setq raw-title-string (buffer-substring title-start (- title-end 3)))
-            (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
-            (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
-            )))
+           (dos2unix)
+           (progn
+             (goto-char 0)
+             (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
+             (goto-char title-start)
+             (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
+             (setq raw-title-string (buffer-substring title-start (- title-end 3)))
+             (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
+             (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
+             )))
 
        (make-process
         :name "youtube_transcript_api"

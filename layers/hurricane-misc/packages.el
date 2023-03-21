@@ -1433,7 +1433,7 @@
        ((and (eq blink-search-grep-pdf-backend 'pdf-tools) (featurep 'pdf-tools) (not (string-empty-p submatches)))
         (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
           (blink-search-grep-pdf-pdftool-goto file page submatches)))
-       ((and (eq blink-search-grep-pdf-backend 'eaf-pdf-viewer) (featurep 'eaf-pdf-viewer))
+      ((and (eq blink-search-grep-pdf-backend 'eaf-pdf-viewer) (featurep 'eaf-pdf-viewer))
         (eaf-pdf-jump-to-page file page))
        ;; TODO support other pdf backends
        (t (message "Unknown backend %s" blink-search-grep-pdf-backend))))
@@ -1454,7 +1454,7 @@
 (defun hurricane-misc/init-subed ()
   (use-package subed
     :ensure t
-    :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20230311.23618/subed"
+    :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20230321.225327/subed"
     :init
     (require 'subed-autoloads)
 
@@ -1616,17 +1616,38 @@ Works only in youtube-sub-extractor-mode buffer."
           dictionary-overlay-recenter-after-mark-and-jump nil)
 
     ;; 该函数可以通过anki-editor-find-notes 替代，但是保留是为了获取文章中的句子至ANKI。
-    (defun hurricane/popweb-translate-and-mark-unknown-word ()
+    (defun hurricane/popweb-translate-and-mark-unknown-word (&optional x)
       (interactive)
       (if (display-graphic-p)
           (popweb-dict-eudic-dicts-input nil (lc-corpus--sentence)))
       (dictionary-overlay-mark-word-unknown))
+
+    (defun hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle ()
+        (interactive)
+        (if (derived-mode-p 'subed-srt-mode)
+            (progn
+             (dictionary-overlay-jump-next-unknown-word)
+             (sleep-for 2)
+             (subed-mpv-jump-to-current-subtitle))
+          (dictionary-overlay-jump-next-unknown-word)))
+
+    (defun hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle ()
+        (interactive)
+        (if (derived-mode-p 'subed-srt-mode)
+            (progn
+             (dictionary-overlay-jump-prev-unknown-word)
+             (sleep-for 2)
+             (subed-mpv-jump-to-current-subtitle))
+          (dictionary-overlay-jump-prev-unknown-word)))
     :bind
-    ("C-c d" . dictionary-overlay-render-buffer)
+    (("C-c d" . dictionary-overlay-render-buffer)
+     ("C-c y" . hurricane/popweb-translate-and-mark-unknown-word))
     (:map dictionary-overlay-map
                 ("y" . hurricane/popweb-translate-and-mark-unknown-word)
                 ("u" . dictionary-overlay-mark-word-know)
                 ("s" . hurricane/youdao-search-at-point)
+                ("n" . hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle)
+                ("p" . hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle)
                 )))
 
 (defun hurricane-misc/init-websocket ()

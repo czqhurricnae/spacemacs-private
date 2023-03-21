@@ -1078,7 +1078,7 @@ Otherwise return word around point."
             (audio (cdar (cdr (assq 'audio fields))))
             (phonetic (or (cdar (cdr (assq 'phonetic fields))) "/ /")))
        (list
-        (format "%s %s %s" sentence notes phonetic)
+        (format "%s %s\n%s\n----------------------------------------------------------------------------------------------------" sentence phonetic notes)
         noteid
         audio)))
    notesinfo))
@@ -1140,6 +1140,7 @@ Otherwise return word around point."
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
      ("p" hurricane//anki-editor-popup-note-at-point-posframe "Popup note")
      ("d" hurricane//anki-editor-gui-delete-note-action "Delete note")
+     ("y" hurricane/popweb-translate-and-mark-unknown-word "Search outer")
      )))
 
 (define-key global-map (kbd "<f3>") #'hurricane/anki-editor-find-notes)

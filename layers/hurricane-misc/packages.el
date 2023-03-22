@@ -1465,7 +1465,7 @@
       (setq subed-screenshot (format "subed_%s.png" (format-time-string "%-I_%M_%p")))
       (let* ((timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
              (timestamp-stop (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-stop))))
-             (final-cmd (format "ffmpeg -i \"%s\" -ss %s -to %s -q:a 0 -map a \"%s%s\" && ffmpeg -i \"%s\" -ss %s -frames:v 1 -vf scale=640:-1 \"%s%s\"" subed-mpv-media-file timestamp-start timestamp-stop (expand-file-name Anki-media-dir) subed-mp3 subed-mpv-media-file timestamp-start (expand-file-name Anki-media-dir) subed-screenshot))
+             (final-cmd (format "ffmpeg -hide_banner -nostdin -y -loglevel quiet -sn -vn  -ss %s -to %s -i \"%s\" -map_metadata -1 -map 0:1 -ac 1 -codec:a libmp3lame -vbr on -compression_level 10 -application voip -b:a 24k \"%s%s\" && ffmpeg -hide_banner -nostdin -y -loglevel quiet -sn -an -ss %s -i \"%s\" -map_metadata -1 -vcodec mjpeg -lossless 0 -compression_level 6 -qscale:v 15 -vf scale=-2:200 -vframes 1 \"%s%s\"" timestamp-start timestamp-stop subed-mpv-media-file (expand-file-name Anki-media-dir) subed-mp3 timestamp-start subed-mpv-media-file (expand-file-name Anki-media-dir) subed-screenshot))
              (proc
               (start-process-shell-command
                "subed-send-sentence-to-Anki"

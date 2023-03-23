@@ -1464,14 +1464,13 @@ Version 2019-02-12 2021-08-09"
       (progn
         (with-proxy
          (with-current-buffer (url-retrieve-synchronously url)
-           (print (buffer-string))
            (dos2unix)
            (progn
              (goto-char 0)
              (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
              (goto-char title-start)
              (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
-             (setq raw-title-string (buffer-substring title-start (- title-end 3)))
+             (setq raw-title-string (buffer-substring title-start (- title-end 2)))
              (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
              (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
              )))
@@ -1510,22 +1509,15 @@ Version 2019-02-12 2021-08-09"
       (message "Unavariable URL!")
       )))
 
-(defun hurricane/mpv-jump ()
-  (interactive)
-  (python-bridge-call-async "mpv" (list "seek" (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))) "absolute+exact")))
-
 (defun hurricane/mpv-toggle-ontop ()
   (interactive)
   (python-bridge-call-async "mpv" (list "cycle" "ontop")))
 
-(defun hurricane/mpv-toggle-play ()
-  (interactive)
-  (python-bridge-call-async "mpv" (list "cycle" "pause")))
-
 (defun hurricane/ivy-you-get (&optional url)
   (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))
   (let ((video-url url)
-        (subtitle (and buffer-file-name (file-truename (buffer-file-name))))
+        (subtitle-file (and buffer-file-name (file-truename (buffer-file-name))))
+        (socket-file (subed-mpv--socket))
         (buffer (generate-new-buffer "*you-get formats*")))
     (while (string-equal video-url "")
       (setq video-url (read-string "Please input the URL to play: "
@@ -1558,37 +1550,61 @@ Version 2019-02-12 2021-08-09"
                                                      ("o"
                                                       (lambda (x)
                                                         (hurricane//you-get
-                                                         (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle t))
+                                                         (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle-file ',socket-file t))
                                                       "play")
                                                      ("d"
                                                       (lambda (x)
                                                         (hurricane//you-get
-                                                         (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle nil))
+                                                         (if (string-match (rx (one-or-more digit)) (format "%s" x)) (match-string 0 (format "%s" x))) ',video-url ',subtitle-file ',socket-file nil))
                                                       "download"))
                                            :sort nil
                                            :history 'hurricane//you-get
                                            :re-builder #'regexp-quote
                                            :preselect "best"))))))
 
-(defun hurricane//you-get (fmt video-url subtitle &optional play-now)
+(defun hurricane//you-get (fmt video-url subtitle-file socket-file &optional play-now)
   (let* ((buffer (generate-new-buffer "*you-get*"))
-         (subtitle-file-path subtitle)
+         (subtitle-file-path subtitle-file)
          (format-args (if (string-match-p "bilibili" video-url) (format "dash-flv%s" fmt) fmt))
-         (mpv-args (if (and (not (string-match-p "bilibili" video-url)) subtitle-file-path) (concat "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal --referrer='https://www.bilibili.com' --user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 '" (format " --sub-files=\"%s\"" subtitle-file-path)) "mpv --input-ipc-server=/var/tmp/mpv.socket --no-terminal --referrer='https://www.bilibili.com' --user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 '"))
+         (mpv-args (if (and (not (string-match-p "bilibili" video-url)) subtitle-file-path) (concat (format "mpv --input-ipc-server=%s --idle --osd-level=2 --osd-fractions --no-terminal --referrer='https://www.bilibili.com' --user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 '" socket-file) (format " --sub-files=\"%s\"" subtitle-file-path)) (format "mpv --input-ipc-server=%s --idle --osd-level=2 --osd-fractions --no-terminal --referrer='https://www.bilibili.com' --user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.76 '" socket-file)))
          (mpv-argv (list "-p" mpv-args))
          (output-dir-argv (list "-o" (file-truename mpv-storage-dir)))
          (mpv-or-output-dir-argv (if play-now mpv-argv output-dir-argv))
-         (proxy-argv (format "%s:%s" provixy-host provixy-port)))
-    (with-current-buffer buffer
-      (ansi-color-for-comint-mode-on)
-      (comint-mode))
-    (print (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv `("-x" ,proxy-argv) '("--debug") `(,video-url)))
-    (make-process :name "you-get"
-                  :buffer buffer
-                  :command (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv `("-x" ,proxy-argv) '("--debug") `(,video-url))
-                  :connection-type 'pty
-                  :filter 'comint-output-filter
-                  :sentinel (lambda (p e)
-                              (message
-                               "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))))))
+         (proxy-args (format "%s:%s" provixy-host provixy-port))
+         (final-cmd (append '("you-get") `("-F" ,format-args) `,mpv-or-output-dir-argv `("-x" ,proxy-args) '("--debug" ) `(,video-url))))
+
+    ;; (with-current-buffer buffer
+    ;;   (ansi-color-for-comint-mode-on)
+    ;;   (comint-mode))
+
+    (print final-cmd)
+
+    (let ((buf (find-file-noselect subtitle-file-path)))
+      (with-current-buffer buf
+        (when (subed-mpv--server-started-p)
+          (subed-mpv-kill))
+
+        (condition-case err
+            (setq subed-mpv--server-proc (make-process :name "you-get"
+                                                       :buffer nil
+                                                       :command final-cmd
+                                                       ;; :connection-type 'pty
+                                                       ;; :filter 'comint-output-filter
+                                                       :noquery t
+                                                       ))
+          (error
+           (error "%s" (mapconcat #'indentity (cdr (cdr err)) ": "))))
+
+        (print ">>> you-get is going to play <<<")
+
+        (setq subed-mpv-media-file video-url)
+        (setq subed-mpv--retry-delays '(2 2 2 2 2 5 5 5 5 5 5 5 5 5 5))
+        (subed-mpv--client-connect subed-mpv--retry-delays)
+        (if (file-exists-p subtitle-file-path)
+            (subed-mpv-add-subtitles subtitle-file-path)
+          (add-hook 'after-save-hook #'subed-mpv--add-subtitle-after-first-save :append :local))
+        (subed-mpv--client-send `(observe_property 1 time-pos))
+        (subed-mpv-playback-speed subed-playback-speed-while-not-typing)
+        ))
+    ))
 ;; }}

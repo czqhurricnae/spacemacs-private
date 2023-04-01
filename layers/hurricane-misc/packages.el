@@ -1623,7 +1623,8 @@ Works only in youtube-sub-extractor-mode buffer."
       (interactive)
       (if (display-graphic-p)
           (popweb-dict-eudic-dicts-input nil (lc-corpus--sentence)))
-      (dictionary-overlay-mark-word-unknown))
+      (ignore-errors
+        (dictionary-overlay-mark-word-unknown)))
 
     (defun hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle ()
         (interactive)

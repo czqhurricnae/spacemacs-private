@@ -1462,18 +1462,18 @@ Version 2019-02-12 2021-08-09"
         (buffer (generate-new-buffer "*youtube_transcript_api*")))
     (if video-id
       (progn
-        (with-proxy
-         (with-current-buffer (url-retrieve-synchronously url)
-           (dos2unix)
-           (progn
-             (goto-char 0)
-             (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
-             (goto-char title-start)
-             (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
-             (setq raw-title-string (buffer-substring title-start (- title-end 2)))
-             (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
-             (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
-             )))
+        (with-current-buffer (url-retrieve-synchronously url)
+          (dos2unix)
+          (progn
+            (goto-char 0)
+            (print (buffer-string))
+            (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
+            (goto-char title-start)
+            (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
+            (setq raw-title-string (buffer-substring title-start (- title-end 2)))
+            (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
+            (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
+            ))
 
        (make-process
         :name "youtube_transcript_api"
@@ -1530,9 +1530,9 @@ Version 2019-02-12 2021-08-09"
                   :sentinel `(lambda (p e)
                                (set-buffer ',buffer)
                                (goto-char (point-min))
-                               (unless (search-forward "streams" nil t)
-                                 (kill-buffer)
-                                 (error "url not supported"))
+                               ;; (unless (search-forward "streams" nil t)
+                               ;;   (kill-buffer)
+                               ;;   (error "url not supported"))
                                (forward-line 1)
                                (let (list)
                                  (while (not (eobp))
@@ -1579,7 +1579,8 @@ Version 2019-02-12 2021-08-09"
 
     (print final-cmd)
 
-    (let ((buf (find-file-noselect subtitle-file-path)))
+    (if (and (and subtitle-file-path (file-exists-p subtitle-file-path)) play-now)
+     (let ((buf (find-file-noselect subtitle-file-path)))
       (with-current-buffer buf
         (when (subed-mpv--server-started-p)
           (subed-mpv-kill))
@@ -1606,5 +1607,13 @@ Version 2019-02-12 2021-08-09"
         (subed-mpv--client-send `(observe_property 1 time-pos))
         (subed-mpv-playback-speed subed-playback-speed-while-not-typing)
         ))
+     (make-process :name "you-get"
+                   :buffer buffer
+                   :command final-cmd
+                   :connection-type 'pty
+                   ;; :filter 'comint-output-filter
+                   :sentinel (lambda (p e)
+                               (message
+                                "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e)))))
     ))
 ;; }}

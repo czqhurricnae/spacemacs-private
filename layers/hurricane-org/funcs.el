@@ -1078,7 +1078,7 @@ Otherwise return word around point."
             (audio (cdar (cdr (assq 'audio fields))))
             (phonetic (or (cdar (cdr (assq 'phonetic fields))) "/ /")))
        (list
-        (format "%s %s\n%s\n----------------------------------------------------------------------------------------------------" sentence phonetic notes)
+        (format "%s\n%s\n%s\n----------------------------------------------------------------------------------------------------" sentence phonetic notes)
         noteid
         audio)))
    notesinfo))

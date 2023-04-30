@@ -740,7 +740,7 @@ class BrowserView(QWebEngineView):
     def _send_eudic_liju(self, marker):
         link = self.get_marker_link(marker)
         if link:
-            eval_in_emacs("eaf-send-eudic-liju-to-anki", [link])
+            eval_in_emacs("eaf-send-merriam-webster-liju-to-Anki", [link])
 
 class BrowserPage(QWebEnginePage):
     def __init__(self):

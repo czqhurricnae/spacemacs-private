@@ -13,6 +13,7 @@
   (use-package youdao-dictionary
     :commands youdao-dictionary-play-voice-of-current-word
     :bind (("C-c s" . hurricane/youdao-search-at-point)
+           ("C-c S" . hurricane/deeplx)
            ;; ("C-c Y" . youdao-dictionary-search-at-point)
            :map youdao-dictionary-mode-map
            ("h" . youdao-dictionary-hydra/body)
@@ -30,6 +31,10 @@
                 (youdao-dictionary-search-at-point-posframe))
             (youdao-dictionary-search-at-point-tooltip))
         (youdao-dictionary-search-at-point)))
+
+    (defun hurricane/deeplx ()
+      (interactive)
+      (python-bridge-call-async "deeplx" (emacs-azure-tts-region-or-sentence)))
     :config
     (with-eval-after-load 'hydra
       (defhydra youdao-dictionary-hydra (:color blue)

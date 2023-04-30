@@ -74,7 +74,11 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-media-note-screenshot-image-dir
+   '((eval setq org-download-image-dir
+           (concat default-directory "./static/Anki 进行筛选强化查漏补缺/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/ICAO/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/make-process 调用 you-get 下载视频出现错误：Sign not allowed in string format specifier/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/修改 you-get 支持同时播放 dash_stream 中 video stream 和 audio stream/"))

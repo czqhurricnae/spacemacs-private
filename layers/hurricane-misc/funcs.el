@@ -1466,7 +1466,6 @@ Version 2019-02-12 2021-08-09"
           (dos2unix)
           (progn
             (goto-char 0)
-            (print (buffer-string))
             (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
             (goto-char title-start)
             (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))

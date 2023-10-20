@@ -64,6 +64,12 @@
     (org-link-edit :location (recipe
                               :fetcher github
                               :repo "emacsmirror/org-link-edit"))
+    (org-gtd :location (recipe
+                        :fetcher github
+                        :repo "Trevoke/org-gtd.el"))
+    (org-super-agenda :location (recipe
+                                 :fetcher github
+                                 :repo "alphapapa/org-super-agenda"))
     )
   )
 
@@ -130,8 +136,8 @@
       (setq org-log-done t)
 
       (setq org-todo-keywords
-            (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
-                    (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
+            (quote ((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d!/!)")
+                    (sequence "SOMEDAY(S)" "|" "CNCL(c@/!)" "MEETING(m)" "PHONE(p)"))))
 
       ;; Change task state to STARTED when clocking in.
       (setq org-clock-in-switch-to-state "NEXT")
@@ -200,7 +206,7 @@
       (setq org-agenda-file-journal (expand-file-name "journal.org" org-agenda-dir))
       (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
       (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
-      (setq org-agenda-files (list org-agenda-dir (concat deft-dir (file-name-as-directory "notes")) org-agenda-file-note))
+      (setq org-agenda-files (list org-agenda-dir org-agenda-file-note))
 
       (with-eval-after-load 'org-agenda
         (define-key org-agenda-mode-map (kbd "P") 'org-pomodoro)
@@ -261,19 +267,19 @@
 
       ;; An entry without a cookie is treated just like priority `B'.
       ;; So when create new task, they are default `重要且紧急'.
-      (setq org-agenda-custom-commands
-            '(
-              ("w" . "任务安排")
-              ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
-              ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
-              ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
-              ("p" . "项目安排")
-              ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"cocos2d-x\"")
-              ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"hurricane\"")
-              ("W" "Weekly Review"
-               ((stuck "") ;; Review stuck projects as designated by org-stuck-projects.
-                (tags-todo "PROJECT") ;; Review all projects (assuming you use todo keywords to designate projects).
-                ))))
+      ;; (setq org-agenda-custom-commands
+      ;;       '(
+      ;;         ("w" . "任务安排")
+      ;;         ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+      ;;         ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
+      ;;         ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
+      ;;         ("p" . "项目安排")
+      ;;         ("pw" tags-todo "PROJECT+WORK+CATEGORY=\"cocos2d-x\"")
+      ;;         ("pl" tags-todo "PROJECT+DREAM+CATEGORY=\"hurricane\"")
+      ;;         ("W" "Weekly Review"
+      ;;          ((stuck "") ;; Review stuck projects as designated by org-stuck-projects.
+      ;;           (tags-todo "PROJECT") ;; Review all projects (assuming you use todo keywords to designate projects).
+      ;;           ))))
 
       (org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
 
@@ -1257,3 +1263,192 @@ Return nil if not found."
 
 (defun hurricane-org/init-org-link-edit ()
   (use-package org-link-edit))
+
+(defun hurricane-org/init-org-gtd ()
+  (use-package org-gtd
+    :init
+    (require 'org-agenda)
+
+    (defun hurricane//org-gtd-engage ()
+      "Display `org-agenda' customized by org-gtd."
+      (interactive)
+      (org-gtd-core-prepare-agenda-buffers)
+      (with-org-gtd-context
+          (let* ((project-format-prefix
+                  (format " %%i %%-%d:(org-gtd-agenda--prefix-format) "
+                          org-gtd-engage-prefix-width))
+                 (org-agenda-custom-commands
+                  `(("g" "Scheduled today and all NEXT items"
+                     ((agenda ""
+                              ((org-agenda-span 1)
+                               (org-agenda-start-day nil)
+                               (org-agenda-skip-additional-timestamps-same-entry t)
+                               (org-super-agenda-groups
+                                '((:name "Today"
+                                         :discard (:and (:todo "WAIT" :scheduled past :deadline past)
+                                                        :and (:todo "WAIT" :scheduled future :deadline past)
+                                                        :and (:todo "WAIT" :scheduled future :deadline future)
+                                                        :and (:todo "WAIT" :scheduled past :deadline future))
+                                         )
+                                  (:name "Overdue 超过截止日期"
+                                         :and (:scheduled past :deadline past))
+                                  (:name "Schedule past 超过起始日期"
+                                         :and (:scheduled past :deadline future))
+                                  (:name "Due Today 今日截至或者今日起始"
+                                         :deadline today
+                                         :scheduled today)
+                                  (:name "Due Soon 即将起始"
+                                         :and (:todo ("TODO" "NEXT") :scheduled future :deadline future))
+                                  (:name "Important"
+                                         :priority "A")))))
+                      (todo org-gtd-next
+                            ((org-agenda-overriding-header "All actions ready to be executed.")
+                             (org-super-agenda-groups
+                              '((:name "Filter"
+                                       :discard (:scheduled t :deadline t))
+                                (:name "Ready"
+                                       :anything)
+                                ))
+
+                             ;; (org-agenda-prefix-format
+                             ;;  '((todo . ,project-format-prefix)))
+
+                             ))
+                      (todo org-gtd-wait
+                            ((org-agenda-overriding-header "Delegated items.")
+                             (org-super-agenda-groups
+                              '(
+                                (:discard (:scheduled today :deadline today))
+                                (:name "Overdue 超过截止日期"
+                                       :and (:scheduled past :deadline past))
+                                (:name "Schedule past 超过起始日期"
+                                       :and (:scheduled past :deadline future))
+                                (:name "Due Soon 即将起始"
+                                       :and (:scheduled future :deadline future))
+                                ))))
+                      (search "Incubate"
+                       ((org-agenda-overriding-header "Blocked items.")
+                        (org-super-agenda-groups
+                              '(
+                                (:name "Blocked 搁置"
+                                       :children t
+                                       )
+                                ))))
+
+                      )))))
+            (org-agenda nil "g")
+            (goto-char (point-min))
+            )))
+
+  (defun hurricane//org-gtd-delegate-item-at-point (&optional delegated-to checkin-date)
+    "Delegate item at point.  Use this if you do not want to refile the item.
+
+  You can pass DELEGATED-TO as the name of the person to whom this was delegated
+  and CHECKIN-DATE as the YYYY-MM-DD string of when you want `org-gtd' to remind
+  you if you want to call this non-interactively.
+  If you call this interactively, the function will ask for the name of the
+  person to whom to delegate by using `org-gtd-delegate-read-func'."
+    (declare (modes org-mode)) ;; for 27.2 compatibility
+    (interactive)
+    (let ((delegated-to (or delegated-to
+                            (apply org-gtd-delegate-read-func nil)))
+          (date (or checkin-date
+                    (org-read-date t nil nil "When do you want to check in on this task? ")))
+          (org-inhibit-logging 'note))
+      (org-set-property org-gtd-delegate-property delegated-to)
+      (save-excursion
+        (org-back-to-heading)
+        (next-line)
+        (open-line 1)
+        (insert (format "DEADLINE: <%s> SCHEDULED: <%s>" date date)))
+      (org-todo org-gtd-wait)
+      (save-excursion
+        (goto-char (org-log-beginning t))
+        (insert (format "programmatically delegated to %s\n" delegated-to)))))
+
+  (defun hurricane//org-gtd-incubate--apply (&optional reminder-date)
+    "Incubate this item through org-gtd.
+
+If you want to call this non-interactively,
+REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
+
+    (setq-local org-gtd--organize-type 'incubated)
+    (org-gtd-organize-apply-hooks)
+    (org-gtd-refile--do org-gtd-incubate org-gtd-incubate-template))
+
+    :config
+    (advice-add #'org-gtd-engage :override #'hurricane//org-gtd-engage)
+    (advice-add #'org-gtd-delegate-item-at-point :override #'hurricane//org-gtd-delegate-item-at-point)
+    (advice-add #'org-gtd-incubate--apply :override #'hurricane//org-gtd-incubate--apply)
+    (add-hook 'org-mode-hook #'org-gtd-mode)
+
+    :custom
+    (org-gtd-directory deft-dir)
+    (org-gtd-organize-hooks nil)))
+
+(defun hurricane-org/init-org-super-agenda ()
+  (use-package org-super-agenda
+  :config
+    (setq project-format-prefix
+      (format " %%i %%-%d:(org-gtd-agenda--prefix-format) "
+              org-gtd-engage-prefix-width))
+    (setq org-agenda-custom-commands
+     `(("g" "Scheduled today and all NEXT items"
+        ((agenda ""
+                 ((org-agenda-span 1)
+                  (org-agenda-start-day nil)
+                  (org-agenda-skip-additional-timestamps-same-entry t)
+                  (org-super-agenda-groups
+                   '((:name "Today"
+                            :discard (:and (:todo "WAIT" :scheduled past :deadline past)
+                                           :and (:todo "WAIT" :scheduled future :deadline past)
+                                           :and (:todo "WAIT" :scheduled future :deadline future)
+                                           :and (:todo "WAIT" :scheduled past :deadline future))
+                            )
+                     (:name "Overdue 超过截止日期"
+                            :and (:scheduled past :deadline past))
+                     (:name "Schedule past 超过起始日期"
+                            :and (:scheduled past :deadline future))
+                     (:name "Due Today 今日截至或者今日起始"
+                            :deadline today
+                            :scheduled today)
+                     (:name "Due Soon 即将起始"
+                            :and (:todo ("TODO" "NEXT") :scheduled future :deadline future))
+                     (:name "Important"
+                            :priority "A")))))
+         (todo org-gtd-next
+               ((org-agenda-overriding-header "All actions ready to be executed.")
+                (org-super-agenda-groups
+                 '((:name "Filter"
+                          :discard (:scheduled t :deadline t))
+                   (:name "Ready"
+                          :anything)
+                   ))
+
+                ;; (org-agenda-prefix-format
+                ;;  '((todo . ,project-format-prefix)))
+
+                ))
+         (todo org-gtd-wait
+               ((org-agenda-overriding-header "Delegated items.")
+                (org-super-agenda-groups
+                 '(
+                   (:discard (:scheduled today :deadline today))
+                   (:name "Overdue 超过截止日期"
+                          :and (:scheduled past :deadline past))
+                   (:name "Schedule past 超过起始日期"
+                          :and (:scheduled past :deadline future))
+                   (:name "Due Soon 即将起始"
+                          :and (:scheduled future :deadline future))
+                   ))))
+         (search "Incubate"
+                 ((org-agenda-overriding-header "Blocked items.")
+                  (org-super-agenda-groups
+                   '(
+                     (:name "Blocked 搁置"
+                            :children t
+                            )
+                     ))))
+
+         ))))
+  (org-super-agenda-mode)))

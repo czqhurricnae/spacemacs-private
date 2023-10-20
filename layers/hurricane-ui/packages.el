@@ -12,6 +12,9 @@
     pretty-hydra
     (good-scroll :location (recipe :fetcher
                             github :repo "io12/good-scroll.el"))
+    (holo-layer :location (recipe :fetcher github
+                                  :repo "manateelazycat/holo-layer"
+                                  :files ("*.*" "icon_cache" "plugin" "resources" "swaymsg-treefetch")))
     ))
 
 ;; {{
@@ -250,3 +253,13 @@
   (use-package good-scroll
     :config
     (good-scroll-mode 1)))
+
+(defun hurricane-ui/init-holo-layer ()
+  (use-package holo-layer
+    :load-path "~/emacs-config/default/elpa/28.2/develop/holo-layer-20231003.185743"
+    :init
+    (require 'holo-layer)
+    :config
+    (holo-layer-enable)
+    :custom
+    (holo-layer-enable-cursor-animation t)))

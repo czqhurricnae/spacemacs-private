@@ -1447,7 +1447,7 @@ Version 2019-02-12 2021-08-09"
 ;; {{
 (defun aspeak-tts (&optional sentence)
   (interactive (list (read-string "Speak: " (emacs-azure-tts-region-or-sentence))))
-  (let ((final-cmd (format "aspeak --profile \"%s\" text \"%s\"" (file-truename aspeak-profile-file) sentence)))
+  (let ((final-cmd (format "edge-playback --text \"%s\" text \"%s\"" (file-truename aspeak-profile-file) sentence)))
     (shell-command final-cmd)
     ))
 ;; }}

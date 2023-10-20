@@ -926,8 +926,8 @@
         (define-key magit-status-mode-map (kbd "s-4") 'magit-jump-to-stashes)
         (setq magit-completing-read-function 'magit-builtin-completing-read)
 
-        (magit-define-popup-switch 'magit-push-popup ?u
-          "Set upstream" "--set-upstream")
+        ;; (magit-define-popup-switch 'magit-push-popup ?u
+        ;;   "Set upstream" "--set-upstream")
         ))
 
     ;; Prefer two way ediff.
@@ -1425,7 +1425,7 @@
             "1" "2" "3" "4"
             "[" "]"))
     :config
-    (setq blink-search-search-backends '("Grep PDF" "Buffer List" "Find File" "Common Directory" "Recent File" "Grep File" "IMenu" "EAF Browser History")
+    (setq blink-search-search-backends '("Grep PDF" "PDF" "Buffer List" "Find File" "Common Directory" "Recent File" "Grep File" "IMenu" "EAF Browser")
           blink-search-grep-pdf-backend 'pdf-tools
           blink-search-grep-pdf-search-paths '("/Users/c/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/" "/Users/c/Downloads/" "/Users/c/Documents/论文期刊/"))
 

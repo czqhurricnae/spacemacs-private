@@ -640,7 +640,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq configuration-layer-elpa-archives
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
           ("NonGNU ELPA-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-          ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+          ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+          ("org" . "https://orgmode.org/elpa/")))
 
   (setq tramp-ssh-controlmaster-options
         "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")

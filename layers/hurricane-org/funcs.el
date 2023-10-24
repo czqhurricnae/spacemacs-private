@@ -1128,7 +1128,7 @@ Otherwise return word around point."
 (defun hurricane//anki-editor-gui-edit-note-action (x)
   (anki-editor-api-call 'guiEditNote :note (nth 1 x)))
 
-(defun hurricane//anki-editor-popup-note-at-point-posframe (x)
+(defun hurricane//anki-editor-popup-note-at-point (x)
   (popweb-org-roam-link-show (nth 0 x)))
 
 (defun hurricane//anki-editor-gui-delete-note-action (x)
@@ -1138,7 +1138,7 @@ Otherwise return word around point."
   (ivy-add-actions
    'hurricane/anki-editor-find-notes
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
-     ("p" hurricane//anki-editor-popup-note-at-point-posframe "Popup note")
+     ("p" hurricane//anki-editor-popup-note-at-point "Popup note")
      ("d" hurricane//anki-editor-gui-delete-note-action "Delete note")
      ("y" hurricane/popweb-translate-and-mark-unknown-word "Search outer")
      )))

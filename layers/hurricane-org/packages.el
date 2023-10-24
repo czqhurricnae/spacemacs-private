@@ -1201,6 +1201,11 @@ Return nil if not found."
                          "Array.from(document.getElementsByClassName('adsbygoogle adsbygoogle-noablate')).forEach(e => { e.style.display = 'none' });"
                         )
                         (popweb-dict-js-file-path "eudic-liju.js"))
+
+    (defun hurricane//popweb-translate-select (translation)
+      (let ((popweb-org-roam-link-popup-window-height-scale 0.2)
+            (popweb-org-roam-link-popup-window-width-scale 0.5))
+        (popweb-org-roam-link-show translation)))
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)

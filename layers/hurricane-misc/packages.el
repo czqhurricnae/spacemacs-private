@@ -1592,7 +1592,7 @@ Works only in youtube-sub-extractor-mode buffer."
     (with-eval-after-load 'eww
       (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "y") #'hurricane/popweb-translate-and-mark-unknown-word)
       (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "<down-mouse-1>") #'hurricane/popweb-translate-and-mark-unknown-word)
-      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "u") #'dictionary-overlay-mark-word-know)
+      (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd "u") #'dictionary-overlay-mark-word-known)
       (evil-define-key '(normal insert emacs motion) eww-mode-map (kbd ".") #'dictionary-overlay-render-buffer)
       (define-key evil-normal-state-map (kbd "<down-mouse-1>") #'hurricane/popweb-translate-and-mark-unknown-word)
       (evilified-state-evilify-map eww-mode-map
@@ -1600,7 +1600,7 @@ Works only in youtube-sub-extractor-mode buffer."
         :bindings
         "y" 'hurricane/popweb-translate-and-mark-unknown-word
         "<down-mouse-1>" 'hurricane/popweb-translate-and-mark-unknown-word
-        "u" 'dictionary-overlay-mark-word-know
+        "u" 'dictionary-overlay-mark-word-known
         "." 'dictionary-overlay-render-buffer)
       )
     :custom-face
@@ -1650,7 +1650,7 @@ Works only in youtube-sub-extractor-mode buffer."
      ("C-c y" . hurricane/popweb-translate-and-mark-unknown-word))
     (:map dictionary-overlay-map
                 ("y" . hurricane/popweb-translate-and-mark-unknown-word)
-                ("u" . dictionary-overlay-mark-word-know)
+                ("u" . dictionary-overlay-mark-word-known)
                 ("s" . hurricane/youdao-search-at-point)
                 ("n" . hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle)
                 ("p" . hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle)

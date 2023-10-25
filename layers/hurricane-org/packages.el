@@ -1235,10 +1235,10 @@ Return nil if not found."
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
-    (popweb-proxy-type provixy-type)
-    (popweb-proxy-host provixy-host)
-    (popweb-proxy-port provixy-port)
-    ;; (popweb-enable-developer-tools t)
+    ;; (popweb-proxy-type provixy-type)
+    ;; (popweb-proxy-host provixy-host)
+    ;; (popweb-proxy-port provixy-port)
+    ;; ;; (popweb-enable-developer-tools t)
     :bind
     ("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point)
     ))

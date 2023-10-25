@@ -74,6 +74,7 @@
         ;; (emacs-azure-tts :location local)
         (reverso :location (recipe :fetcher github
                                    :repo "SqrtMinusOne/reverso.el"))
+        nov
         ))
 
 (defconst sys/macp
@@ -1701,3 +1702,12 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-reverso ()
   (use-package reverso))
+
+(defun hurricane-misc/init-nov ()
+  (use-package nov
+    :init
+    (add-hook 'nov-mode-hook #'shrface-mode)
+    :config
+    (require 'shrface)
+    (setq nov-shr-rendering-functions '((img . nov-render-img) (title . nov-render-title)))
+    (setq nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))))

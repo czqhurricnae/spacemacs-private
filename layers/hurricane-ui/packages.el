@@ -256,7 +256,7 @@
 
 (defun hurricane-ui/init-holo-layer ()
   (use-package holo-layer
-    :load-path "~/emacs-config/default/elpa/28.2/develop/holo-layer-20231003.185743"
+    :load-path "~/emacs-config/default/elpa/28.3/develop/holo-layer-20231003.185743"
     :init
     (require 'holo-layer)
     :config

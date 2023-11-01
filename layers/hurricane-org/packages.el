@@ -508,8 +508,7 @@
 (defun hurricane-org/init-org-tree-slide ()
   (spacemacs|use-package-add-hook org
     :post-config
-    (require 'org-tree-slide)
-    (spacemacs/set-leader-keys "oto" #'org-tree-slide-mode)))
+    (require 'org-tree-slide)))
 
 (defun hurricane-org/init-worf ()
   (spacemacs|use-package-add-hook org
@@ -1164,7 +1163,7 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.2/develop/popweb-20230208.13018" "elpa/28.2/develop/popweb-20230208.13018/extension/latex" "elpa/28.2/develop/popweb-20230208.13018/extension/dict" "elpa/28.2/develop/popweb-20230208.13018/extension/org-roam" "elpa/28.2/develop/popweb-20230208.13018/extension/url-preview")
+    :load-path ("elpa/28.3/develop/popweb-20230208.13018" "elpa/28.3/develop/popweb-20230208.13018/extension/latex" "elpa/28.3/develop/popweb-20230208.13018/extension/dict" "elpa/28.3/develop/popweb-20230208.13018/extension/org-roam" "elpa/28.3/develop/popweb-20230208.13018/extension/url-preview")
     :init
     (require 'popweb-dict)
     (require 'popweb-latex)
@@ -1234,7 +1233,7 @@ Return nil if not found."
          )))
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
-    :custom
+    ;; :custom
     ;; (popweb-proxy-type provixy-type)
     ;; (popweb-proxy-host provixy-host)
     ;; (popweb-proxy-port provixy-port)

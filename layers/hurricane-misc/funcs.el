@@ -582,11 +582,15 @@ Else, returns STRING."
         (replace-string (unshift-prefix-if-necessary (car url-file-path-map) "http" "file:") (concat "file:" image-directory "/" (cdr url-file-path-map))))))
     (write-file (concat file-name ".org"))))
 
-(defvar question-string-pattern-list
+(defvar stackoverflow-question-string-pattern-list
   '("<div class=\"s-prose js-post-body\" itemprop=\"text\">\\|<div class=\"post-text\" itemprop=\"text\">" . "</div>"))
 
-(defvar answer-string-pattern-list
+(defvar stackoverflow-answer-string-pattern-list
   '("\\(<div class=\"answercell post-layout--right\">\\|<div style=\"display: block;\" class=\"comment-body\">\\|<div class=\"comment-body\" style=\"display: block;\" >\\)" . "</div>"))
+
+(defvar stackoverflow-image-url-pattern-list '("<img src=\"" . "\""))
+
+(defvar stackoverflow-all-images-url-list)
 
 ;; Used to replace unexpected strings in raw extracted html file.
 (defvar html-replace-string-rule-lists
@@ -607,10 +611,6 @@ Else, returns STRING."
                                          ("</h6>" . "")
                                          ("{%" . "<")
                                          ("%}" . ">")))
-
-(defvar stackoverflow-image-url-pattern-list '("<img src=\"" . "\""))
-
-(defvar stackoverflow-all-images-url-list)
 
 (defun hurricane/extract-content-from-stackoverflow-to-org-file (src-code-type)
   (interactive
@@ -665,19 +665,19 @@ Else, returns STRING."
       ;; Extract question strings to file.
       (progn
         (goto-char 0)
-        (setq question-start (re-search-forward (car question-string-pattern-list)))
+        (setq question-start (re-search-forward (car stackoverflow-question-string-pattern-list)))
         (goto-char question-start)
-        (setq question-end (re-search-forward (cdr question-string-pattern-list)))
+        (setq question-end (re-search-forward (cdr stackoverflow-question-string-pattern-list)))
         (setq question-string (buffer-substring question-start (- question-end 6)))
         (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
         (append-string-to-file question-string html-file-name))
       ;; Extract image and comment strings to file.
       (let ((answer-search-origin 0) (answer-number 1))
-        (while (string-match (car answer-string-pattern-list) (buffer-string) answer-search-origin)
+        (while (string-match (car stackoverflow-answer-string-pattern-list) (buffer-string) answer-search-origin)
           (progn
             (goto-char answer-search-origin)
-            (setq answer-string-start (re-search-forward (car answer-string-pattern-list)))
-            (setq answer-string-end (re-search-forward (cdr answer-string-pattern-list)))
+            (setq answer-string-start (re-search-forward (car stackoverflow-answer-string-pattern-list)))
+            (setq answer-string-end (re-search-forward (cdr stackoverflow-answer-string-pattern-list)))
             (setq answer-string (buffer-substring  answer-string-start (- answer-string-end 6)))
             (if answer-string
                 (progn
@@ -1615,4 +1615,100 @@ Version 2019-02-12 2021-08-09"
                                (message
                                 "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e)))))
     ))
+;; }}
+
+;; {{
+(defvar wiznote-content-string-pattern-list
+  '("<body spellcheck=\"false\" >" . "</body>"))
+
+(defvar wiznote-image-url-pattern-list '("<img src=\"" . "\""))
+
+(defvar wiznote-all-images-url-list)
+
+(defun download-all-wiznote-images (url image-url-list file-name)
+  "Use `org-download--image' to download image from URL-LIST,FILE-NAME be used to format directory name."
+  (let ((image-directory (concat org-screenshot-image-dir-name "/" file-name)))
+    (cl-loop for image-url in image-url-list
+             do (progn
+                  (unless (file-exists-p image-directory)
+                    (make-directory image-directory t))
+                  (ignore-errors (org-download--image (concat (file-name-directory url) (car image-url) )(concat image-directory "/" (cdr image-url))))
+                  (message "Begin to download: %s" url)
+                  (sleep-for 1)))))
+
+(defun hurricane/extract-content-from-wiznote-to-org-file (src-code-type)
+  (interactive
+   (let ((src-code-type
+          '("ipython" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
+            "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
+            "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
+            "haskell" "latex" "lisp" "matlab" "ocaml" "org" "perl" "ruby"
+            "scheme" "sqlite" "graphviz")))
+     (list (ido-completing-read "Source code type: " src-code-type))))
+
+  (setq begin-marker "" url "" file-name "" html-file-name "" org-file-name "")
+
+  ;; Read `url' string from minibuffer, while the string read is empty, this loop will not stop.
+  (setq url "")
+  (while (string-equal url "")
+    (setq url (read-string "Please input the Wiznote url to extract: "
+                           nil nil "" nil)))
+
+  (while (string-equal file-name "")
+    (setq file-name (read-string "Please input the File name: "
+                                 nil nil "" nil)))
+
+  (setq html-file-name (concat
+                        file-name
+                        ".html")
+        org-file-name (concat
+                       file-name
+                       ".org"))
+
+  ;; Used to replace unexpected strings in org file generated by pandoc.
+  (setq org-image-url-template (concat "[[file:./static/" file-name "/\\1"))
+  (setq org-replace-string-rule-lists '(("#\\+BEGIN_QUOTE\[\t\r\n \]*#\\+END_QUOTE" . "")
+                                        ("\\\\_" . "_")
+                                        ("#\\+END_EXAMPLE" . "#+END_SRC")
+                                        ;; ("\\[\\[http.*/" . "[[file:./static/")
+                                        ))
+  (add-to-list 'org-replace-string-rule-lists `("\\[\\[\.*jpeg\.*/\\(.*\\)\\]\\]" . ,org-image-url-template))
+
+  ;; Create begin-marker used to replace unexpected string `#+BEGIN_EXAMPLE'.
+  (cond ((string-equal src-code-type "")
+         (setq begin-marker (concat "#+BEGIN_SRC " "python")))
+        (t
+         (setq begin-marker (concat "#+BEGIN_SRC " src-code-type))))
+  (add-to-list 'org-replace-string-rule-lists `("#\\+BEGIN_EXAMPLE" . ,begin-marker))
+
+  ;; Extract content to file.
+  (with-current-buffer (url-retrieve-synchronously url)
+    ;; Remove the `^M' character in html file.
+    (dos2unix)
+    (progn
+      (message "%s" (buffer-string))
+      (goto-char 0)
+      (setq content-start (re-search-forward (car wiznote-content-string-pattern-list)))
+      (goto-char content-start)
+      (setq content-end (re-search-forward (cdr wiznote-content-string-pattern-list)))
+      (setq content-string (buffer-substring content-start (- content-end 7)))
+      (append-string-to-file content-string html-file-name))
+    )
+
+  (setq wiznote-all-images-url-list (hurricane//get-all-images-url html-file-name wiznote-image-url-pattern-list))
+  (message "%s" wiznote-all-images-url-list)
+
+  ;; Download all images.
+  (download-all-wiznote-images url wiznote-all-images-url-list file-name)
+
+  (pandoc-converter html-file-name org-file-name "html" "org")
+
+  (replace-url-with-file-path-in-org file-name wiznote-all-images-url-list)
+
+  (defun callback-replace-unexpected-string-in-file ()
+    (replace-unexpected-string-in-file org-file-name org-replace-string-rule-lists))
+
+  (install-monitor-file-exists org-file-name 1 #'callback-replace-unexpected-string-in-file)
+  (insert-header-to-org-content file-name)
+  )
 ;; }}

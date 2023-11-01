@@ -74,7 +74,35 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-media-note-screenshot-image-dir
+   '((eval setq org-download-image-dir
+           (concat default-directory "./static/datetime 模块和 pytz 模块/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python datetime 模块和 pytz 模块/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python calendar 模块/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/在安卓上部署服务器-手机应用程序的配置/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python-popen/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python 调用 Shell 脚本：os.system(cmd) 或 os.popen(cmd) 的区别/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python 上下文管理器和 contextmanager/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/%r 用 rper() 方法处理对象/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/LaTex 首行缩进/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python 中的 classmethod 和 staticmethod 有什么具体用途/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/How do i insert resizebox code in org mode tables when exporting to LaTex/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Latex 字体设置/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/titlesec 宏包/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/LaTex 使用 titlesec 宏包改变章节编号形式的方法/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/HIoPvi/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Introduction.to.Computer.Organization.2022.1/"))

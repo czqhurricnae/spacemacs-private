@@ -1457,7 +1457,7 @@
 (defun hurricane-misc/init-subed ()
   (use-package subed
     :ensure t
-    :load-path "~/emacs-config/default/elpa/28.2/develop/subed-20230321.225327/subed"
+    :load-path "~/emacs-config/default/elpa/28.3/develop/subed-20230321.225327/subed"
     :init
     (require 'subed-autoloads)
 

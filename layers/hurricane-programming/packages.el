@@ -9,7 +9,7 @@
     yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
     (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
-    (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
+    ;; (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
     ;; prettier-js
     (psearch :location (recipe :fetcher github :repo "twlz0ne/psearch.el" :files ("psearch.el")))
 ))

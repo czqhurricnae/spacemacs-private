@@ -75,6 +75,8 @@
         (reverso :location (recipe :fetcher github
                                    :repo "SqrtMinusOne/reverso.el"))
         nov
+        (goldendict-ng :location (recipe :fetcher github
+                                         :repo "benthamite/goldendict-ng"))
         ))
 
 (defconst sys/macp
@@ -1711,3 +1713,11 @@ Works only in youtube-sub-extractor-mode buffer."
     (require 'shrface)
     (setq nov-shr-rendering-functions '((img . nov-render-img) (title . nov-render-title)))
     (setq nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))))
+
+(defun hurricane-misc/init-goldendict-ng ()
+  (use-package goldendict-ng
+    :demand t
+    :config
+    (setq goldendict-ng-executable "/Applications/GoldenDict.app/Contents/MacOS/GoldenDict")
+    (setq goldendict-ng-narrow-groups-to-matching-languages t)
+    ))

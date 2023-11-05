@@ -593,7 +593,7 @@ Else, returns STRING."
 (defvar stackoverflow-all-images-url-list)
 
 ;; Used to replace unexpected strings in raw extracted html file.
-(defvar html-replace-string-rule-lists
+(defvar stackoverflow-html-replace-string-rule-lists
   '(("<span class=\"comment-date\" dir=\"ltr\">\.*" . "")
                                          ("<span\[^>\]*>" . "<blockquote>")
                                          ("</span\[^>\]*>" . "</blockquote>")
@@ -689,7 +689,7 @@ Else, returns STRING."
                   (append-string-to-file answer-string html-file-name)
                   (setq answer-search-origin (match-end 0))))))))
 
-    (replace-unexpected-string-in-file html-file-name html-replace-string-rule-lists)
+    (replace-unexpected-string-in-file html-file-name stackoverflow-html-replace-string-rule-lists)
 
     (setq stackoverflow-all-images-url-list (hurricane//get-all-images-url html-file-name stackoverflow-image-url-pattern-list))
     (message "%s" stackoverflow-all-images-url-list)
@@ -1619,9 +1619,9 @@ Version 2019-02-12 2021-08-09"
 
 ;; {{
 (defvar wiznote-content-string-pattern-list
-  '("<body spellcheck=\"false\" >" . "</body>"))
+  '("<body class=\"wiz-editor-body\">\\|<body class=\"wiz-editor-body\" >\\|<body class=\"wiz-editor-body\" style=\"opacity: 1;\" spellcheck=\"false\">\\|<body class=\"wiz-editor-body\" style=\"opacity: 1;\" spellcheck=\"false\" >\\|<body spellcheck=\"false\" >\\|<body spellcheck=\"false\">" . "</body>"))
 
-(defvar wiznote-image-url-pattern-list '("<img src=\"" . "\""))
+(defvar wiznote-image-url-pattern-list '("<img src=\"\\|<img border=\"0\" src=\"\\|<img style=\"vertical-align: bottom; max-width: 100%;\" src=\"\\|<img alt=\"这里写图片描述\" title=\"\" style=\"margin: 0px; padding: 0px 5px; display: inline;\" src=\"\\|<img border=\"0\" class=\"\" src=\"" . "\""))
 
 (defvar wiznote-all-images-url-list)
 
@@ -1711,4 +1711,146 @@ Version 2019-02-12 2021-08-09"
   (install-monitor-file-exists org-file-name 1 #'callback-replace-unexpected-string-in-file)
   (insert-header-to-org-content file-name)
   )
+;; }}
+
+;; {{
+(defvar goldendict-frame nil)
+
+(defcustom goldendict-buffer-name
+  "*GoldenDict*"
+  "GoldenDict buffer name."
+  :type 'string)
+
+(defcustom goldendict-api-host
+  "127.0.0.1"
+  "The network address SilverDict is listening."
+  :type 'string)
+
+(defcustom goldendict-api-port
+  "2628"
+  "The port number SilverDict is listening."
+  :type 'string)
+
+(defcustom goldendict-html-replace-string-rule-lists
+  '(("<font face=\"Kingsoft Phonetic Plain, Tahoma\" color=#FF6600>[^>]*?>" . "")
+    ("<audio\[^>\]*>" . ""))
+  "The rule alists to filter dictionary content."
+  :type 'alist)
+
+(defun goldendict--suggestions-api-call (query)
+  (let (reply err)
+    (anki-editor--fetch
+     (url-encode-url
+      (format "http://%s:%s/api/suggestions/Default Group/%s"
+              goldendict-api-host
+              goldendict-api-port
+              query)
+      )
+     :type "GET"
+     :parser 'json-read
+     :success (cl-function (lambda (&key data &allow-other-keys)
+                             (setq reply data)))
+     :error (cl-function (lambda (&key error-thrown &allow-other-keys)
+                           (setq err (string-trim (cdr error-thrown)))))
+     :sync t)
+    (when err (error "Error communicating with SilverDict using cURL: %s" err))
+    (or reply (error "Got empty reply from SilverDict"))))
+
+(defun goldendict--query-api-call (query)
+  (let (reply err)
+    (anki-editor--fetch
+     (url-encode-url
+      (format "http://%s:%s/api/query/Default Group/%s"
+              goldendict-api-host
+              goldendict-api-port
+              query))
+     :type "GET"
+     :success (cl-function (lambda (&key data &allow-other-keys)
+                             (setq reply data)))
+     :error (cl-function (lambda (&key error-thrown &allow-other-keys)
+                           (setq err (string-trim (cdr error-thrown)))))
+     :sync t)
+    (when err (error "Error communicating with SilverDict using cURL: %s" err))
+    (or reply (error "Got empty reply from SilverDict"))))
+
+(defun goldendict--suggestions-api-call-result (query)
+  (let-alist (goldendict--suggestions-api-call query)
+    (when .error (error .error))
+    .suggestions))
+
+(defun goldendict--render-html (content)
+  (or (fboundp 'libxml-parse-html-region)
+      (error "This function requires Emacs to be compiled with libxml2"))
+  (let (dom)
+    (with-current-buffer (get-buffer-create goldendict-buffer-name)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert content)
+        (dolist (replace-string-rule goldendict-html-replace-string-rule-lists)
+          (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
+        (setq dom (libxml-parse-html-region (point-min) (point-max)))
+        (erase-buffer)
+        (shr-insert-document dom)
+        (goto-char (point-min)))
+      (unless (get-buffer-window (current-buffer))
+        (switch-to-buffer-other-window goldendict-buffer-name)
+        (goldendict-mode)
+        ))))
+
+(defun goldendict--pop-posframe-toggle (suggestion)
+  (unless (and goldendict-frame
+               (frame-live-p goldendict-frame))
+    (let ((width  (max 100 (round (* (frame-width) 0.62))))
+          (height (round (* (frame-height) 0.62))))
+      (goldendict--render-html (goldendict--query-api-call suggestion))
+      (setq goldendict-frame
+            (posframe-show
+             goldendict-buffer-name
+             :poshandler #'posframe-poshandler-frame-center
+             :hidehandler nil
+             :left-fringe 8
+             :right-fringe 8
+             :width width
+             :height height
+             :min-width width
+             :min-height height
+             :border-width 2
+             :border-color "light gray"
+             :background-color (face-background 'tooltip nil t)
+             :override-parameters '((cursor-type . t))
+             :accept-focus t))
+      (with-current-buffer goldendict-buffer-name
+        (setq-local cursor-type 'box)
+        (read-only-mode)
+        (keymap-local-set "s-p" #'posframe-hide-all))))
+  (goldendict--render-html (goldendict--query-api-call suggestion))
+  (select-frame-set-input-focus goldendict-frame))
+
+(define-derived-mode goldendict-mode fundamental-mode "GoldenDict"
+  "Major mode for viewing golden dictionary result.
+\\{goldendict-mode-map}"
+  (read-only-mode 1))
+
+(with-eval-after-load 'evil-evilified-state
+ (evilified-state-evilify-map goldendict-mode-map
+ :mode goldendict-mode
+ :bindings
+ "q" #'quit-window))
+
+(defun hurricane/goldendict-find (&optional query)
+  (interactive (list (read-string "Query: " (hurricane//region-or-word))))
+  (let ((suggestions (goldendict--suggestions-api-call-result query)))
+    (if (and suggestions (called-interactively-p 'interactive))
+        (ivy-read "Select a suggestion to preview: "
+                  (mapcar
+                   (lambda (x)
+                     (format "%s" x)
+                     )
+                   suggestions)
+                  :action (lambda
+                            (suggestion)
+                            ;; (goldendict--pop-posframe-toggle suggestion)
+                            (goldendict--render-html
+                             (goldendict--query-api-call suggestion))
+                            )))))
 ;; }}

@@ -74,7 +74,59 @@
  '(rustic-ansi-faces
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
-   '((eval setq org-download-image-dir
+   '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Uy4DuJ/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/5Hk1ga/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/边遍历迭代器边修改/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/遍历迭代器遍修改/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/sys.path 与 os.environ[\"PYTHONPATH\"]/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Python 2-text/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/ORM/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/setdaemon function in thread/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Anki 在线词典助手 Chrome 插件/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/解决 Alfred 3 开机后提示是否允许访问通讯录的弹窗/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/将代码转换成电子书/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/使用 DiskGenius 进行固态硬盘 4k 对齐/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/what is better in performance (MySQL)? Count(*) or count(1)?/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/__dict__ 不是决定是否可变的因素/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/__new__ 实践/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/memory usage per character for each mysql collation/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/count vs count1 sql server/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/cannot upgrade pip/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/changes in import statement Python3/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/dynamic and lexical variables in common lisp/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/how does the property decorator work/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/inheritance when new doesnt return instance of class/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/difference between str and repr/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/difference between str and repr/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/JavaScript 参数传递/"))
+     (eval setq org-download-image-dir
+           (concat default-directory "./static/Charles/"))
+     (eval setq org-download-image-dir
            (concat default-directory "./static/datetime 模块和 pytz 模块/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Python datetime 模块和 pytz 模块/"))

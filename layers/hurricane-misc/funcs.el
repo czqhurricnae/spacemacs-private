@@ -1835,10 +1835,13 @@ Version 2019-02-12 2021-08-09"
  (evilified-state-evilify-map goldendict-mode-map
  :mode goldendict-mode
  :bindings
- "q" #'quit-window))
+ "q" #'quit-window
+ "y" #'hurricane//evil-yank
+ "Y" #'hurricane/yank-to-end-of-line
+ ))
 
 (defun hurricane/goldendict-find (&optional query)
-  (interactive (list (read-string "Query: " (hurricane//region-or-word))))
+  (interactive (list (read-string "GoldenDict query: " (hurricane//region-or-word))))
   (let ((suggestions (goldendict--suggestions-api-call-result query)))
     (if (and suggestions (called-interactively-p 'interactive))
         (ivy-read "Select a suggestion to preview: "
@@ -1853,4 +1856,6 @@ Version 2019-02-12 2021-08-09"
                             (goldendict--render-html
                              (goldendict--query-api-call suggestion))
                             )))))
+
+(define-key global-map (kbd "<f4>") #'hurricane/goldendict-find)
 ;; }}

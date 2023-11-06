@@ -1085,7 +1085,7 @@ Otherwise return word around point."
 
 (defun hurricane/anki-editor-find-notes (&optional query)
   "Find notes with QUERY."
-  (interactive (list (read-string "Query: " (hurricane//region-or-word))))
+  (interactive (list (read-string "Anki query: " (hurricane//region-or-word))))
   (let ((nids (anki-editor-api-call-result 'findNotes
                                            :query (or query ""))))
     (unless nids

@@ -616,7 +616,6 @@ class BrowserView(QWebEngineView):
 
     def get_marker_link(self, marker):
         ''' Get marker's link.'''
-        # print(self.execute_js("Marker.getMarkerSelector('%s')" % str(marker)))
         self.load_marker_file()
         link = self.execute_js("Marker.gotoMarker('%s', Marker.getMarkerAction)" % str(marker))
         self.cleanup_links_dom()
@@ -737,10 +736,15 @@ class BrowserView(QWebEngineView):
         else: # light theme
             self.dark_mode_js += """DarkReader.enable({brightness: 100, contrast: 90, sepia: 10, mode: 0});"""
 
-    def _send_eudic_liju(self, marker):
+    def _send_merriam_webster_liju(self, marker):
         link = self.get_marker_link(marker)
         if link:
             eval_in_emacs("eaf-send-merriam-webster-liju-to-Anki", [link])
+
+    def _copy_merriam_webster_phonetic(self, marker):
+        link = self.get_marker_link(marker)
+        if link:
+            eval_in_emacs("eaf-copy-merriam-webster-phonetic", [link])
 
 class BrowserPage(QWebEnginePage):
     def __init__(self):
@@ -1104,8 +1108,10 @@ class BrowserBuffer(Buffer):
             self.buffer_widget.open_url(result_content)
         elif callback_tag == "copy_code":
             self.buffer_widget.copy_code_content(result_content.strip())
-        elif callback_tag == "send_eudic_liju":
-            self.buffer_widget._send_eudic_liju(result_content.strip())
+        elif callback_tag == "send_merriam_webster_liju":
+            self.buffer_widget._send_merriam_webster_liju(result_content.strip())
+        elif callback_tag == "copy_merriam_webster_phonetic":
+            self.buffer_widget._copy_merriam_webster_phonetic(result_content.strip())
         else:
             return False
         return True
@@ -1121,7 +1127,8 @@ class BrowserBuffer(Buffer):
            callback_tag == "copy_link" or \
            callback_tag == "copy_code" or \
            callback_tag == "edit_url" or \
-           callback_tag == "send_eudic_liju":
+           callback_tag == "send_merriam_webster_liju" or \
+           callback_tag == "copy_merriam_webster_phonetic":
             self.buffer_widget.cleanup_links_dom()
         elif callback_tag == "search_text_forward" or callback_tag == "search_text_backward":
             self.buffer_widget.clean_search_and_select()
@@ -1575,9 +1582,14 @@ class BrowserBuffer(Buffer):
         self.dark_mode_js_load(progress)
 
     @interactive
-    def send_eudic_liju(self):
+    def send_merriam_webster_liju(self):
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Copy link: ", "send_eudic_liju", "marker");
+        self.send_input_message("Copy link: ", "send_merriam_webster_liju", "marker");
+
+    @interactive
+    def copy_merriam_webster_phonetic(self):
+        self.buffer_widget.get_link_markers()
+        self.send_input_message("Copy link: ", "copy_merriam_webster_phonetic", "marker");
 
 class ZoomSizeDb(object):
     def __init__(self, dbpath):

@@ -1443,7 +1443,19 @@
        ;; TODO support other pdf backends
        (t (message "Unknown backend %s" blink-search-grep-pdf-backend))))
 
+    (defun hurricane//blink-search-pdf-do (file page submatches)
+      ;;highlight the matches
+      (cond
+       ((and (eq blink-search-pdf-backend 'pdf-tools) (featurep 'pdf-tools) (not (string-empty-p submatches)))
+        (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
+          (blink-search-pdf-pdftool-goto file page submatches)))
+       ((and (eq blink-search-pdf-backend 'eaf-pdf-viewer) (featurep 'eaf-pdf-viewer))
+        (eaf-pdf-jump-to-page file page))
+       ;; TODO support other pdf backends
+       (t (message "Unknown backend %s" blink-search-pdf-backend))))
+
     (advice-add #'blink-search-grep-pdf-do :override #'hurricane//blink-search-grep-pdf-do)
+    (advice-add #'blink-search-pdf-do :override #'hurricane//blink-search-pdf-do)
     ))
 
 (defun hurricane-misc/init-plisty ()
@@ -1681,7 +1693,6 @@ Works only in youtube-sub-extractor-mode buffer."
 
     (with-eval-after-load 'anki-editor
      (defun emacs-azure-tts-add-card (deck front back translation)
-       (print translation)
       (let ((bytes (with-temp-buffer
                      (insert-file-contents-literally front)
                      (buffer-string))))
@@ -1700,6 +1711,7 @@ Works only in youtube-sub-extractor-mode buffer."
                                                                '("allowDuplicate" . t))))))))))
     :config
     (add-to-list 'emacs-azure-tts-after-speak-functions (apply-partially #'emacs-azure-tts-add-card Anki-deck-name))
+    (add-to-list 'emacs-azure-tts-after-speak-functions #'(lambda (front back translation) (and (winum-select-window-2) (evil-exit-visual-state))))
     ))
 
 (defun hurricane-misc/init-reverso ()

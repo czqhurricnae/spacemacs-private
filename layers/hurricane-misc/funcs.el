@@ -1831,11 +1831,19 @@ Version 2019-02-12 2021-08-09"
 \\{goldendict-mode-map}"
   (read-only-mode 1))
 
+(defun hurricane//goldendict-quit-window-and-switch-to-minibuffer-window ()
+  "Switch to minibuffer window (if active)"
+  (interactive)
+  (quit-window)
+  (when (active-minibuffer-window)
+    (select-frame-set-input-focus (window-frame (active-minibuffer-window)))
+    (select-window (active-minibuffer-window))))
+
 (with-eval-after-load 'evil-evilified-state
  (evilified-state-evilify-map goldendict-mode-map
  :mode goldendict-mode
  :bindings
- "q" #'quit-window
+ "q" #'hurricane//goldendict-quit-window-and-switch-to-minibuffer-window
  "y" #'hurricane//evil-yank
  "Y" #'hurricane/yank-to-end-of-line
  ))

@@ -1477,8 +1477,8 @@
 
     (defun hurricane/subed--send-sentence-to-Anki (source-path)
       (setq subed-sentence (substring-no-properties (subed-subtitle-text)))
-      (setq subed-mp3 (format "subed_%s.mp3" (format-time-string "%Y_%-I_%M_%p")))
-      (setq subed-screenshot (format "subed_%s.png" (format-time-string "%Y_%-I_%M_%p")))
+      (setq subed-mp3 (format "subed_%s.mp3" (format-time-string "%Y_%m_%d_%-I_%M_%p")))
+      (setq subed-screenshot (format "subed_%s.png" (format-time-string "%Y_%m_%d__%-I_%M_%p")))
       (let* ((timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
              (timestamp-stop (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-stop))))
              (final-cmd (format "ffmpeg -hide_banner -nostdin -y -loglevel quiet -sn -vn  -ss %s -to %s -i \"%s\" -map_metadata -1 -map 0:1 -ac 1 -codec:a libmp3lame -vbr on -compression_level 10 -application voip -b:a 24k \"%s%s\" && ffmpeg -hide_banner -nostdin -y -loglevel quiet -sn -an -ss %s -i \"%s\" -map_metadata -1 -vcodec mjpeg -lossless 0 -compression_level 6 -qscale:v 15 -vf scale=-2:200 -vframes 1 \"%s%s\"" timestamp-start timestamp-stop source-path (expand-file-name Anki-media-dir) subed-mp3 timestamp-stop source-path (expand-file-name Anki-media-dir) subed-screenshot))
@@ -1487,6 +1487,7 @@
                "hurricane/subed-send-sentence-to-Anki"
                nil
                final-cmd)))
+        (message "%s" final-cmd)
         (set-process-sentinel
          proc
          (lambda (proc event)

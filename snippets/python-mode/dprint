@@ -2,4 +2,4 @@
 # name: dprint
 # key: dprint
 # --
-print('{!s} -> {!s} -> {!s}'.format('`(buffer-name)`', '`(line-number-at-pos)`', '`(which-function)`'), $0)
+print('file: {!s} -> line: {!s} -> func: {!s}'.format('`(buffer-name)`', '`(line-number-at-pos)`', '`(which-function)`'), $0)

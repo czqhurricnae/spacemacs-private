@@ -1068,24 +1068,25 @@ Otherwise return word around point."
                                       (region-end))
     (thing-at-point 'word t)))
 
-(defun anki-editor-collect-content-from-result (notesinfo)
+(defun anki-editor-collect-content-from-result (notesinfo &optional arg)
   (mapcar
    (lambda (x)
      (let* ((noteid (cdr (assq 'noteId x)))
             (fields (cdr (assq 'fields x)))
             (sentence (cdar (cdr (assq 'sentence fields))))
+            (translation (or (cdar (cdr (assq 'translation fields))) "/ /"))
             (notes (cdar (cdr (assq 'notes fields))))
             (audio (cdar (cdr (assq 'audio fields))))
             (phonetic (or (cdar (cdr (assq 'phonetic fields))) "/ /")))
        (list
-        (format "%s\n%s\n%s\n----------------------------------------------------------------------------------------------------" sentence phonetic notes)
+        (format "%s\n%s\n%s\n----------------------------------------------------------------------------------------------------" (if arg translation sentence) phonetic notes)
         noteid
         audio)))
    notesinfo))
 
-(defun hurricane/anki-editor-find-notes (&optional query)
+(defun hurricane/anki-editor-find-notes (&optional arg query)
   "Find notes with QUERY."
-  (interactive (list (read-string "Anki query: " (hurricane//region-or-word))))
+  (interactive (list "P" (read-string "Anki query: " (hurricane//region-or-word))))
   (let ((nids (anki-editor-api-call-result 'findNotes
                                            :query (or query ""))))
     (unless nids
@@ -1100,7 +1101,7 @@ Otherwise return word around point."
         (ignore-errors
           (ivy-read "Select a card to preview: "
                     (anki-editor-collect-content-from-result
-                     (anki-editor-api-call-result 'notesInfo :notes nids))
+                     (anki-editor-api-call-result 'notesInfo :notes nids) arg)
                     :action (lambda (content) (-map (lambda (group-number)
                                                       (ignore-errors
                                                         (play-sound-file
@@ -1129,7 +1130,7 @@ Otherwise return word around point."
   (anki-editor-api-call 'guiEditNote :note (nth 1 x)))
 
 (defun hurricane//anki-editor-popup-note-at-point (x)
-  (popweb-org-roam-link-show (nth 0 x)))
+  (goldendict--render-html (nth 0 x)))
 
 (defun hurricane//anki-editor-gui-delete-note-action (x)
   (anki-editor-api-call 'deleteNotes :notes (list (nth 1 x))))

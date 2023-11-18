@@ -70,6 +70,9 @@
     (org-super-agenda :location (recipe
                                  :fetcher github
                                  :repo "alphapapa/org-super-agenda"))
+    (anki-helper :location (recipe
+                                  :fetcher github
+                                  :repo "czqhurricnae/emacs-anki-helper"))
     )
   )
 
@@ -1160,14 +1163,18 @@ Return nil if not found."
 ;; /usr/bin/env python3 -m pip install PyQt6 PyQtWebEngine epc
 ;; python3 -m pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6
 ;; 系统中存在 Python3.9 和 Python3.10 两种版本，如果原来的3.9 版本安装依赖，升级到3.10 后将无法使用，需要重新安装。
+;; (popweb-proxy-type provixy-type)
+;; (popweb-proxy-host provixy-host)
+;; (popweb-proxy-port provixy-port)
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.3/develop/popweb-20230208.13018" "elpa/28.3/develop/popweb-20230208.13018/extension/latex" "elpa/28.3/develop/popweb-20230208.13018/extension/dict" "elpa/28.3/develop/popweb-20230208.13018/extension/org-roam" "elpa/28.3/develop/popweb-20230208.13018/extension/url-preview")
+    :load-path ("elpa/28.3/develop/popweb-20230208.13018" "elpa/28.3/develop/popweb-20230208.13018/extension/latex" "elpa/28.3/develop/popweb-20230208.13018/extension/dict" "elpa/28.3/develop/popweb-20230208.13018/extension/org-roam" "elpa/28.3/develop/popweb-20230208.13018/extension/anki-review")
     :init
-    (require 'popweb-dict)
     (require 'popweb-latex)
+    (require 'popweb-dict)
     (require 'popweb-org-roam-link)
+    (require 'popweb-anki-review)
     (require 'youdao-dictionary)
     (require 'anki-editor)
 
@@ -1233,11 +1240,9 @@ Return nil if not found."
          )))
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
-    ;; :custom
-    ;; (popweb-proxy-type provixy-type)
-    ;; (popweb-proxy-host provixy-host)
-    ;; (popweb-proxy-port provixy-port)
-    ;; ;; (popweb-enable-developer-tools t)
+    :custom
+    (popweb-anki-review-media-directory Anki-media-dir)
+    (popweb-enable-developer-tools t)
     :bind
     ("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point)
     ))
@@ -1456,3 +1461,8 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
 
          ))))
   (org-super-agenda-mode)))
+
+(defun hurricane-org/init-anki-helper ()
+  (use-package anki-helper
+    :custom
+    (anki-helper-media-directory Anki-media-dir)))

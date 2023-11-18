@@ -75,6 +75,8 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/sys.path 与 os.environ[" PYTHONPATH "]/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/curl 命令示例/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Uy4DuJ/"))

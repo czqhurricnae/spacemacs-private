@@ -36,8 +36,8 @@
       (interactive)
       (python-bridge-call-async "deeplx" (replace-regexp-in-string "[\t\n\r]+" " " (emacs-azure-tts-region-or-sentence))))
     :config
-    (setq youdao-dictionary-app-key "7a8b22fe546e4c92")
-    (setq youdao-dictionary-secret-key "iqOExxkEm7Yl0z11CzA5sBd3zwMI1Mg0")
+    (setq youdao-dictionary-app-key "622ac768f5eb280a")
+    (setq youdao-dictionary-secret-key "Wz5qQqTxQ8yYtcZhKMhyCpkfQ1yPtVKZ")
     (with-eval-after-load 'hydra
       (defhydra youdao-dictionary-hydra (:color blue)
         ("p" youdao-dictionary-play-voice-of-current-word "play voice of current word")

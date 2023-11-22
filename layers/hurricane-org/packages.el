@@ -1166,10 +1166,11 @@ Return nil if not found."
 ;; (popweb-proxy-type provixy-type)
 ;; (popweb-proxy-host provixy-host)
 ;; (popweb-proxy-port provixy-port)
+;; (setq popweb-enable-developer-tools nil)
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.3/develop/popweb-20230208.13018" "elpa/28.3/develop/popweb-20230208.13018/extension/latex" "elpa/28.3/develop/popweb-20230208.13018/extension/dict" "elpa/28.3/develop/popweb-20230208.13018/extension/org-roam" "elpa/28.3/develop/popweb-20230208.13018/extension/anki-review")
+    :load-path ("elpa/28.3/develop/popweb-20231120.212927" "elpa/28.3/develop/popweb-20231120.212927/extension/latex" "elpa/28.3/develop/popweb-20231120.212927/extension/dict" "elpa/28.3/develop/popweb-20231120.212927/extension/org-roam" "elpa/28.3/develop/popweb-20231120.212927/extension/anki-review")
     :init
     (require 'popweb-latex)
     (require 'popweb-dict)
@@ -1208,10 +1209,10 @@ Return nil if not found."
                         )
                         (popweb-dict-js-file-path "eudic-liju.js"))
 
-    (defun hurricane//popweb-translate-select (translation)
-      (let ((popweb-org-roam-link-popup-window-height-scale 0.2)
-            (popweb-org-roam-link-popup-window-width-scale 0.5))
-        (popweb-org-roam-link-show translation)))
+    (defun hurricane//popweb-translate-select (sentence translation)
+      (let ((popweb-org-roam-link-popup-window-height-scale 0.8)
+            (popweb-org-roam-link-popup-window-width-scale 0.8))
+        (popweb-org-roam-link-show sentence nil translation)))
     :config
     (setq popweb-org-roam-link-popup-window-height-scale 1.0)
     (setq popweb-org-roam-link-popup-window-width-scale 1.0)
@@ -1242,7 +1243,9 @@ Return nil if not found."
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
     (popweb-anki-review-media-directory Anki-media-dir)
-    (popweb-enable-developer-tools t)
+    (popweb-org-roam-link-preview-media-directory Anki-media-dir)
+    (popweb-anki-review-callback "popweb-dict-eudic-dicts-input")
+    (popweb-org-roam-link-preview-callback "popweb-dict-eudic-dicts-input")
     :bind
     ("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point)
     ))

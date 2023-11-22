@@ -1103,7 +1103,7 @@ Otherwise return word around point."
                     (anki-editor-collect-content-from-result
                      (anki-editor-api-call-result 'notesInfo :notes nids) arg)
                     :action (lambda (content) (-map (lambda (group-number)
-                                                      (ignore-errors
+                                                     (ignore-errors
                                                         (play-sound-file
                                                          (format "%s%s"
                                                                  Anki-media-dir

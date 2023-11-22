@@ -1728,7 +1728,7 @@ Works only in youtube-sub-extractor-mode buffer."
                                                                '("allowDuplicate" . t))))))))))
     :config
     (add-to-list 'emacs-azure-tts-after-speak-functions (apply-partially #'emacs-azure-tts-add-card Anki-deck-name))
-    (add-to-list 'emacs-azure-tts-after-speak-functions #'(lambda (front back translation) (and (winum-select-window-2) (evil-exit-visual-state))))
+    (add-to-list 'emacs-azure-tts-after-speak-functions #'(lambda (front back translation) (ignore-errors (and (winum-select-window-2) (evil-exit-visual-state)))))
     ))
 
 (defun hurricane-misc/init-reverso ()

@@ -139,6 +139,7 @@ This function should only modify configuration layer settings."
               chinese-enable-youdao-dict t)
      tern
      (eaf :variables
+          eaf-python-command "python3.10"
           eaf-pdf-dark-mode nil
           browse-url-browser-function 'browse-url-default-browser
           eaf-proxy-type "http"

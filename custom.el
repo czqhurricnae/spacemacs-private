@@ -75,6 +75,10 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/图解 HTTP/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Notes/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/DeepLX+Tor+ETCP 电子书翻译插件自定义引擎/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/sys.path 与 os.environ[" PYTHONPATH "]/"))

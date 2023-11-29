@@ -1146,3 +1146,21 @@ Otherwise return word around point."
 
 (define-key global-map (kbd "<f3>") #'hurricane/anki-editor-find-notes)
 ;;}}
+
+;; @see: https://github.com/org-noter/org-noter/issues/35
+;; {{
+(defun hurricane//outline-show-entry ()
+  "Show the body directly following this heading.
+Show the heading too, if it is currently invisible."
+  (interactive)
+  (save-excursion
+    (outline-back-to-heading t)
+    (outline-flag-region (max (1- (point)) (point-min))
+                         (progn
+                           (outline-next-preface)
+                           (if (= 1 (- (point-max) (point)))
+                               (point-max)
+                             (point)))
+                         nil)))
+(advice-add 'outline-show-entry :override #'hurricane//outline-show-entry)
+;; }}

@@ -1867,3 +1867,20 @@ Version 2019-02-12 2021-08-09"
 
 (define-key global-map (kbd "<f4>") #'hurricane/goldendict-find)
 ;; }}
+
+(defun hurricane//popweb-silver-dict-query (suggestion)
+  (let* ((popweb-org-roam-link-popup-window-height-scale 0.8)
+         (popweb-org-roam-link-popup-window-width-scale 0.8)
+         (html-string (goldendict--query-api-call suggestion)))
+    (if html-string
+        (if (not (eq html-string popweb-org-roam-link-preview--previous-html))
+            (progn
+              (setq popweb-org-roam-link-preview--previous-html html-string)
+              (if popweb-org-roam-link-preview-window-visible-p
+                  (progn
+                    (setq popweb-org-roam-link-preview-window-visible-p nil)
+                    (ignore-errors
+                      (popweb-call-async "hide_web_window" "org_roam"))))
+              (popweb-start 'popweb-org-roam-link-preview (list t html-string nil nil))))
+      (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world" nil nil))))
+  (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))

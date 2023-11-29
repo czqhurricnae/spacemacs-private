@@ -73,6 +73,15 @@
     (anki-helper :location (recipe
                                   :fetcher github
                                   :repo "czqhurricnae/emacs-anki-helper"))
+    (org-noter :location (recipe
+                          :fetcher github
+                          :repo "org-noter/org-noter"
+                          :branch "feature/org-roam-integration"
+                          :files ("*.el" "modules/*.el")))
+    (helm-org-ql :location (recipe
+                            :fetcher github
+                            :repo "alphapapa/org-ql"
+                            :files ("helm-org-ql.el")))
     )
   )
 
@@ -761,129 +770,129 @@
 (defun hurricane-org/post-init-org-roam ()
   (with-eval-after-load 'org-roam
    (progn
-  (defun hurricane//display-line-numbers-customize ()
-    (setq display-line-numbers 't)
-    (org-display-inline-images))
+    (defun hurricane//display-line-numbers-customize ()
+      (setq display-line-numbers 't)
+      (org-display-inline-images))
 
-  (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
+    (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
 
-  (advice-add 'org-roam-buffer-persistent-redisplay :before
-			        #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
-  (advice-add 'org-roam-buffer-persistent-redisplay :after
-			        #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+    (advice-add 'org-roam-buffer-persistent-redisplay :before
+                #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+    (advice-add 'org-roam-buffer-persistent-redisplay :after
+                #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
 
-  (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
-    "Return the hierarchy for the node."
-    (let ((title (org-roam-node-title node))
-          (olp (org-roam-node-olp node))
-          (level (org-roam-node-level node))
-          (filetitle (org-roam-node-file-title node)))
-      (concat
-       (if (> level 0) (concat filetitle " > "))
-       (if (> level 1) (concat (string-join olp " > ") " > "))
-       title))
-    )
+    (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+      "Return the hierarchy for the node."
+      (let ((title (org-roam-node-title node))
+            (olp (org-roam-node-olp node))
+            (level (org-roam-node-level node))
+            (filetitle (org-roam-node-file-title node)))
+        (concat
+         (if (> level 0) (concat filetitle " > "))
+         (if (> level 1) (concat (string-join olp " > ") " > "))
+         title))
+      )
 
-  (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
-  (setq org-roam-extract-new-file-path "${slug}.org")
+    (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
+    (setq org-roam-extract-new-file-path "${slug}.org")
 
-  (cl-defmethod org-roam-node-slug ((node org-roam-node))
-    "Return the slug of NODE."
-    (let ((title (org-roam-node-title node))
-          (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
-                             768 ; U+0300 COMBINING GRAVE ACCENT
-                             769 ; U+0301 COMBINING ACUTE ACCENT
-                             770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
-                             771 ; U+0303 COMBINING TILDE
-                             772 ; U+0304 COMBINING MACRON
-                             774 ; U+0306 COMBINING BREVE
-                             775 ; U+0307 COMBINING DOT ABOVE
-                             776 ; U+0308 COMBINING DIAERESIS
-                             777 ; U+0309 COMBINING HOOK ABOVE
-                             778 ; U+030A COMBINING RING ABOVE
-                             780 ; U+030C COMBINING CARON
-                             795 ; U+031B COMBINING HORN
-                             803 ; U+0323 COMBINING DOT BELOW
-                             804 ; U+0324 COMBINING DIAERESIS BELOW
-                             805 ; U+0325 COMBINING RING BELOW
-                             807 ; U+0327 COMBINING CEDILLA
-                             813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
-                             814 ; U+032E COMBINING BREVE BELOW
-                             816 ; U+0330 COMBINING TILDE BELOW
-                             817 ; U+0331 COMBINING MACRON BELOW
-                             )))
-        (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
-                 (strip-nonspacing-marks (s)
-                                           (string-glyph-compose
-                                            (apply #'string
-                                                   (seq-remove #'nonspacing-mark-p
-                                                               (string-glyph-decompose s)))))
-                   (cl-replace (title pair) (replace-regexp-in-string (car pair) (cdr pair) title)))
-        (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
-                        ;; ("--*" . "-")                   ;; remove sequential underscores
-                        ("^-" . "")                     ;; remove starting underscore
-                        ("-$" . "")))                   ;; remove ending underscore
-               (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-           slug))))
+    (cl-defmethod org-roam-node-slug ((node org-roam-node))
+      "Return the slug of NODE."
+      (let ((title (org-roam-node-title node))
+            (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
+                               768 ; U+0300 COMBINING GRAVE ACCENT
+                               769 ; U+0301 COMBINING ACUTE ACCENT
+                               770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
+                               771 ; U+0303 COMBINING TILDE
+                               772 ; U+0304 COMBINING MACRON
+                               774 ; U+0306 COMBINING BREVE
+                               775 ; U+0307 COMBINING DOT ABOVE
+                               776 ; U+0308 COMBINING DIAERESIS
+                               777 ; U+0309 COMBINING HOOK ABOVE
+                               778 ; U+030A COMBINING RING ABOVE
+                               780 ; U+030C COMBINING CARON
+                               795 ; U+031B COMBINING HORN
+                               803 ; U+0323 COMBINING DOT BELOW
+                               804 ; U+0324 COMBINING DIAERESIS BELOW
+                               805 ; U+0325 COMBINING RING BELOW
+                               807 ; U+0327 COMBINING CEDILLA
+                               813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
+                               814 ; U+032E COMBINING BREVE BELOW
+                               816 ; U+0330 COMBINING TILDE BELOW
+                               817 ; U+0331 COMBINING MACRON BELOW
+                               )))
+          (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
+                   (strip-nonspacing-marks (s)
+                                             (string-glyph-compose
+                                              (apply #'string
+                                                     (seq-remove #'nonspacing-mark-p
+                                                                 (string-glyph-decompose s)))))
+                     (cl-replace (title pair) (replace-regexp-in-string (car pair) (cdr pair) title)))
+          (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
+                          ;; ("--*" . "-")                   ;; remove sequential underscores
+                          ("^-" . "")                     ;; remove starting underscore
+                          ("-$" . "")))                   ;; remove ending underscore
+                 (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
+             slug))))
 
-  (defun hurricane//org-roam-strip-ANKI-CARD-drawers (s)
-    (with-temp-buffer
-      (insert s)
-      (goto-char (point-min))
-      (org-element-map (org-element-parse-buffer) 'drawer
-        (lambda (drawer)
-          (if (string= "ANKI-CARD" (org-element-property :drawer-name drawer))
-              (let* ((begin (org-element-property :begin drawer))
-                     (end (org-element-property :end drawer)))
-                (delete-region begin end)))))
-      (buffer-string)))
+    (defun hurricane//org-roam-strip-ANKI-CARD-drawers (s)
+      (with-temp-buffer
+        (insert s)
+        (goto-char (point-min))
+        (org-element-map (org-element-parse-buffer) 'drawer
+          (lambda (drawer)
+            (if (string= "ANKI-CARD" (org-element-property :drawer-name drawer))
+                (let* ((begin (org-element-property :begin drawer))
+                       (end (org-element-property :end drawer)))
+                  (delete-region begin end)))))
+        (buffer-string)))
 
-  (add-to-list 'org-roam-preview-postprocess-functions
-               #'hurricane//org-roam-strip-ANKI-CARD-drawers)
+    (add-to-list 'org-roam-preview-postprocess-functions
+                 #'hurricane//org-roam-strip-ANKI-CARD-drawers)
 
-  (defun hurricane//org-roam-strip-property-drawers (s)
-    (with-temp-buffer
-      (insert s)
-      (goto-char (point-min))
-      (org-element-map (org-element-parse-buffer) 'property-drawer
-        (lambda (property-drawer)
-          (let* ((begin (org-element-property :begin property-drawer))
-                 (end (org-element-property :end property-drawer)))
-            (delete-region begin end))))
-      (buffer-string)))
+    (defun hurricane//org-roam-strip-property-drawers (s)
+      (with-temp-buffer
+        (insert s)
+        (goto-char (point-min))
+        (org-element-map (org-element-parse-buffer) 'property-drawer
+          (lambda (property-drawer)
+            (let* ((begin (org-element-property :begin property-drawer))
+                   (end (org-element-property :end property-drawer)))
+              (delete-region begin end))))
+        (buffer-string)))
 
-  (add-to-list 'org-roam-preview-postprocess-functions
-               #'hurricane//org-roam-strip-property-drawers)
+    (add-to-list 'org-roam-preview-postprocess-functions
+                 #'hurricane//org-roam-strip-property-drawers)
 
-  (dolist (func org-roam-mode-section-functions)
-    (advice-add func :after #'(lambda (node) (org-display-inline-images))))
+    (dolist (func org-roam-mode-section-functions)
+      (advice-add func :after #'(lambda (node) (org-display-inline-images))))
 
-  ;; ;; @See: https://github.com/org-roam/org-roam/issues/2029
-  ;; (defun hurricane//org-roam-db-map-links (fns)
-  ;;   "Run FNS over all links in the current buffer."
-  ;;   (org-with-point-at 1
-  ;;     (while (re-search-forward org-link-any-re nil :no-error)
-  ;;       ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
-  ;;       ;; make the point be on the link.
-  ;;       (backward-char)
-  ;;       (let* ((element (org-element-context))
-  ;;              (type (org-element-type element))
-  ;;              link bounds)
-  ;;         (cond
-  ;;          ;; Links correctly recognized by Org Mode
-  ;;          ((eq type 'link)
-  ;;           (setq link element))
-  ;;          ;; Prevent self-referencing links in ROAM_REFS
-  ;;          ((and (eq type 'node-property)
-  ;;                (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
-  ;;           nil))
-  ;;         (when link
-  ;;           (dolist (fn fns)
-  ;;             (funcall fn link)))))))
+    ;; ;; @See: https://github.com/org-roam/org-roam/issues/2029
+    ;; (defun hurricane//org-roam-db-map-links (fns)
+    ;;   "Run FNS over all links in the current buffer."
+    ;;   (org-with-point-at 1
+    ;;     (while (re-search-forward org-link-any-re nil :no-error)
+    ;;       ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
+    ;;       ;; make the point be on the link.
+    ;;       (backward-char)
+    ;;       (let* ((element (org-element-context))
+    ;;              (type (org-element-type element))
+    ;;              link bounds)
+    ;;         (cond
+    ;;          ;; Links correctly recognized by Org Mode
+    ;;          ((eq type 'link)
+    ;;           (setq link element))
+    ;;          ;; Prevent self-referencing links in ROAM_REFS
+    ;;          ((and (eq type 'node-property)
+    ;;                (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
+    ;;           nil))
+    ;;         (when link
+    ;;           (dolist (fn fns)
+    ;;             (funcall fn link)))))))
 
-  ;; (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
-  ))
-)
+    ;; (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
+    (org-roam-db-autosync-mode)
+  )))
 
 (defun hurricane-org/post-init-org-transclusion ()
   (progn
@@ -1469,3 +1478,29 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
   (use-package anki-helper
     :custom
     (anki-helper-media-directory Anki-media-dir)))
+
+(defun hurricane-org/init-org-noter ()
+  (use-package org-noter
+    :ensure t
+    :config
+    (setq org-noter-create-session-from-document-hook '(org-noter--create-session-from-document-file-supporting-org-roam))
+    (defun hurricane//org-noter-start-from-dired ()
+      "In Dired, open sessions for marked files or file at point.
+
+If there are multiple marked files, focus will be on the last
+marked file."
+      (interactive)
+      (let ((files (or (dired-get-marked-files)
+                       (dired-get-filename))))
+        (dolist (filename files)
+          (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
+           (find-file filename))
+          (save-excursion (org-noter))
+          (bury-buffer))
+        (other-frame 1)))
+
+    (advice-add #'org-noter-start-from-dired :override #'hurricane//org-noter-start-from-dired)))
+
+(defun hurricane-org/init-helm-org-ql ()
+  (use-package helm-org-ql
+    :ensure t))

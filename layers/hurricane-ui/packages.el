@@ -1,17 +1,17 @@
 (defconst hurricane-ui-packages
   '(
-    (doom-themes :location (recipe :fetcher
-                            github :repo "hlissner/emacs-doom-themes"))
-    (hide-mode-line :location (recipe :fetcher
-                               github :repo "hlissner/emacs-hide-mode-line"))
+    (doom-themes :location (recipe :fetcher github
+                                   :repo "hlissner/emacs-doom-themes"))
+    (hide-mode-line :location (recipe :fetcher github
+                                      :repo "hlissner/emacs-hide-mode-line"))
     pangu-spacing
-    (awesome-tab :location (recipe :fetcher
-                            github :repo "manateelazycat/awesome-tab"))
-    (shackle :location (recipe :fetcher
-                        github :repo "wasamasa/shackle"))
+    (awesome-tab :location (recipe :fetcher github
+                                   :repo "manateelazycat/awesome-tab"))
+    (shackle :location (recipe :fetcher github
+                               :repo "wasamasa/shackle"))
     pretty-hydra
-    (good-scroll :location (recipe :fetcher
-                            github :repo "io12/good-scroll.el"))
+    (ultra-scroll-mac :location (recipe :fetcher github
+                                        :repo "jdtsmith/ultra-scroll-mac"))
     (holo-layer :location (recipe :fetcher github
                                   :repo "manateelazycat/holo-layer"
                                   :files ("*.*" "icon_cache" "plugin" "resources" "swaymsg-treefetch")))

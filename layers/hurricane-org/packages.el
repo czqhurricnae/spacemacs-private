@@ -1175,7 +1175,7 @@ Return nil if not found."
 ;; (popweb-proxy-type provixy-type)
 ;; (popweb-proxy-host provixy-host)
 ;; (popweb-proxy-port provixy-port)
-;; (setq popweb-enable-developer-tools nil)
+;; (setq popweb-enable-developer-tools t)
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t

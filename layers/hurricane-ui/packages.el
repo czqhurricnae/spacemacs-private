@@ -10,8 +10,8 @@
     (shackle :location (recipe :fetcher github
                                :repo "wasamasa/shackle"))
     pretty-hydra
-    (ultra-scroll-mac :location (recipe :fetcher github
-                                        :repo "jdtsmith/ultra-scroll-mac"))
+    (good-scroll :location (recipe :fetcher github
+                                   :repo "io12/good-scroll.el"))
     (holo-layer :location (recipe :fetcher github
                                   :repo "manateelazycat/holo-layer"
                                   :files ("*.*" "icon_cache" "plugin" "resources" "swaymsg-treefetch")))

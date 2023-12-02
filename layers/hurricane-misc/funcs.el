@@ -1892,7 +1892,7 @@ Version 2019-02-12 2021-08-09"
                   (progn
                     (setq popweb-org-roam-link-preview-window-visible-p nil)
                     (ignore-errors
-                      (popweb-call-async "hide_web_window" "org_roam"))))
+                      (popweb-call-async "hide_web_window" "silver_dict"))))
               (popweb-start 'popweb-org-roam-link-preview (list t processed-html-string nil nil))))
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world" nil nil))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))

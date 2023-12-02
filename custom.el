@@ -75,6 +75,18 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/安装 Python3 版本的 aeneas/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/修改默认 Python3 版本/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/pyqt、pyside 与 QWebEngine 前端 js 交互简单示例/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/pyqt webview javascript -> python example/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/OKR 示例/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Anki 插件 DeepL Translator/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/图解 HTTP/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Notes/"))

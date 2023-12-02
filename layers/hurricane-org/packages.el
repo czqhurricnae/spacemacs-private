@@ -1257,6 +1257,7 @@ Return nil if not found."
     (popweb-org-roam-link-preview-callback "popweb-dict-eudic-dicts-input")
     :bind
     ("C-c Y" . hurricane/popweb-dict-eudic-liju-search-at-point)
+    ("<f2>" . popweb-anki-review-show)
     ))
 
 ;; npm install mathjax-node-cli

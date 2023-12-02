@@ -34,7 +34,8 @@
 
     (defun hurricane/deeplx ()
       (interactive)
-      (python-bridge-call-async "deeplx" (replace-regexp-in-string "[\t\n\r]+" " " (emacs-azure-tts-region-or-sentence))))
+      ;; (python-bridge-call-async "deeplx" (replace-regexp-in-string "[\t\n\r]+" " " (emacs-azure-tts-region-or-sentence)))
+      (python-bridge-call-async "deeplx" (emacs-azure-tts-region-or-sentence)))
     :config
     (setq youdao-dictionary-app-key "622ac768f5eb280a")
     (setq youdao-dictionary-secret-key "Wz5qQqTxQ8yYtcZhKMhyCpkfQ1yPtVKZ")

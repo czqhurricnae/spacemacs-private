@@ -1587,6 +1587,9 @@
     (evil-define-key '(normal) subed-mode-map (kbd "7") #'hurricane/subed-send-sentence-to-Anki)
     (evil-define-key '(normal) subed-mode-map (kbd "r") #'subed-mpv-jump-to-current-subtitle)
     (evil-define-key '(normal) subed-mode-map (kbd "p") #'subed-mpv-toggle-pause)
+    ;; 因为系统默认版本 python3.11 无法安装 aeneas，只能使用 python3.7 安装成功。
+    ;; @see：https://github.com/readbeyond/aeneas/issues/285#issuecomment-1237726917
+    (setq subed-align-command '("python3.7" "-m" "aeneas.tools.execute_task"))
     ))
 
 (defun hurricane-misc/init-youtube-sub-extractor ()

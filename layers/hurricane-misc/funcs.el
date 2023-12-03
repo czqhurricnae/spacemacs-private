@@ -1350,9 +1350,9 @@ Version 2019-02-12 2021-08-09"
 ;; }}
 
 ;; {{
-(setq voicetube-subtitle-replace-string-rule-lists '(("" . "[0-9]+\.")
+(setq voicetube-subtitle-replace-string-rule-lists '(("" . "^[0-9]\\{1,2\\}\\.$")
                                                      ("" . ",")
-                                                     ("" . "\\.")
+                                                     ;; ("" . "\\.")
                                                      ("" . ":")
                                                      ("" . "!")
                                                      ("" . "！")
@@ -1511,7 +1511,7 @@ Version 2019-02-12 2021-08-09"
 
 (defun hurricane/mpv-toggle-ontop ()
   (interactive)
-  (python-bridge-call-async "mpv" (list "" "cycle" "ontop")))
+  (python-bridge-call-async "mpv_ontop" (list (subed-mpv--socket) "cycle" "ontop")))
 
 (defun hurricane/ivy-you-get (&optional url)
   (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))

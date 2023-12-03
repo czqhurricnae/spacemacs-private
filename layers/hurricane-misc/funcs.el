@@ -1202,12 +1202,13 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
 (defvar Anki-deck-name "English"
   "Shengci in anki deck name.")
 
-(defun anki-add-card (deck front back &optional screenshot tag)
+(defun anki-add-card (deck front back &optional translation screenshot tag)
   "Add anki basic card which contains FRONT and BACK elements to the DECK."
   (let* ((req-params (list `("note" . ,(list `("deckName" . ,deck)
                                              '("modelName" . "Antimoon without expression")
                                              `("fields" . ,(list `("audio" . ,front)
                                                                  `("sentence" . ,back)
+                                                                 `("translation" . ,translation)
                                                                  `("image" . ,screenshot)))
                                              `("options" . ,(list
                                                                   '("allowDuplicate" . t)))
@@ -1431,7 +1432,7 @@ Version 2019-02-12 2021-08-09"
            proc
            (lambda (proc event)
              (when (equal event "finished\n")
-               (anki-add-card Anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
+               (anki-add-card Anki-deck-name (format "[sound:%s]" media-clip-file-name) media-clip-sentence "" (format "<img src=\"%s\">" media-clip-screenshot) "subs2srs")
                )))
           t)
         ;; (org-media-note--display-inline-images)
@@ -1510,7 +1511,7 @@ Version 2019-02-12 2021-08-09"
 
 (defun hurricane/mpv-toggle-ontop ()
   (interactive)
-  (python-bridge-call-async "mpv" (list "cycle" "ontop")))
+  (python-bridge-call-async "mpv" (list "" "cycle" "ontop")))
 
 (defun hurricane/ivy-you-get (&optional url)
   (interactive (list (read-string "URL: " (or eaf--buffer-url (ignore-errors (buffer-local-value 'youtube-transcript-url (current-buffer)))))))

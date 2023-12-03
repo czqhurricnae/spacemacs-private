@@ -1218,7 +1218,7 @@ Return nil if not found."
                         )
                         (popweb-dict-js-file-path "eudic-liju.js"))
 
-    (defun hurricane//popweb-translate-select (sentence translation)
+    (defun hurricane//popweb-translation-show (sentence translation)
       (let ((popweb-org-roam-link-popup-window-height-scale 0.8)
             (popweb-org-roam-link-popup-window-width-scale 0.8))
         (popweb-org-roam-link-show sentence nil translation)))

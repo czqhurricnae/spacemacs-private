@@ -1353,7 +1353,9 @@
     ;;     self.send_input_message("Copy link: ", "send_merriam_webster_liju", "marker");
     (eaf-bind-key send_merriam_webster_liju "C-M-s" eaf-browser-keybinding)
     (eaf-bind-key copy_merriam_webster_phonetic "C-M-p" eaf-browser-keybinding)
-    (eaf-bind-key insert_or_download_youtube_video "y" eaf-browser-keybinding)
+    (eaf-bind-key popweb_translate_select "<f2>" eaf-browser-keybinding)
+    (eaf-bind-key popweb_dict_search_select "y" eaf-browser-keybinding)
+    (eaf-bind-key insert_or_download_youtube_video "Y" eaf-browser-keybinding)
     (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding))
 
   (with-eval-after-load 'eaf-pdf-viewer
@@ -1387,7 +1389,7 @@
     ;; 没有在 webengine.py 或 eaf.py 中定义，build_all_methods 无法获取。
     ;; 无法在 evil-define-key 中调用。
     ;; 只能先在 (setq eaf-pdf-viewer-keybinding) 定义，再调用。
-    ;; /layers/+tools/eaf/packages.el
+    ;; /Users/c/emacs-config/default/layers/+tools/eaf/packages.el
     ;; (setq eaf-pdf-viewer-keybinding
     ;;  '(("y" . "popweb_dict_search_select")))
     ;; 以下的写法，无法运行。

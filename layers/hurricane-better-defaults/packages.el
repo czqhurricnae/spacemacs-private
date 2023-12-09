@@ -13,7 +13,7 @@
   (use-package youdao-dictionary
     :commands youdao-dictionary-play-voice-of-current-word
     :bind (("C-c s" . hurricane/youdao-search-at-point)
-           ("C-c S" . hurricane/deeplx)
+           ;; ("C-c S" . hurricane/deeplx)
            ;; ("C-c Y" . youdao-dictionary-search-at-point)
            :map youdao-dictionary-mode-map
            ("h" . youdao-dictionary-hydra/body)
@@ -32,10 +32,10 @@
             (youdao-dictionary-search-at-point-tooltip))
         (youdao-dictionary-search-at-point)))
 
-    (defun hurricane/deeplx ()
-      (interactive)
+    ;; (defun hurricane/deeplx ()
+      ;; (interactive)
       ;; (python-bridge-call-async "deeplx" (replace-regexp-in-string "[\t\n\r]+" " " (emacs-azure-tts-region-or-sentence)))
-      (python-bridge-call-async "deeplx" (emacs-azure-tts-region-or-sentence)))
+      ;; (python-bridge-call-async "deeplx" (emacs-azure-tts-region-or-sentence)))
     :config
     (setq youdao-dictionary-app-key "622ac768f5eb280a")
     (setq youdao-dictionary-secret-key "Wz5qQqTxQ8yYtcZhKMhyCpkfQ1yPtVKZ")

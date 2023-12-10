@@ -60,7 +60,8 @@
     (org-roam-backlink-collections :location local)
     (org-imagine :location (recipe
                             :fetcher github
-                            :repo "metaescape/org-imagine"))
+                            :repo "metaescape/org-imagine"
+                            :files ("*.el" "view" "*.py")))
     (org-link-edit :location (recipe
                               :fetcher github
                               :repo "emacsmirror/org-link-edit"))
@@ -82,6 +83,14 @@
                             :fetcher github
                             :repo "alphapapa/org-ql"
                             :files ("helm-org-ql.el")))
+    (oer-reveal :location (recipe
+                           :fetcher github
+                           :repo "emacsmirror/oer-reveal"
+                           :files ("*.el" "LICENSES" "css" "examples" "org" "title-slide")))
+    (emacsconf-el :location (recipe
+                             :fetcher github
+                             :repo "emacsconf/emacsconf-el"
+                             :files ("*.el")))
     )
   )
 
@@ -512,10 +521,6 @@
       (add-hook 'org-mode-hook
                 #'(lambda ()
                   (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))))
-
-;; FIXME:
-(defun hurricane-org/post-init-ox-reveal ()
-  (setq org-reveal-root "file:///Users/c/.emacs.d/reveal-js"))
 
 (defun hurricane-org/init-org-tree-slide ()
   (spacemacs|use-package-add-hook org
@@ -1091,7 +1096,6 @@ Return nil if not found."
 
 (defun hurricane-org/init-shrface ()
   (use-package shrface
-    :defer t
     :config
     (shrface-basic)
     (shrface-trial)
@@ -1179,7 +1183,7 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.3/develop/popweb-20231120.212927" "elpa/28.3/develop/popweb-20231120.212927/extension/latex" "elpa/28.3/develop/popweb-20231120.212927/extension/dict" "elpa/28.3/develop/popweb-20231120.212927/extension/org-roam" "elpa/28.3/develop/popweb-20231120.212927/extension/anki-review")
+    :load-path ("elpa/28.3/develop/popweb-20231130.231202" "elpa/28.3/develop/popweb-20231130.231202/extension/latex" "elpa/28.3/develop/popweb-20231130.231202/extension/dict" "elpa/28.3/develop/popweb-20231130.231202/extension/org-roam" "elpa/28.3/develop/popweb-20231130.231202/extension/anki-review")
     :init
     (require 'popweb-latex)
     (require 'popweb-dict)
@@ -1505,3 +1509,20 @@ marked file."
 (defun hurricane-org/init-helm-org-ql ()
   (use-package helm-org-ql
     :ensure t))
+
+(defun hurricane-org/init-oer-reveal ()
+  (spacemacs|use-package-add-hook org
+    :post-config
+    (require 'oer-reveal-publish)
+    (setq oer-reveal-plugin-4-config
+				  "audioslideshow RevealAudioSlideshow "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/plugin.js"
+audiorecorder RevealAudioRecorder "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"
+anything RevealAnything https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js
+customcontrols RevealCustomControls plugin/customcontrols/plugin.js")))
+
+(defun hurricane-org/init-emacsconf-el ()
+  (use-package emacsconf-el
+    :ensure t
+    :config
+    (require 'emacsconf-mail)
+    (require 'emacsconf-spookfox)))

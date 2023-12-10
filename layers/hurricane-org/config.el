@@ -1,10 +1,10 @@
 (progn
-  "Settings of `org-export'."
-  (setq org-export-in-background t
+  ;; "Settings of `org-export'."
+  (setq ;; 如果设置为 t，会导致 org-re-reveal 的 export 出现错误。
+        org-export-in-background nil
         ;; Hide html built-in style and script.
         org-html-htmlize-output-type nil
         org-html-head-include-default-style nil
-        org-html-head-include-scripts nil
         ))
 
 (define-minor-mode auto-save-and-publish-file-mode

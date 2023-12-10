@@ -57,7 +57,7 @@
                                  :repo "sachac/subed"
                                  :files ("*.*" "subed")))
         (youtube-sub-extractor :location (recipe :fetcher github
-                                       :repo "agzam/youtube-sub-extractor"))
+                                       :repo "agzam/youtube-sub-extractor.el"))
         (websocket :location (recipe :fetcher github
                                            :repo "ahyatt/emacs-websocket"))
         (websocket-bridge :location (recipe :fetcher github
@@ -117,7 +117,7 @@
 ;; {{
 ;; @see: https://emacs-china.org/t/ranger-golden-ratio/964/2
 (defun hurricane-misc/post-init-ranger ()
-  (defun my-ranger ()
+  (defun hurricane/ranger ()
     (interactive)
     (if golden-ratio-mode
         (progn
@@ -128,7 +128,7 @@
         (ranger)
         (setq golden-ratio-previous-enable nil))))
 
-(defun my-quit-ranger ()
+(defun hurricane/quit-ranger ()
   (interactive)
   (if golden-ratio-previous-enable
       (progn
@@ -138,12 +138,13 @@
 
 (with-eval-after-load 'ranger
   (progn
-    (define-key ranger-normal-mode-map (kbd "q") 'my-quit-ranger)))
+    (define-key ranger-normal-mode-map (kbd "q") 'hurricane/quit-ranger)))
 
-;; (spacemacs/set-leader-keys "atr" 'my-ranger)
+;; (spacemacs/set-leader-keys "atr" 'hurricane/ranger)
 )
 ;; }}
 
+;; {{
 ;; Copy from spacemacs `helm' layer.
 (defun hurricane-misc/init-helm-ag ()
   (use-package helm-ag
@@ -416,6 +417,7 @@
         (kbd "RET") 'helm-ag-mode-jump-other-window
         (kbd "gr") 'helm-ag--update-save-results
         (kbd "q") 'quit-window))))
+;; }}
 
 (defun hurricane-misc/post-init-hydra ()
   (progn
@@ -470,9 +472,7 @@
     ;; (define-key global-map (kbd "<f1>") 'hydra-hotspots/body)
     (spacemacs/set-leader-keys "oo" 'hydra-hotspots/body)
     ;; (bind-key*  "<f4>" 'hydra-apropos/body)
-    (spacemacs/set-leader-keys "oh" 'hydra-apropos/body)
-
-    ))
+    (spacemacs/set-leader-keys "oh" 'hydra-apropos/body)))
 
 (defun hurricane-misc/post-init-gist ()
   (use-package gist
@@ -506,8 +506,7 @@
         ("q" nil "quit" :exit t)
         ("<escape>" nil nil :exit t))
       (spacemacs/set-leader-keys-for-major-mode 'gist-list-mode
-        "." 'spacemacs/gist-list-mode-transient-state/body))
-    ))
+        "." 'spacemacs/gist-list-mode-transient-state/body))))
 
 ;; Preview files in dired.
 (defun hurricane-misc/init-peep-dired ()
@@ -540,13 +539,11 @@
 
 (defun hurricane-misc/init-tiny ()
   (use-package tiny
-    :defer t
     :init
     (spacemacs/set-leader-keys "oe" 'tiny-expand)))
 
 (defun hurricane-misc/init-helm-github-stars ()
   (use-package helm-github-stars
-    :defer t
     :commands (helm-github-stars)
     :init
     (setq helm-github-stars-username "czqhurricnae")))
@@ -579,7 +576,6 @@
 
 (defun hurricane-misc/init-discover-my-major ()
   (use-package discover-my-major
-    :defer t
     :init
     (progn
       (spacemacs/set-leader-keys (kbd "mhm") #'discover-my-major))))
@@ -817,16 +813,16 @@
         (add-to-list 'projectile-other-file-alist '("html" "js"))
         (add-to-list 'projectile-other-file-alist '("js" "html"))))
 
-    (defvar my-simple-todo-regex "\\<\\(FIXME\\|TODO\\|BUG\\):")
+    (defvar hurricane-simple-todo-regex "\\<\\(FIXME\\|TODO\\|BUG\\):")
 
     (defun hurricane/simple-todo ()
       "When in a project, create a `multi-occur' buffer matching the
-    regex in `my-simple-todo-regex' across all buffers in the
+    regex in `hurricane-simple-todo-regex' across all buffers in the
     current project. Otherwise do `occur' in the current file."
       (interactive)
       (if (projectile-project-p)
-          (multi-occur (projectile-project-buffer-files) my-simple-todo-regex)
-        (occur my-simple-todo-regex)))))
+          (multi-occur (projectile-project-buffer-files) hurricane-simple-todo-regex)
+        (occur hurricane-simple-todo-regex)))))
 
 (defun hurricane-misc/post-init-prodigy ()
   (progn
@@ -872,7 +868,6 @@
 
 (defun hurricane-misc/init-moz-controller ()
   (use-package moz-controller
-    :defer t
     :init
     (progn
       (moz-controller-global-mode t)
@@ -900,7 +895,6 @@
       (add-to-list 'wrap-region-except-modes 'dired-mode)
       (add-to-list 'wrap-region-except-modes 'web-mode)
       )
-    :defer t
     :config
     (spacemacs|hide-lighter wrap-region-mode)))
 
@@ -947,7 +941,6 @@
 
 (defun hurricane-misc/post-init-git-messenger ()
   (use-package git-messenger
-    :defer t
     :config
     (progn
       (define-key git-messenger-map (kbd "f") 'hurricane/github-browse-commit))))
@@ -1078,7 +1071,6 @@
 
 (defun hurricane-misc/init-pandoc-mode ()
   (use-package pandoc-mode
-    :defer t
     :config
     (progn
       (add-hook 'markdown-mode-hook 'pandoc-mode))))
@@ -1489,9 +1481,9 @@
 (defun hurricane-misc/init-subed ()
   (use-package subed
     :ensure t
-    :load-path "~/emacs-config/default/elpa/28.3/develop/subed-20230321.225327/subed"
+    :load-path ("~/emacs-config/default/elpa/28.3/develop/subed-20231129.61416/subed" "~/emacs-config/default/elpa/28.3/develop/subed-20231129.61416")
     :init
-    (require 'subed-autoloads)
+    ;; (require 'subed-autoloads)
 
     (defun hurricane/subed--send-sentence-to-Anki (source-path translation)
       (setq subed-sentence (substring-no-properties (subed-subtitle-text)))
@@ -1703,13 +1695,11 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-websocket ()
   (use-package websocket
-    :ensure t
-    :defer t))
+    :ensure t))
 
 (defun hurricane-misc/init-websocket-bridge ()
   (use-package websocket-bridge
-    :ensure t
-    :defer t))
+    :ensure t))
 
 (defun hurricane-misc/init-ffmpeg-utils ()
   (use-package ffmpeg-utils

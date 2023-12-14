@@ -9,9 +9,9 @@
     (yas-minor-mode)))
 
 ;; {{
-;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
-;; @see: https://github.com/flycheck/flycheck/issues/997
-;; @see: https://github.com/codesuki/add-node-modules-path/issues/7#issuecomment-385388439
+;; @See: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
+;; @See: https://github.com/flycheck/flycheck/issues/997
+;; @See: https://github.com/codesuki/add-node-modules-path/issues/7#issuecomment-385388439
 (defun web-mode-init-hook ()
   ;; BUG: (void function add-node-modules-path)
   ;; (add-node-modules-path)

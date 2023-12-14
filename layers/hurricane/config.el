@@ -95,14 +95,17 @@
 (defvar aspeak-profile-file ""
   "Aspeak profile file location.")
 
-(defvar provixy-type "http"
+(defvar provixy-type ""
   "proxy type for EAF and popweb.")
 
-(defvar provixy-host "0.0.0.0"
+(defvar provixy-host ""
   "Provixy listen host.")
 
-(defvar provixy-port "8118"
+(defvar provixy-port ""
   "Provixy listen port.")
+
+(defvar reveal-project-directory ""
+  "Reveal.js project directory.")
 
 (defcustom eaf-screenshot-command (if (memq system-type '(cygwin windows-nt ms-dos)) "" "/usr/sbin/screencapture")
   "The screenshot command used by eaf.py.
@@ -138,4 +141,8 @@ For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
  Baidu-OCR-Python-file "~/.spacemacs.d/BaiduOcr.py"
  scripts-file "~/.spacemacs.d/scripts.org"
  aspeak-profile-file "~/.spacemacs.d/Backup/.aspeak.toml"
+ reveal-project-directory "~/Downloads/"
+ provixy-type "http"
+ provixy-host "0.0.0.0"
+ provixy-port "8118"
 )

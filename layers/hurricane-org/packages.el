@@ -61,7 +61,7 @@
     (org-imagine :location (recipe
                             :fetcher github
                             :repo "metaescape/org-imagine"
-                            :files ("*.el" "view" "*.py")))
+                            :files ("*.el" "view")))
     (org-link-edit :location (recipe
                               :fetcher github
                               :repo "emacsmirror/org-link-edit"))
@@ -102,9 +102,9 @@
     (add-hook 'org-pomodoro-kill-hook #'(lambda () (hurricane//notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))))
 
 ;; In order to export pdf to support Chinese, I should install Latex in here:
-;; @see: https://www.tug.org/mactex/
-;; @see: http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
-;; @see: http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
+;; @See: https://www.tug.org/mactex/
+;; @See: http://freizl.github.io/posts/2012-04-06-export-orgmode-file-in-Chinese.html
+;; @See: http://stackoverflow.com/questions/21005885/export-org-mode-code-block-and-result-with-different-styles
 (defun hurricane-org/post-init-org ()
   (with-eval-after-load 'org
     (progn
@@ -235,7 +235,7 @@
           "." 'spacemacs/org-agenda-transient-state/body))
 
       ;; {{
-      ;; @see: https://emacs.stackexchange.com/questions/22396/export-without-links
+      ;; @See: https://emacs.stackexchange.com/questions/22396/export-without-links
       (with-eval-after-load 'ox
         (defun custom-pdf-link-filter (link backend info)
           "Rewrite `org' file links in export to preserve link text only."
@@ -248,10 +248,10 @@
 
       ;; {{
       ;; The `%i' would copy the selected text into the template.
-      ;; @see: http://www.howardism.org/Technical/Emacs/journaling-org.html
+      ;; @See: http://www.howardism.org/Technical/Emacs/journaling-org.html
       ;; %a          Annotation, normally the link created with org-store-link.
       ;; %A          Like %a, but prompt for the description part.
-      ;; @see: https://stackoverflow.com/questions/28417026/org-mode-capture-templates
+      ;; @See: https://stackoverflow.com/questions/28417026/org-mode-capture-templates
       ;; Add multi-file journal.
       ;; }}
       (setq org-capture-templates
@@ -470,7 +470,7 @@
       (setq org-hugo-base-dir "..")
 
       ;; {{
-      ;; @see: https://github.com/vascoferreira25/org-mode-incremental-reading
+      ;; @See: https://github.com/vascoferreira25/org-mode-incremental-reading
       ;; org-protocol support for opening a file - needed for ‘my-anki-editor-backlink’.
       (add-to-list
        'org-protocol-protocol-alist
@@ -492,7 +492,7 @@
       ;; }}
 
       ;; {{
-      ;; @see: https://discourse.devontechnologies.com/t/org-mode-emacs-support/22396/6
+      ;; @See: https://discourse.devontechnologies.com/t/org-mode-emacs-support/22396/6
       (defun hurricane//org-dtp-open (record-location)
         "Visit the dtp message with the given Message-ID."
         (eshell-command (concat "open x-devonthink-item:" record-location)))
@@ -558,7 +558,7 @@
   (spacemacs|use-package-add-hook org :post-config (require 'org-emacs-lisp)))
 
 ;; {{
-;; @see: https://github.com/gregsexton/ob-ipython
+;; @See: https://github.com/gregsexton/ob-ipython
 ;; Set ob-ipython-command to the path of jupyter, must be be corresponding to
 ;; the path of ipython virtual envirnment which is setting by
 ;; '(setq venv-location virtualenv-dir)'.
@@ -595,7 +595,7 @@
       "iDp" 'org-download-clipboard)))
 
 ;; {{
-;; @see: https://github.com/tumashu/org2ctex
+;; @See: https://github.com/tumashu/org2ctex
 (defun hurricane-org/init-org2ctex ()
   (use-package org2ctex
     :after org
@@ -730,24 +730,23 @@
 
 (defun hurricane-org/init-ox-html ()
   (spacemacs|use-package-add-hook org
-    :post-init
+    :post-config
     (require 'ox-html)))
 
 (defun hurricane-org/init-ox-publish ()
   (spacemacs|use-package-add-hook org
-    :post-init
+    :post-config
     (require 'ox-publish)))
 
 (defun hurricane-org/init-simple-httpd ()
   (use-package simple-httpd
-    :ensure t
     :config
     (setq httpd-root blog-dir)))
 
 ;; Version: 20220121.2350
 (defun hurricane-org/pre-init-org-roam ()
   (spacemacs|use-package-add-hook org-roam
-  :post-init
+  :post-config
   (setq org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
   (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
   (setq org-roam-capture-templates
@@ -769,8 +768,8 @@
       ("r" "ref" plain ""
        :target (file+head "${slug}.org"
                           "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
-       :unnarrowed t)))
-  ))
+       :unnarrowed t)
+      ))))
 
 (defun hurricane-org/post-init-org-roam ()
   (with-eval-after-load 'org-roam
@@ -795,8 +794,7 @@
         (concat
          (if (> level 0) (concat filetitle " > "))
          (if (> level 1) (concat (string-join olp " > ") " > "))
-         title))
-      )
+         title)))
 
     (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
     (setq org-roam-extract-new-file-path "${slug}.org")
@@ -826,7 +824,7 @@
                                816 ; U+0330 COMBINING TILDE BELOW
                                817 ; U+0331 COMBINING MACRON BELOW
                                )))
-          (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
+        (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
                    (strip-nonspacing-marks (s)
                                              (string-glyph-compose
                                               (apply #'string
@@ -950,12 +948,13 @@ Return nil if not found."
 
 (defun hurricane-org/init-anki-editor ()
   (use-package anki-editor
+    :ensure t
     :diminish anki-editor-mode))
 
 ;; bilibili：必须使用猫抓获取真实视频地址。
 (defun hurricane-org/init-org-media-note ()
   (use-package org-media-note
-    :defer t
+    :ensure t
     :hook (after-init . org-media-note-mode)
     :init
     (spacemacs/set-leader-keys "av" #'org-media-note-hydra/body)
@@ -1092,10 +1091,11 @@ Return nil if not found."
 
 (defun hurricane-org/init-mpv ()
   (use-package mpv
-    :defer t))
+    :ensure t))
 
 (defun hurricane-org/init-shrface ()
   (use-package shrface
+    :ensure t
     :config
     (shrface-basic)
     (shrface-trial)
@@ -1103,10 +1103,12 @@ Return nil if not found."
     (setq shrface-href-versatile t)))
 
 (defun hurricane-org/init-e2ansi ()
-  (use-package e2ansi))
+  (use-package e2ansi
+    :ensure t))
 
 (defun hurricane-org/init-org-super-links ()
-  (use-package org-super-links))
+  (use-package org-super-links
+    :ensure t))
 
 (defun hurricane-org/init-incremental-reading ()
   (use-package incremental-reading
@@ -1510,15 +1512,20 @@ marked file."
   (use-package helm-org-ql
     :ensure t))
 
+(with-eval-after-load 'org-re-reveal
+ (progn
+  (setq org-re-reveal-root "./reveal.js"
+        org-re-reveal-with-tts nil)
+  (setq org-re-reveal-extra-scripts '("https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.js"))
+  (add-to-list 'org-re-reveal-plugin-config '(audioslideshow "RevealAudioSlideshow" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/plugin.js"))
+  (add-to-list 'org-re-reveal-plugin-config '(audiorecorder "RevealAudioRecorder" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"))
+  (add-to-list 'org-re-reveal-plugin-config '(anything "RevealAnything" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js"))
+  (add-to-list 'org-re-reveal-plugin-config '(customcontrols "RevealCustomControls" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"))
+  ))
+
 (defun hurricane-org/init-oer-reveal ()
-  (spacemacs|use-package-add-hook org
-    :post-config
-    (require 'oer-reveal-publish)
-    (setq oer-reveal-plugin-4-config
-				  "audioslideshow RevealAudioSlideshow "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/plugin.js"
-audiorecorder RevealAudioRecorder "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"
-anything RevealAnything https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js
-customcontrols RevealCustomControls plugin/customcontrols/plugin.js")))
+  (use-package oer-reveal
+    :ensure t))
 
 (defun hurricane-org/init-emacsconf-el ()
   (use-package emacsconf-el

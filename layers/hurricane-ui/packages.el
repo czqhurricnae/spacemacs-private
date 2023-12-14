@@ -18,7 +18,7 @@
     ))
 
 ;; {{
-;; @see: https://github.com/hlissner/emacs-doom-themes
+;; @See: https://github.com/hlissner/emacs-doom-themes
 (defun hurricane-ui/init-doom-themes ()
   (use-package doom-themes
     ;; :init
@@ -45,7 +45,7 @@
                                                              venv-postdeactivate-hook)))
 
 ;; {{
-;; @see: https://github.com/hlissner/emacs-hide-mode-line
+;; @See: https://github.com/hlissner/emacs-hide-mode-line
 (defun hurricane-ui/init-hide-mode-line ()
   (use-package hide-mode-line
     :defer t
@@ -75,7 +75,7 @@
                   (spacemacs/toggle-pangu-spaceing-on)))))
 
 ;; {{
-;; @see: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
+;; @See: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
 (defun hurricane//define-evil-normal-keybinding (key def &rest bindings)
   "Binding keys and func for normal state map and motion state map."
   (while key

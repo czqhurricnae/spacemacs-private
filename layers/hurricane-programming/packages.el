@@ -79,8 +79,8 @@
       '(spacemacs|hide-lighter ycmd-mode))))
 
 ;; {{
-;; @see: https://github.com/slime/slime
-;; @see: https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/common-lisp
+;; @See: https://github.com/slime/slime
+;; @See: https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/common-lisp
 ;; This layer defaults to using sbcl.
 ;; $ brew install sbcl
 ;; Set your lisp system and, optionally, some contribs.
@@ -98,8 +98,8 @@
     (add-to-list 'dash-at-point-mode-alist '(c-mode . "C"))))
 
 ;; {{
-;; @see: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
-;; @see: https://github.com/flycheck/flycheck/issues/997
+;; @See: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
+;; @See: https://github.com/flycheck/flycheck/issues/997
 ;; $ npm install -g eslint babel-eslint eslint-plugin-react js-beautify prettier
 ;; $ cd XXX
 ;; $ eslint --init

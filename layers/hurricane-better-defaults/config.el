@@ -48,17 +48,17 @@
          (indent-region (region-beginning) (region-end) nil))))))
 
 ;; {{
-;; @see: https://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
-;; @see: https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
+;; @See: https://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
+;; @See: https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
 ;; This settings will cause command `vc-annotate' failed.
-;; 如果把 `vc-handled-backends' 去掉,那么 `vc-follow-symlinks' 这个选项就会失效.
-;; 进而, 如果你访问一个在版本控制里面的 alias的话, 它不会自动去访问原文件, 这个是非常不爽的.
+;; 如果把 `vc-handled-backends' 去掉，那么 `vc-follow-symlinks' 这个选项就会失效。
+;; 进而，如果你访问一个在版本控制里面的 alias的话，它不会自动去访问原文件， 这个是非常不爽的。
 ;; (setq vc-handled-backends ())
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
 ;; }}
 
 ;; {{
-;; @see: http://batsov.com/emacsredux/blog/2015/05/09/emacs-on-os-x/
+;; @See: http://batsov.com/emacsredux/blog/2015/05/09/emacs-on-os-x/
 (setq large-file-warning-threshold 100000000)
 ;; }}
 
@@ -100,7 +100,7 @@
           (make-directory dir t))))))
 
 ;; {{
-;; @see: http://emacs.stackexchange.com/questions/13970/fixing-double-capitals-as-i-type
+;; @See: http://emacs.stackexchange.com/questions/13970/fixing-double-capitals-as-i-type
 (defun dcaps-to-scaps ()
   "Convert word in `DOuble CApitals' to `Single Capitals'."
   (interactive)
@@ -148,7 +148,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
               (set (make-local-variable 'electric-pair-mode) nil)))
 
 ;; {{
-;; @see: http://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html
+;; @See: http://trey-jackson.blogspot.com/2010/04/emacs-tip-36-abort-minibuffer-when.html
 (defun hurricane/stop-using-minibuffer ()
   "kill the minibuffer."
   (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
@@ -162,13 +162,13 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 (electric-pair-mode t)
 
 ;; {{
-;; @see: https://www.reddit.com/r/emacs/comments/4xhxfw/how_to_tune_the_behavior_of_eletricpairmode/
+;; @See: https://www.reddit.com/r/emacs/comments/4xhxfw/how_to_tune_the_behavior_of_eletricpairmode/
 (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
 ;; (show-paren-mode t)
 ;; }}
 
 ;; {{
-;; @see: http://oremacs.com/2015/01/17/setting-up-ediff/
+;; @See: http://oremacs.com/2015/01/17/setting-up-ediff/
 (defmacro csetq (variable value)
   `(funcall (or (get ',variable 'custom-set)
                 'set-default)
@@ -187,14 +187,14 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 
 ;; {{
 ;; Search chinse must add this line.
-;; @see: https://emacs-china.org/t/emacs-helm-ag/6764
+;; @See: https://emacs-china.org/t/emacs-helm-ag/6764
 (if (spacemacs/system-is-mswindows)
     (modify-coding-system-alist 'process "rg" '(utf-8 . chinese-gbk-dos))
   (modify-coding-system-alist 'process "rg" '(utf-8 . utf-8)))
 ;; }}
 
 ;; {{
-;; @see: https://emacs-china.org/t/advice/7566
+;; @See: https://emacs-china.org/t/advice/7566
 (defun hurricane//advice-remove-button (function)
   "Add a button to remove advice."
   (when (get-buffer "*Help*")
@@ -220,7 +220,7 @@ Converts words in `DOuble CApitals' to `Single Capitals' as you type."
 (advice-add 'describe-function-1 :after #'hurricane//advice-remove-button)
 ;; }}
 
-;; 使用 `counsel-git' 查找文件的时候，忽略指定后缀的文件.
+;; 使用 `counsel-git' 查找文件的时候，忽略指定后缀的文件。
 (when (spacemacs/system-is-mswindows)
   (setq counsel-git-cmd "git ls-files --full-name -- \":!:*.js.meta\" \":!:*.meta\" \":!:.DS_Store\""))
 

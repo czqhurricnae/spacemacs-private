@@ -109,8 +109,8 @@
   (redraw-frame))
 
 ;; {{
-;; @see: https://emacs-china.org/t/inconsolata/7997/11
-;; @see: https://blog.csdn.net/xh_acmagic/article/details/78939246
+;; @See: https://emacs-china.org/t/inconsolata/7997/11
+;; @See: https://blog.csdn.net/xh_acmagic/article/details/78939246
 (defun hurricane/better-font()
   (interactive)
   ;; English font.

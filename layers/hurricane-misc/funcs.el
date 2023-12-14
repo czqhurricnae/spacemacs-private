@@ -2,7 +2,7 @@
   (eq system-type 'darwin)
   "Are we running on a Mac system?")
 
-;; @see: https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+;; @See: https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
 (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
   `(eval-after-load (quote ,(if r r m))
      '(progn
@@ -50,8 +50,8 @@
   (persp-save-state-to-file (concat persp-save-dir "hurricane")))
 
 ;; {{
-;; @see: http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
-;; @see: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
+;; @See: http://blog.binchen.org/posts/use-ivy-mode-to-search-bash-history.html
+;; @See: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun hurricane/counsel-yank-bash-history ()
   "Yank the `zsh' history."
   (interactive)
@@ -126,7 +126,7 @@
   (if (not (eq last-command-event 13))
       (git-timemachine-quit)))
 
-;; @see: http://blog.binchen.org/posts/new-git-timemachine-ui-based-on-ivy-mode.html
+;; @See: http://blog.binchen.org/posts/new-git-timemachine-ui-based-on-ivy-mode.html
 (defun hurricane//git-timemachine-show-selected-revision ()
   "Show last (current) revision of file."
   (let (collection)
@@ -180,7 +180,7 @@ e.g. `Sunday, September 17, 2000'."
   (interactive)
   (insert (format-time-string "%A, %B %e, %Y")))
 
-;; @see: https://github.com/syohex/emacs-browser-refresh/blob/master/browser-refresh.el
+;; @See: https://github.com/syohex/emacs-browser-refresh/blob/master/browser-refresh.el
 (defun hurricane//browser-refresh--chrome-applescript ()
   (interactive)
   (do-applescript
@@ -283,7 +283,7 @@ e.g. `Sunday, September 17, 2000'."
 (defalias 'tt 'hurricane/terminal)
 
 ;; {{
-;; @see: http://kuanyui.github.io/2014/01/18/count-chinese-japanese-and-english-words-in-emacs/
+;; @See: http://kuanyui.github.io/2014/01/18/count-chinese-japanese-and-english-words-in-emacs/
 ;; Add count for chinese, mainly used for writing chinese blog post.
 (defvar wc-regexp-chinese-char-and-punc
   (rx (category chinese)))
@@ -354,7 +354,7 @@ e.g. `Sunday, September 17, 2000'."
     (locate-dominating-file directory ".git")))
 
 ;; {{
-;; @see: http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/
+;; @See: http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/
 (defun hurricane//iterm-shell-command (command &optional prefix)
   "Cd to `default-directory' then run COMMAND in iTerm.
 with PREFIX, cd to project root."
@@ -718,7 +718,7 @@ Else, returns STRING."
     "end tell")))
 
 ;; {{
-;; @see: https://emacs-china.org/t/macos/10219
+;; @See: https://emacs-china.org/t/macos/10219
 ;; (setq english-ID-map '("1" . "美国"))
 ;; (setq chinese-ID-map '("2" . "搜狗拼音"))
 
@@ -760,7 +760,7 @@ Else, returns STRING."
 ;; }}
 
 ;; {{
-;; @see: https://emacs-china.org/t/topic/5518
+;; @See: https://emacs-china.org/t/topic/5518
 (defun hurricane//chrome-tabs ()
   "Return `Chrome' tabs."
   (let ((script
@@ -1518,7 +1518,7 @@ Version 2019-02-12 2021-08-09"
   (let ((video-url url)
         (subtitle-file (and buffer-file-name (file-truename (buffer-file-name))))
         (socket-file (subed-mpv--socket))
-        (buffer (generate-new-buffer "*you-get formats*")))
+        (buffer (get-buffer-create "*you-get formats*")))
     (while (string-equal video-url "")
       (setq video-url (read-string "Please input the URL to play: "
                                    nil nil "" nil)))
@@ -1897,3 +1897,50 @@ Version 2019-02-12 2021-08-09"
               (popweb-start 'popweb-org-roam-link-preview (list t processed-html-string nil nil))))
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world" nil nil))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
+
+(setq reveal-project-directory "~/Downloads/")
+
+(defun hurricane/reveal-cut-video ()
+  (interactive)
+  (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
+                                                         ;; output full file path
+                                                         (format
+                                                          "%saudio/%s/reveal_cut_%s.mp4"
+                                                          (expand-file-name reveal-project-directory)
+                                                          (file-name-sans-extension (buffer-name))
+                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p"))
+                                                         ;; start timestamp
+                                                         (replace-regexp-in-string
+                                                          "," "."
+                                                          (subed-msecs-to-timestamp
+                                                          subed-mpv-playback-position))
+                                                         ;; stop timestamp
+                                                         (replace-regexp-in-string
+                                                          "," "."
+                                                          (subed-msecs-to-timestamp
+                                                           (+ subed-mpv-playback-position
+                                                              (- (subed-subtitle-msecs-stop)
+                                                                 (subed-subtitle-msecs-start)))))
+                                                         ;; duration
+                                                         (- (subed-subtitle-msecs-stop)
+                                                            (subed-subtitle-msecs-start))
+                                                         "get_property"
+                                                         "path")))
+
+(defun hurricane/reveal--cut-video (final-cmd full-file-path)
+  (setq reveal-cut-video-out-put-file full-file-path)
+  (let* ((final-cmd final-cmd)
+         (buffer (get-buffer-create "*ffmpeg reveal cut video*"))
+         (process
+          (start-process-shell-command
+           "hurricane/reveal-cut-video"
+           buffer
+           final-cmd)))
+    (message "%s"  final-cmd)
+    (set-process-sentinel
+     process
+     (lambda (proc event)
+       (when (equal event "finished\n")
+         (insert (concat "[[file:" reveal-cut-video-out-put-file "]]"))
+         )))
+    t))

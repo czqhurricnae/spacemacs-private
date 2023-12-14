@@ -129,7 +129,7 @@
 ;;           </html>")))
 ;; }}
 
-;;{{ @see https://vicarie.in/posts/blogging-with-org.html
+;;{{ @See https://vicarie.in/posts/blogging-with-org.html
 (defun sitemap-format-entry (entry _style project)
   "Return string for each ENTRY in PROJECT."
   (format "@@html:<span class=\"archive-item\"><span class=\"archive-date\">@@ %s @@html:</span>@@ [[file:%s][%s]] @@html:</span>@@"

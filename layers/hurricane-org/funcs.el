@@ -475,11 +475,11 @@ should only be used in org-mode."
                     file-name))))
 
 ;; {{
-;; @see: https://github.com/JamieMason/ImageOptim-CLI#installation
+;; @See: https://github.com/JamieMason/ImageOptim-CLI#installation
 ;; $ brew update
 ;; $ brew install imageoptim-cli
-;; @see: https://imageoptim.com/mac
-;; @see: https://pngmini.com/
+;; @See: https://imageoptim.com/mac
+;; @See: https://pngmini.com/
 ;; Download & install.
 (defun hurricane/org-image-save ()
   (interactive)
@@ -1147,7 +1147,7 @@ Otherwise return word around point."
 (define-key global-map (kbd "<f3>") #'hurricane/anki-editor-find-notes)
 ;;}}
 
-;; @see: https://github.com/org-noter/org-noter/issues/35
+;; @See: https://github.com/org-noter/org-noter/issues/35
 ;; {{
 (defun hurricane//outline-show-entry ()
   "Show the body directly following this heading.

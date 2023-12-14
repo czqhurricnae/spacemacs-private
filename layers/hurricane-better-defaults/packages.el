@@ -112,7 +112,7 @@
     (setq dired-recursive-copies 'always)
 
     ;; {{
-    ;; @see: https://oremacs.com/2017/03/18/dired-ediff/
+    ;; @See: https://oremacs.com/2017/03/18/dired-ediff/
     (defun ora-ediff-files ()
       (interactive)
       (let ((files (dired-get-marked-files))

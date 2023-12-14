@@ -77,6 +77,12 @@
         nov
         (goldendict-ng :location (recipe :fetcher github
                                          :repo "benthamite/goldendict-ng"))
+        (compile-media :location (recipe :fetcher github
+                                         :repo "sachac/compile-media"))
+        (subed-record :location (recipe :fetcher github
+                                        :repo "sachac/subed-record"))
+        (immersive-translate :location (recipe :fetcher github
+                                               :repo "Elilif/emacs-immersive-translate"))
         ))
 
 (defconst sys/macp
@@ -115,7 +121,7 @@
       (add-to-list 'golden-ratio-exclude-buffer-names n))))
 
 ;; {{
-;; @see: https://emacs-china.org/t/ranger-golden-ratio/964/2
+;; @See: https://emacs-china.org/t/ranger-golden-ratio/964/2
 (defun hurricane-misc/post-init-ranger ()
   (defun hurricane/ranger ()
     (interactive)
@@ -626,7 +632,7 @@
 
     ;; {{
     ;; Unbinding Evil's mappings.
-    ;; @see: https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
+    ;; @See: https://stackoverflow.com/questions/24988406/unbinding-evils-c-w-mappings
     (eval-after-load "evil-maps"
       (dolist (map '(evil-motion-state-map
                      evil-insert-state-map
@@ -708,7 +714,7 @@
       (bind-key* "s--" 'mc/skip-to-previous-like-this)
       (bind-key* "s-`" 'mc/mark-all-like-this)
 
-      ;; @see: http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
+      ;; @See: http://endlessparentheses.com/multiple-cursors-keybinds.html?source=rss
       (define-prefix-command 'endless/mc-map)
       ;; `C-x m' is usually `compose-mail'. Bind it to something.
       ;; Else if you use this command.
@@ -947,8 +953,8 @@
 
 ;; {{
 ;; Fix: markdown failed with exit code 127.
-;; @see: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
-;; @see: https://github.com/jrblevin/markdown-mode/issues/177
+;; @See: [[file:~/.emacs.d/elpa/markdown-mode-20180904.1601/markdown-mode.el::(markdown-standalone%20(or%20output-buffer-name%20markdown-output-buffer-name))))]]
+;; @See: https://github.com/jrblevin/markdown-mode/issues/177
 (defun hurricane-misc/post-init-markdown-mode ()
   (progn
     (add-to-list 'auto-mode-alist '("\\.mdown\\'" . markdown-mode))
@@ -964,7 +970,7 @@
 ;; }}
 
 ;; {{
-;; @see: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
+;; @See: http://wikemacs.org/wiki/Shell#Search_the_bash.2C_zsh_or_fish_history_with_Ivy-mode
 (defun hurricane-misc/post-init-shell-mode ()
   (spacemacs|use-package-add-hook shell-mode
     :post-config
@@ -989,7 +995,7 @@
       (add-hook 'shell-mode-hook #'company-mode)
       (define-key shell-mode-map (kbd "TAB" #'company-manual-begin))
 
-      ;; @see: https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
+      ;; @See: https://stackoverflow.com/questions/20952995/emacs-shell-change-directory-with-ido
       ;; Change directory with ido.
       ;; Ido will keep asking for subdirectory after selecting directory with `RET', to finish selection press `C-RET'.
       (require 'ido)
@@ -1483,6 +1489,9 @@
     :ensure t
     :load-path ("~/emacs-config/default/elpa/28.3/develop/subed-20231129.61416/subed" "~/emacs-config/default/elpa/28.3/develop/subed-20231129.61416")
     :init
+    (require 'subed-vtt)
+    (require 'subed-srt)
+    (require 'subed-ass)
     ;; (require 'subed-autoloads)
 
     (defun hurricane/subed--send-sentence-to-Anki (source-path translation)
@@ -1516,7 +1525,7 @@
 
     (defun hurricane/subed-send-sentence-to-Anki ()
       (interactive)
-      (python-bridge-call-async "mpv" (list (substring-no-properties (subed-subtitle-text)) (subed-mpv--socket) "get_property" "path")))
+      (python-bridge-call-async "mpv_send_sentence_to_anki" (list (substring-no-properties (subed-subtitle-text)) (subed-mpv--socket) "get_property" "path")))
 
     :config
     ;; (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
@@ -1590,7 +1599,7 @@
     (evil-define-key '(normal) subed-mode-map (kbd "r") #'subed-mpv-jump-to-current-subtitle)
     (evil-define-key '(normal) subed-mode-map (kbd "p") #'subed-mpv-toggle-pause)
     ;; 因为系统默认版本 python3.11 无法安装 aeneas，只能使用 python3.7 安装成功。
-    ;; @see：https://github.com/readbeyond/aeneas/issues/285#issuecomment-1237726917
+    ;; @See：https://github.com/readbeyond/aeneas/issues/285#issuecomment-1237726917
     (setq subed-align-command '("python3.7" "-m" "aeneas.tools.execute_task"))
     ))
 
@@ -1753,3 +1762,19 @@ Works only in youtube-sub-extractor-mode buffer."
     (setq goldendict-ng-executable "/Applications/GoldenDict.app/Contents/MacOS/GoldenDict")
     (setq goldendict-ng-narrow-groups-to-matching-languages t)
     ))
+
+(defun hurricane-misc/init-compile-media ()
+  (use-package compile-media
+    :ensure t))
+
+(defun hurricane-misc/init-subed-record ()
+  (use-package subed-record
+    :ensure t
+    :config
+    (setq subed-record-backend 'sox)))
+
+(defun hurricane-misc/init-immersive-translate ()
+  (use-package immersive-translate
+    :ensure t
+    :config
+    (setq immersive-translate-backend 'deeplx)))

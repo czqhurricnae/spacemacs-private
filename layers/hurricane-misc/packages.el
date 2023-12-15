@@ -1494,38 +1494,67 @@
     (require 'subed-ass)
     ;; (require 'subed-autoloads)
 
-    (defun hurricane/subed--send-sentence-to-Anki (source-path translation)
-      (setq subed-sentence (substring-no-properties (subed-subtitle-text)))
-      (setq subed-mp3 (format "subed_%s.mp3" (format-time-string "%Y_%m_%d_%-I_%M_%p")))
-      (setq subed-screenshot (format "subed_%s.png" (format-time-string "%Y_%m_%d__%-I_%M_%p")))
-      (setq timestamp-start (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-start))))
-      (setq timestamp-stop (replace-regexp-in-string "," "." (subed-msecs-to-timestamp (subed-subtitle-msecs-stop))))
+    (defun hurricane/subed--send-sentence-to-Anki (final-cmd mp3 sentence translation screenshot)
+      (setq subed-mp3 mp3)
+      (setq subed-sentence sentence)
       (setq subed-translation translation)
-      (if (equal (file-name-extension source-path) "mp3")
-          (progn
-            (setq final-cmd (format "ffmpeg -ss %s -to %s -i \"%s\" -acodec copy \"%s%s\"" timestamp-start timestamp-stop source-path (expand-file-name Anki-media-dir) subed-mp3))
-            (setq screenshot-arg ""))
-        (progn
-          (setq final-cmd (format "ffmpeg -hide_banner -nostdin -y -loglevel quiet -sn -vn  -ss %s -to %s -i \"%s\" -map_metadata -1 -map 0:1 -ac 1 -codec:a libmp3lame -vbr on -compression_level 10 -application voip -b:a 24k \"%s%s\" && ffmpeg -hide_banner -nostdin -y -loglevel quiet -sn -an -ss %s -i \"%s\" -map_metadata -1 -vcodec mjpeg -lossless 0 -compression_level 6 -qscale:v 15 -vf scale=-2:200 -vframes 1 \"%s%s\"" timestamp-start timestamp-stop source-path (expand-file-name Anki-media-dir) subed-mp3 timestamp-stop source-path (expand-file-name Anki-media-dir) subed-screenshot))
-          (setq screenshot-arg (format "<img src=\"%s\">" subed-screenshot))))
-      (let* ((proc
-              (start-process-shell-command
-               "hurricane/subed-send-sentence-to-Anki"
-               nil
-               final-cmd)))
-        (message "%s" final-cmd)
-        (set-process-sentinel
-         proc
-         (lambda (proc event)
-           (when (equal event "finished\n")
-             (anki-add-card Anki-deck-name (format "[sound:%s]" subed-mp3) subed-sentence subed-translation screenshot-arg "subs2srs")
-             )))
-        t)
-      )
+      (setq subed-screenshot screenshot)
+      (setq subed-screenshot-arg (format "<img src=\"%s\">" (file-name-nondirectory subed-screenshot)))
+
+      (let* ((final-cmd final-cmd)
+            (buffer (get-buffer-create "*subed send sentence to Anki*"))
+            (process
+             (start-process-shell-command
+              "hurricane/subed-send-sentence-to-Anki"
+              buffer
+              final-cmd)))
+
+       (message "%s" final-cmd)
+
+       (set-process-sentinel
+        process
+        (lambda (proc event)
+          (when (equal event "finished\n")
+            (anki-add-card Anki-deck-name
+                           (format "[sound:%s]" (file-name-nondirectory subed-mp3))
+                           subed-sentence
+                           subed-translation
+                           subed-screenshot-arg
+                           "subs2srs")
+            )))
+       t))
 
     (defun hurricane/subed-send-sentence-to-Anki ()
       (interactive)
-      (python-bridge-call-async "mpv_send_sentence_to_anki" (list (substring-no-properties (subed-subtitle-text)) (subed-mpv--socket) "get_property" "path")))
+      (python-bridge-call-async "mpv_send_sentence_to_anki" (list (subed-mpv--socket)
+                                                                  ;; mp3 full file path
+                                                                  (format
+                                                                   "%s%s"
+                                                                   (expand-file-name Anki-media-dir)
+                                                                   (format
+                                                                    "subed_%s.mp3"
+                                                                    (format-time-string "%Y_%m_%d_%-I_%M_%p")))
+                                                                  ;; start timestamp
+                                                                  (replace-regexp-in-string
+                                                                   "," "."
+                                                                   (subed-msecs-to-timestamp (subed-subtitle-msecs-start)))
+                                                                  ;; stop timestamp
+                                                                  (replace-regexp-in-string
+                                                                   "," "."
+                                                                   (subed-msecs-to-timestamp (subed-subtitle-msecs-stop)))
+                                                                  ;; duration
+                                                                  (- (subed-subtitle-msecs-stop)
+                                                                     (subed-subtitle-msecs-start))
+                                                                  ;; screenshot
+                                                                  (format
+                                                                   "%s%s"
+                                                                   (expand-file-name Anki-media-dir)
+                                                                   (format "subed_%s.png"
+                                                                           (format-time-string "%Y_%m_%d_%-I_%M_%p")))
+                                                                  ;; subtitle
+                                                                  (substring-no-properties
+                                                                   (subed-subtitle-text))
+                                                                  "get_property" "path")))
 
     :config
     ;; (add-to-list 'subed-mpv-arguments "--no-sub-visibility")

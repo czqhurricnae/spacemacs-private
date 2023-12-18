@@ -1,0 +1,45 @@
+#render-footer {
+    position: fixed;
+	  height: 15vh;
+	  z-index: 20;
+	  width: 100%;
+	  text-align: center;
+	  white-space: nowrap;
+	  padding-top: 0.5vh;
+	  padding-bottom: 0.5vh;
+}
+
+#render-footer {
+    visibility: visible;
+	  opacity: 1;
+	  transition: visibility 0s, opacity 800ms ease-in-out;
+    bottom: 40px;
+}
+
+#render-div {
+    width: 100%;
+	  height: 100%;
+	  overflow: hidden;
+	  letter-spacing: 0em;
+}
+#render-div > div > div > div {
+    margin: 0px;visibility: visible;padding-bottom: 1.5vh;
+}
+
+#render-div span {
+	  font-size: 4.8vh;
+    color: yellow;
+    margin-bottom: 1.5vh;
+}
+
+div.accessibilityWrapper > h2 {
+    display: none;
+}
+
+div.audio-controls {
+    display: none;
+}
+
+aside.controls {
+    display: none;
+}

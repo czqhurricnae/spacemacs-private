@@ -75,6 +75,10 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/国产大飞机 C919 绕飞香港后，何时也能翱翔我国西藏高原/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/遥感卫星-比火眼金睛还火眼金睛/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Downloading partial YouTube videos with ffmpeg/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/When GPS fails, how can weapons find their targets?/"))

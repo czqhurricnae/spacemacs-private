@@ -1178,9 +1178,6 @@ Return nil if not found."
 ;; /usr/bin/env python3 -m pip install PyQt6 PyQtWebEngine epc
 ;; python3 -m pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6
 ;; 系统中存在 Python3.9 和 Python3.10 两种版本，如果原来的3.9 版本安装依赖，升级到3.10 后将无法使用，需要重新安装。
-;; (popweb-proxy-type provixy-type)
-;; (popweb-proxy-host provixy-host)
-;; (popweb-proxy-port provixy-port)
 ;; (setq popweb-enable-developer-tools t)
 (defun hurricane-org/init-popweb ()
   (use-package popweb
@@ -1257,6 +1254,9 @@ Return nil if not found."
 
     (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
+    (popweb-proxy-type provixy-type)
+    (popweb-proxy-host provixy-host)
+    (popweb-proxy-port provixy-port)
     (popweb-anki-review-media-directory Anki-media-dir)
     (popweb-org-roam-link-preview-media-directory Anki-media-dir)
     (popweb-anki-review-callback "popweb-dict-eudic-dicts-input")
@@ -1514,18 +1514,28 @@ marked file."
 
 (with-eval-after-load 'org-re-reveal
  (progn
-  (setq org-re-reveal-root "./reveal.js"
-        org-re-reveal-with-tts nil)
-  (setq org-re-reveal-extra-scripts '("https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.js"))
-  (add-to-list 'org-re-reveal-plugin-config '(audioslideshow "RevealAudioSlideshow" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/plugin.js"))
-  (add-to-list 'org-re-reveal-plugin-config '(audiorecorder "RevealAudioRecorder" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"))
-  (add-to-list 'org-re-reveal-plugin-config '(anything "RevealAnything" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js"))
-  (add-to-list 'org-re-reveal-plugin-config '(customcontrols "RevealCustomControls" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"))
+   (setq org-re-reveal-revealjs-version "4"
+         org-re-reveal-root "/reveal.js"
+         org-re-reveal-with-tts nil)
+   (setq org-re-reveal-extra-scripts '("https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.js" "https://unpkg.com/imsc@1.1.3/dist/imsc.all.min.js" "./reveal.js/third-party-plugins/imscJS.js" "./reveal.js/third-party-plugins/createSubtitle.js"))
+   (add-to-list 'org-re-reveal-plugin-config '(audioslideshow "RevealAudioSlideshow" "plugin/audio-slideshow/plugin.js"))
+   (add-to-list 'org-re-reveal-plugin-config '(audiorecorder "RevealAudioRecorder" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"))
+   (add-to-list 'org-re-reveal-plugin-config '(anything "RevealAnything" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js"))
+   (add-to-list 'org-re-reveal-plugin-config '(customcontrols "RevealCustomControls" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"))
   ))
 
 (defun hurricane-org/init-oer-reveal ()
   (use-package oer-reveal
-    :ensure t))
+    :ensure t
+    :config
+    (require 'oer-reveal-publish)
+
+    (setq oer-reveal-plugin-4-config
+				  "audioslideshow RevealAudioSlideshow plugin/audio-slideshow/plugin.js
+audiorecorder RevealAudioRecorder https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js
+anything RevealAnything https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js
+customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js")
+    (setq oer-reveal-export-dir reveal-project-directory)))
 
 (defun hurricane-org/init-emacsconf-el ()
   (use-package emacsconf-el

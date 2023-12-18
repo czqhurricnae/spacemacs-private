@@ -1898,8 +1898,6 @@ Version 2019-02-12 2021-08-09"
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world" nil nil))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
 
-(setq reveal-project-directory "~/Downloads/")
-
 (defun hurricane/reveal-cut-video ()
   (interactive)
   (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
@@ -1941,6 +1939,216 @@ Version 2019-02-12 2021-08-09"
      process
      (lambda (proc event)
        (when (equal event "finished\n")
-         (insert (concat "[[file:" reveal-cut-video-out-put-file "]]"))
+         (insert (concat "#+REVEAL_HTML: <video muted loop width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-video-out-put-file "\">"))
          )))
     t))
+
+(defvar hurricane//note-words-target 2800)
+
+(defun hurricane//org-collect-notes ()
+  (let (results)
+    (org-block-map
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+         (let ((elem (org-element-at-point)))
+           (when (string= (org-element-property :type elem) "notes")
+             (setq results
+                   (cons (string-trim
+                          (buffer-substring-no-properties
+                           (org-element-property :contents-begin elem)
+                           (org-element-property :contents-end elem)))
+                         results)))))))
+    (reverse results)))
+
+(defun hurricane/org-create-notes-buffer ()
+  (interactive)
+  (let ((notes (hurricane//org-collect-notes)))
+    (with-current-buffer (get-buffer-create "*Notes*")
+      (insert (string-join notes "\n\n"))
+      (switch-to-buffer (current-buffer)))))
+
+(defun hurricane/count-words-in-notes ()
+  (interactive)
+  (let ((notes (hurricane//org-collect-notes)))
+      (with-temp-buffer
+        (insert (string-join notes "\n"))
+        (let ((num (count-words-region (point-min) (point-max))))
+          (message "%d words (%.f%% of %d, %d to go)"
+                   num
+                   (/ (* 100.0 num) hurricane//note-words-target)
+                   my-note-words-target
+                   (- hurricane//note-words-target num))))))
+
+;; Make sure everything with notes has an :audio
+;; or :REVEAL_EXTRA_ATTR: data-audio-src="audio/overview.opus"
+(defun hurricane//reveal-slide-id ()
+  (replace-regexp-in-string
+   "^-\\|-$" ""
+   (replace-regexp-in-string
+    "[^A-Za-z0-9]+" "-"
+    (downcase (concat (string-join (org-get-outline-path) "-") "-" (org-entry-get (point) "ITEM"))))))
+
+(defun hurricane/reveal-slide-audio ()
+  (interactive)
+  (org-map-entries
+   (lambda ()
+     (org-entry-put
+      (point)
+      "REVEAL_EXTRA_ATTR"
+      (format "data-audio-src=\"audio/%s/%s.opus\" data-track-src=\"audio/%s/%s.ttml\""
+              (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
+              (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
+              )))
+   "-REVEAL_EXTRA_ATTR={.}"))
+
+(defun hurricane/reveal-comment-block-translate ()
+  (interactive)
+    (org-block-map
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+         (let ((text (org-element-property :value (org-element-at-point)))
+               (position (point)))
+           (when position
+            (python-bridge-call-async "reveal_comment_block_translate" (list text position))))
+         ))))
+
+(defun hurricane//reveal--comment-block-translate (translation position)
+  (goto-char position)
+  (insert (format "#+begin_notes\n%s#+end_notes\n" translation))
+  (newline-and-indent))
+
+(defun hurricane/reveal-notes-tts ()
+  (interactive)
+  (let ((ms 0)
+        results)
+    (org-block-map
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+         (let ((elem (org-element-at-point)))
+           (when (string= (org-element-property :type elem) "notes")
+             (let ((text (string-trim
+                          (buffer-substring-no-properties
+                           (org-element-property :contents-begin elem)
+                           (org-element-property :contents-end elem))))
+                   audio-output
+                   prev-fragment
+                   prev-heading
+                   prop)
+               (save-excursion (setq prev-heading (org-back-to-heading)))
+               (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+               (if prev-fragment
+                   (setq audio-output (match-string 1))
+                 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+                 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+                   (setq audio-output (expand-file-name (match-string 1 prop) default-directory))))
+               (emacs-azure-tts text audio-output t)
+               ))))))
+      ))
+
+(defun hurricane/reveal-cache-duration ()
+  (interactive)
+  (let ((proj-dir reveal-project-directory))
+    (org-map-entries
+     (lambda ()
+       (let ((prop (org-entry-get (point) "REVEAL_EXTRA_ATTR")))
+	 (when (and prop (string-match (format "audio/%s/[-A-Za-z0-9]+?\\.opus" (file-name-sans-extension (buffer-name))) prop))
+           (print (expand-file-name (match-string 0 prop)
+				    proj-dir))
+	   (org-entry-put (point) "AUDIO_DURATION_MS"
+			  (number-to-string
+			   (compile-media-get-file-duration-ms
+			    (expand-file-name (match-string 0 prop)
+					      proj-dir)))))))
+     "REVEAL_EXTRA_ATTR={.}")))
+
+(defun hurricane/reveal-notes-vtt ()
+  (interactive)
+  (let ((ms 0)
+	results)
+    (org-block-map
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+	 (let ((elem (org-element-at-point)))
+	   (when (string= (org-element-property :type elem) "notes")
+	     (let ((text (string-trim
+			  (buffer-substring-no-properties
+			   (org-element-property :contents-begin elem)
+			   (org-element-property :contents-end elem))))
+		   audio-output
+		   prev-fragment
+		   prev-heading
+		   prop)
+	       (save-excursion (setq prev-heading (org-back-to-heading)))
+	       (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+	       (if prev-fragment
+		   (setq audio-output (match-string 1))
+		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+                 (setq audio-duration (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS")))
+		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+		   (setq audio-output (match-string 1 prop))))
+	       (add-to-list
+		'results
+		(list nil ms (+ audio-duration ms)
+		      text
+		      (format "#+OUTPUT: %s" audio-output))
+		t)
+	       (setq ms (+ audio-duration ms))))))))
+    (with-current-buffer (get-buffer-create (format "%s.vtt" (file-name-sans-extension (buffer-name))))
+      (erase-buffer)
+      (subed-vtt-mode)
+      (subed-auto-insert)
+      (subed-append-subtitle-list results)
+      (display-buffer (current-buffer)))))
+
+(defun hurricane/reveal-cache-video-duration (&optional force)
+  (let ((proj-dir reveal-project-directory))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "\\(?:video:\\([-~/A-Za-z0-9]+.webm\\)\\|\\(https:[^ ]+\\.gif\\)\\|file:\\([-A-Za-z0-9:]+.gif\\)\\)" nil t)
+	(unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION")))
+ 	  (org-entry-put (point) "VIDEO_DURATION"
+			 (number-to-string
+			  (compile-media-get-file-duration-ms
+			   (or (expand-file-name (match-string 1))
+			       (match-string 2)
+			       (expand-file-name (match-string 3) proj-dir))))))))))
+
+(defun hurricane/reveal-slide-vtt ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (let ((ms 0)
+        audio-output
+	results)
+    (org-block-map
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+	 (let ((elem (org-element-at-point)))
+	   (when (string= (org-element-property :type elem) "notes")
+	     (let ((text (string-trim
+			  (buffer-substring-no-properties
+			   (org-element-property :contents-begin elem)
+			   (org-element-property :contents-end elem))))
+		   prev-fragment
+		   prev-heading
+		   prop)
+	       (save-excursion (setq prev-heading (org-back-to-heading)))
+	       (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+	       (if prev-fragment
+		   (setq audio-output (match-string 1))
+		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+                 (setq audio-duration (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS")))
+		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+		   (setq audio-output (match-string 1 prop))))
+	       (add-to-list
+		'results
+		(list nil ms (+ audio-duration ms)
+		      text
+		      (format "#+OUTPUT: %s" audio-output))
+		t)
+	       (setq ms (+ audio-duration ms))))))))
+    (with-current-buffer (find-file-noselect (format "%s.vtt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
+      (erase-buffer)
+      (subed-vtt-mode)
+      (subed-auto-insert)
+      (subed-append-subtitle-list results)
+      (display-buffer (current-buffer)))))

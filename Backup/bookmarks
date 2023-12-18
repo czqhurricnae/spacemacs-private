@@ -34,7 +34,7 @@
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://ludwig.guru/"))
-("Chrome插件,谷歌浏览器插件下载,chrome谷歌商店插件crx应用推荐与下载-扩展迷"
+("Chrome插件扩展迷"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://www.extfans.com/"))

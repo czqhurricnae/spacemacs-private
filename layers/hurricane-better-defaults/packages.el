@@ -189,8 +189,9 @@
 
     (ivy-add-actions
      'counsel-bookmark
-     '(("s" hurricane//bookmark-search-from-action "search-from")
-       ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")))
+     '(("s" hurricane//bookmark-search-from-action "@search-from")
+       ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")
+       ("b" hurricane//browse-url "@browse url")))
 
     (ivy-add-actions
      'counsel-file-jump

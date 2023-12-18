@@ -238,6 +238,10 @@ After this command has been run, any buffers it's modified will remain open and 
          (error "Bookmark %s is not a directory or do not exists." (bookmark-location x)))
         ))
 
+(defun hurricane//browse-url (x)
+  (browse-url (and (member x (bookmark-all-names))
+                   (bookmark-location x))))
+
 (defun hurricane//dired-copy-abs-filename-as-kill ()
   (interactive)
   (dired-copy-filename-as-kill 0))

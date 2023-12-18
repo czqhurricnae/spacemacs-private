@@ -1,0 +1,283 @@
+;;;; Emacs Bookmark Format Version 1;;;; -*- coding: utf-8-emacs; mode: lisp-data -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("EmacsConf - 2023 - talks - EmacsConf.org: How we use Org Mode and TRAMP to organize and run a multi-track conference"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://emacsconf.org/2023/talks/emacsconf/"))
+("VoiceTube | Learning English Online through Videos"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.voicetube.com/"))
+("脑袋瓜子"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.naodai.org/"))
+("Index of /uploads/Ludovicus/英语-搬运/Cambridge English Vocabulary in Use/"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://downloads.freemdict.com/uploads/Ludovicus/%E8%8B%B1%E8%AF%AD-%E6%90%AC%E8%BF%90/Cambridge%20English%20Vocabulary%20in%20Use/"))
+("EZABC 簡單背單字"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.ezabc.com.tw/"))
+("Dictionary by Merriam-Webster: America's most-trusted online dictionary"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.merriam-webster.com/"))
+("幕言AI | 在线文字转语音|智能自动打轴|主播配音|字幕转语音|语音合成配音|音文对齐工具|文章转视频工具"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.muyanpeiyin.com/"))
+("Ludwig • Find your English sentence"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://ludwig.guru/"))
+("Chrome插件,谷歌浏览器插件下载,chrome谷歌商店插件crx应用推荐与下载-扩展迷"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.extfans.com/"))
+("33台词 - 通过台词找影片素材"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://33.agilestudio.cn/"))
+("Python Data Science Handbook"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://jakevdp.github.io/PythonDataScienceHandbook/"))
+("中国民用航空局航空器适航审定司"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://amos.caac.gov.cn/#/home"))
+("互助联盟"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://u.xueshu86.com/"))
+("中国民航科学技术研究院"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "http://www.castc.org.cn/"))
+("代找PDF电子书-带书签目录"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.hdpdf.com/"))
+("风宇资料汇-民航"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "http://www.aircraft.work/"))
+("中国民用航空局"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "http://www.caac.gov.cn/index.html"))
+("在线资源互助"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://bk.5mbook.com/"))
+("中国知网"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.cnki.net/"))
+("中国民用航空维修协会"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "http://www.camac.org.cn/index.php"))
+("民航飞行标准监督管理系统"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://fsop.caac.gov.cn/indexNew.jsp"))
+("中国民用航空安全信息系统"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://safety.caac.gov.cn/index/initpage.act"))
+("免费在线视频解析下载网站"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.parsevideo.com/#53616c7465645f5fd29074c8db0f6479fc16199c80274783802983b701c56557fedcf8461b5b553a8c2c38c02344d9c7e0fa82c5a97f08a0c997f919989e143574b1ea61a2ac8586053e6e1c30cdf69b658bf32f9d551285d2d24c5f6ffac5e7dbd9f4ab535a1b38f5f857bbbfc29e66"))
+("从Youtube，Viki，Viu，Vlive等下载字幕"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://downsub.com/"))
+("哈工大第八版"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.bilibili.com/video/BV1E441117wS?p=18"))
+("在线LaTeX公式编辑器-编辑器"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.latexlive.com/home##"))
+("Collins English Sentences | Definitions, Translations, Example Sentences and Pronunciations"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.collinsdictionary.com/sentences/english"))
+("math"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://webdemo.myscript.com/views/math/index.html#"))
+("Dabeaz"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "http://www.dabeaz.com/index.html"))
+("电子书存档页面 | SaltTiger"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://salttiger.com/archives/comment-page-7/#comments"))
+("Linggle - Language Reference Search Engines - NLPLab"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://linggle.com/"))
+("Yandex"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://yandex.com/"))
+("capture"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "javascript:location.href = 'org-protocol:///capture-eww-readable?template=w&url=%27%20+%20encodeURIComponent(location.href)%20+%20%27&title=%27%20+%20encodeURIComponent(document.title%20||%20%22[untitled%20page]%22);"))
+("flowchart.fun"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://flowchart.fun/"))
+("Google"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.google.co.jp/"))
+("Learn Git Branching"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://learngitbranching.js.org/?locale=zh_CN"))
+("iData-知识检索"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.cn-ki.net/"))
+("Material Design Color Palette Generator"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.materialpalette.com/"))
+("CSS Reference"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://cssreference.io/"))
+("MacWk - 精品mac软件下载"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://macwk.cn/"))
+("搜狗微信搜索"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://weixin.sogou.com/"))
+("Mellow conf"
+ (filename . "~/Library/Application Support/Mellow/config/2023-11-22-2-23-17.conf")
+ (front-context-string . "int]\nClash, buil")
+ (rear-context-string)
+ (position . 7))
+("mpv conf"
+ (filename . "~/.config/mpv/mpv.conf")
+ (front-context-string . "--ytdl-raw-optio")
+ (rear-context-string . "27.0.0.1:59358]\n")
+ (position . 4704))
+("tor torrc"
+ (filename . "/usr/local/etc/tor/torrc")
+ (front-context-string . "UseBridges\nSocks")
+ (rear-context-string . "走 clash 代理或自行设置 ")
+ (position . 121))
+("provixy config"
+ (filename . "/usr/local/etc/privoxy/config")
+ (front-context-string)
+ (rear-context-string . " localhost:7890 ")
+ (position . 74236))
+("zme science"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.zmescience.com/"))
+("science magazine"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.freepdfmagazine.com/science/"))
+("Clash for Windows"
+ (filename . "~/.config/clash/profiles/")
+ (front-context-string . "1701067929452.ym")
+ (rear-context-string . " Dec  2 14:26   ")
+ (position . 133))
+("MarginStudy"
+ (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/")
+ (front-context-string . "59 Specific Ways")
+ (rear-context-string . " Jul 30  2018   ")
+ (position . 318))
+("org-refile-last-stored"
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/org-gtd-tasks.org")
+ (front-context-string . "** FC2\n:PROPERTI")
+ (rear-context-string . "1-02 Thu 10:24]\n")
+ (position . 1597))
+("Siming Lan"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.youtube.com/@SimingLan"))
+("SCMP"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.scmp.com/"))
+("Al Jazzera"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.aljazeera.com/"))
+("ted"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.youtube.com/@TEDEd/videos"))
+("mpv-www-gen"
+ (filename . "~/Downloads/mpv-www-gen/")
+ (front-context-string . "How to know if i")
+ (rear-context-string . " Feb 16 14:28   ")
+ (position . 608))
+("Downloads"
+ (filename . "~/Downloads/")
+ (front-context-string . "【2023合集】BBC 6分钟英")
+ (rear-context-string . " Feb 12 14:58   ")
+ (position . 1678))
+("notes"
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/")
+ (front-context-string . "CCAR396 民用航空安全信息")
+ (rear-context-string . " Jan  3 23:49   ")
+ (position . 16588))
+("Documents"
+ (filename . "~/Documents/")
+ (front-context-string . "论文期刊\n  -rw-r--r-")
+ (rear-context-string . " Nov 26 15:21   ")
+ (position . 6085))
+("static"
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/static/")
+ (front-context-string . "新浪云容器部署\n  drwxr-")
+ (rear-context-string . " Dec 13 19:56   ")
+ (position . 28321))
+("737"
+ (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/737/")
+ (front-context-string . "ATA22-2 自动驾驶.pdf")
+ (rear-context-string . " Jul  3  2021   ")
+ (position . 713))
+("论文期刊"
+ (filename . "~/Documents/论文期刊/")
+ (front-context-string . ".成都 Z 飞机维修公司航线维修")
+ (rear-context-string . " Jul 14 21:06   ")
+ (position . 393))
+("II 类"
+ (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/II 类/")
+ (front-context-string . ".00 飞机概述.pdf.icl")
+ (rear-context-string . " May 23  2021   ")
+ (position . 180))
+("微信公众号抓取链接汇总"
+ (filename . "~/Documents/微信公众号抓取链接汇总/")
+ (front-context-string . ".航佳技术_2021-03-20")
+ (rear-context-string . " Mar 21  2021   ")
+ (position . 221))
+("org-capture-last-stored"
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Downloading partial YouTube videos with ffmpeg.org")
+ (front-context-string . "[[https://til.si")
+ (rear-context-string . "EY:\n#+PAGE_KEY:\n")
+ (position . 468))
+("WebDownloads"
+ (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
+ (front-context-string . "FIM手册在波音飞机排故中的应用")
+ (rear-context-string . " May  1  2020   ")
+ (position . 15781))
+)

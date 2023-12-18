@@ -1301,6 +1301,7 @@
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf
     (setq eaf-screenshot-args (list "-i" "-x"))
+    (setq eaf-chrome-bookmark-file "~/Library/Application Support/Google/Chrome/Profile 1/Bookmarks")
 
     ;; /eaf/eaf.py
     ;; @PostGui

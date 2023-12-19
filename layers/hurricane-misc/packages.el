@@ -1493,6 +1493,7 @@
     (require 'subed-vtt)
     (require 'subed-srt)
     (require 'subed-ass)
+    (require 'subed-align)
     ;; (require 'subed-autoloads)
 
     (defun hurricane/subed--send-sentence-to-Anki (final-cmd mp3 sentence translation screenshot)
@@ -1553,9 +1554,15 @@
                                                                    (format "subed_%s.png"
                                                                            (format-time-string "%Y_%m_%d_%-I_%M_%p")))
                                                                   ;; subtitle
-                                                                  (substring-no-properties
-                                                                   (subed-subtitle-text))
+                                                                  (replace-regexp-in-string
+                                                                   "[\t\n\r]+" " "
+                                                                   (substring-no-properties
+                                                                   (subed-subtitle-text)))
                                                                   "get_property" "path")))
+
+    (defun hurricane//subed-popweb-anki-review-show ()
+      (interactive)
+      (funcall-interactively #'popweb-anki-review-show (replace-regexp-in-string "[\t\n\r]+" " " (substring-no-properties (subed-subtitle-text))) "P"))
 
     :config
     ;; (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
@@ -1628,6 +1635,7 @@
     (evil-define-key '(normal) subed-mode-map (kbd "7") #'hurricane/subed-send-sentence-to-Anki)
     (evil-define-key '(normal) subed-mode-map (kbd "r") #'subed-mpv-jump-to-current-subtitle)
     (evil-define-key '(normal) subed-mode-map (kbd "p") #'subed-mpv-toggle-pause)
+    (evil-define-key '(normal insert emacs) subed-mode-map (kbd "<f2>") #'hurricane//subed-popweb-anki-review-show)
     ;; 因为系统默认版本 python3.11 无法安装 aeneas，只能使用 python3.7 安装成功。
     ;; @See：https://github.com/readbeyond/aeneas/issues/285#issuecomment-1237726917
     (setq subed-align-command '("python3.7" "-m" "aeneas.tools.execute_task"))

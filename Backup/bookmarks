@@ -2,10 +2,16 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("EmacsConf - 2023 - talks - EmacsConf.org: How we use Org Mode and TRAMP to organize and run a multi-track conference"
- (handler . eaf--bookmark-restore)
- (eaf-app . "browser")
- (filename . "https://emacsconf.org/2023/talks/emacsconf/"))
+(("Ethical dilemma"
+ (filename . "~/Downloads/mpv-www-gen/Ethical dilemma Whose life is more valuable.srt")
+ (front-context-string . "\n44\n00:04:11,998")
+ (rear-context-string . "lly acceptable.\n")
+ (position . 4975))
+("https://sachachua.com/blog/"
+ (filename . "~/.spacemacs.d/")
+ (front-context-string . "snippets\n  drwxr")
+ (rear-context-string . " Jul  6  2020   ")
+ (position . 1116))
 ("VoiceTube | Learning English Online through Videos"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
@@ -34,7 +40,7 @@
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://ludwig.guru/"))
-("Chrome插件扩展迷"
+("Chrome插件,谷歌浏览器插件下载,chrome谷歌商店插件crx应用推荐与下载-扩展迷"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://www.extfans.com/"))

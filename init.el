@@ -776,7 +776,8 @@ you should place your code here."
   (setq eww-download-directory (concat deft-dir (file-name-as-directory "notes")))
   (with-eval-after-load 'dictionary-overlay
     (dictionary-overlay-start))
-  (require 'engine-mode))
+  (require 'engine-mode)
+  (setq bookmark-file "~/.spacemacs.d/Backup/bookmarks"))
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()

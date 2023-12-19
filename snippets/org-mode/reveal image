@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: reveal image
+# key: reveal image
+# --
+
+#+REVEAL_HTML: <img width="100%" height="100%" style ="opacity:1;" preload="auto" src="">

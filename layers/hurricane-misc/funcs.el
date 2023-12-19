@@ -2152,3 +2152,43 @@ Version 2019-02-12 2021-08-09"
       (subed-auto-insert)
       (subed-append-subtitle-list results)
       (display-buffer (current-buffer)))))
+
+;; aeneas 中文识别使用 eSpeak-ng
+;; 安装：sudo port install espeak-ng
+;；使用：https://github.com/espeak-ng/espeak-ng/blob/master/src/espeak-ng.1.ronn
+;；使用：https://github.com/readbeyond/aeneas/issues/214
+(defun hurricane/reveal-slide-txt ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (require 'subed-align)
+  (let ((ms 0)
+        (subed-align-language "cmn")
+        (subed-align-options "-r=\"tts=espeak-ng\"")
+        audio-output
+	results)
+    (org-block-map
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+	 (let ((elem (org-element-at-point)))
+	   (when (string= (org-element-property :type elem) "notes")
+	     (let ((text (string-trim
+			  (buffer-substring-no-properties
+			   (org-element-property :contents-begin elem)
+			   (org-element-property :contents-end elem))))
+		   prev-fragment
+		   prev-heading
+		   prop)
+	       (save-excursion (setq prev-heading (org-back-to-heading)))
+	       (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+	       (if prev-fragment
+		   (setq audio-output (match-string 1))
+		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+		   (setq audio-output (match-string 1 prop))))
+               (setq results text)
+	       ))))))
+    (with-current-buffer (find-file-noselect (format "%s.txt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
+      (erase-buffer)
+      (insert results)
+      (display-buffer (current-buffer))
+      (call-interactively 'subed-align))))

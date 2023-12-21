@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: reveal muted video
-# key: reveal muted video
-# --
-
-#+REVEAL_HTML: <video muted width="100%" height="100%" preload="auto" src="$0">

@@ -2001,20 +2001,28 @@ Version 2019-02-12 2021-08-09"
               )))
    "-REVEAL_EXTRA_ATTR={.}"))
 
+(defvar-local reveal-comment-block-position-list (list))
+
 (defun hurricane/reveal-comment-block-translate ()
   (interactive)
-    (org-block-map
-     (lambda ()
-       (unless (org-in-commented-heading-p)
-         (let ((text (org-element-property :value (org-element-at-point)))
-               (position (point)))
-           (when position
-            (python-bridge-call-async "reveal_comment_block_translate" (list text position))))
-         ))))
+   (org-block-map
+    (lambda ()
+      (unless (org-in-commented-heading-p)
+       (let ((text (org-element-property :value (org-element-at-point)))
+             (position (point)))
+         (when (and text position)
+           (add-to-list 'reveal-comment-block-position-list position t)
+          )))))
+   (mapcar
+    (lambda (comment-pos)
+      (progn
+       (goto-char comment-pos)
+       (deno-bridge-call "deno-translate" (org-element-property :value (org-element-at-point)) "hurricane//reveal--comment-block-translate" comment-pos)))
+    (reverse reveal-comment-block-position-list)))
 
 (defun hurricane//reveal--comment-block-translate (translation position)
-  (goto-char position)
-  (insert (format "#+begin_notes\n%s#+end_notes\n" translation))
+  (goto-char (string-to-number position))
+  (insert (format "#+begin_notes\n%s\n#+end_notes\n" (string-trim translation)))
   (newline-and-indent))
 
 (defun hurricane/reveal-notes-tts ()
@@ -2045,7 +2053,7 @@ Version 2019-02-12 2021-08-09"
                ))))))
       ))
 
-(defun hurricane/reveal-cache-duration ()
+(defun hurricane/reveal-cache-audio-duration ()
   (interactive)
   (let ((proj-dir reveal-project-directory))
     (org-map-entries
@@ -2060,6 +2068,24 @@ Version 2019-02-12 2021-08-09"
 			    (expand-file-name (match-string 0 prop)
 					      proj-dir)))))))
      "REVEAL_EXTRA_ATTR={.}")))
+
+;; 以下格式才能获取成功
+;; [[video:audio/《上海十三太保》vs《十月围城》/1.mp4]]
+;; 不支持以下格式
+;; #+REVEAL_HTML: <video width="100%" height="100%" preload="auto" src="audio/《上海十三太保》vs《十月围城》/1.mp4">
+(defun hurricane/reveal-cache-video-duration (&optional force)
+  (interactive)
+  (let ((proj-dir reveal-project-directory))
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "\\(?:video:\\([-~/A-Za-z0-9]+.webm\\)\\|\\(https:[^ ]+\\.gif\\)\\|file:\\([-A-Za-z0-9:]+.gif\\)\\)" nil t)
+	(unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION")))
+ 	  (org-entry-put (point) "VIDEO_DURATION"
+			 (number-to-string
+			  (compile-media-get-file-duration-ms
+			   (or (expand-file-name (match-string 1))
+			       (match-string 2)
+			       (expand-file-name (match-string 3) proj-dir))))))))))
 
 (defun hurricane/reveal-notes-vtt ()
   (interactive)
@@ -2099,19 +2125,6 @@ Version 2019-02-12 2021-08-09"
       (subed-auto-insert)
       (subed-append-subtitle-list results)
       (display-buffer (current-buffer)))))
-
-(defun hurricane/reveal-cache-video-duration (&optional force)
-  (let ((proj-dir reveal-project-directory))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "\\(?:video:\\([-~/A-Za-z0-9]+.webm\\)\\|\\(https:[^ ]+\\.gif\\)\\|file:\\([-A-Za-z0-9:]+.gif\\)\\)" nil t)
-	(unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION")))
- 	  (org-entry-put (point) "VIDEO_DURATION"
-			 (number-to-string
-			  (compile-media-get-file-duration-ms
-			   (or (expand-file-name (match-string 1))
-			       (match-string 2)
-			       (expand-file-name (match-string 3) proj-dir))))))))))
 
 (defun hurricane/reveal-slide-vtt ()
   (interactive)

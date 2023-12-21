@@ -9,9 +9,10 @@ async function messageDispatcher(message: string) {
     const data = JSON.parse(message);
     const sentence = data[1][0];
     const callback = data[1][1];
+    const callbackArgs = data[1].slice(2)
     const translation = await deapl.default(sentence, {
         sourceLanguage: 'en',
         targetLanguage: 'zh-CN',
     });
-    bridge.evalInEmacs(`(${callback} "${translation}")`);
+    bridge.evalInEmacs(`(${callback} "${translation}" "${callbackArgs}")`);
 }

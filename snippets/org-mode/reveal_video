@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: reveal_video
+# key: reveal_video
+# --
+
+#+REVEAL_HTML: <video width="100%" height="100%" preload="auto" src="audio/`(file-name-nondirectory (file-name-sans-extension buffer-file-name))`/">

@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name:reveal header
-# key: reveal header
+# name:reveal_header
+# key: reveal_header
 # --
 
 #+SPDX-FileCopyrightText: 2023 Sacha Chua <https://sachachua.com>

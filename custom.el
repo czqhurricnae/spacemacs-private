@@ -75,6 +75,10 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/唐太宗如何得到《兰亭序》/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/《上海十三太保》vs《十月围城》/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/C919/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/国产大飞机 C919 绕飞香港后，何时也能翱翔我国西藏高原/"))

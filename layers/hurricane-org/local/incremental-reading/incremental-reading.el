@@ -203,7 +203,6 @@ is successful, update the ANKI-BLOCK id."
                  anki-block
                  (cdr (assoc 'result (request-response-data response))))))))
 
-
 (defun incremental-reading--request-update-card (id fields tags)
   "Send an http request to the anki-connect addon with the ID,
 FIELDS and TAGS of the card."

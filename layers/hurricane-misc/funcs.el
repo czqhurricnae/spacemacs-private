@@ -1939,7 +1939,7 @@ Version 2019-02-12 2021-08-09"
      process
      (lambda (proc event)
        (when (equal event "finished\n")
-         (insert (concat "#+REVEAL_HTML: <video muted loop width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-video-out-put-file "\">"))
+         (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-video-out-put-file "\">"))
          )))
     t))
 

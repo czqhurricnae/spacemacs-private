@@ -83,6 +83,12 @@
                                         :repo "sachac/subed-record"))
         (immersive-translate :location (recipe :fetcher github
                                                :repo "Elilif/emacs-immersive-translate"))
+        (deno-bridge :location (recipe :fetcher github
+                                       :repo "manateelazycat/deno-bridge"))
+        (icloud :location (recipe :fetcher github
+                                  :repo "andyjda/icloud-utilities"))
+        (sticky-shell :location (recipe :fetcher github
+                                        :repo "andyjda/sticky-shell"))
         ))
 
 (defconst sys/macp
@@ -1564,6 +1570,12 @@
       (interactive)
       (funcall-interactively #'popweb-anki-review-show (replace-regexp-in-string "[\t\n\r]+" " " (substring-no-properties (subed-subtitle-text))) "P"))
 
+    (defun hurricane//subed-subtitle-translate ()
+      (interactive)
+      (deno-bridge-call "deno-translate" (replace-regexp-in-string "[\t\n\r]+" " " (substring-no-properties (subed-subtitle-text))) "hurricane//subed--subtitle-translate"))
+
+    (defun hurricane//subed--subtitle-translate (translation)
+      (insert translation))
     :config
     ;; (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
     ;; 如果是观看 B 站解析的视频链接，就不需要代理。
@@ -1742,7 +1754,10 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-websocket ()
   (use-package websocket
-    :ensure t))
+    :ensure t
+    :init
+    (require 'websocket)
+    (setq websocket-debug t)))
 
 (defun hurricane-misc/init-websocket-bridge ()
   (use-package websocket-bridge
@@ -1816,3 +1831,17 @@ Works only in youtube-sub-extractor-mode buffer."
     :ensure t
     :config
     (setq immersive-translate-backend 'deeplx)))
+
+(defun hurricane-misc/init-deno-bridge ()
+  (use-package deno-bridge
+    :ensure t
+    :config
+    (setq deno-translator-ts-path (expand-file-name "~/.spacemacs.d/Backup/deno-translate.ts"))))
+
+(defun hurricane-misc/init-icloud ()
+  (use-package icloud
+    :ensure t))
+
+(defun hurricane-misc/init-sticky-shell ()
+  (use-package sticky-shell
+    :ensure t))

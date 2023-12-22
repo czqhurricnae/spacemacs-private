@@ -54,7 +54,7 @@
 
 (defun select-or-enter-file-name (img-dir)
   (ivy-read
-   "please selete or enter a image name (Ctrl-n for next item, Ctrl-p for previous item)"
+   "please selete or enter a name (Ctrl-n for next item, Ctrl-p for previous item)"
             (delete ".."
                     (delete "."
                             (directory-files img-dir)))))

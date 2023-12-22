@@ -83,8 +83,6 @@
                                         :repo "sachac/subed-record"))
         (immersive-translate :location (recipe :fetcher github
                                                :repo "Elilif/emacs-immersive-translate"))
-        (deno-bridge :location (recipe :fetcher github
-                                       :repo "manateelazycat/deno-bridge"))
         (icloud :location (recipe :fetcher github
                                   :repo "andyjda/icloud-utilities"))
         (sticky-shell :location (recipe :fetcher github
@@ -1571,11 +1569,10 @@
       (funcall-interactively #'popweb-anki-review-show (replace-regexp-in-string "[\t\n\r]+" " " (substring-no-properties (subed-subtitle-text))) "P"))
 
     (defun hurricane//subed-subtitle-translate ()
-      (interactive)
-      (deno-bridge-call "deno-translate" (replace-regexp-in-string "[\t\n\r]+" " " (substring-no-properties (subed-subtitle-text))) "hurricane//subed--subtitle-translate"))
-
-    (defun hurricane//subed--subtitle-translate (translation)
-      (insert translation))
+      (insert (mapconcat (lambda (trans) (concat "" trans)) (assoc-default 'translation (youdao-dictionary--request (replace-regexp-in-string "[\t\n\r]+" " " (substring-no-properties (subed-subtitle-text))))) "\n"))
+      (newline-and-indent)
+      (when (subed-forward-subtitle-text)
+        (funcall-interactively #'hurricane//subed-subtitle-translate)))
     :config
     ;; (add-to-list 'subed-mpv-arguments "--no-sub-visibility")
     ;; 如果是观看 B 站解析的视频链接，就不需要代理。
@@ -1831,12 +1828,6 @@ Works only in youtube-sub-extractor-mode buffer."
     :ensure t
     :config
     (setq immersive-translate-backend 'deeplx)))
-
-(defun hurricane-misc/init-deno-bridge ()
-  (use-package deno-bridge
-    :ensure t
-    :config
-    (setq deno-translator-ts-path (expand-file-name "~/.spacemacs.d/Backup/deno-translate.ts"))))
 
 (defun hurricane-misc/init-icloud ()
   (use-package icloud

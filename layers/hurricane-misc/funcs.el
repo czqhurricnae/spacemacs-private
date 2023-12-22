@@ -1988,14 +1988,15 @@ Version 2019-02-12 2021-08-09"
     "[^A-Za-z0-9]+" "-"
     (downcase (concat (string-join (org-get-outline-path) "-") "-" (org-entry-get (point) "ITEM"))))))
 
-(defun hurricane/reveal-slide-audio ()
+(defun hurricane/reveal-notes-media ()
   (interactive)
   (org-map-entries
    (lambda ()
      (org-entry-put
       (point)
       "REVEAL_EXTRA_ATTR"
-      (format "data-audio-src=\"audio/%s/%s.opus\" data-track-src=\"audio/%s/%s.ttml\""
+      (format "data-audio-src=\"audio/%s/%s.opus\" data-track-src=\"audio/%s/%s.ttml\" data-video-src=\"audio/%s/%s.mp4\""
+              (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               )))
@@ -2017,13 +2018,10 @@ Version 2019-02-12 2021-08-09"
     (lambda (comment-pos)
       (progn
        (goto-char comment-pos)
-       (deno-bridge-call "deno-translate" (org-element-property :value (org-element-at-point)) "hurricane//reveal--comment-block-translate" comment-pos)))
+       (insert (format "#+begin_notes\n%s\n#+end_notes\n" (mapconcat (lambda (trans) (concat "" trans)) (assoc-default 'translation (youdao-dictionary--request (org-element-property :value (org-element-at-point)))) "\n")))
+       (newline-and-indent)
+       ))
     (reverse reveal-comment-block-position-list)))
-
-(defun hurricane//reveal--comment-block-translate (translation position)
-  (goto-char (string-to-number position))
-  (insert (format "#+begin_notes\n%s\n#+end_notes\n" (string-trim translation)))
-  (newline-and-indent))
 
 (defun hurricane/reveal-notes-tts ()
   (interactive)
@@ -2059,14 +2057,14 @@ Version 2019-02-12 2021-08-09"
     (org-map-entries
      (lambda ()
        (let ((prop (org-entry-get (point) "REVEAL_EXTRA_ATTR")))
-	 (when (and prop (string-match (format "audio/%s/[-A-Za-z0-9]+?\\.opus" (file-name-sans-extension (buffer-name))) prop))
-           (print (expand-file-name (match-string 0 prop)
-				    proj-dir))
-	   (org-entry-put (point) "AUDIO_DURATION_MS"
-			  (number-to-string
-			   (compile-media-get-file-duration-ms
-			    (expand-file-name (match-string 0 prop)
-					      proj-dir)))))))
+         (when (and prop (string-match (format "audio/%s/[-A-Za-z0-9]+?\\.opus" (file-name-sans-extension (buffer-name))) prop))
+                 (print (expand-file-name (match-string 0 prop)
+                  proj-dir))
+           (org-entry-put (point) "AUDIO_DURATION_MS"
+              (number-to-string
+               (compile-media-get-file-duration-ms
+                (expand-file-name (match-string 0 prop)
+                      proj-dir)))))))
      "REVEAL_EXTRA_ATTR={.}")))
 
 ;; 以下格式才能获取成功
@@ -2079,13 +2077,13 @@ Version 2019-02-12 2021-08-09"
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\(?:video:\\([-~/A-Za-z0-9]+.webm\\)\\|\\(https:[^ ]+\\.gif\\)\\|file:\\([-A-Za-z0-9:]+.gif\\)\\)" nil t)
-	(unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION")))
- 	  (org-entry-put (point) "VIDEO_DURATION"
-			 (number-to-string
-			  (compile-media-get-file-duration-ms
-			   (or (expand-file-name (match-string 1))
-			       (match-string 2)
-			       (expand-file-name (match-string 3) proj-dir))))))))))
+      (unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION")))
+        (org-entry-put (point) "VIDEO_DURATION"
+           (number-to-string
+            (compile-media-get-file-duration-ms
+             (or (expand-file-name (match-string 1))
+                 (match-string 2)
+                 (expand-file-name (match-string 3) proj-dir))))))))))
 
 (defun hurricane/reveal-notes-vtt ()
   (interactive)
@@ -2110,14 +2108,15 @@ Version 2019-02-12 2021-08-09"
 		   (setq audio-output (match-string 1))
 		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
                  (setq audio-duration (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS")))
+                 (setq video-source (org-entry-get (point) "VIDEO_SOURCE"))
 		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
 		   (setq audio-output (match-string 1 prop))))
 	       (add-to-list
-		'results
-		(list nil ms (+ audio-duration ms)
-		      text
-		      (format "#+OUTPUT: %s" audio-output))
-		t)
+          'results
+          (list nil ms (+ audio-duration ms)
+                text
+                (format "#+OUTPUT: %s\n#+VIDEO_SOURCE: %s" audio-output video-source))
+          t)
 	       (setq ms (+ audio-duration ms))))))))
     (with-current-buffer (get-buffer-create (format "%s.vtt" (file-name-sans-extension (buffer-name))))
       (erase-buffer)
@@ -2150,13 +2149,14 @@ Version 2019-02-12 2021-08-09"
 		   (setq audio-output (match-string 1))
 		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
                  (setq audio-duration (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS")))
+                 (setq video-source (org-entry-get (point) "VIDEO_SOURCE"))
 		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
 		   (setq audio-output (match-string 1 prop))))
 	       (add-to-list
 		'results
 		(list nil ms (+ audio-duration ms)
 		      text
-		      (format "#+OUTPUT: %s" audio-output))
+		      (format "#+OUTPUT: %s\n#+VIDEO_SOURCE: %s" audio-output video-source))
 		t)
 	       (setq ms (+ audio-duration ms))))))))
     (with-current-buffer (find-file-noselect (format "%s.vtt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
@@ -2178,30 +2178,102 @@ Version 2019-02-12 2021-08-09"
         (subed-align-language "cmn")
         (subed-align-options "-r=\"tts=espeak-ng\"")
         audio-output
-	results)
+        results)
     (org-block-map
      (lambda ()
        (unless (org-in-commented-heading-p)
-	 (let ((elem (org-element-at-point)))
-	   (when (string= (org-element-property :type elem) "notes")
-	     (let ((text (string-trim
-			  (buffer-substring-no-properties
-			   (org-element-property :contents-begin elem)
-			   (org-element-property :contents-end elem))))
-		   prev-fragment
-		   prev-heading
-		   prop)
-	       (save-excursion (setq prev-heading (org-back-to-heading)))
-	       (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
-	       (if prev-fragment
-		   (setq audio-output (match-string 1))
-		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
-		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
-		   (setq audio-output (match-string 1 prop))))
-               (setq results text)
-	       ))))))
+         (let ((elem (org-element-at-point)))
+           (when (string= (org-element-property :type elem) "notes")
+             (let ((text (string-trim
+              (buffer-substring-no-properties
+               (org-element-property :contents-begin elem)
+               (org-element-property :contents-end elem))))
+             prev-fragment
+             prev-heading
+             prop)
+               (save-excursion (setq prev-heading (org-back-to-heading)))
+               (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+               (if prev-fragment
+             (setq audio-output (match-string 1))
+           (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+           (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+             (setq audio-output (match-string 1 prop))))
+                     (setq results text)))))))
     (with-current-buffer (find-file-noselect (format "%s.txt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
       (erase-buffer)
       (insert results)
       (display-buffer (current-buffer))
       (call-interactively 'subed-align))))
+
+(defun hurricane/reveal-slide-video-source ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (org-block-map
+   (lambda ()
+     (unless (org-in-commented-heading-p)
+       (let ((video-source (select-or-enter-file-name (expand-file-name (format "audio/%s/" (file-name-sans-extension (buffer-name))) reveal-project-directory))))
+         (org-entry-put
+          (point)
+          "VIDEO_SOURCE"
+          video-source))))))
+
+(defun hurricane/reveal-slide-video-timestamp-start ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (org-block-map
+   (lambda ()
+     (unless (org-in-commented-heading-p)
+       (python-bridge-call-async "mpv_get_time_position" (list (subed-mpv--socket) (point) "VIDEO_TIMESTAMP_START" "get_property" "time-pos"))))))
+
+(defun hurricane/reveal-slide-video-timestamp-stop ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (org-block-map
+   (lambda ()
+     (unless (org-in-commented-heading-p)
+       (python-bridge-call-async "mpv_get_time_position" (list (subed-mpv--socket) (point) "VIDEO_TIMESTAMP_STOP" "get_property" "time-pos"))))))
+
+(defun hurricane//reveal--slide-video-timestamp (point start-or-stop millisec)
+  (progn
+   (goto-char (string-to-number point))
+    (org-entry-put
+     (point)
+     start-or-stop
+     millisec)))
+
+(defun hurricane//reveal-create-proj-llc ()
+  (interactive)
+  (let (video-source
+        video-timestamp-start
+        video-timestamp-stop
+        video-segment-name
+        (result (make-hash-table :test 'equal)))
+      (org-map-entries
+       (lambda ()
+         (unless (org-in-commented-heading-p)
+           (print (point))
+           (setq video-source (org-entry-get (point) "VIDEO_SOURCE"))
+           (setq video-timestamp-start (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_START")))
+           (setq video-timestamp-stop (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_STOP")))
+           (setq video-segment-name (format "audio/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)))
+           (if (gethash `,video-source result)
+             (progn
+               (setq cut-segments (plist-get (gethash `,video-source result) :cutSegments))
+               ;; push 不能 append，所以使用 add-to-list，注意细微区别，cut-segments 的处理。
+               ;; (setq new-segments (push `(:start ,video-timestamp-start :end ,video-timestamp-stop) `,cut-segments))
+               (setq new-segments (add-to-list 'cut-segments `(:start ,video-timestamp-start :end ,video-timestamp-stop :name ,video-segment-name) t))
+               (remhash `,video-source result)
+               (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments ,new-segments) result)
+               )
+             (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments (nil (:start ,video-timestamp-start :end ,video-timestamp-stop :name ,video-segment-name))) result ))
+           )))
+      (message "%s" (json-encode-hash-table result))
+      (maphash
+       (lambda (k v)
+         (with-current-buffer (find-file-noselect (expand-file-name (format "audio/%s/%s.llc" (file-name-sans-extension (buffer-name)) k) reveal-project-directory))
+         (erase-buffer)
+         (insert (json-encode v))
+         (display-buffer (current-buffer))))
+               result)
+      )
+  )

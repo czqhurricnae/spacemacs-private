@@ -776,8 +776,6 @@ you should place your code here."
   (setq eww-download-directory (concat deft-dir (file-name-as-directory "notes")))
   (with-eval-after-load 'dictionary-overlay
     (dictionary-overlay-start))
-  (with-eval-after-load 'deno-bridge
-    (deno-bridge-start "deno-translate" deno-translator-ts-path))
   (require 'engine-mode)
   (setq bookmark-file "~/.spacemacs.d/Backup/bookmarks"))
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))

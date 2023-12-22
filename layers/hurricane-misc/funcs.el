@@ -2251,23 +2251,21 @@ Version 2019-02-12 2021-08-09"
       (org-map-entries
        (lambda ()
          (unless (org-in-commented-heading-p)
-           (print (point))
            (setq video-source (org-entry-get (point) "VIDEO_SOURCE"))
            (setq video-timestamp-start (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_START")))
            (setq video-timestamp-stop (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_STOP")))
-           (setq video-segment-name (format "audio/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)))
+           (setq video-segment-name (expand-file-name (format "audio/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)) reveal-project-directory))
            (if (gethash `,video-source result)
              (progn
                (setq cut-segments (plist-get (gethash `,video-source result) :cutSegments))
                ;; push 不能 append，所以使用 add-to-list，注意细微区别，cut-segments 的处理。
                ;; (setq new-segments (push `(:start ,video-timestamp-start :end ,video-timestamp-stop) `,cut-segments))
-               (setq new-segments (add-to-list 'cut-segments `(:start ,video-timestamp-start :end ,video-timestamp-stop :name ,video-segment-name) t))
+               (setq new-segments (add-to-list 'cut-segments `((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)) t))
                (remhash `,video-source result)
                (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments ,new-segments) result)
                )
-             (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments (nil (:start ,video-timestamp-start :end ,video-timestamp-stop :name ,video-segment-name))) result ))
+             (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments (((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)))) result ))
            )))
-      (message "%s" (json-encode-hash-table result))
       (maphash
        (lambda (k v)
          (with-current-buffer (find-file-noselect (expand-file-name (format "audio/%s/%s.llc" (file-name-sans-extension (buffer-name)) k) reveal-project-directory))

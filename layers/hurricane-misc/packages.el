@@ -1413,7 +1413,21 @@
 
   (with-eval-after-load 'eaf-image-viewer
     (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
-    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding)))
+    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding))
+
+  (with-eval-after-load 'eaf-browser
+    (defun eaf-browser-youtube-video-pause-toggle ()
+      (interactive)
+      (eaf-call-sync "execute_js_code" eaf--buffer-id "document.querySelector('[aria-keyshortcuts=\"k\"]').click();"))
+
+    (defun eaf-browser-youtube-video-pause-and-translate-caption ()
+      (interactive)
+      (eaf-call-sync "execute_js_code" eaf--buffer-id "document.querySelector('[aria-keyshortcuts=\"k\"]').click();")
+      (popweb-anki-review-show (eaf-call-sync "execute_js_code" eaf--buffer-id "''.concat(...Array.from(document.querySelectorAll('.ytp-caption-segment')).map(function(node) {return node.innerText}));")))
+
+    (eaf-bind-key eaf-browser-youtube-video-pause-toggle "K" eaf-browser-keybinding)
+    (eaf-bind-key eaf-browser-youtube-video-pause-and-translate-caption "C-k" eaf-browser-keybinding))
+  )
 
 (defun hurricane-misc/init-dupan ()
   (use-package dupan

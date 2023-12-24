@@ -1522,7 +1522,7 @@ Version 2019-02-12 2021-08-09"
     (while (string-equal video-url "")
       (setq video-url (read-string "Please input the URL to play: "
                                    nil nil "" nil)))
-    (print (list "you-get" "-i" "-x" (format "%s:%s" provixy-host provixy-port) "--debug" video-url))
+    (message "%s" (list "you-get" "-i" "-x" (format "%s:%s" provixy-host provixy-port) "--debug" video-url))
     (make-process :name "you-get formats"
                   :buffer buffer
                   :command (list "you-get" "-i" "-x" (format "%s:%s" provixy-host provixy-port) "--debug" video-url)
@@ -1577,7 +1577,7 @@ Version 2019-02-12 2021-08-09"
     ;;   (ansi-color-for-comint-mode-on)
     ;;   (comint-mode))
 
-    (print final-cmd)
+    (message "%s" final-cmd)
 
     (if (and (and subtitle-file-path (file-exists-p subtitle-file-path)) play-now)
      (let ((buf (find-file-noselect subtitle-file-path)))
@@ -1596,7 +1596,7 @@ Version 2019-02-12 2021-08-09"
           (error
            (error "%s" (mapconcat #'indentity (cdr (cdr err)) ": "))))
 
-        (print ">>> you-get is going to play <<<")
+        (message ">>> you-get is going to play <<<")
 
         (setq subed-mpv-media-file video-url)
         (setq subed-mpv--retry-delays '(2 2 2 2 2 5 5 5 5 5 5 5 5 5 5))
@@ -2151,11 +2151,11 @@ Version 2019-02-12 2021-08-09"
 		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
 		   (setq audio-output (match-string 1 prop))))
 	       (add-to-list
-		'results
-		(list nil ms (+ audio-duration ms)
+          'results
+          (list nil ms (+ audio-duration ms)
 		      text
 		      (format "#+OUTPUT: %s\n#+VIDEO_SOURCE: %s" audio-output video-source))
-		t)
+          t)
 	       (setq ms (+ audio-duration ms))))))))
     (with-current-buffer (find-file-noselect (format "%s.vtt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
       (erase-buffer)
@@ -2275,12 +2275,12 @@ Version 2019-02-12 2021-08-09"
 (defun hurricane/reveal-convert-images-to-video ()
   (interactive)
   (org-narrow-to-subtree)
+  (setq reveal-convert-images-to-video-output nil)
   (let (image-file-source-list
         audio-source)
     (while (re-search-forward "\\[\\[file:\\([^]]+\\)\\]\\]" nil t)
       (push (expand-file-name (string-trim (match-string 1)) reveal-project-directory) image-file-source-list))
-    (let (video-output
-          temp-output
+    (let (temp-output
           (video-source (org-entry-get (point) "VIDEO_SOURCE"))
           audio-source
           track-source
@@ -2305,14 +2305,17 @@ Version 2019-02-12 2021-08-09"
           ))
       (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
-        (setq video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
-        (setq temp-output (concat (file-name-sans-extension video-output) "_temp" ".mp4")))
+        (setq reveal-convert-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
+        (setq temp-output (concat (file-name-sans-extension reveal-convert-images-to-video-output) "_temp" ".mp4")))
       (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
         (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
       (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
         (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
-      (setq final-cmd (format "ffmpeg%s -i \"%s\" -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -map %s:a \"%s\"&&ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" image-configurations audio-source filter-complex-configurations-prefix filter-complex-configurations-append (length image-file-source-list) (length image-file-source-list) temp-output temp-output track-source video-output))
+
+      (setq final-cmd (format "ffmpeg%s -i \"%s\" -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -map %s:a \"%s\"&&ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" image-configurations audio-source filter-complex-configurations-prefix filter-complex-configurations-append (length image-file-source-list) (length image-file-source-list) temp-output temp-output track-source reveal-convert-images-to-video-output))
+
       (message final-cmd)
+
       (let* ((buffer (get-buffer-create "*ffmpeg convert images to video*"))
              (process
               (start-process-shell-command
@@ -2323,7 +2326,71 @@ Version 2019-02-12 2021-08-09"
          process
          (lambda (proc event)
            (when (equal event "finished\n")
-             (message "Convert images to video: %s finished." video-output)
+             (message "Convert images to video: %s finished." reveal-convert-images-to-video-output)
+             ))))
+      )
+    )
+  )
+
+;; https://stackoverflow.com/questions/37327163/ffmpeg-input-link-in1v0-parameters-size-640x640-sar-169-do-not-match-the
+;; https://creatomate.com/blog/how-to-zoom-images-and-videos-using-ffmpeg
+(defun hurricane/reveal-convert-zoom-images-to-video ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (setq reveal-convert-zoom-images-to-video-output nil)
+  (let (image-file-source-list
+        audio-source)
+    (while (re-search-forward "\\[\\[file:\\([^]]+\\)\\]\\]" nil t)
+      (push (list (expand-file-name (string-trim (match-string 1)) reveal-project-directory) (expand-file-name (concat (file-name-sans-extension (string-trim (match-string 1))) "_zoom_temp.mp4") reveal-project-directory) (buffer-substring-no-properties (+ 11 (org-element-property :begin (org-element-at-point))) (- (org-element-property :contents-begin (org-element-at-point)) 1))) image-file-source-list))
+    (let ((index 0)
+          zoom-temp-output-list
+          merge-temp-output
+          tts-temp-output
+          (video-source (org-entry-get (point) "VIDEO_SOURCE"))
+          audio-source
+          track-source
+          (audio-duration (org-entry-get (point) "AUDIO_DURATION_MS"))
+          merge-video-configurations
+          zoom-temp-cmd-list
+          final-cmd)
+      (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+      (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
+        (setq reveal-convert-zoom-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
+        (setq merge-temp-output (concat (file-name-sans-extension reveal-convert-zoom-images-to-video-output) "_merge_temp" ".mp4"))
+        (setq tts-temp-output (concat (file-name-sans-extension reveal-convert-zoom-images-to-video-output) "_tts_temp" ".mp4")))
+      (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+        (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+      (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
+        (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+
+      (dolist (image-file-source (nreverse image-file-source-list))
+        (add-to-list 'zoom-temp-output-list (format "-i \"%s\"" (nth 1 image-file-source)) t)
+        (setq merge-video-configurations (concat merge-video-configurations (format "[%s]setdar=16/9%s;" index (substring "[a][b][c][d][e][f][g][h][i][j][k][l][m][n][o][p][q][r][s][t][u][v][w][x][y][z]" (* 3 index) (* 3 (+ 1 index))))))
+        (add-to-list 'zoom-temp-cmd-list (format "ffmpeg %s -t 5 -c:v libx264 -pix_fmt yuv420p \"%s\"" (format (nth 2 image-file-source) (nth 0 image-file-source)) (nth 1 image-file-source)) t)
+        (setq index (+ 1 index)))
+      (setq zoom-cmd (string-join zoom-temp-cmd-list "&&"))
+
+      (setq merge-video-configurations (format "\"%s%s\"" merge-video-configurations (format "%sconcat=n=%s:v=1" (substring "[a][b][c][d][e][f][g][h][i][j][k][l][m][n][o][p][q][r][s][t][u][v][w][x][y][z]" 0 (* 3 index)) (number-to-string index))))
+      (setq merge-video-configurations (concat (string-join zoom-temp-output-list " ") " -filter_complex " merge-video-configurations))
+      (setq merge-cmd (format "ffmpeg %s \"%s\"" merge-video-configurations merge-temp-output))
+      (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -vcodec copy -acodec copy \"%s\"" merge-temp-output audio-source tts-temp-output))
+      (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" tts-temp-output track-source reveal-convert-zoom-images-to-video-output))
+
+      (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd))
+
+      (message "%s" final-cmd)
+
+      (let* ((buffer (get-buffer-create "*ffmpeg convert zoom images to video*"))
+             (process
+              (start-process-shell-command
+               "hurricane/reveal-convert-zoom-images-to-video"
+               buffer
+               final-cmd)))
+        (set-process-sentinel
+         process
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (message "Convert images to video: %s finished." reveal-convert-zoom-images-to-video-output)
              ))))
       )
     )

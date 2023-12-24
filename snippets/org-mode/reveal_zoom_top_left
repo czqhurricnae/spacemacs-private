@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: reveal_zoom_top_left
+# key: reveal_zoom_top_left
+# --
+#+CAPTION: -loop 1 -framerate 60 -i "%s" -vf "scale=8000:-1,zoompan=z='zoom+0.001':x=0:y=0:d=5*60:s=1280x720:fps=60"

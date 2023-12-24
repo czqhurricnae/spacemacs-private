@@ -2239,7 +2239,7 @@ Version 2019-02-12 2021-08-09"
      start-or-stop
      millisec)))
 
-(defun hurricane//reveal-create-proj-llc ()
+(defun hurricane/reveal-create-proj-llc ()
   (interactive)
   (let (video-source
         video-timestamp-start

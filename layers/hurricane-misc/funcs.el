@@ -678,7 +678,7 @@ Else, returns STRING."
             (goto-char answer-search-origin)
             (setq answer-string-start (re-search-forward (car stackoverflow-answer-string-pattern-list)))
             (setq answer-string-end (re-search-forward (cdr stackoverflow-answer-string-pattern-list)))
-            (setq answer-string (buffer-substring  answer-string-start (- answer-string-end 6)))
+            (setq answer-string (buffer-substring answer-string-start (- answer-string-end 6)))
             (if answer-string
                 (progn
                   (if (string-suffix-p "</span>" (replace-regexp-in-string "[\t\n\r ]+" "" answer-string))
@@ -1903,7 +1903,7 @@ Version 2019-02-12 2021-08-09"
   (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
                                                          ;; output full file path
                                                          (format
-                                                          "%saudio/%s/reveal_cut_%s.mp4"
+                                                          "%sstatic/%s/reveal_cut_%s.mp4"
                                                           (expand-file-name reveal-project-directory)
                                                           (file-name-sans-extension (buffer-name))
                                                           (format-time-string "%Y_%m_%d_%-I_%M_%p"))
@@ -1979,8 +1979,6 @@ Version 2019-02-12 2021-08-09"
                    my-note-words-target
                    (- hurricane//note-words-target num))))))
 
-;; Make sure everything with notes has an :audio
-;; or :REVEAL_EXTRA_ATTR: data-audio-src="audio/overview.opus"
 (defun hurricane//reveal-slide-id ()
   (replace-regexp-in-string
    "^-\\|-$" ""
@@ -1995,7 +1993,7 @@ Version 2019-02-12 2021-08-09"
      (org-entry-put
       (point)
       "REVEAL_EXTRA_ATTR"
-      (format "data-audio-src=\"audio/%s/%s.opus\" data-track-src=\"audio/%s/%s.ttml\" data-video-src=\"audio/%s/%s.mp4\""
+      (format "data-audio-src=\"static/%s/%s.opus\" data-track-src=\"static/%s/%s.vtt\" data-video-src=\"static/%s/%s.mp4\""
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
@@ -2057,8 +2055,8 @@ Version 2019-02-12 2021-08-09"
     (org-map-entries
      (lambda ()
        (let ((prop (org-entry-get (point) "REVEAL_EXTRA_ATTR")))
-         (when (and prop (string-match (format "audio/%s/[-A-Za-z0-9]+?\\.opus" (file-name-sans-extension (buffer-name))) prop))
-                 (print (expand-file-name (match-string 0 prop)
+         (when (and prop (string-match (format "static/%s/[-A-Za-z0-9]+?\\.opus" (file-name-sans-extension (buffer-name))) prop))
+                 (message "%s" (expand-file-name (match-string 0 prop)
                   proj-dir))
            (org-entry-put (point) "AUDIO_DURATION_MS"
               (number-to-string
@@ -2068,9 +2066,9 @@ Version 2019-02-12 2021-08-09"
      "REVEAL_EXTRA_ATTR={.}")))
 
 ;; 以下格式才能获取成功
-;; [[video:audio/《上海十三太保》vs《十月围城》/1.mp4]]
+;; [[video:static/《上海十三太保》vs《十月围城》/1.mp4]]
 ;; 不支持以下格式
-;; #+REVEAL_HTML: <video width="100%" height="100%" preload="auto" src="audio/《上海十三太保》vs《十月围城》/1.mp4">
+;; #+REVEAL_HTML: <video width="100%" height="100%" preload="auto" src="static/《上海十三太保》vs《十月围城》/1.mp4">
 (defun hurricane/reveal-cache-video-duration (&optional force)
   (interactive)
   (let ((proj-dir reveal-project-directory))
@@ -2203,7 +2201,7 @@ Version 2019-02-12 2021-08-09"
       (erase-buffer)
       (insert results)
       (display-buffer (current-buffer))
-      (call-interactively 'subed-align))))
+      (funcall-interactively 'subed-align (expand-file-name audio-output reveal-project-directory) (buffer-file-name) "VTT"))))
 
 (defun hurricane/reveal-slide-video-source ()
   (interactive)
@@ -2211,7 +2209,7 @@ Version 2019-02-12 2021-08-09"
   (org-block-map
    (lambda ()
      (unless (org-in-commented-heading-p)
-       (let ((video-source (select-or-enter-file-name (expand-file-name (format "audio/%s/" (file-name-sans-extension (buffer-name))) reveal-project-directory))))
+       (let ((video-source (select-or-enter-file-name (expand-file-name (format "static/%s/" (file-name-sans-extension (buffer-name))) reveal-project-directory))))
          (org-entry-put
           (point)
           "VIDEO_SOURCE"
@@ -2254,7 +2252,7 @@ Version 2019-02-12 2021-08-09"
            (setq video-source (org-entry-get (point) "VIDEO_SOURCE"))
            (setq video-timestamp-start (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_START")))
            (setq video-timestamp-stop (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_STOP")))
-           (setq video-segment-name (expand-file-name (format "audio/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)) reveal-project-directory))
+           (setq video-segment-name (expand-file-name (format "static/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)) reveal-project-directory))
            (if (gethash `,video-source result)
              (progn
                (setq cut-segments (plist-get (gethash `,video-source result) :cutSegments))
@@ -2268,10 +2266,65 @@ Version 2019-02-12 2021-08-09"
            )))
       (maphash
        (lambda (k v)
-         (with-current-buffer (find-file-noselect (expand-file-name (format "audio/%s/%s.llc" (file-name-sans-extension (buffer-name)) k) reveal-project-directory))
+         (with-current-buffer (find-file-noselect (expand-file-name (format "static/%s/%s.llc" (file-name-sans-extension (buffer-name)) k) reveal-project-directory))
          (erase-buffer)
          (insert (json-encode v))
          (display-buffer (current-buffer))))
-               result)
+               result)))
+
+(defun hurricane/reveal-convert-images-to-video ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (let (image-file-source-list
+        audio-source)
+    (while (re-search-forward "\\[\\[file:\\([^]]+\\)\\]\\]" nil t)
+      (push (expand-file-name (string-trim (match-string 1)) reveal-project-directory) image-file-source-list))
+    (let (video-output
+          temp-output
+          (video-source (org-entry-get (point) "VIDEO_SOURCE"))
+          audio-source
+          track-source
+          (audio-duration (org-entry-get (point) "AUDIO_DURATION_MS"))
+          (index 0)
+          image-configurations
+          filter-complex-configurations-prefix
+          filter-complex-configurations-append
+          final-cmd)
+      (dolist (image-file-source image-file-source-list)
+       (setq image-configurations (concat image-configurations " -loop 1 -t 5 " "-i " "\"" image-file-source "\"")))
+      (if (equal 1 (length image-file-source-list))
+          (progn
+           (setq filter-complex-configurations-prefix "[0:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v0];")
+           (setq filter-complex-configurations-append "[v0]"))
+        (while (< index (length image-file-source-list))
+          (if (equal (+ 1 index) (length image-file-source-list))
+              (setq filter-complex-configurations-prefix (concat filter-complex-configurations-prefix " " (format "[%s:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v%s];" index index)))
+            (setq filter-complex-configurations-prefix (concat filter-complex-configurations-prefix " " (format "[%s:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v%s];" index index))))
+          (setq filter-complex-configurations-append (concat filter-complex-configurations-append (format "[v%s]" index)))
+          (setq index (+ 1 index))
+          ))
+      (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+      (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
+        (setq video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
+        (setq temp-output (concat (file-name-sans-extension video-output) "_temp" ".mp4")))
+      (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+        (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+      (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
+        (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+      (setq final-cmd (format "ffmpeg%s -i \"%s\" -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -map %s:a \"%s\"&&ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" image-configurations audio-source filter-complex-configurations-prefix filter-complex-configurations-append (length image-file-source-list) (length image-file-source-list) temp-output temp-output track-source video-output))
+      (message final-cmd)
+      (let* ((buffer (get-buffer-create "*ffmpeg convert images to video*"))
+             (process
+              (start-process-shell-command
+               "hurricane/reveal-convert-images-to-video"
+               buffer
+               final-cmd)))
+        (set-process-sentinel
+         process
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (message "Convert images to video: %s finished." video-output)
+             ))))
       )
+    )
   )

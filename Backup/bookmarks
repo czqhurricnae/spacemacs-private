@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Fact check"
+(("TSMC's Renegade Genius.txt"
+ (filename . "~/Downloads/TSMC's Renegade Genius.txt")
+ (front-context-string . "\nWhich I find to")
+ (rear-context-string . "iasm for work.\"\n")
+ (position . 6337))
+("Fact check"
  (filename . "~/Downloads/mpv-www-gen/Fact check- Myths about electric vehicles busted | DW News -  - 2023-12-20 02-52-56.srt")
  (front-context-string . "\n23\n00:02:31,740")
  (rear-context-string . " little plugin \n")
@@ -13,7 +18,7 @@
  (rear-context-string . "lly acceptable.\n")
  (position . 4975))
 ("https://sachachua.com/blog/"
- (filename . "~/.spacemacs.d/")
+ (filename . "https://sachachua.com/blog/")
  (front-context-string . "snippets\n  drwxr")
  (rear-context-string . " Jul  6  2020   ")
  (position . 1116))

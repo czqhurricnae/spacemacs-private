@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("TSMC's Renegade Genius.txt"
+(("https://agm.haifanwu.com/"
+ (filename . "~/Downloads/vs.org")
+ (front-context-string . "\n#+BEGIN_SRC ema")
+ (rear-context-string . "ents)\n#+END_SRC\n")
+ (position . 4180))
+("TSMC's Renegade Genius.txt"
  (filename . "~/Downloads/TSMC's Renegade Genius.txt")
  (front-context-string . "\nWhich I find to")
  (rear-context-string . "iasm for work.\"\n")
@@ -287,10 +292,10 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Downloading partial YouTube videos with ffmpeg.org")
- (front-context-string . "[[https://til.si")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/ffmpeg 操作音频视频.org")
+ (front-context-string . "\n下面是一些对ffmpeg的基本")
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 468))
+ (position . 350))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

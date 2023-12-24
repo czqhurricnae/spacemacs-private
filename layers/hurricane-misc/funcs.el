@@ -1900,30 +1900,36 @@ Version 2019-02-12 2021-08-09"
 
 (defun hurricane/reveal-cut-video ()
   (interactive)
-  (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
+  (let (full-file-path
+        (prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+        (audio-duration (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start)))))
+    (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
+      (setq full-file-path (expand-file-name (match-string 1 prop) reveal-project-directory)))
+   (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
                                                          ;; output full file path
-                                                         (format
+                                                         (or full-file-path
+                                                          (format
                                                           "%sstatic/%s/reveal_cut_%s.mp4"
                                                           (expand-file-name reveal-project-directory)
                                                           (file-name-sans-extension (buffer-name))
-                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p"))
+                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p")))
                                                          ;; start timestamp
-                                                         (replace-regexp-in-string
+                                                         (and subed-mpv-playback-position
+                                                          (replace-regexp-in-string
                                                           "," "."
-                                                          (subed-msecs-to-timestamp
-                                                          subed-mpv-playback-position))
+                                                          (compile-media-msecs-to-timestamp
+                                                           subed-mpv-playback-position)))
                                                          ;; stop timestamp
-                                                         (replace-regexp-in-string
-                                                          "," "."
-                                                          (subed-msecs-to-timestamp
-                                                           (+ subed-mpv-playback-position
-                                                              (- (subed-subtitle-msecs-stop)
-                                                                 (subed-subtitle-msecs-start)))))
+                                                         (and subed-mpv-playback-position
+                                                          (replace-regexp-in-string
+                                                           "," "."
+                                                           (compile-media-msecs-to-timestamp
+                                                            (+ subed-mpv-playback-position
+                                                               audio-duration))))
                                                          ;; duration
-                                                         (- (subed-subtitle-msecs-stop)
-                                                            (subed-subtitle-msecs-start))
+                                                         audio-duration
                                                          "get_property"
-                                                         "path")))
+                                                         "path"))))
 
 (defun hurricane/reveal--cut-video (final-cmd full-file-path)
   (setq reveal-cut-video-out-put-file full-file-path)

@@ -1900,6 +1900,34 @@ Version 2019-02-12 2021-08-09"
 
 (defun hurricane/reveal-cut-video ()
   (interactive)
+  (let ((audio-duration (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start)))))
+   (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
+                                                         ;; output full file path
+                                                         (format
+                                                          "%sstatic/%s/reveal_cut_%s.mp4"
+                                                          (expand-file-name reveal-project-directory)
+                                                          (file-name-sans-extension (buffer-name))
+                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p"))
+                                                         ;; start timestamp
+                                                         (and subed-mpv-playback-position
+                                                          (replace-regexp-in-string
+                                                           "," "."
+                                                           (compile-media-msecs-to-timestamp
+                                                            subed-mpv-playback-position)))
+                                                         ;; stop timestamp
+                                                         (and subed-mpv-playback-position
+                                                          (replace-regexp-in-string
+                                                           "," "."
+                                                           (compile-media-msecs-to-timestamp
+                                                            (+ subed-mpv-playback-position
+                                                               audio-duration))))
+                                                         ;; duration
+                                                         audio-duration
+                                                         "get_property"
+                                                         "path"))))
+
+(defun hurricane/reveal-cut-backgroundmusic ()
+  (interactive)
   (let (full-file-path
         (prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
         (audio-duration (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start)))))
@@ -1931,21 +1959,25 @@ Version 2019-02-12 2021-08-09"
                                                          "get_property"
                                                          "path"))))
 
-(defun hurricane/reveal--cut-video (final-cmd full-file-path)
-  (setq reveal-cut-video-out-put-file full-file-path)
+(defun hurricane/reveal--cut-media (final-cmd full-file-path)
+  (setq reveal-cut-media-output-file full-file-path)
   (let* ((final-cmd final-cmd)
-         (buffer (get-buffer-create "*ffmpeg reveal cut video*"))
+         (buffer (get-buffer-create "*ffmpeg reveal cut media*"))
          (process
           (start-process-shell-command
-           "hurricane/reveal-cut-video"
+           "hurricane/reveal--cut-media"
            buffer
            final-cmd)))
+
     (message "%s"  final-cmd)
+
     (set-process-sentinel
      process
      (lambda (proc event)
        (when (equal event "finished\n")
-         (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-video-out-put-file "\">"))
+         (if (equal "mp4" (file-name-extension reveal-cut-media-output-file))
+          (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-media-output-file "\">"))
+          (message "Cut media %s finished." reveal-cut-media-output-file))
          )))
     t))
 
@@ -2352,9 +2384,11 @@ Version 2019-02-12 2021-08-09"
           zoom-temp-output-list
           merge-temp-output
           tts-temp-output
+          track-temp-output
           (video-source (org-entry-get (point) "VIDEO_SOURCE"))
           audio-source
           track-source
+          backgroundmusic-source
           (audio-duration (org-entry-get (point) "AUDIO_DURATION_MS"))
           merge-video-configurations
           zoom-temp-cmd-list
@@ -2363,11 +2397,14 @@ Version 2019-02-12 2021-08-09"
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
         (setq reveal-convert-zoom-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
         (setq merge-temp-output (concat (file-name-sans-extension reveal-convert-zoom-images-to-video-output) "_merge_temp" ".mp4"))
-        (setq tts-temp-output (concat (file-name-sans-extension reveal-convert-zoom-images-to-video-output) "_tts_temp" ".mp4")))
+        (setq tts-temp-output (concat (file-name-sans-extension reveal-convert-zoom-images-to-video-output) "_tts_temp" ".mp4"))
+        (setq track-temp-output (concat (file-name-sans-extension reveal-convert-zoom-images-to-video-output) "_track_temp" ".mp4")))
       (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
         (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
       (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
         (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+      (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
+        (setq backgroundmusic-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
 
       (dolist (image-file-source (nreverse image-file-source-list))
         (add-to-list 'zoom-temp-output-list (format "-i \"%s\"" (nth 1 image-file-source)) t)
@@ -2378,11 +2415,22 @@ Version 2019-02-12 2021-08-09"
 
       (setq merge-video-configurations (format "\"%s%s\"" merge-video-configurations (format "%sconcat=n=%s:v=1" (substring "[a][b][c][d][e][f][g][h][i][j][k][l][m][n][o][p][q][r][s][t][u][v][w][x][y][z]" 0 (* 3 index)) (number-to-string index))))
       (setq merge-video-configurations (concat (string-join zoom-temp-output-list " ") " -filter_complex " merge-video-configurations))
+      ;; 合并图片生成的视频片段。
       (setq merge-cmd (format "ffmpeg %s \"%s\"" merge-video-configurations merge-temp-output))
-      (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -vcodec copy -acodec copy \"%s\"" merge-temp-output audio-source tts-temp-output))
-      (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" tts-temp-output track-source reveal-convert-zoom-images-to-video-output))
+      ;；合并配音文件。
+      ;; (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -vcodec copy -acodec copy \"%s\"" merge-temp-output audio-source tts-temp-output))
+      ;; 配音声音在画面出现两秒后出现。
+      (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
+      ;；合并字幕文件。
+      (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" tts-temp-output track-source track-temp-output))
+      ;；合并背景音乐文件。
+      ;; merge-temp-output 的时长必须大于 audio-source，否则 tts-temp-output 播放时
+      ;；video 画面在走完时长后停止，而 tts audio 继续播放。
+      ;；backgroundmusic-source 在被合并时，tts audio只被提取并合并至停止画面的时间戳，backgroundmusci-source 则合并至 tts audio 的完整时间戳。
+      ;；所以 reveal-convert-zoom-images-to-video-output 反而是在停止画面后没有 tts audio，却有 backgroundmusic-source。
+      (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
 
-      (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd))
+      (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))
 
       (message "%s" final-cmd)
 

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: transition_super-8
+# key: transition_super-8
+# --
+:MATERIAL_TRANSITION_VIDEO: static/public media/super-8.mp4
+:MATERIAL_TRANSITION_MUSIC: static/public media/Film Roll Sound Effect.mp3
+:TRANSITION_MUSIC_DELAY: 1000
+:DRAWTEXT_FONTCOLOR: white
+:DRAWTEXT_FONTSIZE: 64
+:DRAWTEXT_FONTFILE: /Users/c/Library/Fonts/sarasa-ui-j-mediumitalic.ttf
+:DRAWTEXT_TEXT: $0

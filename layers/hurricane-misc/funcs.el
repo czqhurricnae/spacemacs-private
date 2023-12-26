@@ -355,7 +355,7 @@ e.g. `Sunday, September 17, 2000'."
 
 ;; {{
 ;; @See: http://xuchunyang.me/Opening-iTerm-From-an-Emacs-Buffer/
-(defun hurricane//iterm-shell-command (command &optional prefix)
+(defun hurricane/iterm-shell-command (command &optional prefix)
   "Cd to `default-directory' then run COMMAND in iTerm.
 with PREFIX, cd to project root."
   (interactive (list (read-shell-command
@@ -1898,33 +1898,56 @@ Version 2019-02-12 2021-08-09"
       (popweb-start 'popweb-org-roam-link-preview (list nil "Hello world" nil nil))))
   (add-hook 'post-command-hook #'popweb-org-roam-link-preview-window-hide-after-move))
 
-(defun hurricane/reveal-cut-video ()
-  (interactive)
-  (let ((audio-duration (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start)))))
+(defun hurricane/reveal-cut-video (&optional from-prop)
+  (interactive "P")
+  (let (full-file-path
+        (prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+        video-timestamp-start
+        video-timestamp-stop
+        (audio-duration (unless from-prop (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start))))))
+    (if from-prop
+      (progn
+        (setq video-timestamp-start (* 1000 (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_START"))))
+        (setq video-timestamp-stop (* 1000 (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_STOP"))))
+        (setq audio-duration (- video-timestamp-stop video-timestamp-start))))
+    (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
+      (setq full-file-path (expand-file-name (match-string 1 prop) reveal-project-directory)))
    (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
                                                          ;; output full file path
-                                                         (format
+                                                         (or full-file-path
+                                                          (format
                                                           "%sstatic/%s/reveal_cut_%s.mp4"
                                                           (expand-file-name reveal-project-directory)
                                                           (file-name-sans-extension (buffer-name))
-                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p"))
+                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p")))
                                                          ;; start timestamp
-                                                         (and subed-mpv-playback-position
-                                                          (replace-regexp-in-string
-                                                           "," "."
-                                                           (compile-media-msecs-to-timestamp
-                                                            subed-mpv-playback-position)))
+                                                         (if from-prop
+                                                           (replace-regexp-in-string
+                                                            "," "."
+                                                            (compile-media-msecs-to-timestamp
+                                                             video-timestamp-start))
+                                                          (and subed-mpv-playback-position
+                                                               (replace-regexp-in-string
+                                                               "," "."
+                                                               (compile-media-msecs-to-timestamp
+                                                                subed-mpv-playback-position))))
                                                          ;; stop timestamp
-                                                         (and subed-mpv-playback-position
-                                                          (replace-regexp-in-string
-                                                           "," "."
-                                                           (compile-media-msecs-to-timestamp
-                                                            (+ subed-mpv-playback-position
-                                                               audio-duration))))
+                                                         (if from-prop
+                                                           (replace-regexp-in-string
+                                                            "," "."
+                                                            (compile-media-msecs-to-timestamp
+                                                             video-timestamp-stop))
+                                                          (and subed-mpv-playback-position
+                                                               (replace-regexp-in-string
+                                                               "," "."
+                                                               (compile-media-msecs-to-timestamp
+                                                                (+ subed-mpv-playback-position
+                                                                   audio-duration)))))
                                                          ;; duration
                                                          audio-duration
                                                          "get_property"
-                                                         "path"))))
+                                                         "path"))
+   ))
 
 (defun hurricane/reveal-cut-backgroundmusic ()
   (interactive)
@@ -2087,16 +2110,16 @@ Version 2019-02-12 2021-08-09"
                ))))))
       ))
 
-(defun hurricane/reveal-cache-audio-duration ()
-  (interactive)
+(defun hurricane/cache-media-duration (&optional video)
+  (interactive "P")
   (let ((proj-dir reveal-project-directory))
     (org-map-entries
      (lambda ()
        (let ((prop (org-entry-get (point) "REVEAL_EXTRA_ATTR")))
-         (when (and prop (string-match (format "static/%s/[-A-Za-z0-9]+?\\.opus" (file-name-sans-extension (buffer-name))) prop))
+         (when (and prop (string-match (format "static/%s/[-A-Za-z0-9]+?\\.%s" (file-name-sans-extension (buffer-name)) (if video "mp4" "opus")) prop))
                  (message "%s" (expand-file-name (match-string 0 prop)
                   proj-dir))
-           (org-entry-put (point) "AUDIO_DURATION_MS"
+           (org-entry-put (point) (if video "VIDEO_DURATION_MS" "AUDIO_DURATION_MS")
               (number-to-string
                (compile-media-get-file-duration-ms
                 (expand-file-name (match-string 0 prop)
@@ -2113,8 +2136,8 @@ Version 2019-02-12 2021-08-09"
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\(?:video:\\([-~/A-Za-z0-9]+.webm\\)\\|\\(https:[^ ]+\\.gif\\)\\|file:\\([-A-Za-z0-9:]+.gif\\)\\)" nil t)
-      (unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION")))
-        (org-entry-put (point) "VIDEO_DURATION"
+      (unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION_MS")))
+        (org-entry-put (point) "VIDEO_DURATION_MS"
            (number-to-string
             (compile-media-get-file-duration-ms
              (or (expand-file-name (match-string 1))
@@ -2241,45 +2264,45 @@ Version 2019-02-12 2021-08-09"
       (display-buffer (current-buffer))
       (funcall-interactively 'subed-align (expand-file-name audio-output reveal-project-directory) (buffer-file-name) "VTT"))))
 
-(defun hurricane/reveal-slide-video-source ()
-  (interactive)
+(defun hurricane/slide-video-source (&optional if-losslesscut)
+  (interactive "P")
   (org-narrow-to-subtree)
-  (org-block-map
+  (org-map-entries
    (lambda ()
      (unless (org-in-commented-heading-p)
        (let ((video-source (select-or-enter-file-name (expand-file-name (format "static/%s/" (file-name-sans-extension (buffer-name))) reveal-project-directory))))
          (org-entry-put
           (point)
-          "VIDEO_SOURCE"
+          (if if-losslesscut "LOSSLESSCUT_VIDEO_SOURCE" "VIDEO_SOURCE")
           video-source))))))
 
-(defun hurricane/reveal-slide-video-timestamp-start ()
+(defun hurricane/slide-video-source-timestamp-start ()
   (interactive)
   (org-narrow-to-subtree)
-  (org-block-map
+  (org-map-entries
    (lambda ()
      (unless (org-in-commented-heading-p)
        (python-bridge-call-async "mpv_get_time_position" (list (subed-mpv--socket) (point) "VIDEO_TIMESTAMP_START" "get_property" "time-pos"))))))
 
-(defun hurricane/reveal-slide-video-timestamp-stop ()
+(defun hurricane/slide-video-source-timestamp-stop ()
   (interactive)
   (org-narrow-to-subtree)
-  (org-block-map
+  (org-map-entries
    (lambda ()
      (unless (org-in-commented-heading-p)
        (python-bridge-call-async "mpv_get_time_position" (list (subed-mpv--socket) (point) "VIDEO_TIMESTAMP_STOP" "get_property" "time-pos"))))))
 
-(defun hurricane//reveal--slide-video-timestamp (point start-or-stop millisec)
+(defun hurricane//slide--video-source-timestamp (point start-or-stop sec)
   (progn
    (goto-char (string-to-number point))
     (org-entry-put
      (point)
      start-or-stop
-     millisec)))
+     sec)))
 
-(defun hurricane/reveal-create-proj-llc ()
+(defun hurricane/create-proj-llc ()
   (interactive)
-  (let (video-source
+  (let (losslesscut-video-source
         video-timestamp-start
         video-timestamp-stop
         video-segment-name
@@ -2287,20 +2310,20 @@ Version 2019-02-12 2021-08-09"
       (org-map-entries
        (lambda ()
          (unless (org-in-commented-heading-p)
-           (setq video-source (org-entry-get (point) "VIDEO_SOURCE"))
+           (setq losslesscut-video-source (org-entry-get (point) "LOSSLESSCUT_VIDEO_SOURCE"))
            (setq video-timestamp-start (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_START")))
            (setq video-timestamp-stop (string-to-number (org-entry-get (point) "VIDEO_TIMESTAMP_STOP")))
            (setq video-segment-name (expand-file-name (format "static/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)) reveal-project-directory))
-           (if (gethash `,video-source result)
+           (if (gethash `,losslesscut-video-source result)
              (progn
-               (setq cut-segments (plist-get (gethash `,video-source result) :cutSegments))
+               (setq cut-segments (plist-get (gethash `,losslesscut-video-source result) :cutSegments))
                ;; push 不能 append，所以使用 add-to-list，注意细微区别，cut-segments 的处理。
                ;; (setq new-segments (push `(:start ,video-timestamp-start :end ,video-timestamp-stop) `,cut-segments))
                (setq new-segments (add-to-list 'cut-segments `((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)) t))
-               (remhash `,video-source result)
-               (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments ,new-segments) result)
+               (remhash `,losslesscut-video-source result)
+               (puthash `,losslesscut-video-source `(:version 1 :mediaFileName ,losslesscut-video-source :cutSegments ,new-segments) result)
                )
-             (puthash `,video-source `(:version 1 :mediaFileName ,video-source :cutSegments (((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)))) result ))
+             (puthash `,losslesscut-video-source `(:version 1 :mediaFileName ,losslesscut-video-source :cutSegments (((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)))) result ))
            )))
       (maphash
        (lambda (k v)
@@ -2310,20 +2333,23 @@ Version 2019-02-12 2021-08-09"
          (display-buffer (current-buffer))))
                result)))
 
-(defun hurricane/reveal-convert-images-to-video ()
+(defun hurricane/convert-fade-images-to-video ()
   (interactive)
   (org-narrow-to-subtree)
-  (setq reveal-convert-images-to-video-output nil)
+  (setq reveal-convert-fade-images-to-video-output nil)
   (let (image-file-source-list
         audio-source)
     (while (re-search-forward "\\[\\[file:\\([^]]+\\)\\]\\]" nil t)
       (push (expand-file-name (string-trim (match-string 1)) reveal-project-directory) image-file-source-list))
-    (let (temp-output
-          (video-source (org-entry-get (point) "VIDEO_SOURCE"))
+    (let ((index 0)
+          merge-temp-output
+          tts-temp-output
+          track-temp-output
+          temp-output
           audio-source
           track-source
+          backgroundmusic-source
           (audio-duration (org-entry-get (point) "AUDIO_DURATION_MS"))
-          (index 0)
           image-configurations
           filter-complex-configurations-prefix
           filter-complex-configurations-append
@@ -2343,28 +2369,42 @@ Version 2019-02-12 2021-08-09"
           ))
       (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
-        (setq reveal-convert-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
-        (setq temp-output (concat (file-name-sans-extension reveal-convert-images-to-video-output) "_temp" ".mp4")))
+        (setq reveal-convert-fade-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
+        (setq merge-temp-output (concat (file-name-sans-extension reveal-convert-fade-images-to-video-output) "_merge_temp" ".mp4"))
+        (setq tts-temp-output (concat (file-name-sans-extension reveal-convert-fade-images-to-video-output) "_tts_temp" ".mp4"))
+        (setq track-temp-output (concat (file-name-sans-extension reveal-convert-fade-images-to-video-output) "_track_temp" ".mp4"))
+        (setq temp-output (concat (file-name-sans-extension reveal-convert-fade-images-to-video-output) "_temp" ".mp4")))
       (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
         (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
       (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
         (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+      (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
+        (setq backgroundmusic-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
 
-      (setq final-cmd (format "ffmpeg%s -i \"%s\" -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -map %s:a \"%s\"&&ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" image-configurations audio-source filter-complex-configurations-prefix filter-complex-configurations-append (length image-file-source-list) (length image-file-source-list) temp-output temp-output track-source reveal-convert-images-to-video-output))
+      ;；https://shotstack.io/learn/use-ffmpeg-to-convert-images-to-video/
+      (setq merge-cmd (format "ffmpeg%s -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" \"%s\"" image-configurations filter-complex-configurations-prefix filter-complex-configurations-append (length image-file-source-list) merge-temp-output merge-temp-output))
+      ;; 配音声音在画面出现两秒后出现。
+      (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
+      ;；合并字幕文件。
+      (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy \"%s\"" tts-temp-output track-source track-temp-output))
+      ;；合并背景音乐文件。
+      (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
 
-      (message final-cmd)
+      (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))
 
-      (let* ((buffer (get-buffer-create "*ffmpeg convert images to video*"))
+      (message "%s" final-cmd)
+
+      (let* ((buffer (get-buffer-create "*ffmpeg convert fade images to video*"))
              (process
               (start-process-shell-command
-               "hurricane/reveal-convert-images-to-video"
+               "hurricane/reveal-convert-fade-images-to-video"
                buffer
                final-cmd)))
         (set-process-sentinel
          process
          (lambda (proc event)
            (when (equal event "finished\n")
-             (message "Convert images to video: %s finished." reveal-convert-images-to-video-output)
+             (message "Convert fade images to video: %s finished." reveal-convert-fade-images-to-video-output)
              ))))
       )
     )
@@ -2372,7 +2412,7 @@ Version 2019-02-12 2021-08-09"
 
 ;; https://stackoverflow.com/questions/37327163/ffmpeg-input-link-in1v0-parameters-size-640x640-sar-169-do-not-match-the
 ;; https://creatomate.com/blog/how-to-zoom-images-and-videos-using-ffmpeg
-(defun hurricane/reveal-convert-zoom-images-to-video ()
+(defun hurricane/convert-zoom-images-to-video ()
   (interactive)
   (org-narrow-to-subtree)
   (setq reveal-convert-zoom-images-to-video-output nil)
@@ -2385,7 +2425,6 @@ Version 2019-02-12 2021-08-09"
           merge-temp-output
           tts-temp-output
           track-temp-output
-          (video-source (org-entry-get (point) "VIDEO_SOURCE"))
           audio-source
           track-source
           backgroundmusic-source
@@ -2428,7 +2467,7 @@ Version 2019-02-12 2021-08-09"
       ;；video 画面在走完时长后停止，而 tts audio 继续播放。
       ;；backgroundmusic-source 在被合并时，tts audio只被提取并合并至停止画面的时间戳，backgroundmusci-source 则合并至 tts audio 的完整时间戳。
       ;；所以 reveal-convert-zoom-images-to-video-output 反而是在停止画面后没有 tts audio，却有 backgroundmusic-source。
-      (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
+      (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1] volume=0.01 [aud1];[aud1] afade=t=in:st=0:d=3 [aud2];[aud2] afade=t=out:st=%s:d=3 [aud3];[0:a][aud3] amix=inputs=2:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
 
       (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))
 
@@ -2444,7 +2483,7 @@ Version 2019-02-12 2021-08-09"
          process
          (lambda (proc event)
            (when (equal event "finished\n")
-             (message "Convert images to video: %s finished." reveal-convert-zoom-images-to-video-output)
+             (message "Convert zoom images to video: %s finished." reveal-convert-zoom-images-to-video-output)
              ))))
       )
     )

@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("https://agm.haifanwu.com/"
+(("https://www.ffmpegbyexample.com/"
+  (filename . "https://www.ffmpegbyexample.com/")
+ (front-context-string . "\n(defun hurrican")
+ (rear-context-string . "))))))\n      ))\n")
+ (position . 91944))
+("https://agm.haifanwu.com/"
  (filename . "~/Downloads/vs.org")
  (front-context-string . "\n#+BEGIN_SRC ema")
  (rear-context-string . "ents)\n#+END_SRC\n")

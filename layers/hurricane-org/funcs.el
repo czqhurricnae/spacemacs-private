@@ -52,12 +52,13 @@
 (defun org-screenshot-image-dir ()
   (or org-screenshot-image-dir-name "."))
 
-(defun select-or-enter-file-name (img-dir)
+(defun select-or-enter-file-name (img-dir &optional init-input)
   (ivy-read
    "please selete or enter a name (Ctrl-n for next item, Ctrl-p for previous item)"
             (delete ".."
                     (delete "."
-                            (directory-files-recursively img-dir ".")))))
+                            (directory-files-recursively img-dir ".")))
+            :initial-input init-input))
 
 (defun trim-space-in-string (string)
   (replace-regexp-in-string "[\t\n ]+" "" string))

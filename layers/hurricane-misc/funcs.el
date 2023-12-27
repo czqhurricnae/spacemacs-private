@@ -2003,7 +2003,9 @@ Version 2019-02-12 2021-08-09"
      (lambda (proc event)
        (when (equal event "finished\n")
          (if (equal "mp4" (file-name-extension reveal-cut-media-output-file))
-          (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-media-output-file "\">"))
+          (progn
+            (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-media-output-file "\">"))
+            (hurricane/slide-material-video (string-trim reveal-cut-media-output-file) nil))
           (message "Cut media %s finished." reveal-cut-media-output-file))
          )))
     t))
@@ -2121,8 +2123,7 @@ Version 2019-02-12 2021-08-09"
      (lambda ()
        (let ((prop (org-entry-get (point) "REVEAL_EXTRA_ATTR")))
          (when (and prop (string-match (format "static/%s/[-A-Za-z0-9]+?\\.%s" (file-name-sans-extension (buffer-name)) (if video "mp4" "opus")) prop))
-                 (message "%s" (expand-file-name (match-string 0 prop)
-                  proj-dir))
+           (message "%s" (expand-file-name (match-string 0 prop) proj-dir))
            (org-entry-put (point) (if video "VIDEO_DURATION_MS" "AUDIO_DURATION_MS")
               (number-to-string
                (compile-media-get-file-duration-ms
@@ -2268,13 +2269,13 @@ Version 2019-02-12 2021-08-09"
       (display-buffer (current-buffer))
       (funcall-interactively 'subed-align (expand-file-name audio-output reveal-project-directory) (buffer-file-name) "VTT"))))
 
-(defun hurricane/slide-material-video (&optional if-losslesscut)
-  (interactive "P")
+(defun hurricane/slide-material-video (&optional init-video if-losslesscut)
+  (interactive nil "P")
   (org-narrow-to-subtree)
   (org-map-entries
    (lambda ()
      (unless (org-in-commented-heading-p)
-       (let ((material-video (select-or-enter-file-name (expand-file-name (format "static/%s/" (file-name-sans-extension (buffer-name))) reveal-project-directory))))
+       (let ((material-video (select-or-enter-file-name (expand-file-name (format "static/%s/" (file-name-sans-extension (buffer-name))) reveal-project-directory) init-video)))
          (org-entry-put
           (point)
           (if if-losslesscut "LOSSLESSCUT_MATERIAL_VIDEO" "MATERIAL_VIDEO")
@@ -2402,7 +2403,7 @@ Version 2019-02-12 2021-08-09"
                ;; 合并字幕文件。
                (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
                ;; 合并背景音乐文件。
-               (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-fade-images-to-video-output))
+               (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1] volume=0.01 [aud1];[aud1] afade=t=in:st=0:d=3 [aud2];[aud2] afade=t=out:st=%s:d=3 [aud3];[0:a][aud3]amix=inputs=2:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-fade-images-to-video-output))
                (setq final-cmd (concat merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
             (t
              (setq final-cmd (format "ffmpeg%s -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -y \"%s\"" image-configurations filter-complex-configurations-prefix filter-complex-configurations-append image-file-source-list-length reveal-convert-fade-images-to-video-output))))
@@ -2494,18 +2495,18 @@ Version 2019-02-12 2021-08-09"
 
       (message "%s" final-cmd)
 
-      ;; (let* ((buffer (get-buffer-create "*ffmpeg convert zoom images to video*"))
-      ;;        (process
-      ;;         (start-process-shell-command
-      ;;          "hurricane/reveal-convert-zoom-images-to-video"
-      ;;          buffer
-      ;;          final-cmd)))
-      ;;   (set-process-sentinel
-      ;;    process
-      ;;    (lambda (proc event)
-      ;;      (when (equal event "finished\n")
-      ;;        (message "Convert zoom images to video: %s finished." reveal-convert-zoom-images-to-video-output)
-      ;;        ))))
+      (let* ((buffer (get-buffer-create "*ffmpeg convert zoom images to video*"))
+             (process
+              (start-process-shell-command
+               "hurricane/reveal-convert-zoom-images-to-video"
+               buffer
+               final-cmd)))
+        (set-process-sentinel
+         process
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (message "Convert zoom images to video: %s finished." reveal-convert-zoom-images-to-video-output)
+             ))))
       )
     )
   )
@@ -2550,9 +2551,9 @@ Version 2019-02-12 2021-08-09"
     )
   )
 
-(defun hurricane/ffmpeg-concat ()
+(defun hurricane/ffmpeg-chapter-concat ()
   (interactive)
-  (setq ffmpeg-concat-output-file (expand-file-name (format "static/%s/final.mp4" (file-name-sans-extension (buffer-name)))  reveal-project-directory))
+  (setq ffmpeg-chapter-concat-output-file (expand-file-name (format "static/%s/final.mp4" (file-name-sans-extension (buffer-name)))  reveal-project-directory))
   (let ((index 0)
         input-configurations
         concat-configurations)
@@ -2561,7 +2562,7 @@ Version 2019-02-12 2021-08-09"
       (setq concat-configurations (concat concat-configurations (format "[%s:0][%s:1]" index index)))
       (setq index (+ 1 index))
       )
-    (setq final-cmd (format "ffmpeg%s -filter_complex \"%s concat=n=%s:v=1:a=1[v][a]\" -map \"[v]\" -map \"[a]\" -c:v h264 -b:v 6m -y \"%s\"" input-configurations concat-configurations (length (read (hurricane//extract-value-from-keyword "CHAPTER_KEY"))) ffmpeg-concat-output-file))
+    (setq final-cmd (format "ffmpeg%s -filter_complex \"%s concat=n=%s:v=1:a=1[v][a]\" -map \"[v]\" -map \"[a]\" -c:v h264 -b:v 6m -y \"%s\"" input-configurations concat-configurations (length (read (hurricane//extract-value-from-keyword "CHAPTER_KEY"))) ffmpeg-chapter-concat-output-file))
 
     (message "%s" final-cmd)
 
@@ -2575,7 +2576,7 @@ Version 2019-02-12 2021-08-09"
        process
        (lambda (proc event)
          (when (equal event "finished\n")
-           (message "Concat: %s finished." ffmpeg-concat-output-file)
+           (message "Concat: %s finished." ffmpeg-chapter-concat-output-file)
            ))))
     ))
 
@@ -2637,3 +2638,57 @@ Version 2019-02-12 2021-08-09"
            ))))
     )
   )
+
+(defun hurricane/ffmpeg-subchapter-concat ()
+  (interactive)
+  (org-narrow-to-subtree)
+  (setq ffmpeg-subchapter-concat-output-file nil)
+  (let ((index 0)
+        merge-temp-output
+        tts-temp-output
+        track-temp-output
+        audio-source
+        track-source
+        backgroundmusic-source
+        (audio-duration (org-entry-get (point) "AUDIO_DURATION_MS"))
+        input-configurations
+        concat-configurations)
+    (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+    (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
+      (setq ffmpeg-subchapter-concat-output-file (expand-file-name (match-string 1 prop) reveal-project-directory))
+      (setq merge-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory ffmpeg-subchapter-concat-output-file) "temp" (file-name-nondirectory ffmpeg-subchapter-concat-output-file))) "_merge_temp" ".mp4"))
+      (setq tts-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory ffmpeg-subchapter-concat-output-file) "temp" (file-name-nondirectory ffmpeg-subchapter-concat-output-file))) "_tts_temp" ".mp4"))
+      (setq track-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory ffmpeg-subchapter-concat-output-file) "temp" (file-name-nondirectory ffmpeg-subchapter-concat-output-file))) "_track_temp" ".mp4")))
+    (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+      (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+    (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
+      (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+    (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
+      (setq backgroundmusic-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+
+    (dolist (subchapter (read (hurricane//headline-property "SUBCHAPTER_KEY")))
+      (setq input-configurations (concat input-configurations  " -i " "\"" (expand-file-name (format "static/%s" (file-name-sans-extension (buffer-name))) reveal-project-directory) "/" (downcase (concat (string-join (org--get-outline-path-1) "-") "-" (number-to-string subchapter))) ".mp4" "\""))
+      (setq concat-configurations (concat concat-configurations (format "[%s:0]" index index)))
+      (setq index (+ 1 index)))
+
+    (setq merge-cmd (format "ffmpeg%s -filter_complex \"%s concat=n=%s:v=1[v]\" -map \"[v]\" -c:v h264 -b:v 6m -y \"%s\"" input-configurations concat-configurations (length (read (hurricane//headline-property "SUBCHAPTER_KEY"))) merge-temp-output))
+    (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
+    (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
+    (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1] volume=0.01 [aud1];[aud1] afade=t=in:st=0:d=3 [aud2];[aud2] afade=t=out:st=%s:d=3 [aud3];[0:a][aud3] amix=inputs=2:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) ffmpeg-subchapter-concat-output-file))
+    (setq final-cmd (concat merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))
+
+    (message "%s" final-cmd)
+
+    (let* ((buffer (get-buffer-create "*ffmpeg subchapter concat*"))
+           (process
+            (start-process-shell-command
+             "hurricane/ffmpeg-subchapter-concat"
+             buffer
+             final-cmd)))
+      (set-process-sentinel
+       process
+       (lambda (proc event)
+         (when (equal event "finished\n")
+           (message "Concat: %s finished." ffmpeg-subchapter-concat-output-file)
+           ))))
+    ))

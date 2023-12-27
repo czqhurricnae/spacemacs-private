@@ -1911,6 +1911,7 @@ Version 2019-02-12 2021-08-09"
         (setq video-timestamp-stop (* 1000 (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_STOP"))))
         (setq audio-duration (- video-timestamp-stop video-timestamp-start))))
     (and (org-entry-get (point) "MATERIAL_VIDEO") (setq full-file-path (expand-file-name (org-entry-get (point) "MATERIAL_VIDEO") reveal-project-directory)))
+    (make-directory (file-name-concat reveal-project-directory "static" (file-name-sans-extension (buffer-name)) "temp") t)
    (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
                                                          ;; output full file path
                                                          (or full-file-path
@@ -1941,14 +1942,14 @@ Version 2019-02-12 2021-08-09"
                                                                "," "."
                                                                (compile-media-msecs-to-timestamp
                                                                 ;；多剪切6 秒钟留白。
-                                                                (+ 6000
+                                                                (+ 4000
                                                                    subed-mpv-playback-position
                                                                    audio-duration)))))
                                                          ;; duration
                                                          ;；多剪切6 秒钟留白。
                                                          (if if-get-timestamp-from-property
                                                              audio-duration
-                                                           (+ 6000 audio-duration))
+                                                           (+ 4000 audio-duration))
                                                          "get_property"
                                                          "path"))))
 
@@ -2057,7 +2058,7 @@ Version 2019-02-12 2021-08-09"
      (org-entry-put
       (point)
       "REVEAL_EXTRA_ATTR"
-      (format "data-audio-src=\"static/%s/%s.opus\" data-track-src=\"static/%s/%s.vtt\" data-video-src=\"static/%s/%s.mp4\""
+      (format "data-audio-src=\"static/%s/%s.opus\" data-track-src=\"static/%s/%s.ass\" data-video-src=\"static/%s/%s.mp4\""
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
               (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)
@@ -2277,7 +2278,7 @@ Version 2019-02-12 2021-08-09"
          (org-entry-put
           (point)
           (if if-losslesscut "LOSSLESSCUT_MATERIAL_VIDEO" "MATERIAL_VIDEO")
-          material-video))))))
+          (file-relative-name material-video default-directory)))))))
 
 (defun hurricane/slide-material-video-timestamp-start ()
   (interactive)
@@ -2357,7 +2358,7 @@ Version 2019-02-12 2021-08-09"
           filter-complex-configurations-prefix
           filter-complex-configurations-append
           final-cmd)
-      (dolist (image-file-source image-file-source-list)
+      (dolist (image-file-source (nreverse image-file-source-list))
        (setq image-configurations (concat image-configurations " -loop 1 -t 5 " "-i " "\"" image-file-source "\"")))
       (if (equal 1 (length image-file-source-list))
           (progn
@@ -2373,6 +2374,7 @@ Version 2019-02-12 2021-08-09"
       (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
         (setq reveal-convert-fade-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
+        (make-directory (expand-file-name (file-name-concat (file-name-directory reveal-convert-fade-images-to-video-output) "temp") reveal-project-directory) t)
         (setq merge-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-fade-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-fade-images-to-video-output))) "_merge_temp" ".mp4"))
         (setq tts-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-fade-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-fade-images-to-video-output))) "_tts_temp" ".mp4"))
         (setq track-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-fade-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-fade-images-to-video-output))) "_track_temp" ".mp4"))
@@ -2422,7 +2424,7 @@ Version 2019-02-12 2021-08-09"
   (let (image-file-source-list
         audio-source)
     (while (re-search-forward "\\[\\[file:\\([^]]+\\)\\]\\]" nil t)
-      (push (list (expand-file-name (string-trim (match-string 1)) reveal-project-directory) (expand-file-name (concat (file-name-sans-extension (string-trim (match-string 1))) "_zoom_temp.mp4") reveal-project-directory) (buffer-substring-no-properties (+ 11 (org-element-property :begin (org-element-at-point))) (- (org-element-property :contents-begin (org-element-at-point)) 1))) image-file-source-list))
+      (push (list (expand-file-name (string-trim (match-string 1)) reveal-project-directory) (expand-file-name (file-name-concat (file-name-directory (string-trim (match-string 1))) "temp" (concat (file-name-sans-extension (file-name-nondirectory (string-trim (match-string 1)))) "_zoom_temp.mp4")) reveal-project-directory) (buffer-substring-no-properties (+ 11 (org-element-property :begin (org-element-at-point))) (- (org-element-property :contents-begin (org-element-at-point)) 1))) image-file-source-list))
     (let ((index 0)
           zoom-temp-output-list
           merge-temp-output
@@ -2438,9 +2440,10 @@ Version 2019-02-12 2021-08-09"
       (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
         (setq reveal-convert-zoom-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
-        (setq merge-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-zoom-images-to-video-output)) "_merge_temp" ".mp4"))
-        (setq tts-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-zoom-images-to-video-output)) "_tts_temp" ".mp4"))
-        (setq track-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-zoom-images-to-video-output)) "_track_temp" ".mp4")))
+        (make-directory (expand-file-name (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp") reveal-project-directory) t)
+        (setq merge-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-zoom-images-to-video-output))) "_merge_temp" ".mp4"))
+        (setq tts-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-zoom-images-to-video-output))) "_tts_temp" ".mp4"))
+        (setq track-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory reveal-convert-zoom-images-to-video-output) "temp" (file-name-nondirectory reveal-convert-zoom-images-to-video-output))) "_track_temp" ".mp4")))
       (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
         (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
       (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
@@ -2545,6 +2548,7 @@ Version 2019-02-12 2021-08-09"
       (setq index (+ 1 index))
       )
     (setq final-cmd (format "ffmpeg%s -filter_complex \"%s concat=n=%s:v=1:a=1[v][a]\" -map \"[v]\" -map \"[a]\" -c:v h264 -b:v 6m -y \"%s\"" input-configurations concat-configurations (length (read (hurricane//extract-value-from-keyword "CHAPTER_KEY"))) ffmpeg-concat-output-file))
+
     (message "%s" final-cmd)
 
     (let* ((buffer (get-buffer-create "*ffmpeg concat*"))
@@ -2560,3 +2564,62 @@ Version 2019-02-12 2021-08-09"
            (message "Concat: %s finished." ffmpeg-concat-output-file)
            ))))
     ))
+
+(defun hurricane/ffmpeg-synthetic-process ()
+  (interactive)
+  (setq synthetic-process-output nil)
+  (let (without-audio-temp-output
+        tts-temp-output
+        track-temp-output
+        audio-source
+        track-source
+        backgroundmusic-source
+        (audio-duration (org-entry-get (point) "AUDIO_DURATION_MS"))
+        (material-video (expand-file-name (org-entry-get (point) "MATERIAL_VIDEO") reveal-project-directory))
+        final-cmd)
+
+    (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+    (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
+      (setq synthetic-process-output (expand-file-name (match-string 1 prop) reveal-project-directory))
+      (make-directory (expand-file-name (file-name-concat (file-name-directory synthetic-process-output) "temp") reveal-project-directory) t)
+      (setq without-audio-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory synthetic-process-output) "temp" (file-name-nondirectory synthetic-process-output))) "_without_audio_temp" ".mp4"))
+      (setq tts-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory synthetic-process-output) "temp" (file-name-nondirectory synthetic-process-output))) "_tts_temp" ".mp4"))
+      (setq track-temp-output (concat (file-name-sans-extension (file-name-concat (file-name-directory synthetic-process-output) "temp" (file-name-nondirectory synthetic-process-output))) "_track_temp" ".mp4")))
+
+    (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+      (setq audio-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+    (when (string-match "data-track-src=\"\\(.+?\\)\"" prop)
+      (setq track-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+    (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
+      (setq backgroundmusic-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
+
+    (cond ((and (file-exists-p audio-source) (file-exists-p track-source) (file-exists-p backgroundmusic-source))
+           (progn
+             (setq remove-cmd (format "ffmpeg -i \"%s\" -c:v copy -an -y \"%s\"" material-video without-audio-temp-output))
+             ;; 配音声音在画面出现两秒后出现。
+             (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" without-audio-temp-output audio-source tts-temp-output))
+              ;; 合并字幕文件。
+             (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
+              ;; 合并背景音乐文件。
+             (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) synthetic-process-output))
+            (setq final-cmd (concat remove-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
+          (t
+           (setq final-cmd (format "ffmpeg -i \"%s\" -c:v copy -an -y \"%s\"" material-video synthetic-process-output))
+           ))
+
+    (message "%s" final-cmd)
+
+    (let* ((buffer (get-buffer-create "*ffmpeg synthetic process*"))
+           (process
+            (start-process-shell-command
+             "hurricane/ffmpeg-synthetic-process"
+             buffer
+             final-cmd)))
+      (set-process-sentinel
+       process
+       (lambda (proc event)
+         (when (equal event "finished\n")
+           (message "Synthetic process: %s finished." synthetic-process-output)
+           ))))
+    )
+  )

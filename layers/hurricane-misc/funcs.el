@@ -2357,20 +2357,27 @@ Version 2019-02-12 2021-08-09"
           image-configurations
           filter-complex-configurations-prefix
           filter-complex-configurations-append
-          final-cmd)
-      (dolist (image-file-source (nreverse image-file-source-list))
-       (setq image-configurations (concat image-configurations " -loop 1 -t 5 " "-i " "\"" image-file-source "\"")))
-      (if (equal 1 (length image-file-source-list))
+          final-cmd
+          (image-file-source-list-length (length image-file-source-list)))
+
+      (if (equal 1 image-file-source-list-length)
           (progn
            (setq filter-complex-configurations-prefix "[0:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v0];")
            (setq filter-complex-configurations-append "[v0]"))
-        (while (< index (length image-file-source-list))
-          (if (equal (+ 1 index) (length image-file-source-list))
-              (setq filter-complex-configurations-prefix (concat filter-complex-configurations-prefix " " (format "[%s:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v%s];" index index)))
-            (setq filter-complex-configurations-prefix (concat filter-complex-configurations-prefix " " (format "[%s:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v%s];" index index))))
-          (setq filter-complex-configurations-append (concat filter-complex-configurations-append (format "[v%s]" index)))
+        (while (< index image-file-source-list-length)
+          (if (equal (+ 1 index) image-file-source-list-length)
+              (progn
+                (setq filter-complex-configurations-append (concat filter-complex-configurations-append (format "[v%s]" index)))
+                (setq filter-complex-configurations-prefix (concat filter-complex-configurations-prefix " " (format "[%s:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v%s];" index index))))
+            (progn
+              (setq filter-complex-configurations-append (concat filter-complex-configurations-append (format "[v%s]" index)))
+              (setq filter-complex-configurations-prefix (concat filter-complex-configurations-prefix " " (format "[%s:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1,fade=t=out:st=4:d=1[v%s];" index index)))))
           (setq index (+ 1 index))
           ))
+
+      (dolist (image-file-source (nreverse image-file-source-list))
+       (setq image-configurations (concat image-configurations " -loop 1 -t 5 " "-i " "\"" image-file-source "\"")))
+
       (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
         (setq reveal-convert-fade-images-to-video-output (expand-file-name (match-string 1 prop) reveal-project-directory))
@@ -2386,16 +2393,19 @@ Version 2019-02-12 2021-08-09"
       (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
         (setq backgroundmusic-source (expand-file-name (match-string 1 prop) reveal-project-directory)))
 
-      ;；https://shotstack.io/learn/use-ffmpeg-to-convert-images-to-video/
-      (setq merge-cmd (format "ffmpeg%s -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -y \"%s\"" image-configurations filter-complex-configurations-prefix filter-complex-configurations-append (length image-file-source-list) merge-temp-output merge-temp-output))
-      ;; 配音声音在画面出现两秒后出现。
-      (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
-      ;；合并字幕文件。
-      (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
-      ;；合并背景音乐文件。
-      (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-fade-images-to-video-output))
-
-      (setq final-cmd (concat merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))
+      (cond ((and (file-exists-p audio-source) (file-exists-p track-source) (file-exists-p backgroundmusic-source))
+             (progn
+               ;; https://shotstack.io/learn/use-ffmpeg-to-convert-images-to-video/
+               (setq merge-cmd (format "ffmpeg%s -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -y \"%s\"" image-configurations filter-complex-configurations-prefix filter-complex-configurations-append image-file-source-list-length merge-temp-output))
+               ;; 配音声音在画面出现两秒后出现。
+               (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
+               ;; 合并字幕文件。
+               (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
+               ;; 合并背景音乐文件。
+               (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-fade-images-to-video-output))
+               (setq final-cmd (concat merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
+            (t
+             (setq final-cmd (format "ffmpeg%s -filter_complex \"%s %sconcat=n=%s:v=1:a=0,format=yuv420p[v]\" -map \"[v]\" -y \"%s\"" image-configurations filter-complex-configurations-prefix filter-complex-configurations-append image-file-source-list-length reveal-convert-fade-images-to-video-output))))
 
       (message "%s" final-cmd)
 
@@ -2460,37 +2470,42 @@ Version 2019-02-12 2021-08-09"
 
       (setq merge-video-configurations (format "\"%s%s\"" merge-video-configurations (format "%sconcat=n=%s:v=1" (substring "[a][b][c][d][e][f][g][h][i][j][k][l][m][n][o][p][q][r][s][t][u][v][w][x][y][z]" 0 (* 3 index)) (number-to-string index))))
       (setq merge-video-configurations (concat (string-join zoom-temp-output-list " ") " -filter_complex " merge-video-configurations))
-      ;; 合并图片生成的视频片段。
-      (setq merge-cmd (format "ffmpeg %s -y \"%s\"" merge-video-configurations merge-temp-output))
-      ;；合并配音文件。
-      ;; (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -vcodec copy -acodec copy \"%s\"" merge-temp-output audio-source tts-temp-output))
-      ;; 配音声音在画面出现两秒后出现。
-      (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
-      ;；合并字幕文件。
-      (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
-      ;；合并背景音乐文件。
-      ;; merge-temp-output 的时长必须大于 audio-source，否则 tts-temp-output 播放时
-      ;；video 画面在走完时长后停止，而 tts audio 继续播放。
-      ;；backgroundmusic-source 在被合并时，tts audio只被提取并合并至停止画面的时间戳，backgroundmusci-source 则合并至 tts audio 的完整时间戳。
-      ;；所以 reveal-convert-zoom-images-to-video-output 反而是在停止画面后没有 tts audio，却有 backgroundmusic-source。
-      (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1] volume=0.01 [aud1];[aud1] afade=t=in:st=0:d=3 [aud2];[aud2] afade=t=out:st=%s:d=3 [aud3];[0:a][aud3] amix=inputs=2:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
 
-      (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))
+      (cond ((and (file-exists-p audio-source) (file-exists-p track-source) (file-exists-p backgroundmusic-source))
+             (progn
+               ;; 合并图片生成的视频片段。
+               (setq merge-cmd (format "ffmpeg %s -y \"%s\"" merge-video-configurations merge-temp-output))
+               ;; 合并配音文件。
+               ;; (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -vcodec copy -acodec copy \"%s\"" merge-temp-output audio-source tts-temp-output))
+               ;; 配音声音在画面出现两秒后出现。
+               (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" merge-temp-output audio-source tts-temp-output))
+               ;; 合并字幕文件。
+               (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
+               ;; 合并背景音乐文件。
+               ;; merge-temp-output 的时长必须大于 audio-source，否则 tts-temp-output 播放时
+               ;; video 画面在走完时长后停止，而 tts audio 继续播放。
+               ;; backgroundmusic-source 在被合并时，tts audio只被提取并合并至停止画面的时间戳，backgroundmusci-source 则合并至 tts audio 的完整时间戳。
+               ;; 所以 reveal-convert-zoom-images-to-video-output 反而是在停止画面后没有 tts audio，却有 backgroundmusic-source。
+               (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1] volume=0.01 [aud1];[aud1] afade=t=in:st=0:d=3 [aud2];[aud2] afade=t=out:st=%s:d=3 [aud3];[0:a][aud3] amix=inputs=2:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
+               (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
+            (t
+             (setq merge-cmd (format "ffmpeg %s -y \"%s\"" merge-video-configurations reveal-convert-zoom-images-to-video-output))
+             (setq final-cmd (concat zoom-cmd "&&" merge-cmd))))
 
       (message "%s" final-cmd)
 
-      (let* ((buffer (get-buffer-create "*ffmpeg convert zoom images to video*"))
-             (process
-              (start-process-shell-command
-               "hurricane/reveal-convert-zoom-images-to-video"
-               buffer
-               final-cmd)))
-        (set-process-sentinel
-         process
-         (lambda (proc event)
-           (when (equal event "finished\n")
-             (message "Convert zoom images to video: %s finished." reveal-convert-zoom-images-to-video-output)
-             ))))
+      ;; (let* ((buffer (get-buffer-create "*ffmpeg convert zoom images to video*"))
+      ;;        (process
+      ;;         (start-process-shell-command
+      ;;          "hurricane/reveal-convert-zoom-images-to-video"
+      ;;          buffer
+      ;;          final-cmd)))
+      ;;   (set-process-sentinel
+      ;;    process
+      ;;    (lambda (proc event)
+      ;;      (when (equal event "finished\n")
+      ;;        (message "Convert zoom images to video: %s finished." reveal-convert-zoom-images-to-video-output)
+      ;;        ))))
       )
     )
   )
@@ -2540,8 +2555,7 @@ Version 2019-02-12 2021-08-09"
   (setq ffmpeg-concat-output-file (expand-file-name (format "static/%s/final.mp4" (file-name-sans-extension (buffer-name)))  reveal-project-directory))
   (let ((index 0)
         input-configurations
-        concat-configurations
-        )
+        concat-configurations)
     (dolist (chapter (read (hurricane//extract-value-from-keyword "CHAPTER_KEY")))
       (setq input-configurations (concat input-configurations  " -i " "\"" (expand-file-name (format "static/%s" (file-name-sans-extension (buffer-name))) reveal-project-directory) "/" (number-to-string chapter) ".mp4" "\""))
       (setq concat-configurations (concat concat-configurations (format "[%s:0][%s:1]" index index)))

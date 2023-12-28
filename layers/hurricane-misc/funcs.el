@@ -1912,7 +1912,7 @@ Version 2019-02-12 2021-08-09"
         (setq audio-duration (- video-timestamp-stop video-timestamp-start))))
     (and (org-entry-get (point) "MATERIAL_VIDEO") (setq full-file-path (expand-file-name (org-entry-get (point) "MATERIAL_VIDEO") reveal-project-directory)))
     (make-directory (file-name-concat reveal-project-directory "static" (file-name-sans-extension (buffer-name)) "temp") t)
-   (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
+    (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
                                                          ;; output full file path
                                                          (or full-file-path
                                                           (format

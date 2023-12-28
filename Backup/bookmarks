@@ -2,8 +2,13 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("https://www.ffmpegbyexample.com/"
-  (filename . "https://www.ffmpegbyexample.com/")
+(("Make video"
+ (filename . "~/Downloads/Make/")
+ (front-context-string)
+ (rear-context-string . "太宗如何得到《兰亭序》.org\n")
+ (position . 411))
+("https://www.ffmpegbyexample.com/"
+ (filename . "https://www.ffmpegbyexample.com/")
  (front-context-string . "\n(defun hurrican")
  (rear-context-string . "))))))\n      ))\n")
  (position . 91944))
@@ -12,11 +17,6 @@
  (front-context-string . "\n#+BEGIN_SRC ema")
  (rear-context-string . "ents)\n#+END_SRC\n")
  (position . 4180))
-("TSMC's Renegade Genius.txt"
- (filename . "~/Downloads/TSMC's Renegade Genius.txt")
- (front-context-string . "\nWhich I find to")
- (rear-context-string . "iasm for work.\"\n")
- (position . 6337))
 ("Fact check"
  (filename . "~/Downloads/mpv-www-gen/Fact check- Myths about electric vehicles busted | DW News -  - 2023-12-20 02-52-56.srt")
  (front-context-string . "\n23\n00:02:31,740")

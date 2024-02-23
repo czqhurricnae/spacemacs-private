@@ -297,10 +297,10 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/ffmpeg 操作音频视频.org")
- (front-context-string . "\n下面是一些对ffmpeg的基本")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/张忠谋.org")
+ (front-context-string . "年，出生放江苏宁波、长于重庆、香")
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 350))
+ (position . 311))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

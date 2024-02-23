@@ -52,9 +52,9 @@
                 (define-key evil-normal-state-local-map
                   (kbd "h") #'youdao-dictionary-hydra/body)))
     (setq url-proxy-services
-          '(("http"     . "localhost:59358")
-            ("https"     . "localhost:59358")
-            ("ftp"     . "localhost:59358")
+          '(("http"     . "localhost:7890")
+            ("https"     . "localhost:7890")
+            ("ftp"     . "localhost:7890")
             ("no_proxy" . "\\(localhost\\|127.0.0.1\\|.?baidu.com\\|.?youdao.com\\)")))))
 
 (defun hurricane-better-defaults/init-mic-paren ()

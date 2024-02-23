@@ -144,7 +144,7 @@ This function should only modify configuration layer settings."
           browse-url-browser-function 'browse-url-default-browser
           eaf-proxy-type "http"
           eaf-proxy-host "0.0.0.0"
-          eaf-proxy-port "8118")
+          eaf-proxy-port "7890")
      pdf
      hurricane
      )

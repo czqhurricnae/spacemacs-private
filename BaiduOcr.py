@@ -1,3 +1,4 @@
+# python -m pip install baidu-aip
 from aip import AipOcr
 import os
 import sys

@@ -75,6 +75,18 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/\345\233\276\350\247\243\347\211\251\350\201\224\347\275\221/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/图解物联网/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Clash For windows 支持 VLESS 协议/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/LaTex 字体设置/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/张忠谋/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/台积电：先进封装“十年磨一剑”/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/public media/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/ffmpeg 操作音频视频/"))

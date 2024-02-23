@@ -361,10 +361,10 @@ with PREFIX, cd to project root."
   (interactive (list (read-shell-command
                       "iTerm Shell Command: ")
                      current-prefix-arg))
-  (let* ((dir (if prefix (hurricane//git-project-root)
+(let* ((dir (if prefix (hurricane//git-project-root)
                 default-directory))
          ;; If `command' is empty, just change directory.
-         (cmd (format "cd %s ;%s" dir command)))
+         (cmd (format "cd \\\"%s\\\" ;%s" (expand-file-name dir) command)))
     (do-applescript
      (format
       "
@@ -1859,8 +1859,7 @@ Version 2019-02-12 2021-08-09"
                      (format "%s" x)
                      )
                    suggestions)
-                  :action (lambda
-                            (suggestion)
+                  :action (lambda (suggestion)
                             ;; (goldendict--pop-posframe-toggle suggestion)
                             (goldendict--render-html
                              (goldendict--query-api-call suggestion))

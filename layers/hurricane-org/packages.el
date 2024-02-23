@@ -77,8 +77,7 @@
     (org-noter :location (recipe
                           :fetcher github
                           :repo "org-noter/org-noter"
-                          :branch "feature/org-roam-integration"
-                          :files ("*.el" "modules/*.el")))
+                          :files ("*.el" "modules" "other")))
     (helm-org-ql :location (recipe
                             :fetcher github
                             :repo "alphapapa/org-ql"
@@ -1490,7 +1489,7 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
   (use-package org-noter
     :ensure t
     :config
-    (setq org-noter-create-session-from-document-hook '(org-noter--create-session-from-document-file-supporting-org-roam))
+    ;; (setq org-noter-create-session-from-document-hook '(org-noter--create-session-from-document-file-supporting-org-roam))
     (defun hurricane//org-noter-start-from-dired ()
       "In Dired, open sessions for marked files or file at point.
 
@@ -1506,7 +1505,100 @@ marked file."
           (bury-buffer))
         (other-frame 1)))
 
-    (advice-add #'org-noter-start-from-dired :override #'hurricane//org-noter-start-from-dired)))
+    (advice-add #'org-noter-start-from-dired :override #'hurricane//org-noter-start-from-dired)
+
+    (defun hurricane//pdf-view-extract-region-image (regions &optional page size
+                                                  output-buffer no-display-p)
+      ;; TODO: what is "resp."? Avoid contractions.
+      "Create a PNG image of REGIONS.
+
+REGIONS should have the same form as `pdf-view-active-region',
+which see.  PAGE and SIZE are the page resp. base-size of the
+image from which the image-regions will be created; they default
+to `pdf-view-current-page' resp. `pdf-view-image-size'.
+
+Put the image in OUTPUT-BUFFER, defaulting to \"*PDF region
+image*\" and display it, unless NO-DISPLAY-P is non-nil.
+
+In case of multiple regions, the resulting image is constructed
+by joining them horizontally.  For this operation (and this only)
+the `convert' program is used."
+
+      (interactive
+       (list (if (pdf-view-active-region-p)
+                 (pdf-view-active-region t)
+               '((0 0 1 1)))))
+      (unless page
+        (setq page (pdf-view-current-page)))
+      (unless size
+        (setq size (pdf-view-image-size)))
+      (unless output-buffer
+        (setq output-buffer (get-buffer-create (org-noter--session-notes-buffer org-noter--session))))
+      (setq notes-file-path (org-noter--session-notes-file-path org-noter--session))
+      (let* ((images (mapcar (lambda (edges)
+                               (let ((file (make-temp-file "pdf-view"))
+                                     (coding-system-for-write 'binary))
+                                 (write-region
+                                  (pdf-info-renderpage
+                                   page (car size)
+                                   :crop-to edges)
+                                  nil file nil 'no-message)
+                                 file))
+                             regions))
+             result)
+        (unwind-protect
+            (progn
+              (if (= (length images) 1)
+                  (setq result (car images))
+                (setq result (make-temp-file "pdf-view"))
+                ;; Join the images horizontally with a gap of 10 pixel.
+                (pdf-util-convert
+                 "-noop" ;; workaround limitations of this function
+                 result
+                 :commands `("("
+                             ,@images
+                             "-background" "white"
+                             "-splice" "0x10+0+0"
+                             ")"
+                             "-gravity" "Center"
+                             "-append"
+                             "+gravity"
+                             "-chop" "0x10+0+0")
+                 :apply '((0 0 0 0))))
+
+              (with-current-buffer output-buffer
+                (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/")))
+                  (progn
+                    (if (file-exists-p relative-img-dir)
+                        (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
+                      (mkdir relative-img-dir))
+                    (let ((temp-name (select-or-enter-file-name relative-img-dir)))
+                      (setq absolute-img-dir (concat default-directory relative-img-dir "/"))
+                      (setq name-base (file-name-base temp-name))
+                      (setq file-name (concat name-base ".png"))
+                      (setq full-file-path (concat relative-img-dir file-name))
+                      (with-temp-buffer
+                        (insert-file-contents-literally result)
+                        (write-region (point-min) (point-max) full-file-path))
+                      (setq absolute-full-file-path (concat absolute-img-dir file-name))
+                      (defun callback-imageoptim()
+                        (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
+                          (eshell-command cmd)))
+                      ;; (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
+                      (insert (concat "[[file:" full-file-path "]]"))
+                      (evil-normal-state)
+                      (org-display-inline-images))))
+                (unless no-display-p
+                  (pop-to-buffer (current-buffer))))
+              )
+          (dolist (f (cons result images))
+            (when (file-exists-p f)
+              (delete-file f))))))
+
+    (advice-add #'pdf-view-extract-region-image :override #'hurricane//pdf-view-extract-region-image)
+
+    (org-noter-enable-org-roam-integration)
+    ))
 
 (defun hurricane-org/init-helm-org-ql ()
   (use-package helm-org-ql

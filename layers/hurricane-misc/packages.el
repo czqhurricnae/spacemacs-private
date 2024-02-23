@@ -87,6 +87,12 @@
                                   :repo "andyjda/icloud-utilities"))
         (sticky-shell :location (recipe :fetcher github
                                         :repo "andyjda/sticky-shell"))
+        (elfeed :location (recipe :fetcher github
+                                  :repo "skeeto/elfeed"))
+        (aio :location (recipe :fetcher github
+                               :repo "skeeto/emacs-aio"))
+        (elfeed-tube :location (recipe :fetcher github
+                                       :repo "karthink/elfeed-tube"))
         ))
 
 (defconst sys/macp
@@ -1850,3 +1856,30 @@ Works only in youtube-sub-extractor-mode buffer."
 (defun hurricane-misc/init-sticky-shell ()
   (use-package sticky-shell
     :ensure t))
+
+(defun hurricane-misc/init-elfeed ()
+  (use-package elfeed
+    :ensure t))
+
+(defun hurricane-misc/init-aio ()
+  (use-package aio
+    :ensure t))
+
+(defun hurricane-misc/init-elfeed-tube ()
+ (use-package elfeed-tube
+   :ensure t ;; or :straight t
+   :after elfeed
+   :demand t
+   :config
+   ;; (setq elfeed-tube-auto-save-p nil) ; default value
+   ;; (setq elfeed-tube-auto-fetch-p t)  ; default value
+   (elfeed-tube-setup)
+
+   :bind (:map elfeed-show-mode-map
+           ("F" . elfeed-tube-fetch)
+           ("C-c C-f" . elfeed-tube-mpv-follow-mode)
+           ("C-c C-w" . elfeed-tube-mpv-where)
+           ([remap save-buffer] . elfeed-tube-save)
+           :map elfeed-search-mode-map
+           ("F" . elfeed-tube-fetch)
+           ([remap save-buffer] . elfeed-tube-save))))

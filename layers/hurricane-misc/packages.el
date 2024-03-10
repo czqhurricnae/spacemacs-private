@@ -1106,7 +1106,7 @@
           (cl-pushnew
            '("H" (lambda ()
                    (call-interactively
-                    'symbol-highlight)))
+                    'spacemacs/symbol-highlight)))
            new-bindings)
           (cl-pushnew
            '("/" (lambda ()

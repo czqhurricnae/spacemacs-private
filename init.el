@@ -175,7 +175,8 @@ This function should only modify configuration layer settings."
                     helm-swoop helm-spacemacs-help smeargle
                     ido-vertical-mode flx-ido company-quickhelp
                     counsel-projectile highlight-parentheses org-pdfview
-                    doc-view org-projectile slime pyim undo-tree)
+                    doc-view org-projectile slime pyim undo-tree
+                    company)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -730,7 +731,7 @@ you should place your code here."
   ;; }}
   (server-start)
   (global-hungry-delete-mode t)
-  (global-company-mode 1)
+  ;; (global-company-mode -1)
   (global-hl-line-highlight)
   ;; Setup javascript auto-complete.
   (setq tern-command '("node" "/usr/local/bin/tern"))

@@ -12,6 +12,7 @@
     ;; (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
     ;; prettier-js
     (psearch :location (recipe :fetcher github :repo "twlz0ne/psearch.el" :files ("psearch.el")))
+    (lsp-bridge :location local)
 ))
 
 (defun hurricane-programming/post-init-yasnippet ()
@@ -184,3 +185,11 @@
 (defun hurricane-programming/init-psearch ()
   (use-package psearch
     :ensure t))
+
+(defun hurricane-programming/init-lsp-bridge ()
+  (use-package lsp-bridge
+    :config
+    (global-lsp-bridge-mode)
+    :custom
+    (lsp-bridge-python-command "/usr/local/bin/python3")
+    (lsp-bridge-enable-org-babel t)))

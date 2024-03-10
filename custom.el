@@ -75,6 +75,32 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32F10xxx 参考手册（中文）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/原子教你玩 STM32 库函数版/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32F103x8B_DS_CH_V10 数据手册/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Mastering STM32/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32 入门/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/C \350\257\255\350\250\200\346\267\261\345\272\246\350\247\243\345\211\226/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/UNIX 系统编程手册/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/UNIX 环境高级编程/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/位域/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/字节序和大小端/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/比特序（位序）/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/计算机系统基础/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/C 语言深度解剖/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/\345\233\276\350\247\243\347\211\251\350\201\224\347\275\221/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/图解物联网/"))

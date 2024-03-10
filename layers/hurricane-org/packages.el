@@ -1,6 +1,6 @@
 (defconst hurricane-org-packages
   `(
-    (org :location built-in)
+    org
     (org-mac-link :location built-in)
     (org-pomodoro :location (recipe
                              :fetcher github
@@ -73,7 +73,7 @@
                                  :repo "alphapapa/org-super-agenda"))
     (anki-helper :location (recipe
                                   :fetcher github
-                                  :repo "czqhurricnae/emacs-anki-helper"))
+                                  :repo "Elilif/emacs-anki-helper"))
     (org-noter :location (recipe
                           :fetcher github
                           :repo "org-noter/org-noter"
@@ -784,16 +784,39 @@
     (advice-add 'org-roam-buffer-persistent-redisplay :after
                 #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
 
+    ;; (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+    ;;   "Return the hierarchy for the node."
+    ;;   (let ((title (org-roam-node-title node))
+    ;;         (olp (nreverse (org-roam-node-olp node)))
+    ;;         (level (org-roam-node-level node))
+    ;;         (filetitle (org-roam-node-file-title node)))
+    ;;     (concat
+    ;;      title
+    ;;      (if (> level 1) (concat " < " (string-join olp " < ")))
+    ;;      (if (> level 0) (concat " < " filetitle ))
+    ;;      )))
+
     (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
-      "Return the hierarchy for the node."
-      (let ((title (org-roam-node-title node))
-            (olp (org-roam-node-olp node))
-            (level (org-roam-node-level node))
-            (filetitle (org-roam-node-file-title node)))
-        (concat
-         (if (> level 0) (concat filetitle " > "))
-         (if (> level 1) (concat (string-join olp " > ") " > "))
-         title)))
+      "Return hierarchy for NODE, constructed of its file title, OLP and direct title.
+      If some elements are missing, they will be stripped out."
+      (let ((title     (org-roam-node-title node))
+            (olp       (nreverse (org-roam-node-olp node)))
+            (level     (org-roam-node-level node))
+            (filetitle (org-roam-node-file-title node))
+            (separator (propertize " < " 'face 'shadow))
+            )
+        (cl-case level
+          ;; node is a top-level file
+          (0 filetitle)
+          ;; node is a level 1 heading
+          (1 (concat title separator (propertize filetitle 'face '(shadow italic))))
+          ;; node is a heading with an arbitrary outline path
+          (t (concat title
+                     separator
+                     (propertize (string-join olp " < ") 'face '(shadow italic))
+                     separator
+                     (propertize filetitle 'face '(shadow italic))
+                      )))))
 
     (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
     (setq org-roam-extract-new-file-path "${slug}.org")
@@ -961,14 +984,14 @@ Return nil if not found."
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)
     (require 'psearch)
 
-    (with-eval-after-load 'psearch
-      (psearch-patch org-media-note--mpv-play-online-video
-        (psearch-replace '`(if ,p1 ,p2 ,p3)
-                         '`(if ,p1
-                               (if (string-match-p (regexp-quote "bilibili") video-url)
-                                   (mpv-start video-url "--referrer=https://www.bilibili.com" "-v" "--no-resume-playback")
-                                 (mpv-start video-url))
-                               ,p3))))
+    ;; (with-eval-after-load 'psearch
+    ;;   (psearch-patch org-media-note--mpv-play-online-video
+    ;;     (psearch-replace '`(if ,p1 ,p2 ,p3)
+    ;;                      '`(if ,p1
+    ;;                            (if (string-match-p (regexp-quote "bilibili") video-url)
+    ;;                                (mpv-start video-url "--referrer=https://www.bilibili.com" "-v" "--no-resume-playback")
+    ;;                              (mpv-start video-url))
+    ;;                            ,p3))))
 
     (require 'pretty-hydra)
 
@@ -1126,35 +1149,35 @@ Return nil if not found."
         incremental-reading-extract-cloze
         incremental-reading-extract-cloze-no-back))
 
-    (defun hurricane//add-incremental-reading-keymap ()
-      (interactive)
-      (org-element-map (org-element-parse-buffer) 'special-block
-        (lambda (special-block)
-          (when (string= "ANKI" (s-upcase (org-element-property :type special-block)))
-            (let ((context-bg-eds (list))
-                  (produce-list (list)))
-              (org-element-map special-block 'special-block
-                (lambda (field)
-                  (when (string= "FIELD" (s-upcase (org-element-property :type field)))
-                    ;; Get the each field's context begin and end position list.
-                    (push (org-element-property :contents-begin field) context-bg-eds)
-                    (push (org-element-property :contents-end field) context-bg-eds))))
-              (while context-bg-eds
-                (push (pop context-bg-eds) produce-list))
-              (while produce-list
-                (let ((begin (pop produce-list))
-                      (end (pop produce-list)))
-                  (if (and begin end)
-                   (add-text-properties begin end
-                                       `(local-map ,incremental-reading-map))))
-                ))))))
+    ;; (defun hurricane//add-incremental-reading-keymap ()
+    ;;   (interactive)
+    ;;   (org-element-map (org-element-parse-buffer) 'special-block
+    ;;     (lambda (special-block)
+    ;;       (when (string= "ANKI" (s-upcase (org-element-property :type special-block)))
+    ;;         (let ((context-bg-eds (list))
+    ;;               (produce-list (list)))
+    ;;           (org-element-map special-block 'special-block
+    ;;             (lambda (field)
+    ;;               (when (string= "FIELD" (s-upcase (org-element-property :type field)))
+    ;;                 ;; Get the each field's context begin and end position list.
+    ;;                 (push (org-element-property :contents-begin field) context-bg-eds)
+    ;;                 (push (org-element-property :contents-end field) context-bg-eds))))
+    ;;           (while context-bg-eds
+    ;;             (push (pop context-bg-eds) produce-list))
+    ;;           (while produce-list
+    ;;             (let ((begin (pop produce-list))
+    ;;                   (end (pop produce-list)))
+    ;;               (if (and begin end)
+    ;;                (add-text-properties begin end
+    ;;                                    `(local-map ,incremental-reading-map))))
+    ;;             ))))))
 
-    (dolist (func incremental-reading-extract-functions)
-      (advice-add func :after #'hurricane//add-incremental-reading-keymap))
+    ;; (dolist (func incremental-reading-extract-functions)
+    ;;   (advice-add func :after #'hurricane//add-incremental-reading-keymap))
 
     (add-hook 'incremental-reading-mode-hook #'anki-editor-mode)
-    (add-hook 'incremental-reading-mode-hook #'hurricane//add-incremental-reading-keymap)
-    (add-hook 'after-save-hook #'hurricane//add-incremental-reading-keymap)
+    ;; (add-hook 'incremental-reading-mode-hook #'hurricane//add-incremental-reading-keymap)
+    ;; (add-hook 'after-save-hook #'hurricane//add-incremental-reading-keymap)
     :hook (org-mode . incremental-reading-mode)
     :custom
     (incremental-reading--basic-template ":ANKI-CARD:
@@ -1482,14 +1505,76 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
 
 (defun hurricane-org/init-anki-helper ()
   (use-package anki-helper
+    :config
+    (defun hurricane//anki-helper-fields-get-default ()
+      "Default function for get filed info of the current entry."
+      (let* ((elt (plist-get (org-element-at-point) 'headline))
+             (front (plist-get elt :raw-value))
+             (contents-begin (plist-get elt :contents-begin))
+             (robust-begin (or (plist-get elt :robust-begin)
+                               contents-begin))
+             (beg (if (or (= contents-begin robust-begin)
+                          (= (+ 2 contents-begin) robust-begin))
+                      contents-begin
+                    (1+ robust-begin)))
+             (contents-end (plist-get elt :contents-end))
+             (back (buffer-substring-no-properties
+                    contents-begin (1- contents-end))))
+        (message "%s" back)
+        (list front back)))
+
+    (advice-add #'anki-helper-fields-get-default :override #'hurricane//anki-helper-fields-get-default)
+
+    (defun hurricane//anki-helper--ox-html-link (text backend info)
+      (when (eq backend 'html)
+        (when-let*
+            ((link (nth anki-helper--org2html-image-counter
+                        (org-element-map (plist-get info :parse-tree) 'link 'identity)))
+             (link-path (org-element-property :path link))
+             (file-exists-p (file-exists-p link-path))
+             (file-extension (file-name-extension link-path))
+             (link-type (org-element-property :type link))
+             (hash (md5 (format "%s%s%s" (random) text (recent-keys))))
+             (new-name (file-name-with-extension hash file-extension))
+             (full-path (file-name-concat
+                         anki-helper-media-directory
+                         new-name)))
+          (cond
+           ((and (plist-get info :html-inline-images)
+                 (org-export-inline-image-p link
+                                            (plist-get info :html-inline-image-rules)))
+            (copy-file link-path full-path)
+            (setq text (replace-regexp-in-string "img src=\"\\(.*?\\)\"" new-name text
+                                                 nil nil 1)))
+           ((member file-extension anki-helper-audio-formats)
+            (copy-file link-path full-path)
+            (setq text (format "<br>[sound:%s]" new-name)))
+           )))
+      (when (string-match "\\(#[^\"]*\\)" text)
+        (setq text (format "%s%s" text (match-string 0 text))))
+      (cl-incf anki-helper--org2html-image-counter)
+      text)
+
+    (advice-add #'anki-helper--ox-html-link :override #'hurricane//anki-helper--ox-html-link)
     :custom
-    (anki-helper-media-directory Anki-media-dir)))
+    (anki-helper-media-directory Anki-media-dir)
+    (anki-helper-cloze-use-emphasis 'bold)
+    (anki-helper-fields-get-alist
+     '(("Basic" . anki-helper-fields-get-default)
+       ("Cloze" . anki-helper-fields-get-cloze)
+       ("Image Occlusion Enhanced" . anki-helper-fields-get-default)))
+    (anki-helper-note-types
+     '(("Basic" "Front" "Back")
+       ("Basic (and reversed card)" "Front" "Back")
+       ("Basic (optional reversed card)" "Front" "Back")
+       ("Cloze" "Text" "Back Extra")
+       ("Image Occlusion Enhanced" "Header" "Image")))
+    ))
 
 (defun hurricane-org/init-org-noter ()
   (use-package org-noter
     :ensure t
     :config
-    ;; (setq org-noter-create-session-from-document-hook '(org-noter--create-session-from-document-file-supporting-org-roam))
     (defun hurricane//org-noter-start-from-dired ()
       "In Dired, open sessions for marked files or file at point.
 
@@ -1581,10 +1666,6 @@ the `convert' program is used."
                         (insert-file-contents-literally result)
                         (write-region (point-min) (point-max) full-file-path))
                       (setq absolute-full-file-path (concat absolute-img-dir file-name))
-                      (defun callback-imageoptim()
-                        (let* ((cmd (format "imageoptim --imagealpha %s" absolute-full-file-path)))
-                          (eshell-command cmd)))
-                      ;; (install-monitor-file-exists absolute-full-file-path 1 #'callback-imageoptim)
                       (insert (concat "[[file:" full-file-path "]]"))
                       (evil-normal-state)
                       (org-display-inline-images))))

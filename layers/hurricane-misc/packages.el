@@ -93,6 +93,10 @@
                                :repo "skeeto/emacs-aio"))
         (elfeed-tube :location (recipe :fetcher github
                                        :repo "karthink/elfeed-tube"))
+        (tabspaces :location (recipe :fetcher github
+                                     :repo "mclear-tools/tabspaces"))
+        (el-easydraw :location (recipe :fetcher github
+                                       :repo "misohena/el-easydraw"))
         ))
 
 (defconst sys/macp
@@ -1512,7 +1516,7 @@
 (defun hurricane-misc/init-subed ()
   (use-package subed
     :ensure t
-    :load-path ("~/emacs-config/default/elpa/28.3/develop/subed-20231129.61416/subed" "~/emacs-config/default/elpa/28.3/develop/subed-20231129.61416")
+    :load-path ("~/emacs-config/default/elpa/28.3/develop/subed-20240123.201217/subed" "~/emacs-config/default/elpa/28.3/develop/subed-20240123.201217")
     :init
     (require 'subed-vtt)
     (require 'subed-srt)
@@ -1883,3 +1887,72 @@ Works only in youtube-sub-extractor-mode buffer."
            :map elfeed-search-mode-map
            ("F" . elfeed-tube-fetch)
            ([remap save-buffer] . elfeed-tube-save))))
+
+(defun hurricane-misc/init-tabspaces ()
+  (use-package tabspaces
+    :ensure t
+    :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+    :commands (tabspaces-switch-or-create-workspace
+               tabspaces-open-or-create-project-and-workspace)
+    :config
+    (defvar tabspaces-command-map
+      (let ((map (make-sparse-keymap)))
+        (define-key map (kbd "C") 'tabspaces-clear-buffers)
+        (define-key map (kbd "b") 'tabspaces-switch-to-buffer)
+        (define-key map (kbd "d") 'tabspaces-close-workspace)
+        (define-key map (kbd "k") 'tabspaces-kill-buffers-close-workspace)
+        (define-key map (kbd "o") 'tabspaces-open-or-create-project-and-workspace)
+        (define-key map (kbd "r") 'tabspaces-remove-current-buffer)
+        (define-key map (kbd "R") 'tabspaces-remove-selected-buffer)
+        (define-key map (kbd "s") 'tabspaces-switch-or-create-workspace)
+        (define-key map (kbd "t") 'tabspaces-switch-buffer-and-tab)
+        map)
+      "Keymap for tabspace/workspace commands after `tabspaces-keymap-prefix'.")
+    :custom
+    (tabspaces-use-filtered-buffers-as-default t)
+    (tabspaces-default-tab "Default")
+    (tabspaces-remove-to-default t)
+    (tabspaces-include-buffers '("*scratch*"))
+    (tabspaces-initialize-project-with-todo t)
+    (tabspaces-todo-file-name "project-todo.org")
+    (tabspaces-keymap-prefix "C-c t")
+    ;; sessions
+    (tabspaces-session t)
+    ;; (tabspaces-session-auto-restore t)
+    )
+  )
+
+(defun hurricane-misc/init-el-easydraw ()
+  (use-package el-easydraw
+    :ensure t
+    :init
+    (defun get-svg-xml (full-file-path)
+      (with-temp-buffer
+        (insert-file-contents full-file-path)
+        (cl-loop for child in (dom-by-tag (libxml-parse-html-region (point-min) (point-max)) 'image)
+                 do (progn
+                      (copy-file (dom-attr child 'xlink:href)
+                                 (file-name-concat
+                                  anki-helper-media-directory
+                                  (file-name-nondirectory (dom-attr child 'xlink:href)))
+                                 t)
+                      (save-excursion
+                        (goto-char (point-min))
+                        (while (re-search-forward
+                                (file-name-directory (dom-attr child 'xlink:href))
+                                (point-max)
+                                t)
+                          (replace-match "" t nil nil nil)))))
+        (write-file full-file-path nil)
+        (buffer-string)))
+    :config
+    (with-eval-after-load 'org
+      (require 'edraw-org)
+      (edraw-org-setup-default))
+    ;; When using the org-export-in-background option (when using the
+    ;; asynchronous export function), the following settings are
+    ;; required. This is because Emacs started in a separate process does
+    ;; not load org.el but only ox.el.
+    (with-eval-after-load "ox"
+      (require 'edraw-org)
+      (edraw-org-setup-exporter))))

@@ -58,10 +58,10 @@
                                   :repo "tecosaur/org-pandoc-import"
                                   :files ("*.el" "filters" "preprocessors")))
     (org-roam-backlink-collections :location local)
-    (org-imagine :location (recipe
-                            :fetcher github
-                            :repo "metaescape/org-imagine"
-                            :files ("*.el" "view")))
+    ;; (org-imagine :location (recipe
+    ;;                         :fetcher github
+    ;;                         :repo "metaescape/org-imagine"
+    ;;                         :files ("*.el" "view")))
     (org-link-edit :location (recipe
                               :fetcher github
                               :repo "emacsmirror/org-link-edit"))
@@ -301,7 +301,7 @@
       ;;           (tags-todo "PROJECT") ;; Review all projects (assuming you use todo keywords to designate projects).
       ;;           ))))
 
-      (org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
+      ;; (org-link-set-parameters "video" :export 'hurricane//org-video-link-export)
 
       (define-key evil-normal-state-map (kbd "C-c C-w") #'org-refile)
       (define-key global-map (kbd "<f9>") #'popweb-org-roam-node-preview-select)
@@ -1274,7 +1274,7 @@ Return nil if not found."
                     note-title)))) "Insert links with transclusions")
          )))
 
-    (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
+    ;; (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
     (popweb-proxy-type provixy-type)
     (popweb-proxy-host provixy-host)
@@ -1308,8 +1308,8 @@ Return nil if not found."
 (defun hurricane-org/init-org-roam-backlink-collections ()
   (use-package org-roam-backlink-collections))
 
-(defun hurricane-org/init-org-imagine ()
-  (use-package org-imagine))
+;; (defun hurricane-org/init-org-imagine ()
+;;   (use-package org-imagine))
 
 (defun hurricane-org/init-org-link-edit ()
   (use-package org-link-edit))
@@ -1520,13 +1520,13 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
              (contents-end (plist-get elt :contents-end))
              (back (buffer-substring-no-properties
                     contents-begin (1- contents-end))))
-        (message "%s" back)
         (list front back)))
 
     (advice-add #'anki-helper-fields-get-default :override #'hurricane//anki-helper-fields-get-default)
 
     (defun hurricane//anki-helper--ox-html-link (text backend info)
       (when (eq backend 'html)
+        (setq link-path-property nil)
         (when-let*
             ((link (nth anki-helper--org2html-image-counter
                         (org-element-map (plist-get info :parse-tree) 'link 'identity)))
@@ -1539,23 +1539,58 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
              (full-path (file-name-concat
                          anki-helper-media-directory
                          new-name)))
+          ;; 提供 when-let* 范围外使用。
+          (setq link-path-property link-path)
           (cond
            ((and (plist-get info :html-inline-images)
                  (org-export-inline-image-p link
                                             (plist-get info :html-inline-image-rules)))
             (copy-file link-path full-path)
+            (when (string-suffix-p "edraw.svg" link-path)
+              (setq text (get-svg-xml full-path)))
+            ;; 没替换前，导出到 Anki 的文本格式：
+            ;; <img src="static/STM32%20入门/1.png" alt="1.png">
+            ;; <img src="static/STM32%20入门/test.edraw.svg" alt="test.edraw.svg" class="org-svg">
+            ;; get-svg-xml 得到的 text 没有 img scr="xxx"，所以以下至替换非 edraw.svg 格式的图片链接
             (setq text (replace-regexp-in-string "img src=\"\\(.*?\\)\"" new-name text
                                                  nil nil 1)))
+           ;; 这里逻辑似乎有问题，file 链接要是既有图片也有音频，而其中一者无法被发送至Anki。
            ((member file-extension anki-helper-audio-formats)
             (copy-file link-path full-path)
-            (setq text (format "<br>[sound:%s]" new-name)))
-           )))
-      (when (string-match "\\(#[^\"]*\\)" text)
-        (setq text (format "%s%s" text (match-string 0 text))))
+            (setq text (format "<br>[sound:%s]" new-name)))))
+
+        ;; 对于 text: <a href="STM32F10xxx 参考手册（中文）.html#ID-1465F803-9159-4625-8D94-33570B46486D">14.4.7 捕获/比较模式寄存器 1(TIMx_CCMR1)</a>，是不会进入 when-let* 处理，所以以下的替换逻辑放在 when-let* 外。
+        ;; 对于get-svg-xml 得到的 text 同样含有 # 字符，所以必须排除 svg 产生的 text。
+        ;; 对于 text: <a href="STM32F10xxx 参考手册（中文）.html#ID-1465F803-9159-4625-8D94-33570B46486D">14.4.7 捕获/比较模式寄存器 1(TIMx_CCMR1)</a>，是不会进入 when-let* 处理，所以不能用 (not (string-suffix-p "edraw.svg" link-path))，
+        ;；必须使用 (setq link-path-property link-path)
+        (when (and (string-match "\\(#[^\"]*\\)" text)
+                   (not (string-suffix-p "edraw.svg" link-path-property)))
+          (setq text (format "%s%s" text (match-string 0 text))))
+        )
+
       (cl-incf anki-helper--org2html-image-counter)
       text)
 
     (advice-add #'anki-helper--ox-html-link :override #'hurricane//anki-helper--ox-html-link)
+
+    (defun hurricane/anki-helper-skip ()
+      "Skip headlines without \"ID\" property."
+      (unless (org-entry-get nil "ID")
+        (point)))
+
+    (setq anki-helper-skip-function #'hurricane/anki-helper-skip)
+
+    (defun hurricane//anki-helper--org2html (string)
+      (let ((org-export-filter-link-functions '(anki-helper--ox-html-link))
+            (org-export-filter-latex-environment-functions anki-helper-ox-filter-latex-env-functions)
+            (org-export-filter-latex-fragment-functions anki-helper-ox-filter-latex-frag-functions)
+            (org-export-filter-src-block-functions '(hurricane//org-html-wrap-blocks-in-code))
+            (org-html-htmlize-output-type 'inline-css)
+            (anki-helper--org2html-image-counter 0))
+        (org-export-string-as string 'html t '(:with-toc nil))))
+
+    (advice-add #'anki-helper--org2html :override #'hurricane//anki-helper--org2html)
+
     :custom
     (anki-helper-media-directory Anki-media-dir)
     (anki-helper-cloze-use-emphasis 'bold)
@@ -1716,3 +1751,7 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
     :config
     (require 'emacsconf-mail)
     (require 'emacsconf-spookfox)))
+
+(defun hurricane-org/init-anki-open-org-note ()
+  (use-package anki-open-org-note
+    :ensure t))

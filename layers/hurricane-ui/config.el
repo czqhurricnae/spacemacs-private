@@ -23,3 +23,10 @@
               ((\` suspicious) '(propertize " ?" 'face 'warning))))))
 
 (setq hurricane-icon t)
+
+(setq tab-bar-separator ""
+      tab-bar-new-tab-choice "*scratch*"
+      tab-bar-tab-name-truncated-max 20
+      tab-bar-auto-width nil
+      tab-bar-close-button-show nil
+      tab-bar-tab-hints t)

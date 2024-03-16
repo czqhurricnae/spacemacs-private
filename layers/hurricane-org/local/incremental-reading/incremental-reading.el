@@ -150,7 +150,6 @@ back field."
           ""))
      (t ""))))
 
-
 (defun incremental-reading--transform-field (field)
   "Transform a special block FIELD to a field in the anki card
 and return a list with the field-name and the parsed-contents."

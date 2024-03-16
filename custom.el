@@ -75,6 +75,14 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/TIM_TimeBaseInitTypeDef 结构体/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/NVIC_InitTypeDef 结构体/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/TIM_ICInitTypeDef 结构体/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Aria2 下载百度网盘/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/STM32F10xxx 参考手册（中文）/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/原子教你玩 STM32 库函数版/"))
@@ -2192,6 +2200,7 @@
      (javascript-backend . tide)
      (javascript-backend . tern)
      (javascript-backend . lsp)))
+ '(screenshot-line-numbers-p nil)
  '(vc-annotate-background "#FDF6E3")
  '(vc-annotate-color-map
    (list

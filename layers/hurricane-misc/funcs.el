@@ -2691,3 +2691,6 @@ Version 2019-02-12 2021-08-09"
            (message "Concat: %s finished." ffmpeg-subchapter-concat-output-file)
            ))))
     ))
+
+;; @See: https://emacs-china.org/t/org-roam/26545/24
+(add-to-list 'file-coding-system-alist '("\\.org\\'" . utf-8))

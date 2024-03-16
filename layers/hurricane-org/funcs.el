@@ -81,7 +81,7 @@
     (save-excursion
       (goto-char start)
       (while (re-search-forward query end t)
-      (replace-match replace t nil nil subexp)))))
+        (replace-match replace t nil nil subexp)))))
 
 (defun jump-to-penultimate-line ()
   (delete-blank-lines)
@@ -108,7 +108,6 @@
     (newline-and-indent)))
 
 (defun image-to-base64-converter (file-full-path)
-  (interactive)
   (image-to-base64-handler file-full-path))
 
 (defun hurricane/org-image-to-base64-converter ()
@@ -961,15 +960,25 @@ that the point is already within a string."
   (when-let ((link (plist-get context 'link))
              (type (plist-get link ':type))
              (path (plist-get link ':path)))
-    (if (string-match "\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)" path)
+    (if (string-match "\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\|svg\\)" path)
 	      (ignore-errors
           (funcall
 	          (helm :sources
 		              `((name . "Action")
 		                (candidates . ,(append
 				                            '(
-                                      ("Preview file" . (lambda (path) (eaf-open path)))
-                                      ("Delete image file and link" . (lambda (path)
+                                      ("@ Preview file" . (lambda (path) (eaf-open path)))
+                                      ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
+                                                                                                                                            (next-line)
+                                                                                                                                            (newline-and-indent)
+                                                                                                                                            (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
+                                                                                                                                            (newline-and-indent)
+                                                                                                                                            (previous-line)
+                                                                                                                                            (edraw-org-edit-regular-file-link)
+                                                                                                                                            (edraw-editor-select-tool-image)
+                                                                                                                                            )
+                                                                                          (edraw-org-edit-regular-file-link))))
+                                      ("@ Delete image file and link" . (lambda (path)
                                                                         (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
                                                                                             (lambda (link)
                                                                                               (when (string= (org-element-property :type link) "file")
@@ -986,14 +995,17 @@ that the point is already within a string."
                                                                                 (progn
                                                                                   (delete-file file-full-path)
                                                                                   ))))))
-                                      ("Copy file link" . (lambda (path)
+                                      ("@ Copy file link" . (lambda (path)
                                                             (kill-new (format "%s" (concat default-directory "/" path)))))
-                                      ("Copy org link" . (lambda (path)
+                                      ("@ Copy org link" . (lambda (path)
 							                                             (kill-new (format "[[file:%s]]" path))))
-                                      ("Eaf open in file manager" . (lambda (path) (eaf-open-in-file-manager path)))
-                                      ("Dired" . (lambda (path)
+                                      ("@ Eaf open in file manager" . (lambda (path) (eaf-open-in-file-manager path)))
+                                      ("@ Dired" . (lambda (path)
 						                                       (dired (file-name-directory path))
-						                                       (re-search-forward (file-name-nondirectory path)))))
+						                                       (re-search-forward (file-name-nondirectory path))))
+                                      ("@ Open in external app" . (lambda (path) (spacemacs//open-in-external-app path)))
+
+                                      )
                                     (loop for f in '(find-file
 						                                         org-open-file)
 					                                collect (cons (symbol-name f) f))))

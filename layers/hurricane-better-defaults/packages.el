@@ -189,8 +189,7 @@
        ("C" hurricane//find-file-copy-file-to "@ Copy to")
        ("m" hurricane//find-file-move-file-to "@ Move to")
        ("E" hurricane/find-file-html-or-markdown-to-org "@ Convert to org")
-       ("p" hurricane//find-file-org-pandoc-import-to-org "@ Import to org")
-       ))
+       ("p" hurricane//find-file-org-pandoc-import-to-org "@ Import to org")))
 
     (ivy-add-actions
      'counsel-bookmark
@@ -205,8 +204,7 @@
        ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")
        ("d" hurricane//file-jump-delete-file "@ Delete file")
        ("C" hurricane//dired-copy-file-to "@ Copy to")
-       ("m" hurricane//dired-move-file-to "@ Move to")
-       ))
+       ("m" hurricane//dired-move-file-to "@ Move to")))
 
     (ivy-add-actions
      'counsel-git
@@ -216,6 +214,11 @@
        ("d" hurricane//file-jump-delete-file "@ Delete file")
        ("C" hurricane//dired-copy-file-to "@ Copy to")
        ("m" hurricane//dired-move-file-to "@ Move to")))
+
+    (dolist (action '(spacemacs/counsel-search counsel-rg counsel-ag counsel-find-file))
+      (ivy-add-actions
+       action
+       '(("t" hurricane//find-file-other-tab "@ find-file-other-tab"))))
 
     (setq ivy-initial-inputs-alist nil)))
 

@@ -364,6 +364,9 @@ After this command has been run, any buffers it's modified will remain open and 
 (defun hurricane//dired-move-file-to (x)
   (hurricane//dired-copy-or-move-file-to #'diredp-move-files-named-in-kill-ring x))
 
+(defun hurricane//find-file-other-tab (x)
+  (spacemacs//counsel-with-git-grep #'find-file-other-tab x))
+
 ;; {{
 ;; @See: https://github.com/purcell/exec-path-from-shell/blob/dff9ce3577bf3f2938d9bde8ec8aa4fef3b061f3/exec-path-from-shell.el
 (defun exec-path-from-shell-setenv (name value)

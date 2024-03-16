@@ -1303,7 +1303,9 @@
        'hurricane/counsel-goto-recent-directory
        '(("o" fasd-find-file-action "find-file")
          ("s" ivy-search-from-action "search-from")
-         ("e" eaf-open-in-file-manager "@ Open file in eaf file manager"))))))
+         ("e" eaf-open-in-file-manager "@ Open file in eaf file manager")
+         ("t" find-file-other-tab "@ find-file-other-tab")
+         )))))
 
 (defun hurricane-misc/init-auto-save ()
   (use-package auto-save

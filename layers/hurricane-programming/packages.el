@@ -13,8 +13,8 @@
     ;; prettier-js
     (psearch :location (recipe :fetcher github :repo "twlz0ne/psearch.el" :files ("psearch.el")))
     (lsp-bridge :location local)
-    (screenshot :location (recipe :fetcher github
-                                  :repo "tecosaur/screenshot"))
+    (silicon :location (recipe :fetcher github
+                                  :repo "iensu/silicon-el"))
 ))
 
 (defun hurricane-programming/post-init-yasnippet ()
@@ -196,5 +196,5 @@
     (lsp-bridge-python-command "/usr/local/bin/python3")
     (lsp-bridge-enable-org-babel t)))
 
-(defun hurricane-programming/init-screenshot ()
-  (use-package screenshot))
+(defun hurricane-programming/init-silicon ()
+  (use-package silicon))

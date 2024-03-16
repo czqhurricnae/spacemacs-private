@@ -36,3 +36,4 @@
 (global-set-key (kbd "C-c C-x t") 'hurricane/org-clock-sum-today-by-tags)
 
 (bind-key* "C-=" 'er/expand-region)
+(bind-key* "s-d" 'tab-close)

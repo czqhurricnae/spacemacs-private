@@ -189,7 +189,12 @@
        ("C" hurricane//find-file-copy-file-to "@ Copy to")
        ("m" hurricane//find-file-move-file-to "@ Move to")
        ("E" hurricane/find-file-html-or-markdown-to-org "@ Convert to org")
-       ("p" hurricane//find-file-org-pandoc-import-to-org "@ Import to org")))
+       ("p" hurricane//find-file-org-pandoc-import-to-org "@ Import to org")
+       ("t" find-file-other-tab "@ find-file-other-tab")))
+
+    (ivy-add-actions
+     'counsel-recentf
+     '(("t" find-file-other-tab "@ find-file-other-tab")))
 
     (ivy-add-actions
      'counsel-bookmark
@@ -215,7 +220,7 @@
        ("C" hurricane//dired-copy-file-to "@ Copy to")
        ("m" hurricane//dired-move-file-to "@ Move to")))
 
-    (dolist (action '(spacemacs/counsel-search counsel-rg counsel-ag counsel-find-file))
+    (dolist (action '(spacemacs/counsel-search counsel-rg counsel-ag))
       (ivy-add-actions
        action
        '(("t" hurricane//find-file-other-tab "@ find-file-other-tab"))))

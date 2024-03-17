@@ -779,9 +779,9 @@
 
     (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
 
-    (advice-add 'org-roam-buffer-persistent-redisplay :before
+    (advice-add #'org-roam-buffer-persistent-redisplay :before
                 #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
-    (advice-add 'org-roam-buffer-persistent-redisplay :after
+    (advice-add #'org-roam-buffer-persistent-redisplay :after
                 #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
 
     ;; (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
@@ -1714,6 +1714,25 @@ the `convert' program is used."
     (advice-add #'pdf-view-extract-region-image :override #'hurricane//pdf-view-extract-region-image)
 
     (org-noter-enable-org-roam-integration)
+
+    (defun hurricane//org-noter-set-highlight (&rest _arg)
+      "Highlight current org-noter note."
+      (save-excursion
+        (with-current-buffer (org-noter--session-notes-buffer org-noter--session)
+          (remove-overlays (point-min) (point-max) 'org-noter-current-hl t)
+          (goto-char (org-entry-beginning-position))
+          (let* ((hl (org-element-context))
+                 (hl-begin (plist-get  (plist-get hl 'headline) :begin))
+                 (hl-end (1- (plist-get  (plist-get hl 'headline) :contents-begin)))
+                 (hl-ov (make-overlay hl-begin hl-end)))
+            (overlay-put hl-ov 'face 'mindre-keyword)
+            (overlay-put hl-ov 'org-noter-current-hl t))
+          (org-cycle-hide-drawers 'all))))
+
+    (advice-add #'org-noter--focus-notes-region
+                :after #'hurricane//org-noter-set-highlight)
+    (advice-add #'org-noter-insert-note
+                :after #'hurricane//org-noter-set-highlight)
     ))
 
 (defun hurricane-org/init-helm-org-ql ()

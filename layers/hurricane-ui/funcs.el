@@ -47,7 +47,7 @@
             (concat "~" (substring (buffer-file-name) (length (getenv "HOME"))))
           (buffer-file-name)) (buffer-name))))
 
-(defun hurricane/toggle-title-format()
+(defun hurricane/toggle-title-format ()
   (interactive)
   (if (equal frame-title-format '(:eval (hurricane/layouts-for-title-bar)))
       (setq frame-title-format '(:eval (hurricane/default-title-bar)))
@@ -101,7 +101,7 @@
             (concat "~" (substring (buffer-file-name) (length (getenv "HOME"))))
           (buffer-file-name)) (buffer-name))))
 
-(defun hurricane/toggle-title-format()
+(defun hurricane/toggle-title-format ()
   (interactive)
   (if (equal frame-title-format '(:eval (hurricane/layouts-for-title-bar)))
       (setq frame-title-format '(:eval (hurricane/default-title-bar)))
@@ -111,7 +111,7 @@
 ;; {{
 ;; @See: https://emacs-china.org/t/inconsolata/7997/11
 ;; @See: https://blog.csdn.net/xh_acmagic/article/details/78939246
-(defun hurricane/better-font()
+(defun hurricane/better-font ()
   (interactive)
   ;; English font.
   (if (display-graphic-p)
@@ -124,7 +124,7 @@
                             (font-spec :family "Sarasa Mono SC")))) ;; 14 16 20 22 28
     ))
 
-(defun hurricane/init-font(frame)
+(defun hurricane/init-font (frame)
   (with-selected-frame frame
     (if (display-graphic-p)
         (hurricane/better-font))))
@@ -160,7 +160,16 @@
              (propertize (number-to-string i) 'face `(:inherit ,face :weight ultra-bold :underline t))
              (propertize (concat " " (alist-get 'name tab) " ") 'face face)))))
 
+  (set-face-attribute 'tab-bar-tab nil :background "dark orange" :foreground "black")
+
   ;; WORKAROUND: update tab-bar for daemon
   (when (daemonp)
     (add-hook 'after-make-frame-functions
-              #'(lambda (&rest _) (force-mode-line-update)))))
+              #'(lambda (&rest _) (force-mode-line-update))))
+
+  (defun hurricane//back-to-primary-frame (&optional TAB-NUMBER)
+    (unless (eq (selected-frame) (car (visible-frame-list)))
+      (select-frame-set-input-focus (car (visible-frame-list)))))
+
+  (advice-add #'tab-bar-select-tab :before #'hurricane//back-to-primary-frame)
+  )

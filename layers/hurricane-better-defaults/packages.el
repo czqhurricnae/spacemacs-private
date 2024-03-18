@@ -197,6 +197,10 @@
      '(("t" find-file-other-tab "@ find-file-other-tab")))
 
     (ivy-add-actions
+     'spacemacs/counsel-recentf
+     '(("t" find-file-other-tab "@ find-file-other-tab")))
+
+    (ivy-add-actions
      'counsel-bookmark
      '(("s" hurricane//bookmark-search-from-action "@search-from")
        ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")

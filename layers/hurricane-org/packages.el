@@ -27,7 +27,7 @@
                             :branch "develop"))
     (org-media-note :location (recipe
                                :fetcher github
-                               :repo "stardiviner/org-media-note"))
+                               :repo "yuchen-lea/org-media-note"))
     (mpv :location (recipe
                     :fetcher github
                     :repo "kljohann/mpv.el"))
@@ -980,6 +980,18 @@ Return nil if not found."
     :hook (after-init . org-media-note-mode)
     :init
     (spacemacs/set-leader-keys "av" #'org-media-note-hydra/body)
+    :custom
+    (org-media-note-mpv-online-website-options-alist
+     '(("youtube\\.com"
+      ;; best audio and best video that is 4K or lower, not using the av01 codec.
+      "--ytdl-format=bestvideo[height<=?2160][vcodec!=?av01]+bestaudio/best"
+      ;; download both automatically generated and manually created subtitles.
+      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=")
+     ("bilibili\\.com"
+      ;; download subtitles and danmaku
+      ;; "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome"
+      "--ytdl-raw-options=proxy=[http://127.0.0.1:7890]"
+      "--ytdl-raw-options-append=proxy=http://127.0.0.1:7890")))
     :config
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)
     (require 'psearch)
@@ -997,118 +1009,135 @@ Return nil if not found."
 
     (with-eval-after-load 'pretty-hydra
       (pretty-hydra-define org-media-note-hydra
-        (:color red :title (org-media-note--hydra-title) :hint nil)
-        ("File"
-         (("o" org-media-note-mpv-smart-play
-           (if (org-media-note-ref-cite-p)
-               (format "Open %s"
-                       (org-media-note--current-org-ref-key))
-             "Open file")
-           :width 15)
-          ("J"
-           (mpv-cycle-property "sub")
-           "toggle subtitles")
-          ("T"
-           (mpv-cycle-property "ontop")
-           "toggle ontop")
-          ("]"
-           (org-media-note-change-speed-by 0.1)
-           "increase speed")
-          ("["
-           (org-media-note-change-speed-by -0.1)
-           "decrease speed")
-          ("z" org-media-note-mpv-toggle-speed "reset speed"))
-         "Playback"
-         (("<SPC>" mpv-pause "Play/Pause")
-          ("l"
-           (mpv-run-command "ab-loop")
-           (let ((time-a (mpv-get-property "ab-loop-a"))
-                 (time-b (mpv-get-property "ab-loop-b")))
-             (if (org-media-note--ab-loop-p)
-                 (format "Clear (%s - %s)"
-                         (org-media-note--seconds-to-timestamp time-a)
-                         (org-media-note--seconds-to-timestamp time-b))
-               (if (numberp time-a)
-                   (format "Set B (%s - )"
-                           (org-media-note--seconds-to-timestamp time-a))
-                 "Set A of A-B loop")))
-           :width 25)
-          ("g" org-media-note-goto-timestamp "Jump to the timestamp")
-          ("<left>" mpv-seek-backward "Backward 5s")
-          ("<right>" mpv-seek-forward "Forward 5s")
-          ("k" mpv-seek-backward-small "Backward 0.5s")
-          ("j" mpv-seek-forward-small "Forward 0.5s")
-          ("H"
-           (mpv-run-command "sub-seek" -1)
-           "Previous subtitle")
-          ("L"
-           (mpv-run-command "sub-seek" 1)
-           "Next subtitle"))
-         "Volume"
-         (("+"
-           (org-media-note-change-volume-by 5)
-           "Up")
-          ("-"
-           (org-media-note-change-volume-by -5)
-           "Down")
-          ("0" org-media-note-mpv-toggle-volume "toggle")
-          ("m"
-           (mpv-cycle-property "mute")
-           "(un)mute"))
-         "Note"
-         (("i" org-media-note-insert-link "Insert timestamp/loop")
-          ("a" org-media-note-adjust-timestamp-offset "Adjust timestamp")
-          ("s" org-media-note-insert-screenshot "Insert screenshot")
-          ("S" org-media-note-insert-sub-text "Insert Subtitle")
-          ("c"
-           (if (org-media-note--ab-loop-p)
-               (let* ((time-a (mpv-get-property "ab-loop-a"))
-                      (time-b (mpv-get-property "ab-loop-b"))
-                      (timestamp-a (org-media-note--seconds-to-timestamp time-a))
-                      (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
-                 (anki-clip-mp3 timestamp-a timestamp-b))
-             (user-error "[org-media-note] You need to finish setting A-B loop."))
-           "Clip Mp3 of A-B loop"
-           :width 25)
-          ("C"
-           (if (org-media-note--ab-loop-p)
-               (let* ((time-a (mpv-get-property "ab-loop-a"))
-                      (time-b (mpv-get-property "ab-loop-b"))
-                      (pos (mpv-get-playback-position))
-                      (timestamp-a (org-media-note--seconds-to-timestamp time-a))
-                      (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
-                 (org-media-note-insert-clip timestamp-a timestamp-b))
-             (user-error "[org-media-note] You need to finish setting A-B loop."))
-           "Insert clip of A-B loop"
-           :width 25)
-          ("n" org-return-indent "Insert Org newline"))
-         "Import"
-         (("I p" org-media-note-insert-note-from-pbf
-           "Import from pbf")
-          ("I n" org-media-note-insert-note-from-noted
-           "Import from Noted")
-          ("I t" org-media-note-convert-from-org-timer
-           "Import from org-timer")
-          ("I s" org-media-note-insert-note-from-srt
-           "Import from srt"))
-         "Toggle"
-         (("t m" org-media-note-mode "Auto insert media item"
-           :toggle t)
-          ("t c" org-media-note-toggle-refcite "Use ref key instead of absolute path"
-           :toggle org-media-note-use-refcite-first)
-          ("t p" org-media-note-toggle-pause-after-insertion
-           "Pause media after insert link" :toggle org-media-note-pause-after-insert-link)
-          ("t s" org-media-note-toggle-save-screenshot
-           "Auto save screenshot" :toggle org-media-note-save-screenshot-p)
-          ("t S" org-media-note-toggle-screenshot-with-sub
-           "Screenshot with subtitles" :toggle org-media-note-screenshot-with-sub)
-          ("t t" org-media-note-toggle-timestamp-pattern
-           (format "Timestamp format: %s"
+        (:color red
+                :title (org-media-note--hydra-title)
+                :hint nil)
+          ("File"
+           (("o" org-media-note-play-smart
+             (cl-multiple-value-bind (link _ _)
+                 (org-media-note--link-context)
+               (cl-multiple-value-bind (ref-mode key _ _)
+                   (org-media-note--ref-context)
+                 (cl-multiple-value-bind (_ media-files-in-attach-dir)
+                     (org-media-note--attach-context)
                    (cond
-                    ((eq org-media-note-timestamp-pattern 'hms)
-                     "hh:mm:ss")
-                    ((eq org-media-note-timestamp-pattern 'hmsf)
-                     "hh:mm:ss.fff")))))))
+                    (link "Open link")
+                    (ref-mode (format "Open %s" key))
+                    ((> (length media-files-in-attach-dir) 0) "Open attach")
+                    (t "Open media")))))
+             :width 20
+             :exit t)
+            ("j"
+             (mpv-cycle-property "sub")
+             "toggle subtitles")
+            ("T"
+             (mpv-cycle-property "ontop")
+             "toggle ontop")
+            ("]"
+             (org-media-note-change-speed-by 0.1)
+             "increase speed")
+            ("["
+             (org-media-note-change-speed-by -0.1)
+             "decrease speed")
+            ("z" org-media-note-mpv-toggle-speed "reset speed"))
+           "Playback"
+           (("<SPC>" mpv-pause "Play/Pause")
+            ("l"
+             (mpv-run-command "ab-loop")
+             (let ((time-a (mpv-get-property "ab-loop-a"))
+                   (time-b (mpv-get-property "ab-loop-b")))
+               (if (org-media-note--ab-loop-p)
+                   (format "Clear A-B loop (%s - %s)"
+                           (org-media-note--seconds-to-timestamp time-a)
+                           (org-media-note--seconds-to-timestamp time-b))
+                 (if (numberp time-a)
+                     (format "Set B of A-B loop (%s - )"
+                             (org-media-note--seconds-to-timestamp time-a))
+                   "Set A of A-B loop")))
+             :width 33)
+            ("g" org-media-note-goto-timestamp "Jump to timestamp")
+            ("<left>" mpv-seek-backward "Backward 5s")
+            ("<right>" mpv-seek-forward "Forward 5s")
+            ("C-<left>"
+             (mpv-run-command "sub-seek" -1)
+             "Previous subtitle")
+            ("C-<right>"
+             (mpv-run-command "sub-seek" 1)
+             "Next subtitle")
+            ("<prior>"
+             (mpv-run-command "add" "chapter" -1)
+             "Previous Chapter")
+            ("<next>"
+             (mpv-run-command "add" "chapter" 1)
+             "Next Chapter"))
+           "Volume"
+           (("+"
+             (org-media-note-change-volume-by 5)
+             "Up")
+            ("-"
+             (org-media-note-change-volume-by -5)
+             "Down")
+            ("0" org-media-note-mpv-toggle-volume "toggle")
+            ("m"
+             (mpv-cycle-property "mute")
+             "(un)mute"))
+           "Note"
+           (("i" org-media-note-insert-link "Insert timestamp")
+            ("a" org-media-note-adjust-timestamp-offset "Adjust timestamp")
+            ("s" org-media-note-insert-screenshot "Insert Screenshot")
+            ("S" org-media-note-insert-sub-text "Insert subtitle")
+            ("c"
+             (if (org-media-note--ab-loop-p)
+                 (let* ((time-a (mpv-get-property "ab-loop-a"))
+                        (time-b (mpv-get-property "ab-loop-b"))
+                        (timestamp-a (org-media-note--seconds-to-timestamp time-a))
+                        (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
+                   (anki-clip-mp3 timestamp-a timestamp-b))
+               (user-error "[org-media-note] You need to finish setting A-B loop."))
+             "Clip Mp3 of A-B loop"
+             :width 25)
+            ("C"
+             (if (org-media-note--ab-loop-p)
+                 (let* ((time-a (mpv-get-property "ab-loop-a"))
+                        (time-b (mpv-get-property "ab-loop-b"))
+                        (pos (mpv-get-playback-position))
+                        (timestamp-a (org-media-note--seconds-to-timestamp time-a))
+                        (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
+                   (org-media-note-insert-clip timestamp-a timestamp-b))
+               (user-error "[org-media-note] You need to finish setting A-B loop."))
+             "Insert clip of A-B loop"
+             :width 25)
+            ("n" org-return-indent "Insert Org newline")
+            ("H-m" org-media-note-merge-item "Merge items"))
+           "Import"
+           (("I p" org-media-note-insert-note-from-pbf
+             "from pbf")
+            ("I n" org-media-note-insert-note-from-noted
+             "from Noted")
+            ("I t" org-media-note-convert-from-org-timer
+             "from org-timer")
+            ("I s" org-media-note-insert-note-from-subtitle
+             "from subtitle")
+            ("I c" org-media-note-insert-note-from-chapter-list
+             "from chapters"))
+           "Toggle"
+           (("t m" toggle-org-media-note-auto-insert-item
+             "Auto insert media item" :toggle org-media-note-auto-insert-item)
+            ("t s" org-media-note-toggle-save-screenshot
+             "Auto insert screenshot" :toggle org-media-note-save-screenshot-p)
+            ("t S" org-media-note-toggle-screenshot-with-sub
+             "Screenshot with subtitles" :toggle org-media-note-screenshot-with-sub)
+            ("t c" org-media-note-toggle-refcite
+             "Use ref key instead of path" :toggle org-media-note-use-refcite-first)
+            ("t p" org-media-note-toggle-pause-after-insertion
+             "Pause media after insert link" :toggle org-media-note-pause-after-insert-link)
+            ("t t" org-media-note-toggle-timestamp-pattern
+             (format "Timestamp format: %s"
+                     (cond
+                      ((eq org-media-note-timestamp-pattern 'hms) "hh:mm:ss")
+                      ((eq org-media-note-timestamp-pattern 'hmsf) "hh:mm:ss.fff"))))
+            ("t M" org-media-note-set-separator
+             (format "Separator when merge: %s" org-media-note-separator-when-merge)))))
       )))
 
 (defun hurricane-org/init-mpv ()

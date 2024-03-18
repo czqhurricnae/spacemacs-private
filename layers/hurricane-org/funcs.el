@@ -1180,3 +1180,46 @@ Show the heading too, if it is currently invisible."
                          nil)))
 (advice-add 'outline-show-entry :override #'hurricane//outline-show-entry)
 ;; }}
+
+;; @See: https://github.com/yuchen-lea/org-media-note/pull/41/files
+;;; cut media clip
+(defun org-media-note-insert-clip (timestamp-a timestamp-b)
+  "Clip between A-B loop then insert into Org-mode note."
+  (interactive)
+  (let* ((media-working-directory (mpv-get-property "working-directory"))
+         (media-path-relative (mpv-get-property "path"))
+         (media-path-absolute (expand-file-name media-path-relative media-working-directory))
+         (media-filename (mpv-get-property "filename"))
+         (media-clip-file-name
+          (concat
+           (org-media-note--format-picture-file-name
+            (concat (file-name-base media-filename)
+                    " - clip - "
+                    ;; (org-media-note--get-current-timestamp)
+                    timestamp-a "--" timestamp-b))
+           "." (file-name-extension media-filename)))
+         (media-clip-target-path
+          (cond
+           ((eq org-media-note-screenshot-save-method 'attach)
+            (expand-file-name media-clip-file-name (org-attach-dir t)))
+           ((eq org-media-note-screenshot-save-method 'directory)
+            (if (not (f-exists? org-media-note-screenshot-image-dir))
+                (make-directory org-media-note-screenshot-image-dir))
+            (expand-file-name media-clip-file-name org-media-note-screenshot-image-dir)))))
+    (when (not (file-exists-p media-clip-target-path))
+      (progn
+        ;; cut media clip with ffmpeg.
+        (ffmpeg-utils-cut-clip media-path-absolute timestamp-a timestamp-b media-clip-target-path)
+        ;; org-attach
+        (if (and (eq org-media-note-screenshot-save-method 'attach)
+                 (eq org-media-note-screenshot-link-type-when-save-in-attach-dir 'attach))
+            (insert (format "[[attachment:%s]]" (file-relative-name media-clip-target-path (org-attach-dir))))
+          (insert (format "[[file:%s]]" (org-media-note--format-file-path media-clip-target-path))))
+        ;; (org-media-note--display-inline-images)
+        ;; display process indicator in mode-line and echo-area.
+        (setq mode-line-process
+              (propertize
+               (format " [org-media-note] clip between A-B loop: %s--%s." timestamp-a timestamp-b)
+               'font-lock-face 'mode-line-highlight))
+        (force-mode-line-update t)
+        (message "[org-media-note] clip between timestamp A-B loop: %s--%s." timestamp-a timestamp-b)))))

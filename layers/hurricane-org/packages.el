@@ -1,6 +1,6 @@
 (defconst hurricane-org-packages
   `(
-    org
+    (org :location built-in)
     (org-mac-link :location built-in)
     (org-pomodoro :location (recipe
                              :fetcher github
@@ -90,6 +90,12 @@
                              :fetcher github
                              :repo "emacsconf/emacsconf-el"
                              :files ("*.el")))
+    (org-drawio :location (recipe
+                           :fetcher github
+                           :repo "kimim/org-drawio"))
+    (org-remark :location (recipe
+                           :fetcher github
+                           :repo "nobiot/org-remark"))
     )
   )
 
@@ -986,12 +992,13 @@ Return nil if not found."
       ;; best audio and best video that is 4K or lower, not using the av01 codec.
       "--ytdl-format=bestvideo[height<=?2160][vcodec!=?av01]+bestaudio/best"
       ;; download both automatically generated and manually created subtitles.
-      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=")
+      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:7890")
      ("bilibili\\.com"
       ;; download subtitles and danmaku
-      ;; "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome"
-      "--ytdl-raw-options=proxy=[http://127.0.0.1:7890]"
-      "--ytdl-raw-options-append=proxy=http://127.0.0.1:7890")))
+      "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome,proxy=http://127.0.0.1:7890"
+      ;; "--ytdl-raw-options-append=proxy=http://127.0.0.1:7890"
+      ;; "--ytdl-raw-options=proxy=[http://127.0.0.1:7890]"
+      )))
     :config
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)
     (require 'psearch)
@@ -1012,132 +1019,128 @@ Return nil if not found."
         (:color red
                 :title (org-media-note--hydra-title)
                 :hint nil)
-          ("File"
-           (("o" org-media-note-play-smart
-             (cl-multiple-value-bind (link _ _)
-                 (org-media-note--link-context)
-               (cl-multiple-value-bind (ref-mode key _ _)
-                   (org-media-note--ref-context)
-                 (cl-multiple-value-bind (_ media-files-in-attach-dir)
-                     (org-media-note--attach-context)
+        ("File"
+         (("o" org-media-note-play-smart
+           (cl-multiple-value-bind (link _ _)
+               (org-media-note--link-context)
+             (cl-multiple-value-bind (ref-mode key _ _)
+                 (org-media-note--ref-context)
+               (cl-multiple-value-bind (_ media-files-in-attach-dir)
+                   (org-media-note--attach-context)
+                 (cond
+                  (link "Open link")
+                  (ref-mode (format "Open %s" key))
+                  ((> (length media-files-in-attach-dir) 0) "Open attach")
+                  (t "Open media")))))
+           :exit t)
+          ("j"
+           (mpv-cycle-property "sub")
+           "toggle subtitles")
+          ("T"
+           (mpv-cycle-property "ontop")
+           "toggle ontop")
+          ("]"
+           (org-media-note-change-speed-by 0.1)
+           "increase speed")
+          ("["
+           (org-media-note-change-speed-by -0.1)
+           "decrease speed")
+          ("z" org-media-note-mpv-toggle-speed "reset speed"))
+         "Playback"
+         (("<SPC>" mpv-pause "Play/Pause")
+          ("l"
+           (mpv-run-command "ab-loop")
+           (let ((time-a (mpv-get-property "ab-loop-a"))
+                 (time-b (mpv-get-property "ab-loop-b")))
+             (if (org-media-note--ab-loop-p)
+                 (format "Clear A-B loop (%s - %s)"
+                         (org-media-note--seconds-to-timestamp time-a)
+                         (org-media-note--seconds-to-timestamp time-b))
+               (if (numberp time-a)
+                   (format "Set B of A-B loop (%s - )"
+                           (org-media-note--seconds-to-timestamp time-a))
+                 "Set A of A-B loop"))))
+          ("g" org-media-note-goto-timestamp "Jump to timestamp")
+          ("<left>" mpv-seek-backward "Backward 5s")
+          ("<right>" mpv-seek-forward "Forward 5s")
+          ("C-<left>"
+           (mpv-run-command "sub-seek" -1)
+           "Previous subtitle")
+          ("C-<right>"
+           (mpv-run-command "sub-seek" 1)
+           "Next subtitle")
+          ("<prior>"
+           (mpv-run-command "add" "chapter" -1)
+           "Previous Chapter")
+          ("<next>"
+           (mpv-run-command "add" "chapter" 1)
+           "Next Chapter"))
+         "Volume"
+         (("+"
+           (org-media-note-change-volume-by 5)
+           "Up")
+          ("-"
+           (org-media-note-change-volume-by -5)
+           "Down")
+          ("0" org-media-note-mpv-toggle-volume "toggle")
+          ("m"
+           (mpv-cycle-property "mute")
+           "(un)mute"))
+         "Note"
+         (("i" org-media-note-insert-link "Insert timestamp")
+          ("a" org-media-note-adjust-timestamp-offset "Adjust timestamp")
+          ("s" org-media-note-insert-screenshot "Insert Screenshot")
+          ("S" org-media-note-insert-sub-text "Insert subtitle")
+          ("c"
+           (if (org-media-note--ab-loop-p)
+               (let* ((time-a (mpv-get-property "ab-loop-a"))
+                      (time-b (mpv-get-property "ab-loop-b"))
+                      (timestamp-a (org-media-note--seconds-to-timestamp time-a))
+                      (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
+                 (anki-clip-mp3 timestamp-a timestamp-b))
+             (user-error "[org-media-note] You need to finish setting A-B loop."))
+           "Clip Mp3 of A-B loop")
+          ("C"
+           (if (org-media-note--ab-loop-p)
+               (let* ((time-a (mpv-get-property "ab-loop-a"))
+                      (time-b (mpv-get-property "ab-loop-b"))
+                      (pos (mpv-get-playback-position))
+                      (timestamp-a (org-media-note--seconds-to-timestamp time-a))
+                      (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
+                 (org-media-note-insert-clip timestamp-a timestamp-b))
+             (user-error "[org-media-note] You need to finish setting A-B loop."))
+           "Insert clip of A-B loop")
+          ("n" org-return-indent "Insert Org newline")
+          ("H-m" org-media-note-merge-item "Merge items"))
+         "Import"
+         (("I p" org-media-note-insert-note-from-pbf
+           "from pbf")
+          ("I n" org-media-note-insert-note-from-noted
+           "from Noted")
+          ("I t" org-media-note-convert-from-org-timer
+           "from org-timer")
+          ("I s" org-media-note-insert-note-from-subtitle
+           "from subtitle")
+          ("I c" org-media-note-insert-note-from-chapter-list
+           "from chapters"))
+         "Toggle"
+         (("t m" toggle-org-media-note-auto-insert-item
+           "Auto insert media item" :toggle org-media-note-auto-insert-item)
+          ("t s" org-media-note-toggle-save-screenshot
+           "Auto insert screenshot" :toggle org-media-note-save-screenshot-p)
+          ("t S" org-media-note-toggle-screenshot-with-sub
+           "Screenshot with subtitles" :toggle org-media-note-screenshot-with-sub)
+          ("t c" org-media-note-toggle-refcite
+           "Use ref key instead of path" :toggle org-media-note-use-refcite-first)
+          ("t p" org-media-note-toggle-pause-after-insertion
+           "Pause media after insert link" :toggle org-media-note-pause-after-insert-link)
+          ("t t" org-media-note-toggle-timestamp-pattern
+           (format "Timestamp format: %s"
                    (cond
-                    (link "Open link")
-                    (ref-mode (format "Open %s" key))
-                    ((> (length media-files-in-attach-dir) 0) "Open attach")
-                    (t "Open media")))))
-             :width 20
-             :exit t)
-            ("j"
-             (mpv-cycle-property "sub")
-             "toggle subtitles")
-            ("T"
-             (mpv-cycle-property "ontop")
-             "toggle ontop")
-            ("]"
-             (org-media-note-change-speed-by 0.1)
-             "increase speed")
-            ("["
-             (org-media-note-change-speed-by -0.1)
-             "decrease speed")
-            ("z" org-media-note-mpv-toggle-speed "reset speed"))
-           "Playback"
-           (("<SPC>" mpv-pause "Play/Pause")
-            ("l"
-             (mpv-run-command "ab-loop")
-             (let ((time-a (mpv-get-property "ab-loop-a"))
-                   (time-b (mpv-get-property "ab-loop-b")))
-               (if (org-media-note--ab-loop-p)
-                   (format "Clear A-B loop (%s - %s)"
-                           (org-media-note--seconds-to-timestamp time-a)
-                           (org-media-note--seconds-to-timestamp time-b))
-                 (if (numberp time-a)
-                     (format "Set B of A-B loop (%s - )"
-                             (org-media-note--seconds-to-timestamp time-a))
-                   "Set A of A-B loop")))
-             :width 33)
-            ("g" org-media-note-goto-timestamp "Jump to timestamp")
-            ("<left>" mpv-seek-backward "Backward 5s")
-            ("<right>" mpv-seek-forward "Forward 5s")
-            ("C-<left>"
-             (mpv-run-command "sub-seek" -1)
-             "Previous subtitle")
-            ("C-<right>"
-             (mpv-run-command "sub-seek" 1)
-             "Next subtitle")
-            ("<prior>"
-             (mpv-run-command "add" "chapter" -1)
-             "Previous Chapter")
-            ("<next>"
-             (mpv-run-command "add" "chapter" 1)
-             "Next Chapter"))
-           "Volume"
-           (("+"
-             (org-media-note-change-volume-by 5)
-             "Up")
-            ("-"
-             (org-media-note-change-volume-by -5)
-             "Down")
-            ("0" org-media-note-mpv-toggle-volume "toggle")
-            ("m"
-             (mpv-cycle-property "mute")
-             "(un)mute"))
-           "Note"
-           (("i" org-media-note-insert-link "Insert timestamp")
-            ("a" org-media-note-adjust-timestamp-offset "Adjust timestamp")
-            ("s" org-media-note-insert-screenshot "Insert Screenshot")
-            ("S" org-media-note-insert-sub-text "Insert subtitle")
-            ("c"
-             (if (org-media-note--ab-loop-p)
-                 (let* ((time-a (mpv-get-property "ab-loop-a"))
-                        (time-b (mpv-get-property "ab-loop-b"))
-                        (timestamp-a (org-media-note--seconds-to-timestamp time-a))
-                        (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
-                   (anki-clip-mp3 timestamp-a timestamp-b))
-               (user-error "[org-media-note] You need to finish setting A-B loop."))
-             "Clip Mp3 of A-B loop"
-             :width 25)
-            ("C"
-             (if (org-media-note--ab-loop-p)
-                 (let* ((time-a (mpv-get-property "ab-loop-a"))
-                        (time-b (mpv-get-property "ab-loop-b"))
-                        (pos (mpv-get-playback-position))
-                        (timestamp-a (org-media-note--seconds-to-timestamp time-a))
-                        (timestamp-b (org-media-note--seconds-to-timestamp time-b)))
-                   (org-media-note-insert-clip timestamp-a timestamp-b))
-               (user-error "[org-media-note] You need to finish setting A-B loop."))
-             "Insert clip of A-B loop"
-             :width 25)
-            ("n" org-return-indent "Insert Org newline")
-            ("H-m" org-media-note-merge-item "Merge items"))
-           "Import"
-           (("I p" org-media-note-insert-note-from-pbf
-             "from pbf")
-            ("I n" org-media-note-insert-note-from-noted
-             "from Noted")
-            ("I t" org-media-note-convert-from-org-timer
-             "from org-timer")
-            ("I s" org-media-note-insert-note-from-subtitle
-             "from subtitle")
-            ("I c" org-media-note-insert-note-from-chapter-list
-             "from chapters"))
-           "Toggle"
-           (("t m" toggle-org-media-note-auto-insert-item
-             "Auto insert media item" :toggle org-media-note-auto-insert-item)
-            ("t s" org-media-note-toggle-save-screenshot
-             "Auto insert screenshot" :toggle org-media-note-save-screenshot-p)
-            ("t S" org-media-note-toggle-screenshot-with-sub
-             "Screenshot with subtitles" :toggle org-media-note-screenshot-with-sub)
-            ("t c" org-media-note-toggle-refcite
-             "Use ref key instead of path" :toggle org-media-note-use-refcite-first)
-            ("t p" org-media-note-toggle-pause-after-insertion
-             "Pause media after insert link" :toggle org-media-note-pause-after-insert-link)
-            ("t t" org-media-note-toggle-timestamp-pattern
-             (format "Timestamp format: %s"
-                     (cond
-                      ((eq org-media-note-timestamp-pattern 'hms) "hh:mm:ss")
-                      ((eq org-media-note-timestamp-pattern 'hmsf) "hh:mm:ss.fff"))))
-            ("t M" org-media-note-set-separator
-             (format "Separator when merge: %s" org-media-note-separator-when-merge)))))
+                    ((eq org-media-note-timestamp-pattern 'hms) "hh:mm:ss")
+                    ((eq org-media-note-timestamp-pattern 'hmsf) "hh:mm:ss.fff"))))
+          ("t M" org-media-note-set-separator
+           (format "Separator when merge: %s" org-media-note-separator-when-merge)))))
       )))
 
 (defun hurricane-org/init-mpv ()
@@ -1305,6 +1308,7 @@ Return nil if not found."
 
     ;; (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
+    (popweb-python-command "python3.11")
     (popweb-proxy-type provixy-type)
     (popweb-proxy-host provixy-host)
     (popweb-proxy-port provixy-port)
@@ -1656,7 +1660,20 @@ marked file."
 
     (advice-add #'org-noter-start-from-dired :override #'hurricane//org-noter-start-from-dired)
 
-    (defun hurricane//pdf-view-extract-region-image (regions &optional page size
+    (defun hurricane//insert-org-drawio ()
+      (interactive)
+      (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))))
+          (if (file-exists-p relative-img-dir)
+              (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
+            (mkdir relative-img-dir))
+          (let ((temp-name (select-or-enter-file-name relative-img-dir)))
+            (setq name-base (file-name-base temp-name))
+            (insert (format "#+drawio:\"%s\" :input-dir \"%s\" :output-dir \"%s\"" name-base relative-img-dir relative-img-dir))
+            (newline-and-indent 1)
+            (previous-line 1)
+            (org-drawio-open))))
+
+(defun hurricane//pdf-view-extract-region-image (regions &optional page size
                                                   output-buffer no-display-p)
       ;; TODO: what is "resp."? Avoid contractions.
       "Create a PNG image of REGIONS.
@@ -1742,6 +1759,21 @@ the `convert' program is used."
 
     (advice-add #'pdf-view-extract-region-image :override #'hurricane//pdf-view-extract-region-image)
 
+    (defun hurricane//org-noter-start-from-dired ()
+      "In Dired, open sessions for marked files or file at point.
+
+If there are multiple marked files, focus will be on the last
+marked file."
+      (interactive)
+      (let ((files (or (dired-get-marked-files)
+                       (dired-get-filename))))
+        (dolist (filename files)
+          (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
+            (find-file filename))
+          (save-excursion (org-noter))
+          (bury-buffer))
+        (other-frame 1)))
+
     (org-noter-enable-org-roam-integration)
 
     (defun hurricane//org-noter-set-highlight (&rest _arg)
@@ -1754,7 +1786,7 @@ the `convert' program is used."
                  (hl-begin (plist-get  (plist-get hl 'headline) :begin))
                  (hl-end (1- (plist-get  (plist-get hl 'headline) :contents-begin)))
                  (hl-ov (make-overlay hl-begin hl-end)))
-            (overlay-put hl-ov 'face 'mindre-keyword)
+            (overlay-put hl-ov 'face 'tab-bar-tab)
             (overlay-put hl-ov 'org-noter-current-hl t))
           (org-cycle-hide-drawers 'all))))
 
@@ -1762,6 +1794,14 @@ the `convert' program is used."
                 :after #'hurricane//org-noter-set-highlight)
     (advice-add #'org-noter-insert-note
                 :after #'hurricane//org-noter-set-highlight)
+
+    (defun hurricane//counsel-org-goto-action (x)
+      "Go to headline in candidate X."
+      (org-goto-marker-or-bmk (cdr x))
+      (when org-noter--session
+        (org-noter-sync-current-note)))
+
+    (advice-add #'counsel-org-goto-action :override #'hurricane//counsel-org-goto-action)
     ))
 
 (defun hurricane-org/init-helm-org-ql ()
@@ -1803,3 +1843,39 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
 (defun hurricane-org/init-anki-open-org-note ()
   (use-package anki-open-org-note
     :ensure t))
+
+(defun hurricane-org/init-org-drawio ()
+  (use-package org-drawio
+    :commands (org-drawio-add
+               org-drawio-open)
+    :custom ((org-drawio-command-drawio "/Applications/draw.io.app/Contents/MacOS/draw.io")
+             (org-drawio-input-dir "./draws")
+             (org-drawio-output-dir "./images")
+             (org-drawio-output-page "0")
+             ;; set to t, if you want to crop the image.
+             (org-drawio-crop nil))))
+
+(defun hurricane-org/init-org-remark ()
+  (use-package org-remark
+    :bind (;; :bind keyword also implicitly defers org-remark itself.
+           ;; Keybindings before :map is set for global-map.
+           ("C-c n m" . org-remark-mark)
+           ("C-c n l" . org-remark-mark-line)
+           :map org-remark-mode-map
+           ("C-c n o" . org-remark-open)
+           ("C-c n ]" . org-remark-view-next)
+           ("C-c n [" . org-remark-view-prev)
+           ("C-c n r" . org-remark-remove)
+           ("C-c n d" . org-remark-delete))
+    ;; Alternative way to enable `org-remark-global-tracking-mode' in
+    ;; `after-init-hook'.
+    ;; :hook (after-init . org-remark-global-tracking-mode)
+    :init
+    ;; It is recommended that `org-remark-global-tracking-mode' be
+    ;; enabled when Emacs initializes. Alternatively, you can put it to
+    ;; `after-init-hook' as in the comment above
+    (org-remark-global-tracking-mode +1)
+    :config
+    (use-package org-remark-info :after info :config (org-remark-info-mode +1))
+    (use-package org-remark-eww  :after eww  :config (org-remark-eww-mode +1))
+    (use-package org-remark-nov  :after nov  :config (org-remark-nov-mode +1))))

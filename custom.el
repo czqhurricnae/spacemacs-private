@@ -75,6 +75,24 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32 中断和事件的区别/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/TIM_OCInitStructure 结构体/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/marginalia/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/TIM_OCInitTypeDef 结构体/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/PVD/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/原子教你玩STM32HAL库版本STM32F103开发板教程/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/原子教你玩 STM32（HAL 库版本）STM32F103 开发板教程/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32 嵌入式技术应用开发全案例实践 2020/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32 Cube 高效开发教程-基础篇/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/TIM_TimeBaseInitTypeDef 结构体/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/NVIC_InitTypeDef 结构体/"))

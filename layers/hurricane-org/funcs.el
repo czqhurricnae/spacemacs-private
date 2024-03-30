@@ -1223,3 +1223,58 @@ Show the heading too, if it is currently invisible."
                'font-lock-face 'mode-line-highlight))
         (force-mode-line-update t)
         (message "[org-media-note] clip between timestamp A-B loop: %s--%s." timestamp-a timestamp-b)))))
+
+
+;; Make <C-f1> and <C-f2> save at point & jump to region.
+;; Useful when going back-and-forth between definitions in a file.
+;; The code below makes this work for pdf-tools as well.
+;;
+;; You can use <C-f3> and <C-f4> to have more save and load slots.
+;; They are named by single characters, i.e. try
+;; <C-f3> 5
+;; to save to slot 5 (you can use a letter as well)
+;; <C-f4> 5
+;; to load from slot 5. The default slot name is 1.
+
+;; {{
+;; @See: https://sachachua.com/blog/2021/02/guest-post-bookmarking-pdfs-in-emacs-with-¡pdf-tools-and-registers/
+(defvar my-bookmarks nil
+  "List of bookmarks, useful for pdf-mode where I save my positions with <C-f1> etc.")
+
+(defconst my-default-bookmark ?1
+  "This is the default bookmark name")
+(with-eval-after-load 'pdf-tools
+(defun my-save-pdf-position (&optional b)
+  "Saves the current PDF position of pdf-tools at a bookmark named B."
+  (unless b (setq b my-default-bookmark))
+  (setf (alist-get b my-bookmarks)
+        (pdf-view-bookmark-make-record)))
+
+(defun my-load-pdf-position (&optional b)
+  "Loads the PDF position saved at the bookmark named B."
+  (unless b (setq b my-default-bookmark))
+  (pdf-view-bookmark-jump (alist-get b my-bookmarks)))
+
+(define-key pdf-view-mode-map (kbd "<C-f1>")
+  (lambda ()
+    (interactive)
+    (my-save-pdf-position)))
+
+(define-key pdf-view-mode-map (kbd "<C-f2>")
+  (lambda ()
+    (interactive)
+    (my-load-pdf-position)))
+
+(define-key pdf-view-mode-map (kbd "<C-f3>")
+  (lambda (b) (interactive "cSaving to bookmark name (single character): ")
+    (my-save-pdf-position b)))
+
+(define-key pdf-view-mode-map (kbd "<C-f4>")
+  (lambda (b) (interactive "cLoading from bookmark name (single character): ")
+    (my-load-pdf-position b))))
+
+(global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register my-default-bookmark)))
+(global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register my-default-bookmark)))
+(global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
+(global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
+;; }}

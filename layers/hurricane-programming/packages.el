@@ -26,8 +26,8 @@
                                                                       org-mode-hook
                                                                       markdown-mode-hook))
     (spacemacs/add-to-hooks 'hurricane//load-yasnippet '(prog-mode-hook
-                                                        org-mode-hook
-                                                        markdown-mode-hook))))
+                                                         org-mode-hook
+                                                         markdown-mode-hook))))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
@@ -192,8 +192,10 @@
   (use-package lsp-bridge
     :config
     (global-lsp-bridge-mode)
+    (add-hook 'prog-mode-hook #'(lambda () (local-set-key (kbd "<f3>") #'lsp-bridge-find-def)))
     :custom
-    (lsp-bridge-python-command "/usr/local/bin/python3")
+    ;; brew 升级 python3 为 python3.12，该版本没有 lsp-bridge 的依赖。
+    (lsp-bridge-python-command "/usr/local/bin/python3.11")
     (lsp-bridge-enable-org-babel t)))
 
 (defun hurricane-programming/init-silicon ()

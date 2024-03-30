@@ -97,6 +97,8 @@
                                      :repo "mclear-tools/tabspaces"))
         (el-easydraw :location (recipe :fetcher github
                                        :repo "misohena/el-easydraw"))
+        (sketch-mode :location (recipe :fetcher github
+                                       :repo "dalanicolai/sketch-mode"))
         ))
 
 (defconst sys/macp
@@ -1474,6 +1476,8 @@
             "s" "a" "e" "q"
             "1" "2" "3" "4"
             "[" "]"))
+    :custom
+    (blink-search-python-command "python3.11")
     :config
     (setq blink-search-search-backends '("Grep PDF" "PDF" "Buffer List" "Find File" "Common Directory" "Recent File" "Grep File" "IMenu" "EAF Browser")
           blink-search-grep-pdf-backend 'pdf-tools
@@ -1958,3 +1962,6 @@ Works only in youtube-sub-extractor-mode buffer."
     (with-eval-after-load "ox"
       (require 'edraw-org)
       (edraw-org-setup-exporter))))
+
+(defun hurricane-misc/init-sketch-mode ()
+  (use-package sketch-mode))

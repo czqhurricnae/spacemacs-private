@@ -99,6 +99,7 @@
                                        :repo "misohena/el-easydraw"))
         (sketch-mode :location (recipe :fetcher github
                                        :repo "dalanicolai/sketch-mode"))
+        (eaf-interleave :location local)
         ))
 
 (defconst sys/macp
@@ -1965,3 +1966,9 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-sketch-mode ()
   (use-package sketch-mode))
+
+(defun hurricane-misc/init-eaf-interleave ()
+  (use-package eaf-interleave
+    :custom
+    (eaf-interleave-org-notes-dir-list (list (concat deft-dir (file-name-as-directory "notes"))))
+    :after eaf))

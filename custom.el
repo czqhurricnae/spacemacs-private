@@ -75,6 +75,14 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32 Cube 高效开发教程-高级篇/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/原子教你玩 STM32HAL 库版本 STM32F103 开发板教程/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/使用 STM32 工程 makefile 生成 compile_commands.json/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/使用 STM32CubeMX 在 ILI9341 上移植 µGUI/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/STM32 中断和事件的区别/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/TIM_OCInitStructure 结构体/"))

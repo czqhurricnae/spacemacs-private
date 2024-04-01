@@ -65,7 +65,7 @@
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (with-selected-frame doc-frame
         (funcall func filename filehost position)
-        (read-only-mode)
+        ;; (read-only-mode)
         (when semantic-stickyfunc-mode (semantic-stickyfunc-mode -1))
         (recenter-top-bottom 0))
 

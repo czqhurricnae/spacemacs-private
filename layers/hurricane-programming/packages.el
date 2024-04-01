@@ -195,6 +195,8 @@
     (add-hook 'prog-mode-hook #'(lambda () (local-set-key (kbd "<f3>") #'lsp-bridge-find-def)))
     :custom
     ;; brew 升级 python3 为 python3.12，该版本没有 lsp-bridge 的依赖。
+    (lsp-bridge-enable-search-words nil)
+    (lsp-bridge-enable-hover-diagnostic t)
     (lsp-bridge-python-command "/usr/local/bin/python3.11")
     (lsp-bridge-enable-org-babel t)))
 

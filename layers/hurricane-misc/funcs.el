@@ -756,7 +756,7 @@ Else, returns STRING."
       (mac-select-input-source (car ID-map))))
 
 ;; (add-hook 'evil-insert-state-entry-hook (lambda () (hurricane//switch-input-source chinese-ID-map)))
-(cond (sys/macp (add-hook 'evil-insert-state-exit-hook (lambda () (hurricane//switch-input-source english-ID-map)))))
+(cond ((and sys/macp (fboundp 'mac-input-source)) (add-hook 'evil-insert-state-exit-hook (lambda () (hurricane//switch-input-source english-ID-map)))))
 ;; }}
 
 ;; {{

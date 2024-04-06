@@ -152,7 +152,7 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(sqlite3 exec-path-from-shell)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -176,7 +176,7 @@ This function should only modify configuration layer settings."
                     ido-vertical-mode flx-ido company-quickhelp
                     counsel-projectile highlight-parentheses org-pdfview
                     doc-view org-projectile slime pyim undo-tree
-                    company)
+                    company org-superstar)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -638,7 +638,6 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;;     '(("melpa-cn" . "https://elpa.emacs-china.org/melpa/")
   ;;       ("org-cn"   . "https://elpa.emacs-china.org/org/")
   ;;       ("gnu-cn"   . "https://elpa.emacs-china.org/gnu/")))
-
   (setq configuration-layer-elpa-archives
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
           ("NonGNU ELPA-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
@@ -778,7 +777,10 @@ you should place your code here."
   (with-eval-after-load 'dictionary-overlay
     (dictionary-overlay-start))
   (require 'engine-mode)
-  (setq bookmark-file "~/.spacemacs.d/Backup/bookmarks"))
+  (setq bookmark-file "~/.spacemacs.d/Backup/bookmarks")
+  (dotimes (i 10)
+    (remove-key winum-keymap (kbd (format "s-%s" i))))
+  )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()

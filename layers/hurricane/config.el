@@ -120,6 +120,7 @@ For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
   :type '(repeat string))
 
 (setq-default
+ dired-quick-sort-suppress-setup-warning t
  org-agenda-dir "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/"
  deft-dir (cond
            (sys/macp "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/")

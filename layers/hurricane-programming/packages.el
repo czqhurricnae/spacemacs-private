@@ -12,9 +12,16 @@
     ;; (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
     ;; prettier-js
     (psearch :location (recipe :fetcher github :repo "twlz0ne/psearch.el" :files ("psearch.el")))
+    ;; (lsp-bridge :location (recipe
+    ;;                        :fetcher github
+    ;;                        :repo "manateelazycat/lsp-bridge"
+    ;;                        :branch "master"
+    ;;                        :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+    ;;                        ;; do not perform byte compilation or native compilation for lsp-bridge
+    ;;                        :build (:not compile)))
     (lsp-bridge :location local)
-    (silicon :location (recipe :fetcher github
-                                  :repo "iensu/silicon-el"))
+    (color-rg :location (recipe :fetcher github
+                               :repo "manateelazycat/color-rg"))
 ))
 
 (defun hurricane-programming/post-init-yasnippet ()
@@ -192,13 +199,71 @@
   (use-package lsp-bridge
     :config
     (global-lsp-bridge-mode)
+
+    ;; @See: https://tuhdo.github.io/emacs-frame-peek.html
+    (defun make-peek-frame (func filename filehost position)
+      "Make a new frame for peeking definition"
+      (let (summary
+            doc-frame
+            x y
+          ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            ;; 1. Find the absolute position of the current beginning of the symbol at point, ;;
+            ;; in pixels.                                                                     ;;
+          ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+            (abs-pixel-pos (save-excursion
+                             (beginning-of-thing 'symbol)
+                             (window-absolute-pixel-position))))
+        (setq x (car abs-pixel-pos))
+        ;; (setq y (cdr abs-pixel-pos))
+        (setq y (+ (cdr abs-pixel-pos) (frame-char-height)))
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; 2. Create a new invisible frame, with the current buffer in it. ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (setq doc-frame (make-frame '((minibuffer . t)
+                                      (name . "*Lsp-bridge Peek*")
+                                      (width . 80)
+                                      (visibility . nil)
+                                      (height . 15))))
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; 3. Position the new frame right under the beginning of the symbol at point. ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (set-frame-position doc-frame x y)
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; 4. Jump to the symbol at point. ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (with-selected-frame doc-frame
+          (funcall func filename filehost position)
+          ;; (read-only-mode)
+          (when semantic-stickyfunc-mode (semantic-stickyfunc-mode -1))
+          (recenter-top-bottom 0))
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; 5. Make frame visible again ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (make-frame-visible doc-frame)
+        (select-frame-set-input-focus doc-frame)))
+
+    (advice-add #'lsp-bridge-define--jump :around #'make-peek-frame)
+
     (add-hook 'prog-mode-hook #'(lambda () (local-set-key (kbd "<f3>") #'lsp-bridge-find-def)))
     :custom
-    ;; brew 升级 python3 为 python3.12，该版本没有 lsp-bridge 的依赖。
     (lsp-bridge-enable-search-words nil)
     (lsp-bridge-enable-hover-diagnostic t)
+    ;; brew 升级 python3 为 python3.12，该版本没有 lsp-bridge 的依赖，所以使用3.11。
     (lsp-bridge-python-command "/usr/local/bin/python3.11")
     (lsp-bridge-enable-org-babel t)))
 
-(defun hurricane-programming/init-silicon ()
-  (use-package silicon))
+(defun hurricane-programming/init-color-rg ()
+ (use-package color-rg
+   :ensure t
+   :load-path ("~/.emacs.d/elpa/29.3/develop/color-rg-20240331.104519")
+   :config
+   (define-key isearch-mode-map (kbd "M-s M-s") 'isearch-toggle-color-rg)
+    ;; https://emacs.stackexchange.com/a/10588/22102
+   (eval-after-load 'color-rg
+     '(progn
+        (evil-make-overriding-map color-rg-mode-map 'normal)
+        (add-hook 'color-rg-mode-hook #'evil-normalize-keymaps)))))

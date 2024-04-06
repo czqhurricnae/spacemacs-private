@@ -1258,6 +1258,7 @@
 
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")
+    (rime-emacs-module-header-root "/Applications/Emacs.app/Contents/Resources/include/")
     :bind
     ("C-\\" . #'+rime-force-enable)
     ("M-g" . #'+rime-convert-string-at-point)
@@ -1523,7 +1524,7 @@
 (defun hurricane-misc/init-subed ()
   (use-package subed
     :ensure t
-    :load-path ("~/emacs-config/default/elpa/28.3/develop/subed-20240123.201217/subed" "~/emacs-config/default/elpa/28.3/develop/subed-20240123.201217")
+    :load-path ("~/.emacs.d/elpa/29.3/develop/subed-20240123.201217" "~/.emacs.d/elpa/29.3/develop/subed-20240123.201217/subed")
     :init
     (require 'subed-vtt)
     (require 'subed-srt)

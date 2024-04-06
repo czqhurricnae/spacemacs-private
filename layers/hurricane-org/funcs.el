@@ -1278,3 +1278,16 @@ Show the heading too, if it is currently invisible."
 (global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
 (global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
 ;; }}
+
+(defun hurricane//format-org-transclude-src ()
+  (interactive)
+  (progn
+    (setq start (point-min))
+    (setq end (point-max))
+
+    (when (use-region-p)
+      (setq start (region-beginning))
+      (setq end (region-end)))
+
+    (kill-new (format "#+transclude: [[file:%s::]] :lines 1-%s :src c" (spacemacs--file-path) (count-lines start end)))
+    ))

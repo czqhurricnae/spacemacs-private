@@ -5,16 +5,15 @@
     (hide-mode-line :location (recipe :fetcher github
                                       :repo "hlissner/emacs-hide-mode-line"))
     pangu-spacing
-    (awesome-tab :location (recipe :fetcher github
-                                   :repo "manateelazycat/awesome-tab"))
     (shackle :location (recipe :fetcher github
                                :repo "wasamasa/shackle"))
     pretty-hydra
     (good-scroll :location (recipe :fetcher github
                                    :repo "io12/good-scroll.el"))
-    (holo-layer :location (recipe :fetcher github
-                                  :repo "manateelazycat/holo-layer"
-                                  :files ("*.*" "icon_cache" "plugin" "resources" "swaymsg-treefetch")))
+    ;; (activities :location (recipe :fetcher github
+    ;;                               :repo "alphapapa/activities.el"))
+    (org-tidy :location (recipe :fetcher github
+                              :repo "jxq0/org-tidy"))
     ))
 
 ;; {{
@@ -82,52 +81,6 @@
     (define-key evil-normal-state-map (kbd key) def)
     (define-key evil-motion-state-map (kbd key) def)
     (setq key (pop bindings) def (pop bindings))))
-
-(defun hurricane-ui/init-awesome-tab ()
-  (use-package awesome-tab
-    :commands (awesome-tab-mode)
-    :defer t
-    :init
-    (progn
-      (spacemacs|define-transient-state awesometab
-        :title "Awesome-tab Transient State"
-        :doc "
- Fast Move^^^^           Tab^^^^                   Window^^           Search^^      Misc^^
- ───────^^^^───────────  ─────^^^^───────────────  ─────^^──────────  ──────^^────  ─────^^───────────────────────
- [_p_/_n_] switch group  [_C-a_/_C-e_] first/last  [_-_] split below  [_b_] buffer  [_C-k_] kill buffer
- [_h_/_l_] switch tab    [_C-j_]^^ ace jump        [_v_] split right  [_g_] group   [_C-S-k_] kill others in group
- [_H_/_L_] switch other  [_C-h_/_C-l_] move        [_D_] delete       ^^            [_q_] quit
-"
-        :on-enter (awesome-tab-mode t)
-        :on-exit (awesome-tab-mode -1)
-        :bindings
-        ;; Fast move.
-        ("p" awesome-tab-backward-group)
-        ("n" awesome-tab-forward-group)
-        ("h" awesome-tab-backward-tab)
-        ("l" awesome-tab-forward-tab)
-        ("H" awesome-tab-forward-tab-other-window)
-        ("L" awesome-tab-backward-tab-other-window)
-        ;; Tab.
-        ("C-a" awesome-tab-select-beg-tab)
-        ("C-e" awesome-tab-select-end-tab)
-        ("C-j" awesome-tab-ace-jump)
-        ("C-h" awesome-tab-move-current-tab-to-left)
-        ("C-l" awesome-tab-move-current-tab-to-right)
-        ;; Window.
-        ("-" split-window-below)
-        ("v" split-window-right)
-        ("D" ace-delete-window)
-        ;; Search.
-        ("b" ivy-switch-buffer)
-        ("g" awesome-tab-counsel-switch-group)
-        ;; Misc.
-        ("C-k" kill-current-buffer)
-        ("C-S-k" awesome-tab-kill-other-buffers-in-current-group)
-        ("q" nil :exit t)))
-    :config
-    (setq awesome-tab-style "bar")
-    ))
 ;; }}
 
 ;; Enforce rules for popups.
@@ -254,12 +207,27 @@
     :config
     (good-scroll-mode 1)))
 
-(defun hurricane-ui/init-holo-layer ()
-  (use-package holo-layer
-    :load-path "~/emacs-config/default/elpa/28.3/develop/holo-layer-20231003.185743"
-    :init
-    (require 'holo-layer)
-    :config
-    (holo-layer-enable)
-    :custom
-    (holo-layer-enable-cursor-animation t)))
+(defun hurricane-ui/init-activities ()
+  (use-package activities
+     :init
+     (activities-mode)
+     (activities-tabs-mode)
+     ;; Prevent `edebug' default bindings from interfering.
+     (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+
+     :bind
+     (("C-x C-a C-n" . activities-new)
+      ("C-x C-a C-d" . activities-define)
+      ("C-x C-a C-a" . activities-resume)
+      ("C-x C-a C-s" . activities-suspend)
+      ("C-x C-a C-k" . activities-kill)
+      ("C-x C-a RET" . activities-switch)
+      ("C-x C-a b" . activities-switch-buffer)
+      ("C-x C-a g" . activities-revert)
+      ("C-x C-a l" . activities-list))))
+
+(defun hurricane-ui/init-org-tidy ()
+  (use-package org-tidy
+    :ensure t
+    :hook
+    (org-mode . org-tidy-mode)))

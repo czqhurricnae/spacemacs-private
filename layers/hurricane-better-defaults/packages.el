@@ -89,11 +89,15 @@
 
 (defun hurricane-better-defaults/post-init-dired ()
   (use-package dired
-    :defer t
     :config
     (require 'dired-x)
     (require 'dired-aux)
+    (when sys/macp
+      (setq dired-use-ls-dired nil))
     (setq dired-dwin-target 1)
+    ;; 对于 Mac 需要先安装 gls
+    ;; brew install coreutils
+    (setq insert-directory-program "gls")
     (setq dired-listing-switches "-alh")
     (setq dired-guess-shell-alist-user
           '(("\\.pdf\\'" "open")

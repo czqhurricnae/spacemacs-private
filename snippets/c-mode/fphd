@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: fphd
+# key: fphd
+# --
+/**
+* @brief
+* @param
+* @param
+* @retval      无
+*/

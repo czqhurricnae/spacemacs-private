@@ -41,11 +41,10 @@
     (org-super-links :location (recipe
                                 :fetcher github
                                 :repo "toshism/org-super-links"))
-    (incremental-reading :location local)
     (popweb :location (recipe
-                       :fetcher github
-                       :repo "czqhurricnae/popweb"
-                       :files ("*.*" "extension")))
+                      :fetcher github
+                      :repo "czqhurricnae/popweb"
+                      :files ("*.*" "extension")))
     (org-latex-impatient :location (recipe
                                     :fetcher github
                                     :repo "yangsheng6810/org-latex-impatient"))
@@ -96,6 +95,15 @@
     (org-remark :location (recipe
                            :fetcher github
                            :repo "nobiot/org-remark"))
+    (org-modern-indent :location (recipe
+                           :fetcher github
+                           :repo "jdtsmith/org-modern-indent"))
+    (org-bars :location (recipe
+                         :fetcher github
+                         :repo "tonyaldon/org-bars"))
+    (org-visual-outline :location (recipe
+                         :fetcher github
+                         :repo "legalnonsense/org-visual-outline"))
     )
   )
 
@@ -1164,71 +1172,6 @@ Return nil if not found."
   (use-package org-super-links
     :ensure t))
 
-(defun hurricane-org/init-incremental-reading ()
-  (use-package incremental-reading
-    :diminish incremental-reading-mode
-    :init
-    (defvar incremental-reading-map
-      (let ((map (make-sparse-keymap)))
-        (define-key map (kbd "c") #'anki-editor-cloze-region)
-        (define-key map (kbd "C") #'anki-editor-cloze-dwim)
-        (define-key map (kbd "C-c C-c") #'incremental-reading-parse-cards)
-        map))
-
-    (defvar incremental-reading-extract-functions
-      '(incremental-reading-extract-basic
-        incremental-reading-extract-basic-no-back
-        incremental-reading-extract-cloze
-        incremental-reading-extract-cloze-no-back))
-
-    ;; (defun hurricane//add-incremental-reading-keymap ()
-    ;;   (interactive)
-    ;;   (org-element-map (org-element-parse-buffer) 'special-block
-    ;;     (lambda (special-block)
-    ;;       (when (string= "ANKI" (s-upcase (org-element-property :type special-block)))
-    ;;         (let ((context-bg-eds (list))
-    ;;               (produce-list (list)))
-    ;;           (org-element-map special-block 'special-block
-    ;;             (lambda (field)
-    ;;               (when (string= "FIELD" (s-upcase (org-element-property :type field)))
-    ;;                 ;; Get the each field's context begin and end position list.
-    ;;                 (push (org-element-property :contents-begin field) context-bg-eds)
-    ;;                 (push (org-element-property :contents-end field) context-bg-eds))))
-    ;;           (while context-bg-eds
-    ;;             (push (pop context-bg-eds) produce-list))
-    ;;           (while produce-list
-    ;;             (let ((begin (pop produce-list))
-    ;;                   (end (pop produce-list)))
-    ;;               (if (and begin end)
-    ;;                (add-text-properties begin end
-    ;;                                    `(local-map ,incremental-reading-map))))
-    ;;             ))))))
-
-    ;; (dolist (func incremental-reading-extract-functions)
-    ;;   (advice-add func :after #'hurricane//add-incremental-reading-keymap))
-
-    (add-hook 'incremental-reading-mode-hook #'anki-editor-mode)
-    ;; (add-hook 'incremental-reading-mode-hook #'hurricane//add-incremental-reading-keymap)
-    ;; (add-hook 'after-save-hook #'hurricane//add-incremental-reading-keymap)
-    :hook (org-mode . incremental-reading-mode)
-    :custom
-    (incremental-reading--basic-template ":ANKI-CARD:
-#+ATTR_DECK: %s
-#+ATTR_TYPE: Basic
-#+ATTR_TAGS: %s
-#+BEGIN_ANKI org
-#+ATTR_FIELD: Front
-#+BEGIN_FIELD
-#+END_FIELD
-
-#+ATTR_FIELD: Back
-#+BEGIN_FIELD
-%s
-#+END_FIELD
-#+END_ANKI
-:END:
-\n")))
-
 ;; /usr/bin/env python3 -m pip install PyQt6 PyQtWebEngine epc
 ;; python3 -m pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6
 ;; 系统中存在 Python3.9 和 Python3.10 两种版本，如果原来的3.9 版本安装依赖，升级到3.10 后将无法使用，需要重新安装。
@@ -1236,7 +1179,7 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/28.3/develop/popweb-20231130.231202" "elpa/28.3/develop/popweb-20231130.231202/extension/latex" "elpa/28.3/develop/popweb-20231130.231202/extension/dict" "elpa/28.3/develop/popweb-20231130.231202/extension/org-roam" "elpa/28.3/develop/popweb-20231130.231202/extension/anki-review")
+    :load-path ("elpa/29.3/develop/popweb-20231130.231202" "elpa/29.3/develop/popweb-20231130.231202/extension/latex" "elpa/29.3/develop/popweb-20231130.231202/extension/dict" "elpa/29.3/develop/popweb-20231130.231202/extension/org-roam" "elpa/29.3/develop/popweb-20231130.231202/extension/anki-review")
     :init
     (require 'popweb-latex)
     (require 'popweb-dict)
@@ -1840,9 +1783,11 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
     (require 'emacsconf-mail)
     (require 'emacsconf-spookfox)))
 
-(defun hurricane-org/init-anki-open-org-note ()
-  (use-package anki-open-org-note
-    :ensure t))
+(defun hurricane-org/init-org-modern-indent ()
+  (use-package org-modern-indent
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook #'org-modern-indent-mode 90)))
 
 (defun hurricane-org/init-org-drawio ()
   (use-package org-drawio
@@ -1879,3 +1824,17 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
     (use-package org-remark-info :after info :config (org-remark-info-mode +1))
     (use-package org-remark-eww  :after eww  :config (org-remark-eww-mode +1))
     (use-package org-remark-nov  :after nov  :config (org-remark-nov-mode +1))))
+
+(defun hurricane-org/init-org-bars ()
+  (use-package org-bars
+    :ensure t))
+
+(defun hurricane-org/init-org-visual-outline ()
+  (use-package org-visual-outline
+    :ensure t
+    :config
+    (require 'org-dynamic-bullets)
+    (require 'org-visual-indent)
+    :hook
+    (org-mode . org-visual-indent-mode)
+    (org-mode . org-dynamic-bullets-mode)))

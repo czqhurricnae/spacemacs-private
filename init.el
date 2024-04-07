@@ -109,8 +109,8 @@ This function should only modify configuration layer settings."
      (python :variables
              python-test-runner '(nose pytest))
      ;; ipython-notebook
-     (c-c++ :variables
-            c-c++-default-mode-for-headers 'c++-mode)
+     ;; (c-c++ :variables
+            ;; c-c++-default-mode-for-headers 'c++-mode)
      ;; ycmd
      ;; common-lisp
      emacs-lisp

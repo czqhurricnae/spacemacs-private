@@ -24,8 +24,6 @@
         gist
         hydra
         wrap-region
-        ranger
-        golden-ratio
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         symbol-overlay
         browse-at-remote
@@ -34,14 +32,12 @@
         (autoinsert :location built-in)
         use-package-ensure-system-package
         rime
-        atomic-chrome
         dired-rsync
         (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
         (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
         (mybigword :location (recipe :fetcher github
                                      :repo "redguardtoo/mybigword"
                                      :files ("*.*")))
-        emacs-everywhere
         command-log-mode
         fasd
         (auto-save :location (recipe :fetcher github :repo "manateelazycat/auto-save"))
@@ -51,8 +47,6 @@
                                         :repo "manateelazycat/blink-search"
                                         :files ("*.*" "backend" "core" "icons")))
         (plisty :location local)
-        (org-tags-filter :location local)
-        (org-roam-dblocks :location local)
         (subed :location (recipe :fetcher github
                                  :repo "sachac/subed"
                                  :files ("*.*" "subed")))
@@ -75,8 +69,6 @@
         (reverso :location (recipe :fetcher github
                                    :repo "SqrtMinusOne/reverso.el"))
         nov
-        (goldendict-ng :location (recipe :fetcher github
-                                         :repo "benthamite/goldendict-ng"))
         (compile-media :location (recipe :fetcher github
                                          :repo "sachac/compile-media"))
         (subed-record :location (recipe :fetcher github
@@ -85,8 +77,6 @@
                                                :repo "Elilif/emacs-immersive-translate"))
         (icloud :location (recipe :fetcher github
                                   :repo "andyjda/icloud-utilities"))
-        (sticky-shell :location (recipe :fetcher github
-                                        :repo "andyjda/sticky-shell"))
         (elfeed :location (recipe :fetcher github
                                   :repo "skeeto/elfeed"))
         (aio :location (recipe :fetcher github
@@ -129,43 +119,6 @@
       (spacemacs/transient-state-register-add-bindings 'symbol-overlay
         '((">" symbol-overlay-jump-last)
           ("<" symbol-overlay-jump-first))))))
-
-(defun hurricane-misc/post-init-golden-ratio ()
-  (with-eval-after-load 'golden-ratio
-    (dolist (mode '("dired-mode" "occur-mode"))
-      (add-to-list 'golden-ratio-exclude-modes mode))
-    (dolist (n '("COMMIT_EDITMSG"))
-      (add-to-list 'golden-ratio-exclude-buffer-names n))))
-
-;; {{
-;; @See: https://emacs-china.org/t/ranger-golden-ratio/964/2
-(defun hurricane-misc/post-init-ranger ()
-  (defun hurricane/ranger ()
-    (interactive)
-    (if golden-ratio-mode
-        (progn
-          (golden-ratio-mode -1)
-          (ranger)
-          (setq golden-ratio-previous-enable t))
-      (progn
-        (ranger)
-        (setq golden-ratio-previous-enable nil))))
-
-(defun hurricane/quit-ranger ()
-  (interactive)
-  (if golden-ratio-previous-enable
-      (progn
-        (ranger-close)
-        (golden-ratio-mode 1))
-    (ranger-close)))
-
-(with-eval-after-load 'ranger
-  (progn
-    (define-key ranger-normal-mode-map (kbd "q") 'hurricane/quit-ranger)))
-
-;; (spacemacs/set-leader-keys "atr" 'hurricane/ranger)
-)
-;; }}
 
 ;; {{
 ;; Copy from spacemacs `helm' layer.
@@ -1153,28 +1106,6 @@
   (use-package use-package-ensure-system-package
     :ensure t))
 
-(defun hurricane-misc/init-atomic-chrome ()
-  (use-package atomic-chrome
-    :ensure t
-    :defer 5                            ; since the entry of this
-                                        ; package is from Chrome.
-    :config
-    (setq atomic-chrome-url-major-mode-alist
-          '(("github\\.com"        . gfm-mode)
-            ("emacs-china\\.org"   . gfm-mode)
-            ("stackexchange\\.com" . gfm-mode)
-            ("stackoverflow\\.com" . gfm-mode)))
-
-    (defun hurricane-atomic-chrome-mode-setup ()
-      (setq header-line-format
-            (substitute-command-keys
-             "Edit Chrome text area.  Finish \
-`\\[atomic-chrome-close-current-buffer]'.")))
-
-    (add-hook 'atomic-chrome-edit-mode-hook #'hurricane-atomic-chrome-mode-setup)
-
-    (atomic-chrome-start-server)))
-
 (defun hurricane-misc/init-dired-rsync ()
   (use-package dired-rsync
     :config
@@ -1284,12 +1215,6 @@
 (defun hurricane-misc/init-mybigword ()
   (use-package mybigword
     :ensure t))
-
-(defun hurricane-misc/init-emacs-everywhere ()
-  (use-package emacs-everywhere
-    :requires org-roam
-    :init
-    (setq emacs-everywhere-markdown-apps '("MarginNote 3"))))
 
 (defun hurricane-misc/init-command-log-mode ()
   (use-package command-log-mode))
@@ -1513,13 +1438,6 @@
 
 (defun hurricane-misc/init-plisty ()
   (use-package plisty))
-
-(defun hurricane-misc/init-org-tags-filter ()
-  (use-package org-tags-filter))
-
-(defun hurricane-misc/init-org-roam-dblocks ()
-  (use-package org-roam-dblocks
-    :hook (org-mode . org-roam-dblocks-autoupdate-mode)))
 
 (defun hurricane-misc/init-subed ()
   (use-package subed
@@ -1837,14 +1755,6 @@ Works only in youtube-sub-extractor-mode buffer."
     (setq nov-shr-rendering-functions '((img . nov-render-img) (title . nov-render-title)))
     (setq nov-shr-rendering-functions (append nov-shr-rendering-functions shr-external-rendering-functions))))
 
-(defun hurricane-misc/init-goldendict-ng ()
-  (use-package goldendict-ng
-    :demand t
-    :config
-    (setq goldendict-ng-executable "/Applications/GoldenDict.app/Contents/MacOS/GoldenDict")
-    (setq goldendict-ng-narrow-groups-to-matching-languages t)
-    ))
-
 (defun hurricane-misc/init-compile-media ()
   (use-package compile-media
     :ensure t))
@@ -1863,10 +1773,6 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-icloud ()
   (use-package icloud
-    :ensure t))
-
-(defun hurricane-misc/init-sticky-shell ()
-  (use-package sticky-shell
     :ensure t))
 
 (defun hurricane-misc/init-elfeed ()

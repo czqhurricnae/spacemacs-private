@@ -1,10 +1,6 @@
 (defconst hurricane-org-packages
   `(
     (org :location built-in)
-    (org-mac-link :location built-in)
-    (org-pomodoro :location (recipe
-                             :fetcher github
-                             :repo "lolownia/org-pomodoro"))
     (ox-latex :location built-in)
     (ox-md :location built-in)
     (org-protocol-capture-html :location (recipe
@@ -38,9 +34,6 @@
     (e2ansi :location (recipe
                        :fetcher github
                        :repo "Lindydancer/e2ansi"))
-    (org-super-links :location (recipe
-                                :fetcher github
-                                :repo "toshism/org-super-links"))
     (popweb :location (recipe
                       :fetcher github
                       :repo "czqhurricnae/popweb"
@@ -57,10 +50,10 @@
                                   :repo "tecosaur/org-pandoc-import"
                                   :files ("*.el" "filters" "preprocessors")))
     (org-roam-backlink-collections :location local)
-    ;; (org-imagine :location (recipe
-    ;;                         :fetcher github
-    ;;                         :repo "metaescape/org-imagine"
-    ;;                         :files ("*.el" "view")))
+    (org-imagine :location (recipe
+                            :fetcher github
+                            :repo "metaescape/org-imagine"
+                            :files ("*.el" "view")))
     (org-link-edit :location (recipe
                               :fetcher github
                               :repo "emacsmirror/org-link-edit"))
@@ -104,6 +97,8 @@
     (org-visual-outline :location (recipe
                          :fetcher github
                          :repo "legalnonsense/org-visual-outline"))
+    (org-tags-filter :location local)
+    (org-roam-dblocks :location local)
     )
   )
 
@@ -524,16 +519,6 @@
       ;; }}
       (pixel-scroll-mode)
       )))
-
-(defun hurricane-org/init-org-mac-link ()
-  (use-package org-mac-link
-    :after org
-    :commands org-mac-grab-link
-    :init
-    (progn
-      (add-hook 'org-mode-hook
-                #'(lambda ()
-                  (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link))))))
 
 (defun hurricane-org/init-org-tree-slide ()
   (spacemacs|use-package-add-hook org
@@ -1168,10 +1153,6 @@ Return nil if not found."
   (use-package e2ansi
     :ensure t))
 
-(defun hurricane-org/init-org-super-links ()
-  (use-package org-super-links
-    :ensure t))
-
 ;; /usr/bin/env python3 -m pip install PyQt6 PyQtWebEngine epc
 ;; python3 -m pip install PyQt6 PyQt6-Qt6 PyQt6-sip PyQt6-WebEngine PyQt6-WebEngine-Qt6
 ;; 系统中存在 Python3.9 和 Python3.10 两种版本，如果原来的3.9 版本安装依赖，升级到3.10 后将无法使用，需要重新安装。
@@ -1186,7 +1167,7 @@ Return nil if not found."
     (require 'popweb-org-roam-link)
     (require 'popweb-anki-review)
     (require 'youdao-dictionary)
-    (require 'anki-editor)
+    ;; (require 'anki-editor)
 
     (defun hurricane/popweb-dict-eudic-liju-search-at-point ()
       (interactive)
@@ -1284,8 +1265,8 @@ Return nil if not found."
 (defun hurricane-org/init-org-roam-backlink-collections ()
   (use-package org-roam-backlink-collections))
 
-;; (defun hurricane-org/init-org-imagine ()
-;;   (use-package org-imagine))
+(defun hurricane-org/init-org-imagine ()
+  (use-package org-imagine))
 
 (defun hurricane-org/init-org-link-edit ()
   (use-package org-link-edit))
@@ -1838,3 +1819,10 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
     :hook
     (org-mode . org-visual-indent-mode)
     (org-mode . org-dynamic-bullets-mode)))
+
+(defun hurricane-org/init-org-tags-filter ()
+  (use-package org-tags-filter))
+
+(defun hurricane-org/init-org-roam-dblocks ()
+  (use-package org-roam-dblocks
+    :hook (org-mode . org-roam-dblocks-autoupdate-mode)))

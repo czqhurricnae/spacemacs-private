@@ -380,3 +380,10 @@ variables `exec-path' and `eshell-path-env'."
     ;; value.
     (setq-default eshell-path-env value)))
 ;; }}
+
+(defun hurricane//evil-keyboard-quit ()
+  "Keyboard quit and force normal state."
+  (interactive)
+  (and evil-mode (evil-force-normal-state))
+  (progn
+    (keyboard-quit)))

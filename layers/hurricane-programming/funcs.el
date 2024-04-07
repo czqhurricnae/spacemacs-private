@@ -1,13 +1,3 @@
-(defun hurricane//load-yasnippet ()
-  (progn
-    (setq my-snippet-dir (expand-file-name snippet-dir))
-    (setq yas-snippet-dirs '(my-snippet-dir))
-    (yas-load-directory my-snippet-dir)
-    (setq yas-wrap-around-region t)
-    (setq yas-indent-line 'fixed)
-    (setq yas-verbosity 0)
-    (yas-minor-mode)))
-
 ;; {{
 ;; @See: https://gist.github.com/CodyReichert/9dbc8bd2a104780b64891d8736682cea
 ;; @See: https://github.com/flycheck/flycheck/issues/997
@@ -28,4 +18,3 @@
   (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
   (emmet-mode))
 ;; }}
-

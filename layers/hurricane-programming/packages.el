@@ -5,36 +5,22 @@
     virtualenvwrapper
     web-mode
     slime
-    dumb-jump
-    yasnippet
     (standardfmt :location (recipe :fetcher github :repo "jimeh/standardfmt.el"))
     (eslintfmt :location (recipe :fetcher github :repo "czqhurricnae/eslintfmt.el"))
     ;; (pythonfmt :location (recipe :fetcher github :repo "czqhurricnae/pythonfmt.el"))
     ;; prettier-js
     (psearch :location (recipe :fetcher github :repo "twlz0ne/psearch.el" :files ("psearch.el")))
-    ;; (lsp-bridge :location (recipe
-    ;;                        :fetcher github
-    ;;                        :repo "manateelazycat/lsp-bridge"
-    ;;                        :branch "master"
-    ;;                        :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-    ;;                        ;; do not perform byte compilation or native compilation for lsp-bridge
-    ;;                        :build (:not compile)))
-    (lsp-bridge :location local)
+    (lsp-bridge :location (recipe
+                           :fetcher github
+                           :repo "manateelazycat/lsp-bridge"
+                           :branch "master"
+                           :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+                           ;; do not perform byte compilation or native compilation for lsp-bridge
+                           :build (:not compile)))
+    ;; (lsp-bridge :location local)
     (color-rg :location (recipe :fetcher github
-                               :repo "manateelazycat/color-rg"))
+                              :repo "manateelazycat/color-rg"))
 ))
-
-(defun hurricane-programming/post-init-yasnippet ()
-  (progn
-    (yas-global-mode 1)
-    (set-face-background 'secondary-selection "gray")
-    (setq-default yas-prompt-functions '(yas-ido-prompt yas-dropdown-prompt))
-    (mapc #'(lambda (hook) (remove-hook hook 'spacemacs/load-yasnippet)) '(prog-mode-hook
-                                                                      org-mode-hook
-                                                                      markdown-mode-hook))
-    (spacemacs/add-to-hooks 'hurricane//load-yasnippet '(prog-mode-hook
-                                                         org-mode-hook
-                                                         markdown-mode-hook))))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
@@ -44,8 +30,7 @@
     (setq venv-location virtualenv-dir)))
 
 (defun hurricane-programming/post-init-web-mode ()
-  (use-package web-mode
-    :config
+  (with-eval-after-load 'web-mode
     (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
     (add-to-list 'auto-mode-alist '("\\.jsx$" . rjsx-mode))
@@ -59,34 +44,6 @@
                                        company-etags)
                                        company-files
                                        company-dabbrev))
-
-(defun hurricane-programming/post-init-dumb-jump ()
-  (setq dumb-jump-selector 'ivy))
-
-(defun hurricane/dumb-jump ()
-  (interactive)
-  (evil-set-jump)
-  (dumb-jump-go-other-window))
-
-(defun hurricane-programming/init-ycmd ()
-  (use-package ycmd
-    :init
-    (set-variable 'ycmd-global-config "~/.ycm_extra_conf.py")
-    (set-variable 'ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
-    (setq ycmd-tag-files 'auto)
-    (setq ycmd-force-semantic-completion t)
-    (setq ycmd-request-message-level -1)
-    (add-hook 'c++-mode-hook 'ycmd-mode)
-    (add-hook 'python-mode-hook 'ycmd-mode)
-    (setq company-backends-c-mode-common '((company-c-headers
-                                            company-dabbrev-code
-                                            company-keywords
-                                            company-gtags :with company-yasnippet)
-                                            company-files company-dabbrev ))
-    (hurricane|toggle-company-backends company-ycmd)
-    :config
-    (eval-after-load 'ycmd
-      '(spacemacs|hide-lighter ycmd-mode))))
 
 ;; {{
 ;; @See: https://github.com/slime/slime
@@ -237,14 +194,16 @@
         (with-selected-frame doc-frame
           (funcall func filename filehost position)
           ;; (read-only-mode)
-          (when semantic-stickyfunc-mode (semantic-stickyfunc-mode -1))
+          (when global-semantic-stickyfunc-mode (semantic-stickyfunc-mode -1))
           (recenter-top-bottom 0))
 
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         ;; 5. Make frame visible again ;;
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (make-frame-visible doc-frame)
-        (select-frame-set-input-focus doc-frame)))
+        (select-frame-set-input-focus doc-frame)
+        (raise-frame doc-frame)
+        ))
 
     (advice-add #'lsp-bridge-define--jump :around #'make-peek-frame)
 

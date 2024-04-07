@@ -1157,14 +1157,13 @@ Otherwise return word around point."
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
      ("p" hurricane//anki-editor-popup-note-at-point "Popup note")
      ("d" hurricane//anki-editor-gui-delete-note-action "Delete note")
-     ("y" hurricane/popweb-translate-and-mark-unknown-word "Search outer")
-     )))
+     ("y" hurricane/popweb-translate-and-mark-unknown-word "Search outer"))))
 
 (define-key global-map (kbd "<f3>") #'hurricane/anki-editor-find-notes)
 ;;}}
 
-;; @See: https://github.com/org-noter/org-noter/issues/35
 ;; {{
+;; @See: https://github.com/org-noter/org-noter/issues/35
 (defun hurricane//outline-show-entry ()
   "Show the body directly following this heading.
 Show the heading too, if it is currently invisible."
@@ -1238,45 +1237,46 @@ Show the heading too, if it is currently invisible."
 
 ;; {{
 ;; @See: https://sachachua.com/blog/2021/02/guest-post-bookmarking-pdfs-in-emacs-with-¡pdf-tools-and-registers/
-(defvar my-bookmarks nil
+(defvar hurricane//bookmarks nil
   "List of bookmarks, useful for pdf-mode where I save my positions with <C-f1> etc.")
 
-(defconst my-default-bookmark ?1
+(defconst hurricane//default-bookmark ?1
   "This is the default bookmark name")
+
 (with-eval-after-load 'pdf-tools
-(defun my-save-pdf-position (&optional b)
-  "Saves the current PDF position of pdf-tools at a bookmark named B."
-  (unless b (setq b my-default-bookmark))
-  (setf (alist-get b my-bookmarks)
-        (pdf-view-bookmark-make-record)))
+  (defun hurricane//save-pdf-position (&optional b)
+    "Saves the current PDF position of pdf-tools at a bookmark named B."
+    (unless b (setq b hurricane//default-bookmark))
+    (setf (alist-get b hurricane//bookmarks)
+          (pdf-view-bookmark-make-record)))
 
-(defun my-load-pdf-position (&optional b)
-  "Loads the PDF position saved at the bookmark named B."
-  (unless b (setq b my-default-bookmark))
-  (pdf-view-bookmark-jump (alist-get b my-bookmarks)))
+  (defun hurricane//load-pdf-position (&optional b)
+    "Loads the PDF position saved at the bookmark named B."
+    (unless b (setq b hurricane//default-bookmark))
+    (pdf-view-bookmark-jump (alist-get b hurricane//bookmarks)))
 
-(define-key pdf-view-mode-map (kbd "<C-f1>")
-  (lambda ()
-    (interactive)
-    (my-save-pdf-position)))
+  (define-key pdf-view-mode-map (kbd "<C-f1>")
+    (lambda ()
+      (interactive)
+      (hurricane//save-pdf-position)))
 
-(define-key pdf-view-mode-map (kbd "<C-f2>")
-  (lambda ()
-    (interactive)
-    (my-load-pdf-position)))
+  (define-key pdf-view-mode-map (kbd "<C-f2>")
+    (lambda ()
+      (interactive)
+      (hurricane//load-pdf-position)))
 
-(define-key pdf-view-mode-map (kbd "<C-f3>")
-  (lambda (b) (interactive "cSaving to bookmark name (single character): ")
-    (my-save-pdf-position b)))
+  (define-key pdf-view-mode-map (kbd "<C-f3>")
+    (lambda (b) (interactive "cSaving to bookmark name (single character): ")
+      (hurricane//save-pdf-position b)))
 
-(define-key pdf-view-mode-map (kbd "<C-f4>")
-  (lambda (b) (interactive "cLoading from bookmark name (single character): ")
-    (my-load-pdf-position b))))
+  (define-key pdf-view-mode-map (kbd "<C-f4>")
+    (lambda (b) (interactive "cLoading from bookmark name (single character): ")
+      (hurricane//load-pdf-position b))))
 
-(global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register my-default-bookmark)))
-(global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register my-default-bookmark)))
-(global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
-(global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
+  (global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register hurricane//default-bookmark)))
+  (global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register hurricane//default-bookmark)))
+  (global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
+  (global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
 ;; }}
 
 (defun hurricane//format-org-transclude-src ()

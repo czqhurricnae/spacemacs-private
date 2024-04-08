@@ -10,8 +10,6 @@
     pretty-hydra
     (activities :location (recipe :fetcher github
                                   :repo "alphapapa/activities.el"))
-    (org-tidy :location (recipe :fetcher github
-                              :repo "jxq0/org-tidy"))
     ))
 
 ;; {{
@@ -199,7 +197,6 @@
 (defun hurricane-ui/init-pretty-hydra ()
   (use-package pretty-hydra
     :ensure t))
-
 (defun hurricane-ui/init-activities ()
   (use-package activities
      :init
@@ -218,9 +215,3 @@
       ("C-x C-a b" . activities-switch-buffer)
       ("C-x C-a g" . activities-revert)
       ("C-x C-a l" . activities-list))))
-
-(defun hurricane-ui/init-org-tidy ()
-  (use-package org-tidy
-    :ensure t
-    :hook
-    (org-mode . org-tidy-mode)))

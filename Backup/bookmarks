@@ -297,11 +297,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/lsp-bridge 在嵌套的 Git 项目下不能正常识别.org")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Error running timer ‘org-noter--show-arrow’: (invalid-function pdf-view-current-overlay).org")
  (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 363)
- (last-modified 26129 14617 233593 0))
+ (position . 446)
+ (last-modified 26130 19522 161916 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

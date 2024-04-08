@@ -297,11 +297,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Error running timer ‘org-noter--show-arrow’: (invalid-function pdf-view-current-overlay).org")
- (front-context-string)
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/升级 Emacs 后，使用 do-applescript 出现  AppleScript error 1.org")
+ (front-context-string . "\n使用 eshell 运行命令：")
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 446)
- (last-modified 26130 19522 161916 0))
+ (position . 436)
+ (last-modified 26131 34565 553038 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

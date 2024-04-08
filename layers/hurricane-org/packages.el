@@ -1255,9 +1255,9 @@ Return nil if not found."
 (defun hurricane-org/init-org-ql ()
   (use-package org-ql))
 
-;;(defun hurricane-org/init-org-pandoc-import ()
-;;  (use-package org-pandoc-import
-;;    :ensure t))
+(defun hurricane-org/init-org-pandoc-import ()
+ (use-package org-pandoc-import
+   :ensure t))
 
 (defun hurricane-org/init-org-roam-backlink-collections ()
   (use-package org-roam-backlink-collections))

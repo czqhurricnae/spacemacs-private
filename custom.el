@@ -14,7 +14,7 @@
  '(custom-safe-themes
    '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
  '(debug-on-error t)
- '(dired-quick-sort-suppress-setup-warning t t)
+ '(dired-quick-sort-suppress-setup-warning t)
  '(doom-modeline-buffer-file-name-style 'truncate-with-project)
  '(doom-modeline-icon t)
  '(doom-modeline-major-mode-icon nil)
@@ -69,6 +69,8 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/升级 Emacs 后，使用 do-applescript 出现  AppleScript error 1/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Error running timer ‘org-noter--show-arrow’: (invalid-function pdf-view-current-overlay)/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/修改 el-easydraw 源代码，使得 svg 内嵌图片资源路径不使用相对路径，在 Emacs、本地预览 中正常显示/"))

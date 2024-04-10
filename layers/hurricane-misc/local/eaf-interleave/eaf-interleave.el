@@ -434,8 +434,7 @@ Consider a headline with property PROPERTY as parent headline."
          (position (eaf-interleave--go-to-page-note eaf--buffer-url page)))
     (if position
         (eaf-interleave--switch-to-org-buffer t position)
-      (eaf-interleave--create-new-note eaf--buffer-url eaf--buffer-app-name page)))
-  )
+      (eaf-interleave--create-new-note eaf--buffer-url eaf--buffer-app-name page))))
 
 (defun eaf-interleave--browser-add-note ()
   "EAF browser add note"

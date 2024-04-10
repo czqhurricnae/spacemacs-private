@@ -1723,6 +1723,29 @@ marked file."
         (org-noter-sync-current-note)))
 
     (advice-add #'counsel-org-goto-action :override #'hurricane//counsel-org-goto-action)
+
+    (defun hurricane//org-noter-link-follow (link)
+      (let* ((splitted (string-split link "#"))
+             (pdf-file-path (nth 0 splitted))
+             (location (nth 1 splitted))
+             (value (car (read-from-string location)))
+             (notes-file-path (buffer-file-name))
+             (eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
+        (when (eq major-mode 'org-mode)
+         (when location
+          (org-noter-pdf--goto-location
+           'pdf-view-mode
+           (cond ((and (consp value) (integerp (car value)) (numberp (cdr value))) value)
+                 ((and (consp value) (integerp (car value)) (consp (cdr value)) (numberp (cadr value)) (numberp (cddr value))) value)
+                 ((integerp value) (cons value 0)))
+           (get-buffer-window (find-file pdf-file-path)))))))
+
+    (org-link-set-parameters org-noter-property-note-location :follow #'hurricane//org-noter-link-follow)
+
+    (defun hurricane//add-org-noter-link ()
+      (interactive)
+      (kill-new (format "[[NOTER_PAGE:%s#%s]]" (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window))))))
+
     ))
 
 (defun hurricane-org/init-helm-org-ql ()

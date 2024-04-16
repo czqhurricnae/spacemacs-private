@@ -32,14 +32,15 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(yaml
-     sql
-     lua
+   '(
+     ;; yaml
+     ;; sql
+     ;; lua
      ivy
      better-defaults
-     ranger
-     colors
-     prodigy
+     ;; ranger
+     ;; colors
+     ;; prodigy
      (search-engine :variables
                     search-engine-config-list '((CAAC
                                                  :name "CAAC"
@@ -58,17 +59,17 @@ This function should only modify configuration layer settings."
                                                  :url "https://www.merriam-webster.com/dictionary/%s"
                                                  :keywords (:keybinding "m" :docstring "韦氏词典" :browser 'eaf-open-browser))
                                                 ))
-     graphviz
+     ;; graphviz
      (syntax-checking :variables
                       syntax-checking-enable-by-default t
                       syntax-checking-enable-tooltips t)
-     (spell-checking :variables
-                     spell-checking-enable-by-default nil)
+     ;; (spell-checking :variables
+     ;;                 spell-checking-enable-by-default nil)
      (vinegar :variables
               vinegar-reuse-dired-buffer t)
-     (spacemacs-layouts :variables
-                        layouts-enable-autosave nil
-                        layouts-autosave-delay 300)
+     ;; (spacemacs-layouts :variables
+     ;;                    layouts-enable-autosave nil
+     ;;                    layouts-autosave-delay 300)
      (git :variables
           git-magit-status-fullscreen t
           magit-push-always-verify nil
@@ -76,45 +77,45 @@ This function should only modify configuration layer settings."
           magit-revert-buffers 'silent
           magit-refs-show-commit-count 'all
           magit-revision-show-gravatars nil)
-     (ibuffer :variables
-              ibuffer-group-buffers-by 'projects)
+     ;; (ibuffer :variables
+     ;;          ibuffer-group-buffers-by 'projects)
      (auto-completion :variables
                       auto-completion-enable-sort-by-usage t
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-help-tooltip nil
                       :disabled-for org markdown)
-     (osx :variables
-          osx-dictionary-dictionary-choice "Simplified Chinese - English"
-          osx-command-as 'super)
-     restclient
-     (gtags :disabled-for
-            clojure
-            emacs-lisp
-            javascript
-            latex
-            python
-            shell-scripts)
-     (shell :variables
-            shell-default-shell 'eshell)
+     ;; (osx :variables
+     ;;      osx-dictionary-dictionary-choice "Simplified Chinese - English"
+     ;;      osx-command-as 'super)
+     ;; restclient
+     ;; (gtags :disabled-for
+     ;;        clojure
+     ;;        emacs-lisp
+     ;;        javascript
+     ;;        latex
+     ;;        python
+     ;;        shell-scripts)
+     ;; (shell :variables
+     ;;        shell-default-shell 'eshell)
      ;; docker
-     latex
-     (javascript :variables
-                 javascript-disable-tern-port-files nil
-                 add-node-modules-path t)
-     (typescript :variables
-                 typescript-fmt-on-save nil
-                 typescript-fmt-tool 'typescript-formatter)
-     html
-     react
-     (python :variables
-             python-test-runner '(nose pytest))
+     ;; latex
+     ;; (javascript :variables
+     ;;             javascript-disable-tern-port-files nil
+     ;;             add-node-modules-path t)
+     ;; (typescript :variables
+     ;;             typescript-fmt-on-save nil
+     ;;             typescript-fmt-tool 'typescript-formatter)
+     ;; html
+     ;; react
+     ;; (python :variables
+     ;;         python-test-runner '(nose pytest))
      ;; ipython-notebook
      ;; (c-c++ :variables
             ;; c-c++-default-mode-for-headers 'c++-mode)
      ;; ycmd
      ;; common-lisp
      emacs-lisp
-     markdown
+     ;; markdown
      (org :variables
           org-want-to-do-binding t
           org-enable-github-support t
@@ -130,14 +131,14 @@ This function should only modify configuration layer settings."
      ;; Must ensure fasd installed first.
      ;; brew install fasd
      fasd
-     (spacemacs-layouts :variables
-                        layouts-enable-autosave nil
-                        layouts-autosave-delay 300)
-     theming
+     ;; (spacemacs-layouts :variables
+     ;;                    layouts-enable-autosave nil
+     ;;                    layouts-autosave-delay 300)
+     ;; theming
      (chinese :variables
               chinese-default-input-method nil
               chinese-enable-youdao-dict t)
-     tern
+     ;; tern
      (eaf :variables
           eaf-python-command "python3.10"
           eaf-pdf-dark-mode nil
@@ -152,7 +153,7 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(sqlite3 exec-path-from-shell)
+   dotspacemacs-additional-packages '(sqlite3)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()

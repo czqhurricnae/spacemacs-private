@@ -1,12 +1,12 @@
 (defconst hurricane-ui-packages
   '(
-    (doom-themes :location (recipe :fetcher github
-                                   :repo "hlissner/emacs-doom-themes"))
-    (hide-mode-line :location (recipe :fetcher github
-                                      :repo "hlissner/emacs-hide-mode-line"))
+    ;; (doom-themes :location (recipe :fetcher github
+    ;;                                :repo "hlissner/emacs-doom-themes"))
+    ;; (hide-mode-line :location (recipe :fetcher github
+    ;;                                   :repo "hlissner/emacs-hide-mode-line"))
     pangu-spacing
-    (shackle :location (recipe :fetcher github
-                               :repo "wasamasa/shackle"))
+    ;; (shackle :location (recipe :fetcher github
+    ;;                            :repo "wasamasa/shackle"))
     pretty-hydra
     (activities :location (recipe :fetcher github
                                   :repo "alphapapa/activities.el"))

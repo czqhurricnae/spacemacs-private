@@ -20,7 +20,14 @@
     ;; (lsp-bridge :location local)
     (color-rg :location (recipe :fetcher github
                               :repo "manateelazycat/color-rg"))
-))
+    (stm32 :location (recipe :fetcher github
+                             :repo "SL-RU/stm32-emacs"))
+    friendly-shell-command
+    (dap-mode :location (recipe
+                         :fetcher github
+                         :repo "emacs-lsp/dap-mode"
+                         :files ("*.el" "docs" "features" "icons")))
+    exec-path-from-shell))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
@@ -201,9 +208,7 @@
         ;; 5. Make frame visible again ;;
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (make-frame-visible doc-frame)
-        (select-frame-set-input-focus doc-frame)
-        (raise-frame doc-frame)
-        ))
+        (select-frame-set-input-focus doc-frame)))
 
     (advice-add #'lsp-bridge-define--jump :around #'make-peek-frame)
 
@@ -226,3 +231,36 @@
      '(progn
         (evil-make-overriding-map color-rg-mode-map 'normal)
         (add-hook 'color-rg-mode-hook #'evil-normalize-keymaps)))))
+
+(defun hurricane-programming/init-stm32 ()
+  (use-package stm32
+    :ensure t))
+
+(defun hurricane-programming/init-friendly-shell-command ()
+  (use-package friendly-shell-command
+    :ensure t))
+
+(defun hurricane-programming/init-dap-mode ()
+  (use-package dap-mode
+    :ensure t
+    :config
+    (dap-ui-mode 1)
+    (dap-tooltip-mode 1)
+    (tooltip-mode 1)
+    (dap-ui-controls-mode 1)
+    ;;@See: https://zhuanlan.zhihu.com/p/467681146
+    (use-package dap-lldb
+      :after dap-mode
+      ;; 配置中明确指定了 lldb-vscode 的路径。这里的路径是 macOS 上通过 Homebrew 安装 llvm 的路径，其它平台的路径需要自行确定。
+      :custom
+      (dap-lldb-debug-program '("/usr/local/opt/llvm/bin/lldb-vscode"))
+      ;; ask user for executable to debug if not specified explicitly (c++)
+      (dap-lldb-debugged-program-function
+       (lambda () (read-file-name "Select file to debug: "))))
+    (require 'dap-gdb-lldb)
+    (dap-gdb-lldb-setup)))
+
+(defun hurricane-programming/init-exec-path-from-shell ()
+  (use-package exec-path-from-shell
+    :ensure t
+    :init (exec-path-from-shell-initialize)))

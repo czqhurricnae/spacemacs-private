@@ -1,6 +1,6 @@
 (setq hurricane-misc-packages
       '(
-        helm-github-stars
+        ;; helm-github-stars
         helm-ag
         expand-region
         projectile
@@ -9,15 +9,15 @@
         multiple-cursors
         visual-regexp
         visual-regexp-steroids
-        command-log
+        ;; command-log
         evil
-        discover-my-major
+        ;; discover-my-major
         ace-window
         avy
         tiny
-        flyspell-correct
-        peep-dired
-        markdown-mode
+        ;; flyspell-correct
+        ;; peep-dired
+        ;; markdown-mode
         swiper
         magit
         git-messenger
@@ -26,41 +26,41 @@
         wrap-region
         (highlight-global :location (recipe :fetcher github :repo "glen-dai/highlight-global"))
         symbol-overlay
-        browse-at-remote
-        (shell-mode :location local)
-        pandoc-mode
+        ;; browse-at-remote
+        ;; (shell-mode :location local)
+        ;; pandoc-mode
         (autoinsert :location built-in)
         use-package-ensure-system-package
         rime
-        dired-rsync
-        (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
+        ;; dired-rsync
+        ;; (with-proxy :location (recipe :fetcher github :repo "twlz0ne/with-proxy.el"))
         (emacsql :location (recipe :fetcher github :repo "skeeto/emacsql"))
-        (mybigword :location (recipe :fetcher github
-                                     :repo "redguardtoo/mybigword"
-                                     :files ("*.*")))
-        command-log-mode
+        ;; (mybigword :location (recipe :fetcher github
+        ;;                              :repo "redguardtoo/mybigword"
+        ;;                              :files ("*.*")))
+        ;; command-log-mode
         fasd
         (auto-save :location (recipe :fetcher github :repo "manateelazycat/auto-save"))
         eaf
-        (dupan :location (recipe :fetcher github :repo "lorniu/emacs-baidupan"))
+        ;; (dupan :location (recipe :fetcher github :repo "lorniu/emacs-baidupan"))
         (blink-search :location (recipe :fetcher github
                                         :repo "manateelazycat/blink-search"
                                         :files ("*.*" "backend" "core" "icons")))
         (plisty :location local)
-        (subed :location (recipe :fetcher github
-                                 :repo "sachac/subed"
-                                 :files ("*.*" "subed")))
-        (youtube-sub-extractor :location (recipe :fetcher github
-                                       :repo "agzam/youtube-sub-extractor.el"))
-        (websocket :location (recipe :fetcher github
-                                           :repo "ahyatt/emacs-websocket"))
-        (websocket-bridge :location (recipe :fetcher github
-                                            :repo "ginqi7/websocket-bridge"))
-        (dictionary-overlay :location (recipe :fetcher github
-                                              :repo "ginqi7/dictionary-overlay"
-                                              :files ("*.*" "resources")))
-        (ffmpeg-utils :location (recipe :fetcher github
-                                        :repo "czqhurricnae/ffmpeg-utils"))
+        ;; (subed :location (recipe :fetcher github
+        ;;                          :repo "sachac/subed"
+        ;;                          :files ("*.*" "subed")))
+        ;; (youtube-sub-extractor :location (recipe :fetcher github
+        ;;                                :repo "agzam/youtube-sub-extractor.el"))
+        ;; (websocket :location (recipe :fetcher github
+        ;;                                    :repo "ahyatt/emacs-websocket"))
+        ;; (websocket-bridge :location (recipe :fetcher github
+        ;;                                     :repo "ginqi7/websocket-bridge"))
+        ;; (dictionary-overlay :location (recipe :fetcher github
+        ;;                                       :repo "ginqi7/dictionary-overlay"
+        ;;                                       :files ("*.*" "resources")))
+        ;; (ffmpeg-utils :location (recipe :fetcher github
+        ;;                                 :repo "czqhurricnae/ffmpeg-utils"))
         ;; engine-mode
         (emacs-azure-tts :location (recipe :fetcher github
                                      :repo "czqhurricnae/emacs-azure-tts"
@@ -68,28 +68,28 @@
         ;; (emacs-azure-tts :location local)
         (reverso :location (recipe :fetcher github
                                    :repo "SqrtMinusOne/reverso.el"))
-        nov
-        (compile-media :location (recipe :fetcher github
-                                         :repo "sachac/compile-media"))
-        (subed-record :location (recipe :fetcher github
-                                        :repo "sachac/subed-record"))
-        (immersive-translate :location (recipe :fetcher github
-                                               :repo "Elilif/emacs-immersive-translate"))
+        ;; nov
+        ;; (compile-media :location (recipe :fetcher github
+        ;;                                  :repo "sachac/compile-media"))
+        ;; (subed-record :location (recipe :fetcher github
+        ;;                                 :repo "sachac/subed-record"))
+        ;; (immersive-translate :location (recipe :fetcher github
+        ;;                                        :repo "Elilif/emacs-immersive-translate"))
         (icloud :location (recipe :fetcher github
                                   :repo "andyjda/icloud-utilities"))
-        (elfeed :location (recipe :fetcher github
-                                  :repo "skeeto/elfeed"))
-        (aio :location (recipe :fetcher github
-                               :repo "skeeto/emacs-aio"))
-        (elfeed-tube :location (recipe :fetcher github
-                                       :repo "karthink/elfeed-tube"))
-        (tabspaces :location (recipe :fetcher github
-                                     :repo "mclear-tools/tabspaces"))
-        (el-easydraw :location (recipe :fetcher github
-                                       :repo "misohena/el-easydraw"))
-        (sketch-mode :location (recipe :fetcher github
-                                       :repo "dalanicolai/sketch-mode"))
-        (eaf-interleave :location local)
+        ;; (elfeed :location (recipe :fetcher github
+        ;;                           :repo "skeeto/elfeed"))
+        ;; (aio :location (recipe :fetcher github
+        ;;                        :repo "skeeto/emacs-aio"))
+        ;; (elfeed-tube :location (recipe :fetcher github
+        ;;                                :repo "karthink/elfeed-tube"))
+        ;; (tabspaces :location (recipe :fetcher github
+        ;;                              :repo "mclear-tools/tabspaces"))
+        ;; (el-easydraw :location (recipe :fetcher github
+        ;;                                :repo "misohena/el-easydraw"))
+        ;; (sketch-mode :location (recipe :fetcher github
+        ;;                                :repo "dalanicolai/sketch-mode"))
+        ;; (eaf-interleave :location local)
         ))
 
 (defconst sys/macp

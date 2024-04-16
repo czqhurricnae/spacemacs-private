@@ -1,21 +1,21 @@
 (defconst hurricane-org-packages
   `(
     (org :location built-in)
-    (ox-latex :location built-in)
-    (ox-md :location built-in)
-    (org-protocol-capture-html :location (recipe
-                                          :fetcher github
-                                          :repo "alphapapa/org-protocol-capture-html"))
-    ,@(when sys/macp '(ob-ipython))
+    ;; (ox-latex :location built-in)
+    ;; (ox-md :location built-in)
+    ;; (org-protocol-capture-html :location (recipe
+    ;;                                       :fetcher github
+    ;;                                       :repo "alphapapa/org-protocol-capture-html"))
+    ;; ,@(when sys/macp '(ob-ipython))
     (org-download :location (recipe
                              :fetcher github
                              :repo "abo-abo/org-download"))
-    (org2ctex :location (recipe
-                         :fetcher github
-                         :repo "tumashu/org2ctex"))
-    org-tree-slide
-    (ox-html :location built-in)
-    (ox-publish :location built-in)
+    ;; (org2ctex :location (recipe
+    ;;                      :fetcher github
+    ;;                      :repo "tumashu/org2ctex"))
+    ;; org-tree-slide
+    ;; (ox-html :location built-in)
+    ;; (ox-publish :location built-in)
     simple-httpd
     (anki-editor :location (recipe
                             :fetcher github
@@ -27,42 +27,42 @@
     (mpv :location (recipe
                     :fetcher github
                     :repo "kljohann/mpv.el"))
-    (shrface :location (recipe
-                        :fetcher github
-                        :repo "chenyanming/shrface"))
+    ;; (shrface :location (recipe
+    ;;                     :fetcher github
+    ;;                     :repo "chenyanming/shrface"))
     org-roam
-    (e2ansi :location (recipe
-                       :fetcher github
-                       :repo "Lindydancer/e2ansi"))
+    ;; (e2ansi :location (recipe
+    ;;                    :fetcher github
+    ;;                    :repo "Lindydancer/e2ansi"))
     (popweb :location (recipe
                       :fetcher github
                       :repo "czqhurricnae/popweb"
                       :files ("*.*" "extension")))
-    (org-latex-impatient :location (recipe
-                                    :fetcher github
-                                    :repo "yangsheng6810/org-latex-impatient"))
-    (org-ql :location (recipe
-                       :fetcher github
-                       :repo "alphapapa/org-ql"
-                       :exclude "helm-org-ql.le"))
-    (org-pandoc-import :location (recipe
-                                  :fetcher github
-                                  :repo "tecosaur/org-pandoc-import"
-                                  :files ("*.el" "filters" "preprocessors")))
-    (org-roam-backlink-collections :location local)
-    (org-imagine :location (recipe
-                            :fetcher github
-                            :repo "metaescape/org-imagine"
-                            :files ("*.el" "view")))
+    ;; (org-latex-impatient :location (recipe
+    ;;                                 :fetcher github
+    ;;                                 :repo "yangsheng6810/org-latex-impatient"))
+    ;; (org-ql :location (recipe
+    ;;                    :fetcher github
+    ;;                    :repo "alphapapa/org-ql"
+    ;;                    :exclude "helm-org-ql.le"))
+    ;; (org-pandoc-import :location (recipe
+    ;;                               :fetcher github
+    ;;                               :repo "tecosaur/org-pandoc-import"
+    ;;                               :files ("*.el" "filters" "preprocessors")))
+    ;; (org-roam-backlink-collections :location local)
+    ;; (org-imagine :location (recipe
+    ;;                         :fetcher github
+    ;;                         :repo "metaescape/org-imagine"
+    ;;                         :files ("*.el" "view")))
     (org-link-edit :location (recipe
                               :fetcher github
                               :repo "emacsmirror/org-link-edit"))
-    (org-gtd :location (recipe
-                        :fetcher github
-                        :repo "Trevoke/org-gtd.el"))
-    (org-super-agenda :location (recipe
-                                 :fetcher github
-                                 :repo "alphapapa/org-super-agenda"))
+    ;; (org-gtd :location (recipe
+    ;;                     :fetcher github
+    ;;                     :repo "Trevoke/org-gtd.el"))
+    ;; (org-super-agenda :location (recipe
+    ;;                              :fetcher github
+    ;;                              :repo "alphapapa/org-super-agenda"))
     (anki-helper :location (recipe
                                   :fetcher github
                                   :repo "Elilif/emacs-anki-helper"))
@@ -70,32 +70,32 @@
                           :fetcher github
                           :repo "org-noter/org-noter"
                           :files ("*.el" "modules" "other")))
-    (helm-org-ql :location (recipe
-                            :fetcher github
-                            :repo "alphapapa/org-ql"
-                            :files ("helm-org-ql.el")))
-    (oer-reveal :location (recipe
-                           :fetcher github
-                           :repo "emacsmirror/oer-reveal"
-                           :files ("*.el" "LICENSES" "css" "examples" "org" "title-slide")))
-    (emacsconf-el :location (recipe
-                             :fetcher github
-                             :repo "emacsconf/emacsconf-el"
-                             :files ("*.el")))
-    (org-drawio :location (recipe
-                           :fetcher github
-                           :repo "kimim/org-drawio"))
+    ;; (helm-org-ql :location (recipe
+    ;;                         :fetcher github
+    ;;                         :repo "alphapapa/org-ql"
+    ;;                         :files ("helm-org-ql.el")))
+    ;; (oer-reveal :location (recipe
+    ;;                        :fetcher github
+    ;;                        :repo "emacsmirror/oer-reveal"
+    ;;                        :files ("*.el" "LICENSES" "css" "examples" "org" "title-slide")))
+    ;; (emacsconf-el :location (recipe
+    ;;                          :fetcher github
+    ;;                          :repo "emacsconf/emacsconf-el"
+    ;;                          :files ("*.el")))
+    ;; (org-drawio :location (recipe
+    ;;                        :fetcher github
+    ;;                        :repo "kimim/org-drawio"))
     (org-remark :location (recipe
                            :fetcher github
                            :repo "nobiot/org-remark"))
-    (org-modern-indent :location (recipe
-                           :fetcher github
-                           :repo "jdtsmith/org-modern-indent"))
-    (org-bars :location (recipe
-                         :fetcher github
-                         :repo "tonyaldon/org-bars"))
-    (org-tags-filter :location local)
-    (org-roam-dblocks :location local)
+    ;; (org-modern-indent :location (recipe
+    ;;                        :fetcher github
+    ;;                        :repo "jdtsmith/org-modern-indent"))
+    ;; (org-bars :location (recipe
+    ;;                      :fetcher github
+    ;;                      :repo "tonyaldon/org-bars"))
+    ;; (org-tags-filter :location local)
+    ;; (org-roam-dblocks :location local)
     )
   )
 
@@ -477,9 +477,9 @@
       ;; {{
       ;; @See: https://github.com/vascoferreira25/org-mode-incremental-reading
       ;; org-protocol support for opening a file - needed for ‘my-anki-editor-backlink’.
-      (add-to-list
-       'org-protocol-protocol-alist
-       '("org-open-file" :protocol "open-file" :function org-protocol-open-file))
+      ;; (add-to-list
+      ;;  'org-protocol-protocol-alist
+      ;;  '("org-open-file" :protocol "open-file" :function org-protocol-open-file))
 
       (defun org-protocol-open-file (fname)
         "Process an org-protocol://open-file?url= style URL with FNAME.
@@ -1559,10 +1559,11 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
        ("Cloze" "Text" "Back Extra")
        ("Image Occlusion Enhanced" "Header" "Image")))
     ))
-
 (defun hurricane-org/init-org-noter ()
   (use-package org-noter
     :ensure t
+    :custom
+    (org-noter-always-create-frame nil)
     :config
     (defun hurricane//org-noter-start-from-dired ()
       "In Dired, open sessions for marked files or file at point.
@@ -1738,15 +1739,47 @@ marked file."
            (cond ((and (consp value) (integerp (car value)) (numberp (cdr value))) value)
                  ((and (consp value) (integerp (car value)) (consp (cdr value)) (numberp (cadr value)) (numberp (cddr value))) value)
                  ((integerp value) (cons value 0)))
-           (get-buffer-window (find-file pdf-file-path)))))))
+            (let ((org-link-frame-setup
+                   (cl-acons 'file 'find-file-other-frame org-link-frame-setup)))
+              (if (bound-and-true-p org-noter--session)
+                (org-noter--with-valid-session
+                 (let ((doc (with-selected-window
+                                (org-noter--get-doc-window)
+                              buffer-file-name)))
+                   (if (string-equal doc pdf-file-path)
+                       (select-window
+                        (org-noter--get-doc-window))
+                     (get-buffer-window (org-open-file pdf-file-path 1)))))
+                (get-buffer-window (org-open-file pdf-file-path 1)))))))))
 
-    (org-link-set-parameters org-noter-property-note-location :follow #'hurricane//org-noter-link-follow)
+    (org-link-set-parameters org-noter-property-note-location
+                             :follow #'hurricane//org-noter-link-follow
+                             :store #'hurricane//org-noter-store-link)
 
-    (defun hurricane//add-org-noter-link ()
+    (defun hurricane//org-noter-get-link ()
+      (format "%s:%s#%s" org-noter-property-note-location (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window)))))
+
+    (defun hurricane//org-noter-store-link ()
       (interactive)
-      (kill-new (format "[[NOTER_PAGE:%s#%s]]" (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window))))))
-
-    ))
+      (cond ((eq major-mode 'pdf-view-mode)
+             (let* ((file (file-name-base (pdf-view-buffer-file-name)))
+                    (page (number-to-string
+                           (org-noter--get-location-page
+                            (org-noter-pdf--approx-location-cons
+                             'pdf-view-mode
+                             (org-noter-pdf--pdf-view-get-precise-info
+                              'pdf-view-mode
+                              (get-buffer-window))))))
+                    (quote (if (pdf-view-active-region-p)
+                              (replace-regexp-in-string "\n" " "
+                                                        (mapconcat 'identity (pdf-view-active-region-text) ? ))))
+                    (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
+                    (link (hurricane//org-noter-get-link)))
+               (org-link-store-props
+                :type org-noter-property-note-location
+                :link link
+                :description desc)))))
+))
 
 (defun hurricane-org/init-helm-org-ql ()
   (use-package helm-org-ql

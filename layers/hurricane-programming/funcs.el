@@ -18,3 +18,19 @@
   (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil))
   (emmet-mode))
 ;; }}
+
+(defun hurricane/dired-insert-relative-path ()
+  (interactive)
+  (let* ((make-file (file-name-parent-directory buffer-file-name))
+         (other-window (get-window-with-predicate
+                        (lambda (window)
+                          (with-current-buffer (window-buffer window)
+                            (and (not (equal window (selected-window)))
+                                 (equal major-mode 'dired-mode))))))
+         (mark-files (and other-window
+                          (with-current-buffer (window-buffer other-window)
+                            (dired-get-marked-files nil)))))
+    (dolist (file mark-files)
+      (progn
+        (insert (concat (file-relative-name file make-file) " \\"))
+        (newline-and-indent)))))

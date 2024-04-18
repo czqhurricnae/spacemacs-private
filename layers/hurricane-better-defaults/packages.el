@@ -122,26 +122,26 @@
 
     ;; {{
     ;; @See: https://oremacs.com/2017/03/18/dired-ediff/
-    (defun ora-ediff-files ()
-      (interactive)
-      (let ((files (dired-get-marked-files))
-            (wnd (current-window-configuration)))
-        (if (<= (length files) 2)
-            (let ((file1 (car files))
-                  (file2 (if (cdr files)
-                             (cadr files)
-                           (read-file-name
-                            "file: "
-                            (dired-dwim-target-directory)))))
-              (if (file-newer-than-file-p file1 file2)
-                  (ediff-files file2 file1)
-                (ediff-files file1 file2))
-              (add-hook 'ediff-after-quit-hook-internal
-                        (lambda ()
-                          (setq ediff-after-quit-hook-internal nil)
-                          (if wnd
-                              (set-window-configuration wnd)))))
-          (error "No more than 2 files should be marked"))))
+    ;; (defun ora-ediff-files ()
+    ;;   (interactive)
+    ;;   (let ((files (dired-get-marked-files))
+    ;;         (wnd (current-window-configuration)))
+    ;;     (if (<= (length files) 2)
+    ;;         (let ((file1 (car files))
+    ;;               (file2 (if (cdr files)
+    ;;                          (cadr files)
+    ;;                        (read-file-name
+    ;;                         "file: "
+    ;;                         (dired-dwim-target-directory)))))
+    ;;           (if (file-newer-than-file-p file1 file2)
+    ;;               (ediff-files file2 file1)
+    ;;             (ediff-files file1 file2))
+    ;;           (add-hook 'ediff-after-quit-hook-internal
+    ;;                     (lambda ()
+    ;;                       (setq ediff-after-quit-hook-internal nil)
+    ;;                       (if wnd
+    ;;                           (set-window-configuration wnd)))))
+    ;;       (error "No more than 2 files should be marked"))))
     ;; }}
 
     (defvar dired-filelist-cmd

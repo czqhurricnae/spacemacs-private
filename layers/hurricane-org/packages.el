@@ -96,6 +96,9 @@
     ;;                      :repo "tonyaldon/org-bars"))
     ;; (org-tags-filter :location local)
     ;; (org-roam-dblocks :location local)
+    (org-web-tools :location (recipe
+                              :fetcher github
+                              :repo "alphapapa/org-web-tools"))
     )
   )
 
@@ -982,7 +985,7 @@ Return nil if not found."
       ;; best audio and best video that is 4K or lower, not using the av01 codec.
       "--ytdl-format=bestvideo[height<=?2160][vcodec!=?av01]+bestaudio/best"
       ;; download both automatically generated and manually created subtitles.
-      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:7890")
+      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:62933")
      ("bilibili\\.com"
       ;; download subtitles and danmaku
       "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome,proxy=http://127.0.0.1:7890"
@@ -1854,6 +1857,7 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
     ;; enabled when Emacs initializes. Alternatively, you can put it to
     ;; `after-init-hook' as in the comment above
     (org-remark-global-tracking-mode +1)
+    ;; (setopt org-remark-notes-file-name (expand-file-name "marginalia.org" (project-root (project-current t))))
     :config
     (use-package org-remark-info :after info :config (org-remark-info-mode +1))
     (use-package org-remark-eww  :after eww  :config (org-remark-eww-mode +1))
@@ -1879,3 +1883,6 @@ customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugi
 (defun hurricane-org/init-org-roam-dblocks ()
   (use-package org-roam-dblocks
     :hook (org-mode . org-roam-dblocks-autoupdate-mode)))
+
+(defun hurricane-org/init-org-web-tools ()
+  (use-package org-web-tools))

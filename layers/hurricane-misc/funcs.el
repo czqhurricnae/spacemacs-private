@@ -790,7 +790,7 @@ Else, returns STRING."
     (thread-first script
       (do-applescript)
       (string-trim "\"\n" "\n\"")
-      (split-string "\n"))))
+      (split-string "\r"))))
 
 ;; (hurricane//chrome-tabs)
 ;; => ("1⋘⋙1⋘⋙Google⋘⋙www.google.com" "1⋘⋙2⋘⋙Home - BBC News⋘⋙www.bbc.com")
@@ -861,7 +861,7 @@ Else, returns STRING."
                                                            string-end)
                                                        s)
                                                       (match-string 1 s)))
-                                               (hurricane//chrome-tabs))
+                                               (remove "" (hurricane//chrome-tabs)))
             :action 'hurricane//chrome-switch-tab-action
             ))
 
@@ -2694,3 +2694,26 @@ Version 2019-02-12 2021-08-09"
 
 ;; @See: https://emacs-china.org/t/org-roam/26545/24
 (add-to-list 'file-coding-system-alist '("\\.org\\'" . utf-8))
+
+(defun hurricane/org-download-images ()
+  "Open `url' under cursor in Chrome.
+Work in macOS only."
+  (interactive)
+  (let* (($inputStr (if (use-region-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end))
+                      (let ($p0 $p1 $p2
+                                ($pathStops "^  \t\n\"`'‘’“”|[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭〘〙·。\\"))
+                        (setq $p0 (point))
+                        (skip-chars-backward $pathStops)
+                        (setq $p1 (point))
+                        (goto-char $p0)
+                        (skip-chars-forward $pathStops)
+                        (setq $p2 (point))
+                        (goto-char $p0)
+                        (buffer-substring-no-properties $p1 $p2)))))
+    (next-line)
+    (org-download-image $inputStr)))
+
+;; 在函数 switch_to_reader_mode 中加入eval_in_emacs("hurricane/html-to-org-with-pandoc", [html])
+(defun hurricane/html-to-org-with-pandoc (html)
+  (kill-new (org-web-tools--html-to-org-with-pandoc html)))

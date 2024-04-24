@@ -1253,7 +1253,7 @@ Show the heading too, if it is currently invisible."
   (defun hurricane//load-pdf-position (&optional b)
     "Loads the PDF position saved at the bookmark named B."
     (unless b (setq b hurricane//default-bookmark))
-    (pdf-view-bookmark-jump (alist-get b hurricane//bookmarks)))
+    (ignore-errors (pdf-view-bookmark-jump (alist-get b hurricane//bookmarks))))
 
   (define-key pdf-view-mode-map (kbd "<C-f1>")
     (lambda ()

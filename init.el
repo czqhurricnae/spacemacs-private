@@ -95,8 +95,8 @@ This function should only modify configuration layer settings."
      ;;        latex
      ;;        python
      ;;        shell-scripts)
-     ;; (shell :variables
-     ;;        shell-default-shell 'eshell)
+     (shell :variables
+            shell-default-shell 'eshell)
      ;; docker
      ;; latex
      ;; (javascript :variables

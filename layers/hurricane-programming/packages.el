@@ -27,7 +27,11 @@
                          :fetcher github
                          :repo "emacs-lsp/dap-mode"
                          :files ("*.el" "docs" "features" "icons")))
-    exec-path-from-shell))
+    exec-path-from-shell
+    (format-all :location (recipe
+                           :fetcher github
+                           :repo "lassik/emacs-format-all-the-code"))
+    ))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
   (use-package virtualenvwrapper
@@ -264,3 +268,12 @@
   (use-package exec-path-from-shell
     :ensure t
     :init (exec-path-from-shell-initialize)))
+
+(defun hurricane-programming/init-format-all ()
+  (use-package format-all
+    :commands format-all-mode
+    ;; :hook (prog-mode . format-all-mode)
+    ;; :config
+    ;; (setq-default format-all-formatters
+    ;;              '(("C"     (astyle "--mode=c"))))
+    ))

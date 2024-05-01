@@ -329,11 +329,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/软链接.org")
- (front-context-string)
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/SDRAM.org")
+ (front-context-string . "o\nSTM32F1 系列芯片使用")
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 311)
- (last-modified 26150 32837 958279 0))
+ (position . 315)
+ (last-modified 26158 19475 8122 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

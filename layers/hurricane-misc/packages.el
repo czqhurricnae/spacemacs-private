@@ -487,7 +487,6 @@
 ;; Preview files in dired.
 (defun hurricane-misc/init-peep-dired ()
   (use-package peep-dired
-    :defer t
     :commands (peep-dired-next-file
                peep-dired-prev-file)
     :bind (:map dired-mode-map
@@ -951,8 +950,7 @@
       (toggle-read-only)
       (ansi-color-apply-on-region (point-min) (point-max))
       (toggle-read-only))
-      (add-hook 'compilation-filter-hook 'colorize-
-              compilation-buffer)
+      (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
       (add-hook 'shell-mode-hook (lambda () (highlight-regexp
                                        "\\[OK\\]" "hi-green-b")))
       ;; Make `URLs' clickable.

@@ -1287,7 +1287,10 @@ Show the heading too, if it is currently invisible."
 
     (when (use-region-p)
       (setq start (region-beginning))
-      (setq end (region-end)))
+      (setq end (region-end))
+      (goto-char start))
 
-    (kill-new (format "#+transclude: [[file:%s::]] :lines 1-%s :src c" (spacemacs--file-path) (count-lines start end)))
+    (setq start-line (s-trim-right (thing-at-point 'line t)))
+
+    (kill-new (format "#+transclude: [[file:%s::%s]] :lines 1-%s :src c" (spacemacs--file-path) start-line (count-lines start end)))
     ))

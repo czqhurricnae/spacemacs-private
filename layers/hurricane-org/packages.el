@@ -985,7 +985,7 @@ Return nil if not found."
       ;; best audio and best video that is 4K or lower, not using the av01 codec.
       "--ytdl-format=bestvideo[height<=?2160][vcodec!=?av01]+bestaudio/best"
       ;; download both automatically generated and manually created subtitles.
-      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:62933")
+      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:7890")
      ("bilibili\\.com"
       ;; download subtitles and danmaku
       "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome,proxy=http://127.0.0.1:7890"

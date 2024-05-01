@@ -2712,7 +2712,8 @@ Work in macOS only."
                         (goto-char $p0)
                         (buffer-substring-no-properties $p1 $p2)))))
     (next-line)
-    (org-download-image $inputStr)))
+    (org-download-image $inputStr)
+    (org-display-inline-images)))
 
 ;; 在函数 switch_to_reader_mode 中加入eval_in_emacs("hurricane/html-to-org-with-pandoc", [html])
 (defun hurricane/html-to-org-with-pandoc (html)

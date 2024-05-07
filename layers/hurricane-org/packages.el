@@ -88,9 +88,9 @@
     (org-remark :location (recipe
                            :fetcher github
                            :repo "nobiot/org-remark"))
-    ;; (org-modern-indent :location (recipe
-    ;;                        :fetcher github
-    ;;                        :repo "jdtsmith/org-modern-indent"))
+    (org-modern-indent :location (recipe
+                           :fetcher github
+                           :repo "jdtsmith/org-modern-indent"))
     ;; (org-bars :location (recipe
     ;;                      :fetcher github
     ;;                      :repo "tonyaldon/org-bars"))

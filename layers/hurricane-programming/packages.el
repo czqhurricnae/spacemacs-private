@@ -34,6 +34,22 @@
     (cmake-project :location (recipe
                               :fetcher github
                               :repo "alamaison/emacs-cmake-project"))
+    (uncrustify-mode :location (recipe
+                                :fetcher github
+                                :repo "koko1000ban/emacs-uncrustify-mode"))
+    (ts-docstr :location (recipe
+                          :fetcher github
+                          :repo "emacs-vs/ts-docstr"
+                          :files (:defaults "langs/*.el")))
+    (msgu :location (recipe
+                     :fetcher github
+                     :repo "jcs-elpa/msgu"))
+    (treesit-auto (recipe
+                   :fetcher github
+                   :repo "renzmann/treesit-auto"))
+    (tree-sitter-langs (recipe
+                        :fetcher github
+                        :repo "emacs-tree-sitter/tree-sitter-langs"))
     ))
 
 (defun hurricane-programming/init-virtualenvwrapper ()
@@ -289,6 +305,7 @@
      '(progn
         (evil-make-overriding-map color-rg-mode-map 'normal)
         (add-hook 'color-rg-mode-hook #'evil-normalize-keymaps)))
+
    (define-key isearch-mode-map (kbd "M-s M-s") 'isearch-toggle-color-rg)))
 
 (defun hurricane-programming/init-stm32 ()
@@ -346,3 +363,33 @@
     (add-hook 'c++-mode-hook 'maybe-cmake-project-mode)
     :custom
     (cmake-project-default-build-dir-name "build/")))
+
+(defun hurricane-programming/init-uncrustify-mode ()
+  (use-package uncrustify-mode
+    :hook (c-mode . uncrustify-mode)))
+
+(defun hurricane-programming/init-msgu ()
+  (use-package msgu
+    :ensure t))
+
+(defun hurricane-programming/init-ts-docstr ()
+  (use-package ts-docstr
+    :ensure t
+    :custom
+    (setq ts-docstr-desc-summary "@brief        \n*   @note")
+    (setq ts-docstr-desc-param "")
+    (setq ts-docstr-desc-return "      无")))
+
+(defun hurricane-programming/init-treesit-auto ()
+  (use-package treesit-auto
+    :ensure t
+    :custom
+    (treesit-auto-install 'prompt)
+    (treesit-font-lock-level 4)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode)))
+
+(defun hurricane-programming/init-tree-sitter-langs ()
+  (use-package tree-sitter-langs
+    :ensure t))

@@ -77,16 +77,16 @@
         ;;                                        :repo "Elilif/emacs-immersive-translate"))
         (icloud :location (recipe :fetcher github
                                   :repo "andyjda/icloud-utilities"))
-        ;; (elfeed :location (recipe :fetcher github
-        ;;                           :repo "skeeto/elfeed"))
+        (elfeed :location (recipe :fetcher github
+                                  :repo "skeeto/elfeed"))
         ;; (aio :location (recipe :fetcher github
         ;;                        :repo "skeeto/emacs-aio"))
-        ;; (elfeed-tube :location (recipe :fetcher github
-        ;;                                :repo "karthink/elfeed-tube"))
+        (elfeed-tube :location (recipe :fetcher github
+                                       :repo "karthink/elfeed-tube"))
         ;; (tabspaces :location (recipe :fetcher github
         ;;                              :repo "mclear-tools/tabspaces"))
-        ;; (el-easydraw :location (recipe :fetcher github
-        ;;                                :repo "misohena/el-easydraw"))
+        (el-easydraw :location (recipe :fetcher github
+                                       :repo "misohena/el-easydraw"))
         ;; (sketch-mode :location (recipe :fetcher github
         ;;                                :repo "dalanicolai/sketch-mode"))
         ;; (eaf-interleave :location local)

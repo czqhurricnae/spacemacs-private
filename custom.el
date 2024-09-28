@@ -14,11 +14,13 @@
  '(custom-safe-themes
    '("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default))
  '(debug-on-error t)
- '(dired-quick-sort-suppress-setup-warning t t)
+ '(dired-quick-sort-suppress-setup-warning t)
  '(doom-modeline-buffer-file-name-style 'truncate-with-project)
  '(doom-modeline-icon t)
  '(doom-modeline-major-mode-icon nil)
  '(doom-modeline-minor-modes nil)
+ '(elfeed-feeds
+   '("https://www.youtube.com/feeds/videos.xml?channel_id=UCBz5zoTs_tCab4dhjNCPKtw" "https://www.youtube.com/feeds/videos.xml?channel_id=UCjiVhIvGmRZixSzupD0sS9Q" "https://www.youtube.com/feeds/videos.xml?channel_id=UCwFdriSdz5wqI39ot2WS7pw" "https://www.youtube.com/feeds/videos.xml?channel_id=UCkbJA8wcwM_Sz-U2pCCvW0w" "https://www.youtube.com/feeds/videos.xml?channel_id=UCMGXFEew8I6gzjg3tWen4Gw" "https://www.youtube.com/feeds/videos.xml?channel_id=UCa1REBV9hyrzGp2mjJCagBg" "https://www.youtube.com/feeds/videos.xml?channel_id=UCyn-xUvGpRqp5dyHSOVhLvg" "https://www.youtube.com/feeds/videos.xml?channel_id=UC8Vq9VlWfHBYBh1d1zhB1TA" "https://www.youtube.com/feeds/videos.xml?channel_id=UCYSxRFao8sS9gdFknWFdnIQ" "https://www.youtube.com/feeds/videos.xml?channel_id=UCWGq2ZZIIFtC1jeIa5VwPCQ" "https://www.youtube.com/feeds/videos.xml?channel_id=UCNfBbaHnAmanT-03jHy8m1Q" "https://www.youtube.com/feeds/videos.xml?channel_id=UCyZT_--LBi0PG6dCLmGdBqg" "https://www.youtube.com/feeds/videos.xml?channel_id=UClEEsT7DkdVO_fkrBw0OTrA" "https://www.youtube.com/feeds/videos.xml?channel_id=UCP8XEOeg-FsKOg6oJOeZxcQ" "https://www.youtube.com/feeds/videos.xml?channel_id=UCnTWd_4LwCEcAw19Jds0Vjg" "https://www.youtube.com/feeds/videos.xml?channel_id=UCRIR1soNqiUEPVDjY0EheBQ" "https://www.youtube.com/feeds/videos.xml?channel_id=UC5zdou2_vz6rjpqMJ23UnQg" "https://www.youtube.com/feeds/videos.xml?channel_id=UCkdqtSMnhYuMsJkyHOxiPZQ" "https://www.youtube.com/feeds/videos.xml?channel_id=UCVryWqJ4cSlbTSETBHpBUWw" "https://www.youtube.com/feeds/videos.xml?channel_id=UCjPRuknkFjqM6UxxTbCQJ5Q"))
  '(evil-want-Y-yank-to-eol nil)
  '(evil-want-y-yank-to-eol t)
  '(helm-mode nil)
@@ -69,6 +71,10 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/STM32 如何加载第一条指令/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Modern Embedded Systems Programming/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/SDRAM/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/LVGL 移植 FATFS/"))

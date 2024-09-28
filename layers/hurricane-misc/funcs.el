@@ -2696,8 +2696,6 @@ Version 2019-02-12 2021-08-09"
 (add-to-list 'file-coding-system-alist '("\\.org\\'" . utf-8))
 
 (defun hurricane/org-download-images ()
-  "Open `url' under cursor in Chrome.
-Work in macOS only."
   (interactive)
   (let* (($inputStr (if (use-region-p)
                         (buffer-substring-no-properties (region-beginning) (region-end))
@@ -2718,3 +2716,53 @@ Work in macOS only."
 ;; 在函数 switch_to_reader_mode 中加入eval_in_emacs("hurricane/html-to-org-with-pandoc", [html])
 (defun hurricane/html-to-org-with-pandoc (html)
   (kill-new (org-web-tools--html-to-org-with-pandoc html)))
+
+;; @See: https://remacs.fun/posts/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%E6%88%91%E4%BB%AC%E6%80%8E%E4%B9%88%E7%8E%A9emacs1.-%E4%B8%AD%E8%8B%B1%E6%96%87%E8%BE%93%E5%85%A5%E6%97%B6%E7%9A%84%E7%A9%BA%E6%A0%BC/
+;; {{
+(defun add-space-between-chinese-and-english ()
+  "在中英文之间自动添加空格。"
+  (let ((current-char (char-before))
+        (prev-char (char-before (1- (point)))))
+    (when (and current-char prev-char
+               (or (and (is-chinese-character prev-char) (is-halfwidth-character current-char))
+                   (and (is-halfwidth-character prev-char) (is-chinese-character current-char))
+                   (and (is-closing-bracket prev-char) (is-opening-bracket current-char)))
+               (not (eq prev-char ?\s))) ; 检查前一个字符不是空格
+      (save-excursion
+        (goto-char (1- (point)))
+        (insert " ")))))
+
+(defun is-chinese-character (char)
+  "判断字符是否为中文字符。"
+  (and char (or (and (>= char #x4e00) (<= char #x9fff))
+                (and (>= char #x3400) (<= char #x4dbf))
+                (and (>= char #x20000) (<= char #x2a6df))
+                (and (>= char #x2a700) (<= char #x2b73f))
+                (and (>= char #x2b740) (<= char #x2b81f))
+                (and (>= char #x2b820) (<= char #x2ceaf)))))
+
+(defun is-halfwidth-character (char)
+  "判断字符是否为半角字符，包括英文字母、数字和标点符号。"
+  (and char (or (and (>= char ?a) (<= char ?z))
+                (and (>= char ?A) (<= char ?Z))
+                (and (>= char ?0) (<= char ?9))
+                )))
+
+(defun is-opening-bracket (char)
+  (= char ?[))
+
+(defun is-closing-bracket (char)
+  (= char ?]))
+
+(defun delayed-add-space-between-chinese-and-english ()
+  "延迟执行，在中英文之间自动添加空格。"
+  (run-with-idle-timer 0 nil 'add-space-between-chinese-and-english))
+
+(define-minor-mode auto-space-mode
+  "在中英文之间自动添加空格的模式。"
+  :lighter " Auto-Space"
+  :global t
+  (if auto-space-mode
+      (add-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)
+    (remove-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)))
+;; }}

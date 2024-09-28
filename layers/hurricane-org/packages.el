@@ -480,16 +480,17 @@
       ;; {{
       ;; @See: https://github.com/vascoferreira25/org-mode-incremental-reading
       ;; org-protocol support for opening a file - needed for ‘my-anki-editor-backlink’.
-      ;; (add-to-list
-      ;;  'org-protocol-protocol-alist
-      ;;  '("org-open-file" :protocol "open-file" :function org-protocol-open-file))
+      (with-eval-after-load 'org-protocol
+       (add-to-list
+       'org-protocol-protocol-alist
+       '("org-noter-pdf" :protocol "open-pdf" :function org-protocol-open-pdf)))
 
-      (defun org-protocol-open-file (fname)
+      (defun org-protocol-open-pdf(fname)
         "Process an org-protocol://open-file?url= style URL with FNAME.
       Change a filename by mapping URLs to local filenames as set
       in `org-protocol-project-alist'.
       The location for a browser's bookmark should look like this:
-      javascript:location.href = \\='org-protocol://open-file?url=\\=' + \\
+      javascript:location.href = \\='org-protocol://open-pdf?url=\\=' + \\
         encodeURIComponent(location.href)"
         ;; As we enter this function for a match on our protocol, the return value
         ;; defaults to nil.
@@ -1005,6 +1006,16 @@ Return nil if not found."
     ;;                              (mpv-start video-url))
     ;;                            ,p3))))
 
+    (with-eval-after-load 'psearch
+      (psearch-patch org-media-note-play-online-video
+        (psearch-replace '`(read-string "Url to play: ")
+                         '`(read-string "Url to play: " (hurricane//retrieve-chrome-current-tab-url))))
+      (psearch-patch org-media-note--insert-file-link
+        (psearch-replace '`(format "[[file:%s]]"
+                                   (org-media-note--format-file-path file-path))
+                         '`(format "[[file:%s]] "
+                                   (org-media-note--format-file-path file-path)))))
+
     (require 'pretty-hydra)
 
     (with-eval-after-load 'pretty-hydra
@@ -1508,7 +1519,7 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
             ;; 没替换前，导出到 Anki 的文本格式：
             ;; <img src="static/STM32%20入门/1.png" alt="1.png">
             ;; <img src="static/STM32%20入门/test.edraw.svg" alt="test.edraw.svg" class="org-svg">
-            ;; get-svg-xml 得到的 text 没有 img scr="xxx"，所以以下至替换非 edraw.svg 格式的图片链接
+            ;; get-svg-xml 得到的 text 没有 img scr="xxx"，所以以下只替换非 edraw.svg 格式的图片链接
             (setq text (replace-regexp-in-string "img src=\"\\(.*?\\)\"" new-name text
                                                  nil nil 1)))
            ;; 这里逻辑似乎有问题，file 链接要是既有图片也有音频，而其中一者无法被发送至Anki。
@@ -1735,29 +1746,29 @@ marked file."
              (value (car (read-from-string location)))
              (notes-file-path (buffer-file-name))
              (eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
-        (when (eq major-mode 'org-mode)
-         (when location
+        (when location
           (org-noter-pdf--goto-location
            'pdf-view-mode
            (cond ((and (consp value) (integerp (car value)) (numberp (cdr value))) value)
                  ((and (consp value) (integerp (car value)) (consp (cdr value)) (numberp (cadr value)) (numberp (cddr value))) value)
                  ((integerp value) (cons value 0)))
-            (let ((org-link-frame-setup
-                   (cl-acons 'file 'find-file-other-frame org-link-frame-setup)))
-              (if (bound-and-true-p org-noter--session)
-                (org-noter--with-valid-session
-                 (let ((doc (with-selected-window
-                                (org-noter--get-doc-window)
-                              buffer-file-name)))
-                   (if (string-equal doc pdf-file-path)
-                       (select-window
-                        (org-noter--get-doc-window))
-                     (get-buffer-window (org-open-file pdf-file-path 1)))))
-                (get-buffer-window (org-open-file pdf-file-path 1)))))))))
+           (let ((org-link-frame-setup
+                  (cl-acons 'file 'find-file-other-frame org-link-frame-setup)))
+             (if (bound-and-true-p org-noter--session)
+                 (org-noter--with-valid-session
+                  (let ((doc (with-selected-window
+                                 (org-noter--get-doc-window)
+                               buffer-file-name)))
+                    (if (string-equal doc pdf-file-path)
+                        (select-window
+                         (org-noter--get-doc-window))
+                      (get-buffer-window (org-open-file pdf-file-path 1)))))
+               (get-buffer-window (org-open-file pdf-file-path 1))))))))
 
     (org-link-set-parameters org-noter-property-note-location
                              :follow #'hurricane//org-noter-link-follow
-                             :store #'hurricane//org-noter-store-link)
+                             :store #'hurricane//org-noter-store-link
+                             :export #'hurricane//org-noter-link-export)
 
     (defun hurricane//org-noter-get-link ()
       (format "%s:%s#%s" org-noter-property-note-location (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window)))))
@@ -1782,6 +1793,16 @@ marked file."
                 :type org-noter-property-note-location
                 :link link
                 :description desc)))))
+
+    (defun hurricane//org-noter-link-export (path desc backend)
+      (let ((ext (file-name-extension path)))
+        (cond
+         ((eq 'html backend)
+          (format "<a onclick=\"(function() {javascript:location.href = \'org-protocol://open-pdf?pdf-tools=%s\'})()\">%s</a>" (url-hexify-string (format "[[%s:%s]]" org-noter-property-note-location path)) (or desc path))
+          )
+         ;; fall-through case for everything else.
+         (t
+          path))))
 ))
 
 (defun hurricane-org/init-helm-org-ql ()

@@ -781,7 +781,9 @@ you should place your code here."
   (setq bookmark-file "~/.spacemacs.d/Backup/bookmarks")
   (dotimes (i 10)
     (remove-key winum-keymap (kbd (format "s-%s" i))))
-  )
+
+(put 'narrow-to-page 'disabled nil)
+)
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()

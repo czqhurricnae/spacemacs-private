@@ -1789,6 +1789,7 @@ marked file."
                                                         (mapconcat 'identity (pdf-view-active-region-text) ? ))))
                     (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
                     (link (hurricane//org-noter-get-link)))
+               (kill-new (format "[[%s]][[%s]]" link desc))
                (org-link-store-props
                 :type org-noter-property-note-location
                 :link link

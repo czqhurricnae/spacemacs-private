@@ -873,6 +873,24 @@ Else, returns STRING."
    ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url")
    )))
 
+(defun hurricane/open-noter-page ()
+  (interactive)
+  (let* (($inputStr (if (use-region-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end))
+                      (let ($p0 $p1 $p2
+                                ($pathStarts "\\[\\[")
+                                ($pathStops "\\]\\]"))
+                        (setq $p0 (point))
+                        (re-search-forward $pathStops)
+                        (setq $p1 (point))
+                        (goto-char $p0)
+                        (re-search-backward $pathStarts)
+                        (setq $p2 (point))
+                        (goto-char $p0)
+                        (buffer-substring-no-properties $p1 $p2))))
+         )
+    (org-link-open-from-string $inputStr)))
+
 (defun hurricane/open-link-in-chrome ()
   "Open `url' under cursor in Chrome.
 Work in macOS only."

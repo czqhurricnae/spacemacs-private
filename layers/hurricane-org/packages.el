@@ -1739,6 +1739,31 @@ marked file."
 
     (advice-add #'counsel-org-goto-action :override #'hurricane//counsel-org-goto-action)
 
+    (defun hurricane//org-noter-get-link ()
+      (format "%s:%s#%s" org-noter-property-note-location (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window)))))
+
+    (defun hurricane//org-noter-store-link ()
+      (interactive)
+      (cond ((eq major-mode 'pdf-view-mode)
+             (let* ((file (file-name-base (pdf-view-buffer-file-name)))
+                    (page (number-to-string
+                           (org-noter--get-location-page
+                            (org-noter-pdf--approx-location-cons
+                             'pdf-view-mode
+                             (org-noter-pdf--pdf-view-get-precise-info
+                              'pdf-view-mode
+                              (get-buffer-window))))))
+                    (quote (if (pdf-view-active-region-p)
+                               (replace-regexp-in-string "\n" " "
+                                                         (mapconcat 'identity (pdf-view-active-region-text) ? ))))
+                    (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
+                    (link (hurricane//org-noter-get-link)))
+               (kill-new (format "[[%s]][[%s]]" link desc))
+               (org-link-store-props
+                :type org-noter-property-note-location
+                :link link
+                :description desc)))))
+
     (defun hurricane//org-noter-link-follow (link)
       (let* ((splitted (string-split link "#"))
              (pdf-file-path (nth 0 splitted))
@@ -1765,36 +1790,6 @@ marked file."
                       (get-buffer-window (org-open-file pdf-file-path 1)))))
                (get-buffer-window (org-open-file pdf-file-path 1))))))))
 
-    (org-link-set-parameters org-noter-property-note-location
-                             :follow #'hurricane//org-noter-link-follow
-                             :store #'hurricane//org-noter-store-link
-                             :export #'hurricane//org-noter-link-export)
-
-    (defun hurricane//org-noter-get-link ()
-      (format "%s:%s#%s" org-noter-property-note-location (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window)))))
-
-    (defun hurricane//org-noter-store-link ()
-      (interactive)
-      (cond ((eq major-mode 'pdf-view-mode)
-             (let* ((file (file-name-base (pdf-view-buffer-file-name)))
-                    (page (number-to-string
-                           (org-noter--get-location-page
-                            (org-noter-pdf--approx-location-cons
-                             'pdf-view-mode
-                             (org-noter-pdf--pdf-view-get-precise-info
-                              'pdf-view-mode
-                              (get-buffer-window))))))
-                    (quote (if (pdf-view-active-region-p)
-                              (replace-regexp-in-string "\n" " "
-                                                        (mapconcat 'identity (pdf-view-active-region-text) ? ))))
-                    (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
-                    (link (hurricane//org-noter-get-link)))
-               (kill-new (format "[[%s]][[%s]]" link desc))
-               (org-link-store-props
-                :type org-noter-property-note-location
-                :link link
-                :description desc)))))
-
     (defun hurricane//org-noter-link-export (path desc backend)
       (let ((ext (file-name-extension path)))
         (cond
@@ -1804,7 +1799,11 @@ marked file."
          ;; fall-through case for everything else.
          (t
           path))))
-))
+
+    (org-link-set-parameters org-noter-property-note-location
+                             :follow #'hurricane//org-noter-link-follow
+                             :store #'hurricane//org-noter-store-link
+                             :export #'hurricane//org-noter-link-export)))
 
 (defun hurricane-org/init-helm-org-ql ()
   (use-package helm-org-ql

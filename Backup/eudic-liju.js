@@ -34,6 +34,7 @@ function insertDownloadLink(
     ELEMENT = $(HTML);
     ELEMENT.bind("click", function() {
         const { word, lijuMp3, pronunciationMp3, dataRel, line, exp } = prepareContent($(this)[0]);
+        console.log(dataRel);
         const params = {
             "note": {
                 "deckName": "English",
@@ -50,13 +51,13 @@ function insertDownloadLink(
                     "image"         : "",
                     "add-dw"        : "1",
                 },
-                "audio": {
+                "audio": [{
                     "url": dataRel,
                     "filename": lijuMp3,
                     "fields": [
-                        "audio"
+                        "sound"
                     ]
-                },
+                }],
                 "options": {
             	      "allowDuplicate": true
                 }
@@ -70,6 +71,7 @@ function insertDownloadLink(
                     "url": "http://dict.youdao.com/dictvoice?type=2&audio=" + word,
                     "filename": pronunciationMp3
                 });
+                alert(v);
             },
             (e) => {alert(e);},
         );
@@ -103,7 +105,7 @@ function invoke(action, version, params={}) {
         });
 
         xhr.open("POST", "http://127.0.0.1:8765");
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send(JSON.stringify({action, version, params}));
     });
 }

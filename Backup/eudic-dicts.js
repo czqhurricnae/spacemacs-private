@@ -52,13 +52,13 @@ function insertDownloadLink(
                     "image"         : "",
                     "add-dw"        : "1",
                 },
-                "audio": {
+                "audio": [{
                     "url": dataRel,
                     "filename": lijuMp3,
                     "fields": [
-                        "audio"
+                        "sound"
                     ]
-                },
+                }],
                 "options": {
             	      "allowDuplicate": true
                 }
@@ -106,7 +106,7 @@ function invoke(action, version, params={}) {
         });
 
         xhr.open("POST", "http://127.0.0.1:8765");
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        // xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send(JSON.stringify({action, version, params}));
     });
 }
@@ -166,7 +166,7 @@ function playSuccess() {
     if (spanPhonitic.length == 0) {
         var phonetic = "";
     }
-    var pronunciation = $(voiceButtonEn).attr("data-rel") ? "http://api.frdic.com/api/v2/speech/speakweb?" + $(voiceButtonEn).attr("data-rel") : "";
+    var pronunciation = $(voiceButtonEn).attr("data-rel") ? "https://api.frdic.com/api/v2/speech/speakweb?" + $(voiceButtonEn).attr("data-rel") : "";
     var glossary = (ExpFCChild && ExpSYNChild) ? ExpFCChild + ExpSYNChild : "";
     var notes = arguments[0] ? arguments[0].join("") : "";
 

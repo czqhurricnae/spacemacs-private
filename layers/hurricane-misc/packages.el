@@ -1350,9 +1350,15 @@
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
     (eaf-bind-key popweb-dict-eudic-dicts-input "C-c y" eaf-pdf-viewer-keybinding))
 
+  (defun eaf-image-viewer-create-occlusion ()
+    (interactive)
+    (eaf-open-image-occlusion eaf--buffer-url))
+
   (with-eval-after-load 'eaf-image-viewer
     (eaf-bind-key eaf-ocr-buffer "z" eaf-image-viewer-keybinding)
-    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding))
+    (eaf-bind-key eaf-ocr-area "Z" eaf-image-viewer-keybinding)
+    (eaf-bind-key eaf-image-viewer-create-occlusion "q" eaf-image-viewer-keybinding)
+    )
 
   (with-eval-after-load 'eaf-browser
     (defun eaf-browser-youtube-video-pause-toggle ()

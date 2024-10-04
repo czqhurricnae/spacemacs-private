@@ -1609,91 +1609,124 @@ marked file."
             (previous-line 1)
             (org-drawio-open))))
 
-(defun hurricane//pdf-view-extract-region-image (regions &optional page size
-                                                  output-buffer no-display-p)
-      ;; TODO: what is "resp."? Avoid contractions.
-      "Create a PNG image of REGIONS.
+  (defun hurricane//pdf-view-extract-region-image (regions &optional page size
+                                                    output-buffer no-display-p)
+        ;; TODO: what is "resp."? Avoid contractions.
+        "Create a PNG image of REGIONS.
 
-REGIONS should have the same form as `pdf-view-active-region',
-which see.  PAGE and SIZE are the page resp. base-size of the
-image from which the image-regions will be created; they default
-to `pdf-view-current-page' resp. `pdf-view-image-size'.
+  REGIONS should have the same form as `pdf-view-active-region',
+  which see.  PAGE and SIZE are the page resp. base-size of the
+  image from which the image-regions will be created; they default
+  to `pdf-view-current-page' resp. `pdf-view-image-size'.
 
-Put the image in OUTPUT-BUFFER, defaulting to \"*PDF region
-image*\" and display it, unless NO-DISPLAY-P is non-nil.
+  Put the image in OUTPUT-BUFFER, defaulting to \"*PDF region
+  image*\" and display it, unless NO-DISPLAY-P is non-nil.
 
-In case of multiple regions, the resulting image is constructed
-by joining them horizontally.  For this operation (and this only)
-the `convert' program is used."
+  In case of multiple regions, the resulting image is constructed
+  by joining them horizontally.  For this operation (and this only)
+  the `convert' program is used."
 
-      (interactive
-       (list (if (pdf-view-active-region-p)
-                 (pdf-view-active-region t)
-               '((0 0 1 1)))))
-      (unless page
-        (setq page (pdf-view-current-page)))
-      (unless size
-        (setq size (pdf-view-image-size)))
-      (unless output-buffer
-        (setq output-buffer (get-buffer-create (org-noter--session-notes-buffer org-noter--session))))
-      (setq notes-file-path (org-noter--session-notes-file-path org-noter--session))
-      (let* ((images (mapcar (lambda (edges)
-                               (let ((file (make-temp-file "pdf-view"))
-                                     (coding-system-for-write 'binary))
-                                 (write-region
-                                  (pdf-info-renderpage
-                                   page (car size)
-                                   :crop-to edges)
-                                  nil file nil 'no-message)
-                                 file))
-                             regions))
-             result)
-        (unwind-protect
-            (progn
-              (if (= (length images) 1)
-                  (setq result (car images))
-                (setq result (make-temp-file "pdf-view"))
-                ;; Join the images horizontally with a gap of 10 pixel.
-                (pdf-util-convert
-                 "-noop" ;; workaround limitations of this function
-                 result
-                 :commands `("("
-                             ,@images
-                             "-background" "white"
-                             "-splice" "0x10+0+0"
-                             ")"
-                             "-gravity" "Center"
-                             "-append"
-                             "+gravity"
-                             "-chop" "0x10+0+0")
-                 :apply '((0 0 0 0))))
+        (interactive
+         (list (if (pdf-view-active-region-p)
+                   (pdf-view-active-region t)
+                 '((0 0 1 1)))))
+        (unless page
+          (setq page (pdf-view-current-page)))
+        (unless size
+          (setq size (pdf-view-image-size)))
+        (unless output-buffer
+          (setq output-buffer (get-buffer-create (org-noter--session-notes-buffer org-noter--session))))
+        (setq notes-file-path (org-noter--session-notes-file-path org-noter--session))
+        (let* ((images (mapcar (lambda (edges)
+                                 (let ((file (make-temp-file "pdf-view"))
+                                       (coding-system-for-write 'binary))
+                                   (write-region
+                                    (pdf-info-renderpage
+                                     page (car size)
+                                     :crop-to edges)
+                                    nil file nil 'no-message)
+                                   file))
+                               regions))
+               result)
+          (unwind-protect
+              (progn
+                (if (= (length images) 1)
+                    (setq result (car images))
+                  (setq result (make-temp-file "pdf-view"))
+                  ;; Join the images horizontally with a gap of 10 pixel.
+                  (pdf-util-convert
+                   "-noop" ;; workaround limitations of this function
+                   result
+                   :commands `("("
+                               ,@images
+                               "-background" "white"
+                               "-splice" "0x10+0+0"
+                               ")"
+                               "-gravity" "Center"
+                               "-append"
+                               "+gravity"
+                               "-chop" "0x10+0+0")
+                   :apply '((0 0 0 0))))
 
-              (with-current-buffer output-buffer
-                (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/")))
-                  (progn
-                    (if (file-exists-p relative-img-dir)
-                        (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
-                      (mkdir relative-img-dir))
-                    (let ((temp-name (select-or-enter-file-name relative-img-dir)))
-                      (setq absolute-img-dir (concat default-directory relative-img-dir "/"))
-                      (setq name-base (file-name-base temp-name))
-                      (setq file-name (concat name-base ".png"))
-                      (setq full-file-path (concat relative-img-dir file-name))
-                      (with-temp-buffer
-                        (insert-file-contents-literally result)
-                        (write-region (point-min) (point-max) full-file-path))
-                      (setq absolute-full-file-path (concat absolute-img-dir file-name))
-                      (insert (concat "[[file:" full-file-path "]]"))
-                      (evil-normal-state)
-                      (org-display-inline-images))))
-                (unless no-display-p
-                  (pop-to-buffer (current-buffer))))
-              )
-          (dolist (f (cons result images))
-            (when (file-exists-p f)
-              (delete-file f))))))
+                (with-current-buffer output-buffer
+                  (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/")))
+                    (progn
+                      (if (file-exists-p relative-img-dir)
+                          (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
+                        (mkdir relative-img-dir))
+                      (let ((temp-name (select-or-enter-file-name relative-img-dir)))
+                        (setq absolute-img-dir (concat default-directory relative-img-dir "/"))
+                        (setq name-base (file-name-base temp-name))
+                        (setq file-name (concat name-base ".png"))
+                        (setq full-file-path (concat relative-img-dir file-name))
+                        (with-temp-buffer
+                          (insert-file-contents-literally result)
+                          (write-region (point-min) (point-max) full-file-path))
+                        (setq absolute-full-file-path (concat absolute-img-dir file-name))
+                        (insert (concat "[[file:" full-file-path "]]"))
+                        (evil-normal-state)
+                        (org-display-inline-images)
+                        (eaf-open-image-occlusion (expand-file-name absolute-full-file-path))
+                        )))
+                  (unless no-display-p
+                    (pop-to-buffer (current-buffer))))
+                )
+
+            (dolist (f (cons result images))
+              (when (file-exists-p f)
+                (delete-file f))))))
 
     (advice-add #'pdf-view-extract-region-image :override #'hurricane//pdf-view-extract-region-image)
+
+    (defun hurricane//pdf-view-mouse-set-region-rectangle (event)
+      "Like `pdf-view-mouse-set-region' but displays as a rectangle.
+
+EVENT is the mouse event.
+
+This is more useful for commands like
+`pdf-view-extract-region-image'."
+      (interactive "@e")
+      (pdf-view-mouse-set-region event nil t)
+      (cond ((eq major-mode 'pdf-view-mode)
+             (let* ((file (file-name-base (pdf-view-buffer-file-name)))
+                    (page (number-to-string
+                           (org-noter--get-location-page
+                            (org-noter-pdf--approx-location-cons
+                             'pdf-view-mode
+                             (org-noter-pdf--pdf-view-get-precise-info
+                              'pdf-view-mode
+                              (get-buffer-window))))))
+                    (quote (if (pdf-view-active-region-p)
+                               (replace-regexp-in-string "\n" " "
+                                                         (mapconcat 'identity (pdf-view-active-region-text) ? ))))
+                    (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
+                    (link (hurricane//org-noter-get-link)))
+               (if pdf-view--have-rectangle-region
+                   (kill-new (format "<a onclick=\"(function() {javascript:location.href = \'org-protocol://open-pdf?pdf-tools=%s\'})()\">%s</a>" (url-hexify-string (format "[[%s]]" link)) (or desc link)))
+                 (kill-new (format "[[%s]][[%s]]" link desc)))
+               ))))
+
+    (advice-add #'pdf-view-mouse-set-region-rectangle :override #'hurricane//pdf-view-mouse-set-region-rectangle)
 
     (defun hurricane//org-noter-start-from-dired ()
       "In Dired, open sessions for marked files or file at point.
@@ -1758,7 +1791,9 @@ marked file."
                                                          (mapconcat 'identity (pdf-view-active-region-text) ? ))))
                     (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
                     (link (hurricane//org-noter-get-link)))
-               (kill-new (format "[[%s]][[%s]]" link desc))
+               (if pdf-view--have-rectangle-region
+                   (kill-new (format "<a onclick=\"(function() {javascript:location.href = \'org-protocol://open-pdf?pdf-tools=%s\'})()\">%s</a>" (url-hexify-string (format "[[%s]]" link)) (or desc link)))
+                 (kill-new (format "[[%s]][[%s]]" link desc)))
                (org-link-store-props
                 :type org-noter-property-note-location
                 :link link

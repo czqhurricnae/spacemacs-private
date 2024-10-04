@@ -968,6 +968,7 @@ that the point is already within a string."
 		                (candidates . ,(append
 				                            '(
                                       ("@ Preview file" . (lambda (path) (eaf-open path)))
+                                      ("@ EAF image occlusion" . (lambda (path) (eaf-open-image-occlusion (expand-file-name path))))
                                       ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
                                                                                                                                             (next-line)
                                                                                                                                             (newline-and-indent)

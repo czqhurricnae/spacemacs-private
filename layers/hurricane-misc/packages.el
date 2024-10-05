@@ -634,7 +634,7 @@
     (define-key minibuffer-local-map (kbd "C-w") 'evil-delete-backward-word)
 
     (define-key evil-visual-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
-    (define-key evil-visual-state-map (kbd "C-r") 'hurricane//evil-quick-replace)
+    (define-key evil-visual-state-map (kbd "C-r") 'hurricane/evil-quick-replace)
     (define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
     (define-key evil-visual-state-map (kbd "mp") 'mc/mark-previous-like-this)
     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
@@ -708,7 +708,7 @@
     (setq mc/cmds-to-run-once
           '(
             counsel-M-x
-            hurricane//my-mc-mark-next-like-this))
+            hurricane//mc-mark-next-like-this))
     (setq mc/cmds-to-run-for-all
           '(
             electric-newline-and-maybe-indent
@@ -1845,24 +1845,38 @@ Works only in youtube-sub-extractor-mode buffer."
     :ensure t
     :init
     (defun get-svg-xml (full-file-path)
-      (with-temp-buffer
+      (let (new-file-name
+            image-href-attr
+            new-full-file-path
+            content)
+       (with-temp-buffer
         (insert-file-contents full-file-path)
+        (setq content (buffer-string))
         (cl-loop for child in (dom-by-tag (libxml-parse-html-region (point-min) (point-max)) 'image)
                  do (progn
-                      (copy-file (dom-attr child 'xlink:href)
+                      (setq image-href-attr (dom-attr child 'xlink:href))
+                      (setq new-file-name (md5 (format "%s" (random))))
+                      (setq new-full-file-path (file-name-with-extension new-file-name (file-name-extension image-href-attr)))
+
+                      (copy-file image-href-attr
                                  (file-name-concat
                                   anki-helper-media-directory
-                                  (file-name-nondirectory (dom-attr child 'xlink:href)))
+                                  new-full-file-path)
                                  t)
-                      (save-excursion
-                        (goto-char (point-min))
-                        (while (re-search-forward
-                                (file-name-directory (dom-attr child 'xlink:href))
-                                (point-max)
-                                t)
-                          (replace-match "" t nil nil nil)))))
+
+                      (setq content (string-replace (string-as-unibyte image-href-attr) new-full-file-path (string-as-unibyte content)))
+                      ;; (save-excursion
+                      ;;   (goto-char (point-min))
+                      ;;   (while (re-search-forward
+                      ;;           image-href-attr
+                      ;;           (point-max)
+                      ;;           t)
+                      ;;     (replace-match (file-name-with-extension new-file-name (file-name-extension image-href-attr)) t nil nil nil)))
+                      ))
+        (erase-buffer)
+        (insert content)
         (write-file full-file-path nil)
-        (buffer-string)))
+        content)))
     :config
     (with-eval-after-load 'org
       (require 'edraw-org)

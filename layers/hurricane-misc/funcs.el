@@ -338,7 +338,7 @@ e.g. `Sunday, September 17, 2000'."
              (+ chinese-char english-word)))))
 ;; }}
 
-(defun hurricane//evil-quick-replace (beg end)
+(defun hurricane/evil-quick-replace (beg end)
   (interactive "r")
   (when (evil-visual-state-p)
     (evil-exit-visual-state)
@@ -382,7 +382,7 @@ end tell
 (defadvice persp-switch (after my-quit-helm-perspectives activate)
   (setq hydra-deactivate t))
 
-(defun hurricane//my-mc-mark-next-like-this ()
+(defun hurricane//mc-mark-next-like-this ()
   (interactive)
   (if (region-active-p)
       (mc/mark-next-like-this 1)

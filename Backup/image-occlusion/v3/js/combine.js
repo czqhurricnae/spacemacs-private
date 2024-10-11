@@ -284,7 +284,7 @@ async function createCombineCloze() {
 
                 var params = {
                   "note": {
-                      "deckName": "STM32",
+                      "deckName": localStorage.getItem("deckName"),
                       "modelName": "Image Occlusion Enhanced",
                       "fields": {
                           "id (hidden)": noteId,

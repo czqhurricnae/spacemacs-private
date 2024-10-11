@@ -818,6 +818,48 @@
                      (propertize filetitle 'face '(shadow italic))
                       )))))
 
+    (defun hurricane//org-roam-node-formatter (node)
+      (let ((title     (org-roam-node-title node))
+            (olp       (nreverse (org-roam-node-olp node)))
+            (level     (org-roam-node-level node))
+            (filetitle (org-roam-node-file-title node))
+            (separator (propertize " < " 'face 'shadow))
+            )
+        (cl-case level
+          ;; node is a top-level file
+          (0 filetitle)
+          ;; node is a level 1 heading
+          (1 (concat title separator (propertize filetitle 'face '(shadow italic))))
+          ;; node is a heading with an arbitrary outline path
+          (t (concat title
+                     separator
+                     (propertize (string-join olp " < ") 'face '(shadow italic))
+                     separator
+                     (propertize filetitle 'face '(shadow italic))
+                     )))))
+
+    (setq org-roam-node-formatter #'hurricane//org-roam-node-formatter)
+
+    (defun hurricane//org-roam-node-formatter (node)
+      (let ((title     (org-roam-node-title node))
+            (olp       (org-roam-node-olp node))
+            (level     (org-roam-node-level node))
+            (filetitle (org-roam-node-file-title node))
+            (separator " > ")
+            )
+        (pcase level
+          ;; node is a top-level file
+          (0 filetitle)
+          ;; node is a level 1 heading
+          (1 (concat filetitle separator file))
+          ;; node is a heading with an arbitrary outline path
+          (_ (concat filetitle
+                     separator
+                     (string-join olp " > ")
+                     separator
+                     title
+                     )))))
+
     (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
     (setq org-roam-extract-new-file-path "${slug}.org")
 
@@ -979,7 +1021,7 @@ Return nil if not found."
     :ensure t
     :hook (after-init . org-media-note-mode)
     :init
-    (spacemacs/set-leader-keys "av" #'org-media-note-hydra/body)
+    (spacemacs/set-leader-keys "av" #'org-media-note-pretty-hydra)
     :custom
     (org-media-note-mpv-online-website-options-alist
      '(("youtube\\.com"
@@ -1007,6 +1049,8 @@ Return nil if not found."
     ;;                            ,p3))))
 
     (with-eval-after-load 'psearch
+      (require 'org-media-note-mpv)
+
       (psearch-patch org-media-note-play-online-video
         (psearch-replace '`(read-string "Url to play: ")
                          '`(read-string "Url to play: " (hurricane//retrieve-chrome-current-tab-url))))
@@ -1019,23 +1063,14 @@ Return nil if not found."
     (require 'pretty-hydra)
 
     (with-eval-after-load 'pretty-hydra
-      (pretty-hydra-define org-media-note-hydra
+      (pretty-hydra-define org-media-note-pretty-hydra
         (:color red
-                :title (org-media-note--hydra-title)
+                :title (org-media-note--ui-title)
                 :hint nil)
         ("File"
          (("o" org-media-note-play-smart
-           (cl-multiple-value-bind (link _ _)
-               (org-media-note--link-context)
-             (cl-multiple-value-bind (ref-mode key _ _)
-                 (org-media-note--ref-context)
-               (cl-multiple-value-bind (_ media-files-in-attach-dir)
-                   (org-media-note--attach-context)
-                 (cond
-                  (link "Open link")
-                  (ref-mode (format "Open %s" key))
-                  ((> (length media-files-in-attach-dir) 0) "Open attach")
-                  (t "Open media")))))
+           (org-media-note--ui-play-smart-title)
+           :width 20
            :exit t)
           ("j"
            (mpv-cycle-property "sub")
@@ -1054,19 +1089,11 @@ Return nil if not found."
          (("<SPC>" mpv-pause "Play/Pause")
           ("l"
            (mpv-run-command "ab-loop")
-           (let ((time-a (mpv-get-property "ab-loop-a"))
-                 (time-b (mpv-get-property "ab-loop-b")))
-             (if (org-media-note--ab-loop-p)
-                 (format "Clear A-B loop (%s - %s)"
-                         (org-media-note--seconds-to-timestamp time-a)
-                         (org-media-note--seconds-to-timestamp time-b))
-               (if (numberp time-a)
-                   (format "Set B of A-B loop (%s - )"
-                           (org-media-note--seconds-to-timestamp time-a))
-                 "Set A of A-B loop"))))
+           (org-media-note--ui-ab-loop-title)
+           :width 31)
           ("g" org-media-note-goto-timestamp "Jump to timestamp")
-          ("<left>" mpv-seek-backward "Backward 5s")
-          ("<right>" mpv-seek-forward "Forward 5s")
+          ("<left>" (org-media-note-seek 'backward) (format "Backward %s" (org-media-note--ui-seek-step t)))
+          ("<right>" (org-media-note-seek 'forward) (format "Forward %s" (org-media-note--ui-seek-step t)))
           ("C-<left>"
            (mpv-run-command "sub-seek" -1)
            "Previous subtitle")
@@ -1093,8 +1120,14 @@ Return nil if not found."
          "Note"
          (("i" org-media-note-insert-link "Insert timestamp")
           ("a" org-media-note-adjust-timestamp-offset "Adjust timestamp")
-          ("s" org-media-note-insert-screenshot "Insert Screenshot")
-          ("S" org-media-note-insert-sub-text "Insert subtitle")
+          ("S"
+           (if (org-media-note--ab-loop-p)
+               (org-media-note-capture-ab-loop-and-insert)
+             (org-media-note-insert-screenshot))
+           (if (org-media-note--ab-loop-p)
+               "Insert ab-loop clip"
+             "Insert Screenshot"))
+          ("s" org-media-note-insert-sub-text "Insert subtitle")
           ("c"
            (if (org-media-note--ab-loop-p)
                (let* ((time-a (mpv-get-property "ab-loop-a"))
@@ -1127,25 +1160,31 @@ Return nil if not found."
            "from subtitle")
           ("I c" org-media-note-insert-note-from-chapter-list
            "from chapters"))
-         "Toggle"
-         (("t m" toggle-org-media-note-auto-insert-item
+         "Config"
+         (("t m" org-media-note-toggle-auto-insert-item
            "Auto insert media item" :toggle org-media-note-auto-insert-item)
           ("t s" org-media-note-toggle-save-screenshot
            "Auto insert screenshot" :toggle org-media-note-save-screenshot-p)
           ("t S" org-media-note-toggle-screenshot-with-sub
-           "Screenshot with subtitles" :toggle org-media-note-screenshot-with-sub)
+           "Screenshot with sub" :toggle org-media-note-screenshot-with-sub)
+          ("t l" org-media-note-set-ab-loop-capture-method
+           (format "AB-loop Clip: %s"
+                   (if org-media-note-capture-ab-loop-ask-each-time
+                       "always ask" org-media-note-default-capture-ab-loop-function-name)))
           ("t c" org-media-note-toggle-refcite
-           "Use ref key instead of path" :toggle org-media-note-use-refcite-first)
+           "Cite key instead of path" :toggle org-media-note-use-refcite-first)
           ("t p" org-media-note-toggle-pause-after-insertion
-           "Pause media after insert link" :toggle org-media-note-pause-after-insert-link)
+           "Pause after insert link" :toggle org-media-note-pause-after-insert-link)
           ("t t" org-media-note-toggle-timestamp-pattern
            (format "Timestamp format: %s"
                    (cond
                     ((eq org-media-note-timestamp-pattern 'hms) "hh:mm:ss")
-                    ((eq org-media-note-timestamp-pattern 'hmsf) "hh:mm:ss.fff"))))
+                    ((eq org-media-note-timestamp-pattern 'hmsf) "hh:mm:ss.fff")))
+           :width 29)
           ("t M" org-media-note-set-separator
-           (format "Separator when merge: %s" org-media-note-separator-when-merge)))))
-      )))
+           (format "Separator when merge: %s" org-media-note-separator-when-merge))
+          ("t <right>" org-media-note-set-seek-method
+           (format "Seek step: %s" (org-media-note--ui-seek-step t)))))))))
 
 (defun hurricane-org/init-mpv ()
   (use-package mpv
@@ -1244,9 +1283,9 @@ Return nil if not found."
     ;; (advice-add #'org-roam-node-read :override #'popweb-org-roam-node-preview-select)
     :custom
     (popweb-python-command "python3.11")
-    (popweb-proxy-type provixy-type)
-    (popweb-proxy-host provixy-host)
-    (popweb-proxy-port provixy-port)
+    ;; (popweb-proxy-type provixy-type)
+    ;; (popweb-proxy-host provixy-host)
+    ;; (popweb-proxy-port provixy-port)
     (popweb-anki-review-media-directory Anki-media-dir)
     (popweb-org-roam-link-preview-media-directory Anki-media-dir)
     (popweb-anki-review-callback "popweb-dict-eudic-dicts-input")
@@ -1477,7 +1516,8 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
     (defun hurricane//anki-helper-fields-get-default ()
       "Default function for get filed info of the current entry."
       (let* ((elt (plist-get (org-element-at-point) 'headline))
-             (front (plist-get elt :raw-value))
+             ;; (front (plist-get elt :raw-value))
+             (front (string-join (org-get-outline-path t) " > "))
              (contents-begin (plist-get elt :contents-begin))
              (robust-begin (or (plist-get elt :robust-begin)
                                contents-begin))

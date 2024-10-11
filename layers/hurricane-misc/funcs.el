@@ -2784,3 +2784,12 @@ Version 2019-02-12 2021-08-09"
       (add-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)
     (remove-hook 'post-self-insert-hook 'add-space-between-chinese-and-english)))
 ;; }}
+
+;; https://emacs-china.org/t/topic/16566/7
+(defun remove-multiple-spaces-between-chinese ()
+  "Remove one or more spaces between Chinese characters."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "\\([[:multibyte:]]\\) +\\([[:multibyte:]]\\)" nil t)
+      (replace-match "\\1\\2"))))

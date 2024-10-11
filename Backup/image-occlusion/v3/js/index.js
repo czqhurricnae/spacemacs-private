@@ -50,7 +50,6 @@ var draw;
 var rect;
 var temp_draw;
 
-
 var canDraw = false;
 
 // Get point in global SVG space
@@ -356,11 +355,15 @@ function redoDraw() {
 
 var imgHeight;
 var imgWidth;
-function addImage(url="", height=0, width=0, source="") {
+function addImage(url="", height=0, width=0, deck="") {
     scaleVar = 1.0;
 
     polygonStack = [];
     undoStack = [];
+
+    if (deck) {
+        localStorage.setItem("deckName", deck);
+    }
 
     if (!url) {
         try {

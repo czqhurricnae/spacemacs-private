@@ -44,21 +44,11 @@
  (front-context-string . "\n(defun hurrican")
  (rear-context-string . "))))))\n      ))\n")
  (position . 91944))
-("https://agm.haifanwu.com/"
- (filename . "~/Downloads/vs.org")
- (front-context-string . "\n#+BEGIN_SRC ema")
- (rear-context-string . "ents)\n#+END_SRC\n")
- (position . 4180))
 ("Fact check"
  (filename . "~/Downloads/mpv-www-gen/Fact check- Myths about electric vehicles busted | DW News -  - 2023-12-20 02-52-56.srt")
  (front-context-string . "\n23\n00:02:31,740")
  (rear-context-string . " little plugin \n")
  (position . 3563))
-("Ethical dilemma"
- (filename . "~/Downloads/mpv-www-gen/Ethical dilemma Whose life is more valuable.srt")
- (front-context-string . "\n44\n00:04:11,998")
- (rear-context-string . "lly acceptable.\n")
- (position . 4975))
 ("https://sachachua.com/blog/"
  (filename . "https://sachachua.com/blog/")
  (front-context-string . "snippets\n  drwxr")

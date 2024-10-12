@@ -2,7 +2,19 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("STM32-V4开发板（45个例子）_免费高速下载|百度网盘-分享无限制"
+(("Library Genesis"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://libgen.li/"))
+("Z-Library – 世界上最大的电子图书馆。自由访问知识和文化。"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://zh.singlelogin.re/"))
+("Hex Calculator"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.calculator.net/hex-calculator.html"))
+("STM32-V4开发板（45个例子）_免费高速下载|百度网盘-分享无限制"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://pan.baidu.com/s/1hrYxMYC#list/path=%2Fsharelink286563520-594644706110903%2FSTM32-V4%E5%BC%80%E5%8F%91%E6%9D%BF%EF%BC%8845%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%89&parentPath=%2Fsharelink286563520-594644706110903"))
@@ -315,11 +327,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/EAF image-occlusion.org")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Hands On RTOS with Microcontrollers Building real time embedded systems using FreeRTOS, STM32 MCUs, and SEGGER debug tools.org")
  (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 308)
- (last-modified 26367 55143 530887 0))
+ (position . 549)
+ (last-modified 26378 16445 441292 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

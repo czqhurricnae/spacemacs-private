@@ -90,6 +90,8 @@
         ;; (sketch-mode :location (recipe :fetcher github
         ;;                                :repo "dalanicolai/sketch-mode"))
         ;; (eaf-interleave :location local)
+        (go-translate :location (recipe :fetcher github
+                                        :repo "lorniu/go-translate"))
         ))
 
 (defconst sys/macp
@@ -1244,7 +1246,7 @@
 (defun hurricane-misc/post-init-eaf ()
   (with-eval-after-load 'eaf
     (setq eaf-screenshot-args (list "-i" "-x"))
-    (setq eaf-chrome-bookmark-file "~/Library/Application Support/Google/Chrome/Profile 1/Bookmarks")
+    (setq eaf-chrome-bookmark-file "/Users/c/Library/Application Support/Google/Chrome/Default/Bookmarks")
 
     ;; /eaf/eaf.py
     ;; @PostGui
@@ -1693,12 +1695,12 @@ Works only in youtube-sub-extractor-mode buffer."
              (subed-mpv-jump-to-current-subtitle))
           (dictionary-overlay-jump-prev-unknown-word)))
     :bind
-    (("C-c d" . dictionary-overlay-render-buffer)
-     ("C-c y" . hurricane/popweb-translate-and-mark-unknown-word))
+    ("C-c d" . dictionary-overlay-render-buffer)
+    ("C-c y" . hurricane/popweb-translate-and-mark-unknown-word)
     (:map dictionary-overlay-map
                 ("y" . hurricane/popweb-translate-and-mark-unknown-word)
                 ("u" . dictionary-overlay-mark-word-known)
-                ("s" . hurricane/youdao-search-at-point)
+                ("S" . hurricane/youdao-search-at-point)
                 ("n" . hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle)
                 ("p" . hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle)
                 )))
@@ -1897,3 +1899,81 @@ Works only in youtube-sub-extractor-mode buffer."
     :custom
     (eaf-interleave-org-notes-dir-list (list (concat deft-dir (file-name-as-directory "notes"))))
     :after eaf))
+
+(defun hurricane-misc/init-go-translate ()
+  (use-package go-translate
+    :bind
+    ("C-c s g" . gt-do-translate)
+    ("C-c s s" . gt-do-setup)
+    ("C-c s p" . gt-do-speak)
+    :config
+    (cl-defmethod gt-text :around ((taker gt-taker) translator)
+      "Extend the original gt-text method to handle pdf-view-mode."
+      (if (eq major-mode 'pdf-view-mode)
+          (gt-text-at-point nil 'pdf-view-mode)
+        (cl-call-next-method)))
+
+    (setq gt-langs '(en zh)
+          gt-chatgpt-host "https://api.deepseek.com"
+          gt-chatgpt-model "deepseek-chat"
+          gt-chatgpt-key (funcall (lambda ()
+                                    (if-let* ((auth-info (car (auth-source-search
+                                                               :host "api.deepseek.com"
+                                                               :user "apikey"
+                                                               :require '(:secret))))
+                                              (secret (plist-get auth-info :secret)))
+                                        (if (functionp secret)
+                                            (encode-coding-string (funcall secret) 'utf-8)
+                                          secret)
+                                      (user-error "No `gptel-api-key' found in the auth source"))))
+          gt-buffer-render-follow-p t
+          gt-buffer-render-window-config
+          '((display-buffer-reuse-window display-buffer-in-direction)
+            (direction . bottom)
+            (window-height . 0.4))
+          gt-buffer-prompt-window-config
+          '(display-buffer-reuse-window (inhibit-same-window . nil))
+
+          gt-preset-translators
+          `((default . ,(gt-translator
+                         :taker (list (gt-taker :pick nil :if 'selection)
+                                      ;; (gt-taker :text 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode))
+                                      (gt-taker :text 'buffer :pick 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode eww-mode))
+                                      (gt-taker :text 'word))
+                         :engines (list (gt-chatgpt-engine))
+                         :render  (list (gt-overlay-render :if '(Info-mode help-mode telega-webpage-mode helpful-mode devdocs-mode eww-mode))
+                                        (gt-buffer-render))))
+            ;; gt-insert-render
+            (after-source-insert . ,(gt-translator
+                                     :taker (gt-taker :text 'buffer :pick 'paragraph)
+                                     :engines (gt-chatgpt-engine)
+                                     :render (gt-insert-render :type 'after)))
+            (replace-source-chat-insert . ,(gt-translator
+                                            :taker (gt-taker :text 'paragraph :pick nil)
+                                            :engines (gt-chatgpt-engine)
+                                            :render (gt-insert-render :type 'replace)))
+            (only-translate-rare-insert . ,(gt-translator
+                                            :taker (gt-taker :text 'paragraph
+                                                             :pick 'word
+                                                             :pick-pred (lambda (w) (length> w 6)))
+                                            :engines (gt-chatgpt-engine)
+                                            :render (gt-insert-render :type 'after
+                                                                      :rfmt " (%s)"
+                                                                      :rface '(:foreground "grey"))))
+            ;; gt-overlay-render
+            (after-source-overlay . ,(gt-translator
+                                      :taker (gt-taker :text 'buffer :pick 'paragraph)
+                                      :engines (gt-chatgpt-engine)
+                                      :render (gt-overlay-render :type 'after
+                                                                 :sface nil
+                                                                 :rface 'font-lock-doc-face)))
+            (only-translate-rare-overlay . ,(gt-translator
+                                             :taker (gt-taker :text 'buffer :pick 'word :pick-pred (lambda (w) (length> w 5)))
+                                             :engines (gt-chatgpt-engine)
+                                             :render (gt-overlay-render :type 'after
+                                                                        :rfmt "(%s)"
+                                                                        :rface '(:foreground "grey")))))
+
+
+          )
+    ))

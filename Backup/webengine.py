@@ -19,49 +19,47 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt6 import QtCore
-from PyQt6.QtCore import QUrl, Qt, QEvent, QEventLoop, QTimer, QFile, QPointF, QPoint, pyqtSlot
-from PyQt6.QtWebChannel import QWebChannel
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineScript, QWebEngineProfile, QWebEngineSettings
-from PyQt6.QtWidgets import QApplication, QWidget
-from core.buffer import Buffer
-from core.utils import (touch, string_to_base64, popen_and_call,
-                        call_and_check_code, interactive,
-                        eval_in_emacs, message_to_emacs, clear_emacs_message,
-                        open_url_in_background_tab, duplicate_page_in_new_tab,
-                        open_url_in_new_tab, open_url_in_new_tab_other_window,
-                        focus_emacs_buffer, atomic_edit, get_emacs_config_dir,
-                        to_camel_case, get_emacs_vars, PostGui)
-from urllib.parse import urlparse, parse_qs
 import base64
+import json
 import os
-import platform
 import pathlib
+import platform
+import shutil
+import tempfile
+import threading
+from urllib.parse import parse_qs, urlparse
 
-MOUSE_LEFT_BUTTON = 1
-MOUSE_WHEEL_BUTTON = 4
-MOUSE_BACK_BUTTON = 8
-MOUSE_FORWARD_BUTTON = 16
+from core.buffer import Buffer
+from core.utils import *
+from PyQt6 import QtCore
+from PyQt6.QtCore import QEvent, QEventLoop, QPoint, QPointF, Qt, QThread, QTimer, QUrl, pyqtSlot
+from PyQt6.QtWebChannel import QWebChannel
+from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile, QWebEngineSettings
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import QApplication, QWidget
 
 class BrowserView(QWebEngineView):
 
     translate_selected_text = QtCore.pyqtSignal(str)
 
-    def __init__(self, buffer_id):
-        super(QWebEngineView, self).__init__()
+    def __init__(self, profile, buffer_id):
+        super(QWebEngineView, self).__init__(profile)
 
         self.installEventFilter(self)
         self.buffer_id = buffer_id
         self.is_button_press = False
 
-        self.web_page = BrowserPage()
+        self.web_page = BrowserPage(profile)
         self.setPage(self.web_page)
 
         self.url_hovered = ""
         self.page().linkHovered.connect(self.link_hovered)
+        self.page().quotaRequested.connect(lambda request: request.accept())
+        self.page().fileSystemAccessRequested.connect(lambda request: request.accept())
 
         self.selectionChanged.connect(self.select_text_change)
+
+        self.loadProgress.connect(self.load_fix_script)
 
         # Cookie init.
         self.cookies_manager = CookiesManager(self)
@@ -79,7 +77,15 @@ class BrowserView(QWebEngineView):
         self.select_input_text_js = None
         self.get_selection_text_js = None
         self.focus_input_js = None
+        self.immersive_translation_js = None
+        self.immersive_translation_response_js = None
+
         self.simulated_wheel_event = False
+
+        self.last_mouse_word = None
+        self.last_mouse_word_timer = None
+
+        self.thread_queue = []
 
         (self.default_zoom, self.zoom_step,
          self.show_hover_link, self.marker_letters,
@@ -97,45 +103,17 @@ class BrowserView(QWebEngineView):
     def delete_cookie(self):
         self.cookies_manager.delete_cookie()
 
-    def load_css(self, path, name):
-        path = QFile(path)
-        if not path.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text):
-            return
-        css = path.readAll().data().decode("utf-8")
-        SCRIPT = """
-        (function() {
-        try {
-        css = document.createElement('style');
-        css.type = 'text/css';
-        css.id = "%s";
-        document.head.appendChild(css);
-        css.innerText = `%s`;
-        } catch(e) {}
-        })()
-        """ % (name, css)
+    def load_fix_script(self, progress):
+        '''We need set environment variable QTWEBENGINE_CHROMIUM_FLAGS with --disable-web-security
+to make EAF can load local html and avoid browser throw CORS error.
 
-        script = QWebEngineScript()
-        self.web_page.runJavaScript(SCRIPT, QWebEngineScript.ScriptWorldId.ApplicationWorld)
-        script.setName(name)
-        script.setSourceCode(SCRIPT)
-        script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentReady)
-        script.setRunsOnSubFrames(True)
-        script.setWorldId(QWebEngineScript.ScriptWorldId.ApplicationWorld)
-        self.web_page.scripts().insert(script)
+After set --disable-web-security, some website (such as github.com) will throw 'navigator.clipboard is undefined' error recursively.
 
-    def remove_css(self, name, immediately):
-        SCRIPT =  """
-        (function() {
-        var element = document.getElementById('%s');
-        element.outerHTML = '';
-        delete element;
-        })()
-         """ % (name)
-        if immediately:
-            self.web_page.runJavaScript(SCRIPT, QWebEngineScript.ScriptWorldId.ApplicationWorld)
+So this function add some script to avoid website throw error recursively.
 
-        script = self.web_page.scripts().findScript(name)
-        self.web_page.scripts().remove(script)
+Note, we need hook this function to signal 'loadProgress', signal 'loadStarted' is not enough.'''
+        if not self.url().toString().startswith("file:///"):
+            self.eval_js("navigator.clipboard = {};")
 
     def read_js_content(self, js_file):
         ''' Read content of JavaScript(js) files.'''
@@ -151,7 +129,7 @@ class BrowserView(QWebEngineView):
         else:
             filtered = dict((k, v) for k, v in qd.items())
 
-        from urllib.parse import urlunparse, urlencode
+        from urllib.parse import urlencode, urlunparse
 
         return urlunparse([
             parsed.scheme,
@@ -166,7 +144,6 @@ class BrowserView(QWebEngineView):
         "If title is google url, we should drop this history, it's a temp redirect url."
         try:
             parsed = urlparse(title)
-            qd = parse_qs(parsed.query, keep_blank_values=True)
             if parsed.netloc.startswith("www.google.com"):
                 return ""
             else:
@@ -188,6 +165,7 @@ class BrowserView(QWebEngineView):
         self.search_term = ""
         self.web_page.findText("")
 
+    @PostGui()
     def _search_text(self, text, is_backward = False):
         self.search_term = text
 
@@ -207,7 +185,7 @@ class BrowserView(QWebEngineView):
         ''' Backward Search Text.'''
         self.buffer.send_input_message("Backward Search Text: ", "search_text_backward", "search")
 
-    @interactive
+    @PostGui()
     def action_quit(self):
         ''' Quit action.'''
         # Clean search selections if search text is not empty.
@@ -275,12 +253,26 @@ class BrowserView(QWebEngineView):
             else:
                 focus_emacs_buffer(self.buffer_id)
 
+        if event.type() == QEvent.Type.MouseMove:
+            modifiers = QApplication.keyboardModifiers()
+            if modifiers == Qt.KeyboardModifier.ControlModifier:
+                word = self.get_cursor_word(event.pos().x() / self.zoomFactor(), event.pos().y() / self.zoomFactor())
+                if self.last_mouse_word != word:
+                    self.last_mouse_word = word
+
+                    if self.last_mouse_word is not None:
+                        if self.last_mouse_word_timer is not None and self.last_mouse_word_timer.is_alive():
+                            self.last_mouse_word_timer.cancel()
+
+                        self.last_mouse_word_timer = threading.Timer(1, lambda : self.translate_cursor_word(word))
+                        self.last_mouse_word_timer.start()
+
         if event.type() == QEvent.Type.MouseButtonPress:
 
             if platform.system() == "Darwin":
                 eval_in_emacs('eaf-activate-emacs-window', [])
 
-            if event.button() == MOUSE_FORWARD_BUTTON:
+            if event.button() == Qt.MouseButton.ForwardButton:
                 modifiers = QApplication.keyboardModifiers()
                 if modifiers == Qt.KeyboardModifier.ControlModifier:
                     self.switch_to_next_webpage_buffer()
@@ -290,7 +282,7 @@ class BrowserView(QWebEngineView):
                 event.accept()
                 return True
 
-            elif event.button() == MOUSE_BACK_BUTTON:
+            elif event.button() == Qt.MouseButton.BackButton:
                 modifiers = QApplication.keyboardModifiers()
                 if modifiers == Qt.KeyboardModifier.ControlModifier:
                     self.switch_to_previous_webpage_buffer()
@@ -300,13 +292,13 @@ class BrowserView(QWebEngineView):
                 event.accept()
                 return True
 
-            elif event.button() == MOUSE_LEFT_BUTTON:
+            elif event.button() == Qt.MouseButton.LeftButton:
                 modifiers = QApplication.keyboardModifiers()
                 if modifiers == Qt.KeyboardModifier.ControlModifier and self.url_hovered:
                     self.open_url_background_buffer(self.url_hovered)
                     return True
 
-            elif event.button() == MOUSE_WHEEL_BUTTON:
+            elif event.button() == Qt.MouseButton.MiddleButton:
                 if self.url_hovered:
                     self.open_url_new_buffer_other_window(self.url_hovered)
                     return True
@@ -321,6 +313,9 @@ class BrowserView(QWebEngineView):
                     self.zoom_out()
 
         return super(QWebEngineView, self).eventFilter(obj, event)
+
+    def translate_cursor_word(self, word):
+        self.translate_selected_text.emit(word)
 
     def link_hovered(self, url):
         self.url_hovered = url
@@ -394,7 +389,11 @@ class BrowserView(QWebEngineView):
 
     def eval_js(self, js):
         ''' Run JavaScript.'''
-        self.web_page.runJavaScript(js)
+        try:
+            self.web_page.runJavaScript(js)
+        except:
+            import traceback
+            traceback.print_exc()
 
     def eval_js_file(self, js_file):
         ''' Run JavaScript from JS file.'''
@@ -410,25 +409,22 @@ class BrowserView(QWebEngineView):
         return self.web_page.execute_javascript(js)
 
     def eval_js_function(self, *args):
-        import json
-
-        function_name = args[0]
-        function_args = args[1:]
-
-        format_string = ""
-
-        for index, arg in enumerate(function_args):
-            if type(arg) == str:
-                format_string += '\"{}\"'.format(arg)
-            else:
-                format_string += '{}'.format(json.dumps(arg))
-
-            if index != len(function_args) - 1:
-                format_string += ","
-
-        format_string = function_name + "(" + format_string + ");"
-
         try:
+            function_name = args[0]
+            function_args = args[1:]
+
+            format_string = ""
+
+            for index, arg in enumerate(function_args):
+                if isinstance(arg, str):
+                    format_string += '\"{}\"'.format(arg)
+                else:
+                    format_string += '{}'.format(json.dumps(arg))
+
+                if index != len(function_args) - 1:
+                    format_string += ","
+
+            format_string = function_name + "(" + format_string + ");"
             self.web_page.runJavaScript(format_string)
         except:
             import traceback
@@ -454,7 +450,7 @@ class BrowserView(QWebEngineView):
         )
 
         for widget in self.buffer.get_key_event_widgets():
-            QApplication.postEvent(widget, event)
+            post_event(widget, event)
 
     @interactive(insert_or_do=True)
     def scroll_left(self):
@@ -509,7 +505,7 @@ class BrowserView(QWebEngineView):
             self.scroll_up_page()
 
             # Try scroll to next page if reach bottom, such as, access google.com
-            if self.get_next_page_url_js == None:
+            if self.get_next_page_url_js is None:
                 self.get_next_page_url_js = self.read_js_content("get_next_page_url.js")
 
             next_page_url = self.execute_js(self.get_next_page_url_js)
@@ -519,7 +515,7 @@ class BrowserView(QWebEngineView):
     @interactive
     def get_selection_text(self):
         ''' Get the selected text.'''
-        if self.get_selection_text_js == None:
+        if self.get_selection_text_js is None:
             self.get_selection_text_js = self.read_js_content("get_selection_text.js")
 
         return self.execute_js(self.get_selection_text_js)
@@ -579,7 +575,7 @@ class BrowserView(QWebEngineView):
 
     def select_input_text(self):
         ''' Select input text.'''
-        if self.select_input_text_js == None:
+        if self.select_input_text_js is None:
             self.select_input_text_js = self.read_js_content("select_input_text.js")
 
         self.eval_js(self.select_input_text_js)
@@ -590,7 +586,7 @@ class BrowserView(QWebEngineView):
         return self.url().toString().replace(" ", "%20")
 
     def load_marker_file(self):
-        if self.marker_js_raw == None:
+        if self.marker_js_raw is None:
             self.marker_js_raw = self.read_js_content("marker.js")
 
         self.eval_js(self.marker_js_raw
@@ -612,18 +608,7 @@ class BrowserView(QWebEngineView):
     def get_text_markers(self):
         ''' Get visiable text markers.'''
         self.load_marker_file()
-        self.eval_js("Marker.generateMarker(Marker.generateTextMarkerList());");
-
-    def get_marker_link(self, marker):
-        ''' Get marker's link.'''
-        self.load_marker_file()
-        link = self.execute_js("Marker.gotoMarker('%s', Marker.getMarkerAction)" % str(marker))
-        self.cleanup_links_dom()
-        if link is None or type(link).__name__ == "QVariant" or link.startswith("eaf::"):
-            return False
-        else:
-            return link
-
+        self.eval_js("Marker.generateMarker(Marker.generateTextMarkerList());")
     def get_text(self, marker):
         self.load_marker_file()
         text = self.execute_js("Marker.getMarkerText('%s')" % str(marker))
@@ -633,25 +618,40 @@ class BrowserView(QWebEngineView):
         else:
             return text
 
+    def get_marker_link(self, marker):
+        ''' Get marker's link.'''
+        # print(self.execute_js("Marker.getMarkerSelector('%s')" % str(marker)))
+        self.load_marker_file()
+        link = self.execute_js("Marker.gotoMarker('%s', Marker.getMarkerAction)" % str(marker))
+        self.cleanup_links_dom()
+        if link is None or type(link).__name__ == "QVariant" or link.startswith("eaf::"):
+            return False
+        else:
+            return link
+
     def _open_link(self, marker):
         ''' Jump to link according to marker.'''
         link = self.get_marker_link(marker)
-        if link: self.open_url(link)
+        if link:
+            self.open_url(link)
 
     def _open_link_new_buffer(self, marker):
         ''' Open the link at the marker in a new buffer.'''
         link = self.get_marker_link(marker)
-        if link: self.open_url_new_buffer(link)
+        if link:
+            self.open_url_new_buffer(link)
 
     def _open_link_new_buffer_other_window(self, marker):
         ''' Open the link at the marker in a new buffer in other window.'''
         link = self.get_marker_link(marker)
-        if link: self.open_url_new_buffer_other_window(link)
+        if link:
+            self.open_url_new_buffer_other_window(link)
 
     def _open_link_background_buffer(self, marker):
         ''' Open link at the marker in the background.'''
         link = self.get_marker_link(marker)
-        if link: self.open_url_background_buffer(link)
+        if link:
+            self.open_url_background_buffer(link)
 
     def _copy_link(self, marker):
         ''' Copy the link.'''
@@ -698,7 +698,7 @@ class BrowserView(QWebEngineView):
 
     def get_focus_text(self):
         ''' Get the focus text.'''
-        if self.get_focus_text_js == None:
+        if self.get_focus_text_js is None:
             self.get_focus_text_js = self.read_js_content("get_focus_text.js")
 
         return self.execute_js(self.get_focus_text_js)
@@ -708,47 +708,81 @@ class BrowserView(QWebEngineView):
         ''' Set the focus text.'''
         new_text = base64.b64decode(new_text).decode("utf-8")
 
-        if self.set_focus_text_raw == None:
+        if self.set_focus_text_raw is None:
             self.set_focus_text_raw = self.read_js_content("set_focus_text.js")
 
-        self.set_focus_text_js = self.set_focus_text_raw.replace("%{new_text_base64}", string_to_base64(new_text));
+        self.set_focus_text_js = self.set_focus_text_raw.replace("%{new_text_base64}", string_to_base64(new_text))
         self.eval_js(self.set_focus_text_js)
 
     @interactive(insert_or_do=True)
     def focus_input(self):
         ''' input in focus.'''
-        if self.focus_input_js == None:
+        if self.focus_input_js is None:
             self.focus_input_js = self.read_js_content("focus_input.js")
 
         self.eval_js(self.focus_input_js)
         eval_in_emacs('eaf-update-focus-state', [self.buffer_id, "'t"])
 
+    def get_cursor_word(self, x, y):
+        get_cursor_word_js = self.read_js_content("get_cursor_word.js").replace("%{mouse_x}", str(x)).replace("%{mouse_y}", str(y))
+        return self.execute_js(get_cursor_word_js)
+
     @interactive
     def clear_focus(self):
         ''' Clear the focus.'''
-        if self.clear_focus_js == None:
+        if self.clear_focus_js is None:
             self.clear_focus_js = self.read_js_content("clear_focus.js")
 
         self.eval_js(self.clear_focus_js)
         eval_in_emacs('eaf-update-focus-state', [self.buffer_id, "'nil"])
 
-    def init_dark_mode_js(self, module_path, selection_color="auto", dark_mode_theme="dark"):
+    @interactive(insert_or_do=True)
+    def immersive_translation(self):
+        if shutil.which("crow"):
+            if self.immersive_translation_js is None:
+                self.immersive_translation_js = self.read_js_content("immersive_translation.js")
+
+            translate_list = self.execute_js(self.immersive_translation_js)
+            thread = TranslateThread(translate_list)
+            thread.fetch_result.connect(self.handle_immersive_translation_result)
+            self.thread_queue.append(thread)
+            thread.start()
+
+            message_to_emacs("Translate...")
+        else:
+            message_to_emacs("Please install the translation tool 'crow' before experiencing immersive translation.")
+
+    @PostGui()
+    def handle_immersive_translation_result(self, translates):
+        if self.immersive_translation_response_js is None:
+            self.immersive_translation_response_js = self.read_js_content("immersive_translation_response.js")
+
+        self.eval_js(self.immersive_translation_response_js.replace("%1", json.dumps(translates)))
+
+        message_to_emacs("Translate done.")
+
+    def init_dark_mode_js(self, module_path, selection_color="auto", dark_mode_theme="dark",
+                          dark_mode_custom_theme={
+                              "brightness": 100,
+                              "constrast": 90,
+                              "sepia": 10,
+                              "mode": 0,
+                              "darkSchemeBackgroundColor": "#242525",
+                              "darkSchemeForegroundColor": "#00CE00"}):
+        import json
         self.dark_mode_js = open(os.path.join(os.path.dirname(module_path), "node_modules", "darkreader", "darkreader.js")).read()
 
         if selection_color != "auto":
             self.dark_mode_js = self.dark_mode_js.replace("selectionColor: 'auto'", "selectionColor: '" + selection_color + "'")
 
-        self.dark_mode_js += """DarkReader.setFetchMethod(window.fetch);"""
+        self.dark_mode_js += """DarkReader.setFetchMethod(window.fetch);\n"""
 
         if dark_mode_theme == "dark":
-            self.dark_mode_js += """DarkReader.enable({brightness: 100, contrast: 90, sepia: 10, mode: 1});"""
+            dark_mode_custom_theme["mode"] = 1
         else: # light theme
-            self.dark_mode_js += """DarkReader.enable({brightness: 100, contrast: 90, sepia: 10, mode: 0});"""
+            dark_mode_custom_theme["mode"] = 0
 
-    def _send_merriam_webster_liju(self, marker):
-        link = self.get_marker_link(marker)
-        if link:
-            eval_in_emacs("eaf-send-merriam-webster-liju-to-Anki", [link])
+        self.dark_mode_js += """DarkReader.enable(%s);""" % json.dumps(dark_mode_custom_theme)
 
     def _copy_merriam_webster_phonetic(self, marker):
         link = self.get_marker_link(marker)
@@ -761,36 +795,52 @@ class BrowserView(QWebEngineView):
             eval_in_emacs("popweb-anki-review-show", [sentence])
 
 class BrowserPage(QWebEnginePage):
-    def __init__(self):
-        QWebEnginePage.__init__(self)
+    def __init__(self, profile):
+        QWebEnginePage.__init__(self, profile)
 
     def execute_javascript(self, script_src):
         ''' Execute JavaScript.'''
-        if hasattr(self, "loop") and self.loop.isRunning():
-            # NOTE:
-            #
-            # Just return None is QEventLoop is busy, such as press 'j' key not release on webpage.
-            # Otherwise will got error 'RecursionError: maximum recursion depth exceeded while calling a Python object'.
-            #
-            # And don't warry, API 'execute_javascript' is works well for programming purpse since we just call this interface occasionally.
+        try:
+            if hasattr(self, "loop") and self.loop.isRunning():
+                # NOTE:
+                #
+                # Just return None is QEventLoop is busy, such as press 'j' key not release on webpage.
+                # Otherwise will got error 'RecursionError: maximum recursion depth exceeded while calling a Python object'.
+                #
+                # And don't warry, API 'execute_javascript' is works well for programming purpse since we just call this interface occasionally.
+                return None
+            else:
+                # Build event loop.
+                self.loop = QEventLoop()
+
+                # Run JavaScript code.
+                self.runJavaScript(script_src, self.callback_js)
+
+                # Execute event loop, and wait event loop quit.
+                self.loop.exec()
+
+                # Return JavaScript function result.
+                return self.result
+        except:
+            import traceback
+            traceback.print_exc()
+
             return None
-        else:
-            # Build event loop.
-            self.loop = QEventLoop()
-
-            # Run JavaScript code.
-            self.runJavaScript(script_src, self.callback_js)
-
-            # Execute event loop, and wait event loop quit.
-            self.loop.exec()
-
-            # Return JavaScript function result.
-            return self.result
 
     def callback_js(self, result):
         ''' Callback of JavaScript, call loop.quit to jump code after loop.exec.'''
         self.result = result
         self.loop.quit()
+
+    def javaScriptConsoleMessage(self, level, message, line_number, source_id):
+        # Only print JavaScript console message for EAF application.
+        # don't print any console message from browser, print too much message will slow down Emacs.
+        if self.url().toString() == "file:///":
+            print("[JavaScript console]: " + message)
+
+webengine_profile = QWebEngineProfile('eaf')
+webengine_profile.setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.ForcePersistentCookies)
+webengine_profile.setHttpCacheType(QWebEngineProfile.HttpCacheType.DiskHttpCache)
 
 class BrowserBuffer(Buffer):
 
@@ -800,7 +850,9 @@ class BrowserBuffer(Buffer):
     def __init__(self, buffer_id, url, arguments, fit_to_view):
         Buffer.__init__(self, buffer_id, url, arguments, fit_to_view)
 
-        self.add_widget(BrowserView(buffer_id))
+        self.profile = webengine_profile
+
+        self.add_widget(BrowserView(self.profile, buffer_id))
 
         self.url = url
 
@@ -840,11 +892,7 @@ class BrowserBuffer(Buffer):
               "eaf-webengine-default-zoom",
               "eaf-webengine-zoom-step"])
 
-        # self.profile = QWebEngineProfile(self.buffer_widget)
-        # self.profile.defaultProfile() == QWebEngineProfile.defaultProfile()
-        # The default profile can be accessed by defaultProfile(). It is a built-in profile that all web pages not specifically created with another profile belong to.
-        self.profile = QWebEngineProfile.defaultProfile()
-        self.profile.defaultProfile().setHttpUserAgent(self.pc_user_agent)
+        self.profile.setHttpUserAgent(self.pc_user_agent)
 
         self.caret_js_ready = False
         self.caret_browsing_mode = False
@@ -853,6 +901,8 @@ class BrowserBuffer(Buffer):
         self.caret_browsing_search_text = ""
         self.is_dark_mode_enabled = self.dark_mode_is_enabled()
 
+        self.input_mode = False
+
         self.current_url = ""
         self.request_url = ""
 
@@ -860,7 +910,7 @@ class BrowserBuffer(Buffer):
         self.buffer_widget.web_page.fullScreenRequested.connect(self.handle_fullscreen_request)
         self.buffer_widget.web_page.pdfPrintingFinished.connect(self.notify_print_message)
         self.buffer_widget.web_page.featurePermissionRequested.connect(self.permission_requested) # enable camera permission
-        self.profile.defaultProfile().downloadRequested.connect(self.handle_download_request)
+        self.profile.downloadRequested.connect(self.handle_download_request)
 
         self.settings = self.buffer_widget.settings()
         try:
@@ -885,9 +935,14 @@ class BrowserBuffer(Buffer):
             self.settings.setFontSize(QWebEngineSettings.FontSize.DefaultFontSize, self.font_size)
             self.settings.setFontSize(QWebEngineSettings.FontSize.DefaultFixedFontSize, self.fixed_font_size)
 
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.LocalStorageEnabled, True)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.FullScreenSupportEnabled, True)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.DnsPrefetchEnabled, True)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.FocusOnNavigationEnabled, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessRemoteUrls, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.LocalContentCanAccessFileUrls, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
+            self.settings.setAttribute(QWebEngineSettings.WebAttribute.AllowGeolocationOnInsecureOrigins, True)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.PlaybackRequiresUserGesture, False)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, self.enable_plugin)
             self.settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, self.enable_javascript)
@@ -941,11 +996,14 @@ class BrowserBuffer(Buffer):
     def notify_print_message(self, file_path, success):
         ''' Notify the print as pdf message.'''
         if success:
-            # Try to rename pdf file with title.
-            # Use host name if title include invalid file char.
-            title_path = os.path.join(os.path.expanduser(self.download_path), "{}.pdf".format(self.title))
             try:
-                os.rename(file_path, title_path)
+                # Try to rename pdf file with title if title exists and title does not contain invalid file char.
+                # Otherwise use host name (web pages) or filepath (local files) if title include invalid file char.
+                if self.title:
+                    title_path = os.path.join(os.path.expanduser(self.download_path), "{}.pdf".format(self.title))
+                    os.rename(file_path, title_path)
+                else:
+                    title_path = file_path
                 message_to_emacs("Successfully saved current webpage as '{}'.".format(title_path))
             except Exception:
                 message_to_emacs("Successfully saved current webpage as '{}'.".format(file_path))
@@ -970,7 +1028,7 @@ class BrowserBuffer(Buffer):
 
     def dark_mode_js_load(self, progress):
         # is_dark_mode_enabled use for toggle dark mode.
-        if self.is_dark_mode_enabled and self.dark_mode_is_enabled() and self.buffer_widget.dark_mode_js != None and progress < 100:
+        if self.is_dark_mode_enabled and self.dark_mode_is_enabled() and (self.buffer_widget.dark_mode_js is not None) and progress < 100:
             self.buffer_widget.eval_js(self.buffer_widget.dark_mode_js)
 
     def handle_fullscreen_request(self, request):
@@ -1007,15 +1065,18 @@ class BrowserBuffer(Buffer):
                 from core.pyaria2 import Jsonrpc
 
                 download_url = download_item.url().toString()
-                jsonrpc = Jsonrpc('localhost', 6800)
-                resp = jsonrpc.addUris(download_url)
+                jsonrpc = Jsonrpc('127.0.0.1', 6800)
+                jsonrpc.addUris(download_url)
 
                 message_to_emacs("Downloading: " + download_url)
 
     def _save_as_pdf(self):
         parsed = urlparse(self.url)
-        qd = parse_qs(parsed.query, keep_blank_values=True)
-        pdf_path = os.path.join(os.path.expanduser(self.download_path), "{}.pdf".format(parsed.netloc))
+        if parsed.netloc:
+            pdf_filename = "{}.pdf".format(parsed.netloc)
+        else:
+            pdf_filename = "{}.pdf".format(os.path.basename(parsed.path))
+        pdf_path = os.path.join(os.path.expanduser(self.download_path), pdf_filename)
         message_to_emacs("Saving as pdf...")
         self.buffer_widget.web_page.printToPdf(pdf_path)
 
@@ -1028,7 +1089,6 @@ class BrowserBuffer(Buffer):
         from functools import partial
 
         parsed = urlparse(self.url)
-        qd = parse_qs(parsed.query, keep_blank_values=True)
         file_path = os.path.join(os.path.expanduser(self.download_path), "{}.html".format(parsed.netloc))
         message_to_emacs("Saving as single file...")
         args = ["monolith", self.url, "-o", file_path]
@@ -1072,6 +1132,7 @@ class BrowserBuffer(Buffer):
         # We need send key event to QWebEngineView's focusProxy widget, not QWebEngineView.
         return [self.buffer_widget.focusProxy()]
 
+    @PostGui()
     def scroll_other_buffer(self, scroll_direction, scroll_type):
         ''' Scroll.'''
         if scroll_type == "page":
@@ -1085,6 +1146,7 @@ class BrowserBuffer(Buffer):
             else:
                 self.scroll_down()
 
+    @PostGui()
     def handle_input_response(self, callback_tag, result_content):
         ''' Handle input message.'''
         result_content = str(result_content)
@@ -1132,6 +1194,7 @@ class BrowserBuffer(Buffer):
             return False
         return True
 
+    @PostGui()
     def cancel_input_response(self, callback_tag):
         ''' Cancel input message.'''
         if callback_tag == "open_link" or \
@@ -1150,14 +1213,17 @@ class BrowserBuffer(Buffer):
         elif callback_tag == "search_text_forward" or callback_tag == "search_text_backward":
             self.buffer_widget.clean_search_and_select()
 
+    @PostGui()
     def handle_search_forward(self, callback_tag):
         if callback_tag == "search_text_forward" or callback_tag == "search_text_backward":
             self.buffer_widget._search_text(self.buffer_widget.search_term)
 
+    @PostGui()
     def handle_search_backward(self, callback_tag):
         if callback_tag == "search_text_forward" or callback_tag == "search_text_backward":
             self.buffer_widget._search_text(self.buffer_widget.search_term, True)
 
+    @PostGui()
     def handle_search_finish(self, callback_tag):
         if callback_tag == "search_text_forward" or callback_tag == "search_text_backward":
             self.buffer_widget.clean_search()
@@ -1330,48 +1396,48 @@ class BrowserBuffer(Buffer):
     def copy_code(self):
         ''' Copy code.'''
         self.buffer_widget.get_code_markers()
-        self.send_input_message("Copy code: ", "copy_code", "marker");
+        self.send_input_message("Copy code: ", "copy_code", "marker")
 
     @interactive(insert_or_do=True)
     def select_text(self):
         ''' Select Text.'''
         self.buffer_widget.get_text_markers()
-        self.send_input_message("Select Text: ", "select_marker_text", "marker");
+        self.send_input_message("Select Text: ", "select_marker_text", "marker")
 
     @interactive(insert_or_do=True)
     def caret_at_line(self):
         self.buffer_widget.get_text_markers()
-        self.send_input_message("Toggle Caret Browsing at Line: ", "caret_at_line", "marker");
+        self.send_input_message("Toggle Caret Browsing at Line: ", "caret_at_line", "marker")
 
     @interactive(insert_or_do=True)
     def open_link(self):
         ''' Open Link through a marker.'''
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Open Link: ", "open_link", "marker");
+        self.send_input_message("Open Link: ", "open_link", "marker")
 
     @interactive(insert_or_do=True)
     def open_link_new_buffer(self):
         ''' Open Link in New Buffer.'''
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Open Link in New Buffer: ", "open_link_new_buffer", "marker");
+        self.send_input_message("Open Link in New Buffer: ", "open_link_new_buffer", "marker")
 
     @interactive(insert_or_do=True)
     def open_link_new_buffer_other_window(self):
         ''' Open Link in New Buffer in Other Window.'''
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Open Link in New Buffer in Other Window: ", "open_link_new_buffer_other_window", "marker");
+        self.send_input_message("Open Link in New Buffer in Other Window: ", "open_link_new_buffer_other_window", "marker")
 
     @interactive(insert_or_do=True)
     def open_link_background_buffer(self):
         ''' Open Link in Background Buffer.'''
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Open Link in Background Buffer: ", "jump_link_background_buffer", "marker");
+        self.send_input_message("Open Link in Background Buffer: ", "jump_link_background_buffer", "marker")
 
     @interactive
     def copy_link(self):
         ''' Copy link.'''
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Copy link: ", "copy_link", "marker");
+        self.send_input_message("Copy link: ", "copy_link", "marker")
 
     @interactive(insert_or_do=True)
     def edit_url(self):
@@ -1391,18 +1457,37 @@ class BrowserBuffer(Buffer):
     def atomic_edit(self):
         ''' Edit the focus text.'''
         text = self.buffer_widget.get_focus_text()
-        if text != None:
+        if text is not None:
             atomic_edit(self.buffer_id, text)
         else:
-            message_to_emacs("No active input element.")
+            self.buffer_widget.focus_input()
+
+            # try again:
+            text = self.buffer_widget.get_focus_text()
+            if text is not None:
+                atomic_edit(self.buffer_id, text)
+            else:
+                message_to_emacs("No active input element.")
+
+    @interactive
+    def switch_to_input_mode(self):
+        self.input_mode = not self.input_mode
+
+        if self.input_mode:
+            message_to_emacs("Enable input mode.")
+        else:
+            message_to_emacs("Disable input mode.")
 
     def is_focus(self):
         ''' Return bool of whether the buffer is focused.'''
-        input_focus = self.buffer_widget.get_focus_text() != None or self.url.startswith("devtools://")
+        if self.input_mode:
+            return True
+        else:
+            input_focus = (self.buffer_widget.get_focus_text() is not None) or self.url.startswith("devtools://")
 
-        eval_in_emacs("eaf-update-focus-state", [self.buffer_id, input_focus])
+            eval_in_emacs("eaf-update-focus-state", [self.buffer_id, input_focus])
 
-        return input_focus
+            return input_focus
 
     @interactive(insert_or_do=True)
     def duplicate_page(self):
@@ -1438,12 +1523,12 @@ class BrowserBuffer(Buffer):
     @interactive(insert_or_do=True)
     def toggle_device(self):
         ''' Toggle device.'''
-        user_agent = self.profile.defaultProfile().httpUserAgent()
+        user_agent = self.profile.httpUserAgent()
         if user_agent == self.pc_user_agent:
-            self.profile.defaultProfile().setHttpUserAgent(self.phone_user_agent)
+            self.profile.setHttpUserAgent(self.phone_user_agent)
             self.set_aspect_ratio(2.0 / 3)
         else:
-            self.profile.defaultProfile().setHttpUserAgent(self.pc_user_agent)
+            self.profile.setHttpUserAgent(self.pc_user_agent)
             self.set_aspect_ratio(0)
 
         self.refresh_page()
@@ -1484,30 +1569,31 @@ class BrowserBuffer(Buffer):
         if url.startswith("https://www.youtube.com"):
             import shutil
 
-            if shutil.which("youtube-dl"):
+            if shutil.which("yt-dlp"):
                 download_path = "{}/%(title)s-%(id)s.%(ext)s".format(os.path.expanduser(self.download_path))
 
-                youtube_dl_args = ["youtube-dl"]
-                youtube_dl_args.append("--proxy")
-                youtube_dl_args.append(self.proxy_string)
-                youtube_dl_args.append(url)
-                youtube_dl_args.append("-o")
-                youtube_dl_args.append(download_path)
+                yt_dlp_args = ["yt-dlp"]
+                if self.proxy_string != "":
+                    yt_dlp_args.append("--proxy")
+                    yt_dlp_args.append(self.proxy_string)
+                yt_dlp_args.append(url)
+                yt_dlp_args.append("-o")
+                yt_dlp_args.append(download_path)
 
                 file_type = "video"
                 if only_audio:
-                    youtube_dl_args.append("-x --write-srt --sub-lang en")
+                    yt_dlp_args.append("-x")
                     file_type = "audio"
 
-                with open(os.devnull, "w") as null_file:
-                    popen_and_call(youtube_dl_args, lambda : message_to_emacs("Downloaded: {0}".format(url)), null_file)
+                popen_and_call(yt_dlp_args, lambda : message_to_emacs("Downloaded: {0}".format(url)))
 
                 message_to_emacs("Downloading {0}: {1}".format(file_type, url))
             else:
-                message_to_emacs("Please install youtube-dl to use this feature.")
+                message_to_emacs("Please install yt-dlp to use this feature.")
         else:
             message_to_emacs("Only videos from YouTube can be downloaded for now.")
 
+    @PostGui()
     def eval_js_function(self, function_name, function_arguments):
         ''' Eval JavaScript function.'''
         if function_arguments == "":
@@ -1522,6 +1608,7 @@ class BrowserBuffer(Buffer):
         else:
             return self.buffer_widget.execute_js('''{}({})'''.format(to_camel_case(function_name), function_arguments))
 
+    @PostGui()
     def eval_js_code(self, js_code):
         ''' Eval JavaScript code.'''
         self.buffer_widget.eval_js(js_code)
@@ -1583,6 +1670,19 @@ class BrowserBuffer(Buffer):
         self._change_url(url)
 
     @PostGui()
+    def load_url_with_agent(self, url, agent):
+        self.set_agent(agent)
+
+        self.change_url(url)
+
+    def set_agent(self, agent):
+        user_agent = self.profile.httpUserAgent()
+        if agent == "pc" and user_agent == self.phone_user_agent:
+            self.profile.setHttpUserAgent(self.pc_user_agent)
+        elif agent == "phone" and user_agent == self.pc_user_agent:
+            self.profile.setHttpUserAgent(self.phone_user_agent)
+
+    @PostGui()
     def _change_url(self, url):
         self.buffer_widget.stop()
         self.buffer_widget.setUrl(QUrl(url))
@@ -1599,14 +1699,22 @@ class BrowserBuffer(Buffer):
         self.dark_mode_js_load(progress)
 
     @interactive
+    def update_theme(self):
+        self.theme_mode = get_emacs_theme_mode()
+        self.theme_foreground_color = get_emacs_theme_foreground()
+        self.theme_background_color = get_emacs_theme_background()
+        self.buffer_widget.eval_js("document.body.style.background = '{}'; document.body.style.color = '{}'".format(
+            self.theme_background_color, self.theme_foreground_color))
+
+    @interactive
     def send_merriam_webster_liju(self):
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Copy link: ", "send_merriam_webster_liju", "marker");
+        self.send_input_message("Copy link: ", "send_merriam_webster_liju", "marker")
 
     @interactive
     def copy_merriam_webster_phonetic(self):
         self.buffer_widget.get_link_markers()
-        self.send_input_message("Copy link: ", "copy_merriam_webster_phonetic", "marker");
+        self.send_input_message("Copy link: ", "copy_merriam_webster_phonetic", "marker")
 
     @interactive
     def popweb_dict_search_select(self):
@@ -1617,7 +1725,8 @@ class BrowserBuffer(Buffer):
     @interactive
     def popweb_translate_select(self):
         self.buffer_widget.get_text_markers()
-        self.send_input_message("Popweb tranlsate select: ", "popweb_translate_select", "marker");
+        self.send_input_message("Popweb tranlsate select: ", "popweb_translate_select", "marker")
+
 
 class ZoomSizeDb(object):
     def __init__(self, dbpath):
@@ -1668,9 +1777,6 @@ class CookiesManager(object):
         self.browser_view = browser_view
 
         self.cookies_dir = os.path.join(get_emacs_config_dir(), "browser", "cookies")
-
-        # Both session and persistent cookies are stored in memory
-        self.browser_view.page().profile().setPersistentCookiesPolicy(QWebEngineProfile.PersistentCookiesPolicy.NoPersistentCookies)
 
         self.cookie_store = self.browser_view.page().profile().cookieStore()
 
@@ -1730,8 +1836,9 @@ class CookiesManager(object):
 
     def delete_cookie(self):
         ''' Delete all cookie used by current site except session cookies.'''
-        from PyQt6.QtNetwork import QNetworkCookie
         import shutil
+
+        from PyQt6.QtNetwork import QNetworkCookie
 
         cookies_domain = os.listdir(self.cookies_dir)
 
@@ -1747,11 +1854,11 @@ class CookiesManager(object):
     def domain_matching(self, cookie_domain):
         ''' Check if a given cookie's domain is matching for host string.'''
 
-        cookie_is_hostOnly = True
+        cookie_is_host_only = True
         if cookie_domain.startswith('.'):
             # get rid of prefixing dot when matching domains
             cookie_domain = cookie_domain[1:]
-            cookie_is_hostOnly = False
+            cookie_is_host_only = False
 
         host_string = self.browser_view.url().host()
 
@@ -1764,7 +1871,7 @@ class CookiesManager(object):
             # is shorter than the domain string
             return False
 
-        if host_string.endswith(cookie_domain) and host_string[:-len(cookie_domain)][-1] == '.' and not cookie_is_hostOnly:
+        if host_string.endswith(cookie_domain) and host_string[:-len(cookie_domain)][-1] == '.' and not cookie_is_host_only:
             # The domain string should be a suffix of the host string,
             # The last character of the host string that is not included in the
             # domain string should be a %x2E (".") character.
@@ -1775,7 +1882,9 @@ class CookiesManager(object):
 
     def get_relate_domains(self, cookie_domain):
         ''' Check whether the cookie domain is located under the same root host as the current URL host.'''
-        import tld, re
+        import re
+
+        import tld
 
         host_string = self.browser_view.url().host()
 
@@ -1786,7 +1895,7 @@ class CookiesManager(object):
 
         if not base_domain:
             # check whether host string is an IP address
-            if re.compile('^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$').match(host_string) and host_string == cookie_domain:
+            if re.compile(r'^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$').match(host_string) and host_string == cookie_domain:
                 return True
             return  False
 
@@ -1808,3 +1917,42 @@ class CookiesManager(object):
             encode_path = cookie.path().replace("/", "|")
 
         return name + "+" + domain + "+" + encode_path
+
+class TranslateThread(QThread):
+
+    fetch_result = QtCore.pyqtSignal(list)
+
+    def __init__(self, texts):
+        QThread.__init__(self)
+
+        self.texts = texts
+
+    def get_command_result(self, command_string):
+        import subprocess
+        process = subprocess.Popen(command_string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process.wait()
+        result = process.stdout.readlines()
+        return result
+
+    def run(self):
+        if self.texts is None:
+            message_to_emacs("Not fetch words, please try agian.")
+        else:
+            separator = "<meta name='google' content='notranslate'/>"
+            text = ''.join(list(map(lambda t: f"{separator}{t}\n", self.texts)))
+            self.cache_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
+            self.cache_file_path = self.cache_file.name
+
+            with open(self.cache_file_path, "w") as f:
+                f.write(text)
+
+            result = self.get_command_result("crow -t 'zh-CN' --j -e 'google' -f {}".format(self.cache_file_path))
+            translation = json.loads(''.join(list(map(lambda b: b.decode("utf-8"), result))))["translation"]
+
+            if os.path.exists(self.cache_file_path):
+                os.remove(self.cache_file_path)
+
+            if len(translation) > 0:
+                translates = translation.split(separator)[1:]
+
+                self.fetch_result.emit(translates)

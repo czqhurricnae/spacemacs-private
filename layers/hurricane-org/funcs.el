@@ -1111,12 +1111,12 @@ Otherwise return word around point."
             (sentence (cdar (cdr (assq 'sentence fields))))
             (translation (or (cdar (cdr (assq 'translation fields))) "/ /"))
             (notes (cdar (cdr (assq 'notes fields))))
-            (audio (cdar (cdr (assq 'audio fields))))
+            (sound (cdar (cdr (assq 'sound fields))))
             (phonetic (or (cdar (cdr (assq 'phonetic fields))) "/ /")))
        (list
         (format "%s\n%s\n%s\n----------------------------------------------------------------------------------------------------" (if arg translation sentence) phonetic notes)
         noteid
-        audio)))
+        sound)))
    notesinfo))
 
 (defun hurricane/anki-editor-find-notes (&optional arg query)
@@ -1139,7 +1139,8 @@ Otherwise return word around point."
                      (anki-editor-api-call-result 'notesInfo :notes nids) arg)
                     :action (lambda (content) (-map (lambda (group-number)
                                                      (ignore-errors
-                                                        (play-sound-file
+                                                       ;; play-sound-file 该函数在特定Emacs版本不被支持
+                                                       (mpv-play
                                                          (format "%s%s"
                                                                  Anki-media-dir
                                                                  (and
@@ -1158,7 +1159,9 @@ Otherwise return word around point."
                                                                     )
                                                                    (elt content 2))
                                                                   (match-string group-number (elt content 2)))))))
-                                                    '(1 2)))))
+                                                    ;; '(1 2)，只播放 sound 字段，不播放 pronunciation 字段，所以 group-number 只需要 1
+                                                    '(1)
+                                                    ))))
       nids)))
 
 (defun hurricane//anki-editor-gui-edit-note-action (x)

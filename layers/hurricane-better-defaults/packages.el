@@ -12,7 +12,7 @@
 (defun hurricane-better-defaults/pre-init-youdao-dictionary ()
   (use-package youdao-dictionary
     :commands youdao-dictionary-play-voice-of-current-word
-    :bind (("C-c s" . hurricane/youdao-search-at-point)
+    :bind (("C-c S" . hurricane/youdao-search-at-point)
            ;; ("C-c S" . hurricane/deeplx)
            ;; ("C-c Y" . youdao-dictionary-search-at-point)
            :map youdao-dictionary-mode-map

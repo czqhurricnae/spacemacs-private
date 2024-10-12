@@ -1709,25 +1709,41 @@ marked file."
                    :apply '((0 0 0 0))))
 
                 (with-current-buffer output-buffer
-                  (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/")))
-                    (progn
-                      (if (file-exists-p relative-img-dir)
-                          (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
-                        (mkdir relative-img-dir))
-                      (let ((temp-name (select-or-enter-file-name relative-img-dir)))
-                        (setq absolute-img-dir (concat default-directory relative-img-dir "/"))
-                        (setq name-base (file-name-base temp-name))
-                        (setq file-name (concat name-base ".png"))
-                        (setq full-file-path (concat relative-img-dir file-name))
-                        (with-temp-buffer
-                          (insert-file-contents-literally result)
-                          (write-region (point-min) (point-max) full-file-path))
-                        (setq absolute-full-file-path (concat absolute-img-dir file-name))
-                        (insert (concat "[[file:" full-file-path "]]"))
-                        (evil-normal-state)
-                        (org-display-inline-images)
-                        (eaf-open-image-occlusion (expand-file-name absolute-full-file-path))
-                        )))
+                  (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/"))
+                         deck
+                         (elt (plist-get (org-element-at-point) 'headline))
+                         (front (string-join (org-get-outline-path t) " > "))
+                         (contents-begin (plist-get elt :contents-begin))
+                         (robust-begin (or (plist-get elt :robust-begin)
+                                           contents-begin))
+                         (beg (if (or (= contents-begin robust-begin)
+                                      (= (+ 2 contents-begin) robust-begin))
+                                  contents-begin
+                                (1+ robust-begin)))
+                         (contents-end (plist-get elt :contents-end))
+                         (back (buffer-substring-no-properties
+                                contents-begin (1- contents-end))))
+                  (progn
+                    (if (file-exists-p relative-img-dir)
+                        (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
+                      (mkdir relative-img-dir))
+                    (let ((temp-name (select-or-enter-file-name relative-img-dir)))
+                      (setq absolute-img-dir (concat default-directory relative-img-dir "/"))
+                      (setq name-base (file-name-base temp-name))
+                      (setq file-name (concat name-base ".png"))
+                      (setq full-file-path (concat relative-img-dir file-name))
+                      (with-temp-buffer
+                        (insert-file-contents-literally result)
+                        (write-region (point-min) (point-max) full-file-path))
+                      (setq absolute-full-file-path (concat absolute-img-dir file-name))
+                      (insert (concat "[[file:" full-file-path "]]"))
+                      (evil-normal-state)
+                      (org-display-inline-images)
+                      (save-excursion
+                        (goto-char (point-min))
+                        (setq deck (or (hurricane//extract-value-from-keyword "ANKI_DECK") (hurricane//headline-property "ANKI_DECK"))))
+                      (eaf-open-image-occlusion (expand-file-name absolute-full-file-path) (list deck front back))
+                      )))
                   (unless no-display-p
                     (pop-to-buffer (current-buffer))))
                 )

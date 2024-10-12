@@ -49,6 +49,8 @@ var originalImageName;
 var draw;
 var rect;
 var temp_draw;
+var deck;
+
 
 var canDraw = false;
 
@@ -355,7 +357,7 @@ function redoDraw() {
 
 var imgHeight;
 var imgWidth;
-function addImage(url="", height=0, width=0, deck="") {
+function addImage(url="", height=0, width=0, deck="", front="") {
     scaleVar = 1.0;
 
     polygonStack = [];
@@ -363,6 +365,10 @@ function addImage(url="", height=0, width=0, deck="") {
 
     if (deck) {
         localStorage.setItem("deckName", deck);
+    }
+
+    if (front) {
+        localStorage.setItem("front", front);
     }
 
     if (!url) {
@@ -538,12 +544,16 @@ function addNote() {
         document.getElementById("done-btn").style.display = "none";
 
         document.getElementById("close-add-note-btn").style.display = "block";
+
+        document.getElementById("noteHeader").value = localStorage.getItem("front");
     }
 }
 
 function closeAddNoteNav() {
     document.getElementById("add-note").style.height = "0";
     document.getElementById("close-add-note-btn").style.display = "none";
+    localStorage.setItem("front", document.getElementById("noteHeader").value);
+
     resetTitle();
 }
 

@@ -968,7 +968,25 @@ that the point is already within a string."
 		                (candidates . ,(append
 				                            '(
                                       ("@ Preview file" . (lambda (path) (eaf-open path)))
-                                      ("@ EAF image occlusion" . (lambda (path) (eaf-open-image-occlusion (expand-file-name path))))
+                                      ("@ EAF image occlusion" . (lambda (path)
+                                                                   (save-excursion
+                                                                     (org-back-to-heading-or-point-min)
+                                                                     (let* ((deck (hurricane//extract-value-from-keyword "ANKI_DECK"))
+                                                                            (elt (plist-get (org-element-at-point) 'headline))
+                                                                            (front (string-join (org-get-outline-path t) " > "))
+                                                                            (contents-begin (plist-get elt :contents-begin))
+                                                                            (robust-begin (or (plist-get elt :robust-begin)
+                                                                                              contents-begin))
+                                                                            (beg (if (or (= contents-begin robust-begin)
+                                                                                         (= (+ 2 contents-begin) robust-begin))
+                                                                                     contents-begin
+                                                                                   (1+ robust-begin)))
+                                                                            (contents-end (plist-get elt :contents-end))
+                                                                            (back (buffer-substring-no-properties
+                                                                                   contents-begin (1- contents-end))))
+                                                                       (eaf-open-image-occlusion (expand-file-name path) (list deck front back))
+                                                                       ))
+                                                                   ))
                                       ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
                                                                                                                                             (next-line)
                                                                                                                                             (newline-and-indent)

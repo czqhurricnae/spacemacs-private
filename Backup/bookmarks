@@ -2,11 +2,7 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Z-Library – 世界上最大的电子图书馆。自由访问知识和文化。"
- (handler . eaf--bookmark-restore)
- (eaf-app . "browser")
- (filename . "https://zh.z-library.se/"))
-("STM32-V4开发板（45个例子）_免费高速下载|百度网盘-分享无限制"
+(("STM32-V4开发板（45个例子）_免费高速下载|百度网盘-分享无限制"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://pan.baidu.com/s/1hrYxMYC#list/path=%2Fsharelink286563520-594644706110903%2FSTM32-V4%E5%BC%80%E5%8F%91%E6%9D%BF%EF%BC%8845%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%89&parentPath=%2Fsharelink286563520-594644706110903"))

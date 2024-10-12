@@ -288,7 +288,7 @@ async function createCombineCloze() {
                       "modelName": "Image Occlusion Enhanced",
                       "fields": {
                           "id (hidden)": noteId,
-                          "Header": noteHeader,
+                          "Header": noteHeader || localStorage.getItem("front"),
                           "Image": origImage,
                           "Question Mask": queSvg,
                           "Footer": noteFooter,

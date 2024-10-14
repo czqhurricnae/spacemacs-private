@@ -73,8 +73,6 @@
         ;;                                  :repo "sachac/compile-media"))
         ;; (subed-record :location (recipe :fetcher github
         ;;                                 :repo "sachac/subed-record"))
-        ;; (immersive-translate :location (recipe :fetcher github
-        ;;                                        :repo "Elilif/emacs-immersive-translate"))
         (icloud :location (recipe :fetcher github
                                   :repo "andyjda/icloud-utilities"))
         (elfeed :location (recipe :fetcher github
@@ -1770,12 +1768,6 @@ Works only in youtube-sub-extractor-mode buffer."
     :ensure t
     :config
     (setq subed-record-backend 'sox)))
-
-(defun hurricane-misc/init-immersive-translate ()
-  (use-package immersive-translate
-    :ensure t
-    :config
-    (setq immersive-translate-backend 'deeplx)))
 
 (defun hurricane-misc/init-icloud ()
   (use-package icloud

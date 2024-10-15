@@ -656,8 +656,7 @@
           evil-visual-state-tag   (propertize "[V]" 'face '((:background "gray" :foreground "black")))
           evil-operator-state-tag (propertize "[O]" 'face '((:background "purple"))))
     (setq evil-insert-state-cursor '("chartreuse3" box))
-    (define-key evil-insert-state-map (kbd "C-z") 'evil-emacs-state)
-    ))
+    (define-key evil-insert-state-map (kbd "C-z") 'evil-emacs-state)))
 
 (defun hurricane-misc/init-visual-regexp ()
   (use-package visual-regexp
@@ -1348,7 +1347,17 @@
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key popweb-dict-eudic-dicts-input "C-c y" eaf-pdf-viewer-keybinding))
+    (eaf-bind-key popweb-dict-eudic-dicts-input "C-c y" eaf-pdf-viewer-keybinding)
+
+    (evilified-state-evilify-map eaf-pdf-outline-mode-map
+      :mode eaf-pdf-outline-mode
+      :bindings
+      "q" #'kill-buffer-and-window)
+
+    (evilified-state-evilify-map eaf-pdf-outline-edit-mode-map
+      :mode eaf-pdf-outline-edit-mode
+      :bindings
+      "q" #'kill-buffer-and-window))
 
   (defun eaf-image-viewer-create-occlusion ()
     (interactive)
@@ -1898,12 +1907,48 @@ Works only in youtube-sub-extractor-mode buffer."
     ("C-c s g" . gt-do-translate)
     ("C-c s s" . gt-do-setup)
     ("C-c s p" . gt-do-speak)
+    :init
+    (defun merge-sublists-with-same-first-element (nested-list)
+      "Merge the nested list into the specified format."
+      (let (temp
+            (result '()))
+        (dolist (sublist nested-list)
+          (setq temp (car result))
+          (if (or (equal (car temp) (car sublist))
+                  (and (numberp (car temp))
+                       (numberp (car sublist))
+                       (< (abs (- (car temp) (car sublist))) 0.025)))
+              (push (append (keep-first-two-elements (pop result))
+                            (keep-last-two-elements sublist)) result)
+            (push sublist result)))
+        (reverse result)))
+
+    (defun keep-first-two-elements (lst)
+      "Keep only the first two elements of the list."
+      (let ((first-element (car lst))
+            (second-element (car (cdr lst))))
+        (list first-element second-element)))
+
+    (defun keep-last-two-elements (lst)
+      "Keep only the last two elements of the list."
+      (let ((last-two (nthcdr (- (length lst) 2) lst)))
+        (if (listp last-two)
+            last-two
+          (list last-two))))
     :config
+    (add-hook 'gt-buffer-render-init-hook (lambda () (define-key evil-normal-state-local-map (kbd "q") #'kill-buffer-and-window)))
+
     (cl-defmethod gt-text :around ((taker gt-taker) translator)
       "Extend the original gt-text method to handle pdf-view-mode."
-      (if (eq major-mode 'pdf-view-mode)
-          (gt-text-at-point nil 'pdf-view-mode)
-        (cl-call-next-method)))
+      (cond ((and (eq major-mode 'pdf-view-mode) (not (pdf-view-active-region-p)))
+              (mapconcat (lambda (text) (replace-regexp-in-string "[\t\n\r]+" " " text))
+                       (-map (lambda (edge) (pdf-info-gettext (pdf-view-current-page) edge))
+                             (merge-sublists-with-same-first-element
+                              (pdf-info-getselection (pdf-view-current-page) '(0 0 1 1) 'line nil)))
+                       "\r\n"))
+            ((eq major-mode 'pdf-view-mode)
+             (gt-text-at-point nil 'pdf-view-mode))
+            (t (cl-call-next-method))))
 
     (setq gt-langs '(en zh)
           gt-chatgpt-host "https://api.deepseek.com"
@@ -1921,8 +1966,8 @@ Works only in youtube-sub-extractor-mode buffer."
           gt-buffer-render-follow-p t
           gt-buffer-render-window-config
           '((display-buffer-reuse-window display-buffer-in-direction)
-            (direction . bottom)
-            (window-height . 0.4))
+            (direction . right)
+            (window-width . 0.5))
           gt-buffer-prompt-window-config
           '(display-buffer-reuse-window (inhibit-same-window . nil))
 
@@ -1931,6 +1976,7 @@ Works only in youtube-sub-extractor-mode buffer."
                          :taker (list (gt-taker :pick nil :if 'selection)
                                       ;; (gt-taker :text 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode))
                                       (gt-taker :text 'buffer :pick 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode eww-mode))
+                                      (gt-taker :text #'(lambda () (eaf-call-sync "execute_function" eaf--buffer-id "get_page_text")) :if '(eaf-mode))
                                       (gt-taker :text 'word))
                          :engines (list (gt-chatgpt-engine))
                          :render  (list (gt-overlay-render :if '(Info-mode help-mode telega-webpage-mode helpful-mode devdocs-mode eww-mode))

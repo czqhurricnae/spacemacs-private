@@ -171,8 +171,7 @@
     (unless (eq (selected-frame) (car (visible-frame-list)))
       (select-frame-set-input-focus (car (visible-frame-list)))))
 
-  (advice-add #'tab-bar-select-tab :before #'hurricane//back-to-primary-frame)
-  )
+  (advice-add #'tab-bar-select-tab :before #'hurricane//back-to-primary-frame))
 
 (defun remove-key (keymap key)
   (define-key keymap key nil)

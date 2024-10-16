@@ -504,6 +504,6 @@ class AppBuffer(Buffer):
             result = [self.url, (self.buffer_widget.start_char_page_index + 1, ey/self.buffer_widget.page_height, ex/self.buffer_widget.page_width), self.get_select()]
         else:
             store_link_beg_ex, store_link_beg_ey, page_index = self.buffer_widget.get_cursor_absolute_position()
-            result = [self.url, (page_index + 1, store_link_beg_ey/self.buffer_widget.page_height, store_link_beg_ex/self.buffer_widget.page_width), ""]
+            result = [self.url, (page_index + 1, store_link_beg_ey/self.buffer_widget.page_height, store_link_beg_ex/self.buffer_widget.page_width)]
 
         return result

@@ -888,36 +888,33 @@
 (defun hurricane-misc/post-init-magit ()
   (progn
     (with-eval-after-load 'magit
-      (progn
-        (add-to-list 'magit-no-confirm 'stage-all-changes)
-        (define-key magit-log-mode-map (kbd "W") 'magit-copy-section-value)
-        (define-key magit-status-mode-map (kbd "s-1") 'magit-jump-to-unstaged)
-        (define-key magit-status-mode-map (kbd "s-2") 'magit-jump-to-untracked)
-        (define-key magit-status-mode-map (kbd "s-3") 'magit-jump-to-staged)
-        (define-key magit-status-mode-map (kbd "s-4") 'magit-jump-to-stashes)
-        (setq magit-completing-read-function 'magit-builtin-completing-read)
+      (add-to-list 'magit-no-confirm 'stage-all-changes)
+      (define-key magit-log-mode-map (kbd "W") 'magit-copy-section-value)
+      (define-key magit-status-mode-map (kbd "s-1") 'magit-jump-to-unstaged)
+      (define-key magit-status-mode-map (kbd "s-2") 'magit-jump-to-untracked)
+      (define-key magit-status-mode-map (kbd "s-3") 'magit-jump-to-staged)
+      (define-key magit-status-mode-map (kbd "s-4") 'magit-jump-to-stashes)
+      (setq magit-completing-read-function 'magit-builtin-completing-read)
 
-        ;; (magit-define-popup-switch 'magit-push-popup ?u
-        ;;   "Set upstream" "--set-upstream")
-        ))
+      ;; (magit-define-popup-switch 'magit-push-popup ?u
+      ;;   "Set upstream" "--set-upstream"))
 
-    ;; Prefer two way ediff.
-    (setq magit-ediff-dwim-show-on-hunks t)
+      ;; Prefer two way ediff.
+      (setq magit-ediff-dwim-show-on-hunks t)
 
-    ;; (setq magit-repository-directories '("~/Python/"))
-    (setq magit-push-always-verify nil)
+      ;; (setq magit-repository-directories '("~/Python/"))
+      (setq magit-push-always-verify nil)
 
-    (eval-after-load 'magit
-      '(define-key magit-mode-map (kbd "C-c g")
-         #'hurricane//magit-visit-pull-request))
+      (eval-after-load 'magit
+        '(define-key magit-mode-map (kbd "C-c g")
+           #'hurricane//magit-visit-pull-request))
 
-    (setq magit-process-popup-time 10)))
+      (setq magit-process-popup-time 10))))
 
 (defun hurricane-misc/post-init-git-messenger ()
   (use-package git-messenger
     :config
-    (progn
-      (define-key git-messenger-map (kbd "f") 'hurricane/github-browse-commit))))
+    (define-key git-messenger-map (kbd "f") 'hurricane/github-browse-commit)))
 
 ;; {{
 ;; Fix: markdown failed with exit code 127.

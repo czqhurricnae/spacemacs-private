@@ -706,7 +706,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
         ,@additional-segments
         (buffer-position :priority 99)
         (hud :priority 99)))
-    (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))))
+    (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
+    ;; https://github.com/magit/forge/issues/716
+    (setq package-install-upgrade-built-in t)))
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.

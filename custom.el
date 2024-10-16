@@ -71,6 +71,8 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/EAF PR-Popweb dict translate select/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/重装 org-noter 后出现 Error running timer ‘org-noter--show-arrow’: (invalid-function pdf-view-current-overlay)/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/Hands On RTOS with Microcontrollers Building real time embedded systems using FreeRTOS, STM32 MCUs, and SEGGER debug tools/"))

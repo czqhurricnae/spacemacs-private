@@ -145,5 +145,4 @@ For example, (setq eaf-screenshot-args (list \"-i\" \"-x\"))"
  reveal-project-directory "~/Downloads/"
  provixy-type "http"
  provixy-host "0.0.0.0"
- provixy-port "8118"
-)
+ provixy-port "8118")

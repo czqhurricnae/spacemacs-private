@@ -1291,8 +1291,8 @@
     ;;     self.send_input_message("Copy link: ", "send_merriam_webster_liju", "marker");
     (eaf-bind-key send_merriam_webster_liju "C-M-s" eaf-browser-keybinding)
     (eaf-bind-key copy_merriam_webster_phonetic "C-M-p" eaf-browser-keybinding)
-    (eaf-bind-key popweb_translate_select "<f2>" eaf-browser-keybinding)
-    (eaf-bind-key popweb_dict_search_select "y" eaf-browser-keybinding)
+    (eaf-bind-key popweb_anki_review "<f2>" eaf-browser-keybinding)
+    (eaf-bind-key popweb_dict_translate_select "y" eaf-browser-keybinding)
     (eaf-bind-key insert_or_download_youtube_video "Y" eaf-browser-keybinding)
     (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding))
 
@@ -1317,7 +1317,7 @@
                  "end tell\n"
                  ))))
     ;; pdf-viewer -> eaf_pdf_buffer.py
-    ;; def popweb_dict_search_select(self):
+    ;; def popweb_dict_translate_select(self):
     ;;     if self.buffer_widget.is_select_mode:
     ;;         content = self.buffer_widget.parse_select_char_list()
     ;;         eval_in_emacs('popweb-dict-eudic-dicts-input', [content])
@@ -1329,11 +1329,11 @@
     ;; 只能先在 (setq eaf-pdf-viewer-keybinding) 定义，再调用。
     ;; /Users/c/emacs-config/default/layers/+tools/eaf/packages.el
     ;; (setq eaf-pdf-viewer-keybinding
-    ;;  '(("y" . "popweb_dict_search_select")))
+    ;;  '(("y" . "popweb_dict_translate_select")))
     ;; 以下的写法，无法运行。
     ;; (defun eaf-pdf-viewer-popweb-dict-translate-select ()
     ;;   (interactive)
-    ;;   (eaf-call-async "popweb_dict_search_select" eaf--buffer-id))
+    ;;   (eaf-call-async "popweb_dict_translate_select" eaf--buffer-id))
 
     (evil-define-key 'normal eaf-pdf-outline-edit-mode-map (kbd "RET") #'eaf-pdf-outline-edit-jump)
     ;; (eaf-bind-key extract_page_images "e" eaf-pdf-viewer-keybinding)
@@ -1344,7 +1344,9 @@
     (eaf-bind-key eaf-pdf-outline-edit "O" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_left_tab "J" eaf-pdf-viewer-keybinding)
     (eaf-bind-key select_right_tab "K" eaf-pdf-viewer-keybinding)
-    (eaf-bind-key popweb-dict-eudic-dicts-input "C-c y" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key popweb_anki_review "<f2>" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key popweb_dict_translate_select "y" eaf-pdf-viewer-keybinding)
+    (eaf-bind-key store_link "M-l" eaf-pdf-viewer-keybinding)
 
     (evilified-state-evilify-map eaf-pdf-outline-mode-map
       :mode eaf-pdf-outline-mode

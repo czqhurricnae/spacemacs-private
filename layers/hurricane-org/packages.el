@@ -1853,6 +1853,19 @@ marked file."
                (org-link-store-props
                 :type org-noter-property-note-location
                 :link link
+                :description desc)))
+            ((eq major-mode 'eaf-mode)
+             (let* ((info (eaf-call-sync "execute_function" eaf--buffer-id "store_link"))
+                    (file (nth 0 info))
+                    (raw-location (nth 1 info))
+                    (page (number-to-string (car raw-location)))
+                    (location (cons page (cons (car (cdr raw-location)) (cadr (cdr raw-location)))))
+                    (quote (nth 2 info))
+                    (desc (concat (file-name-nondirectory file) ": Page " page (when quote (concat "; Quoting: " quote))))
+                    (link (format "%s:%s#%s" org-noter-property-note-location file location)))
+               (org-link-store-props
+                :type org-noter-property-note-location
+                :link link
                 :description desc)))))
 
     (defun hurricane//org-noter-link-follow (link)

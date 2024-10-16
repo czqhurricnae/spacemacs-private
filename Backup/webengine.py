@@ -609,6 +609,7 @@ Note, we need hook this function to signal 'loadProgress', signal 'loadStarted' 
         ''' Get visiable text markers.'''
         self.load_marker_file()
         self.eval_js("Marker.generateMarker(Marker.generateTextMarkerList());")
+
     def get_text(self, marker):
         self.load_marker_file()
         text = self.execute_js("Marker.getMarkerText('%s')" % str(marker))
@@ -789,7 +790,7 @@ Note, we need hook this function to signal 'loadProgress', signal 'loadStarted' 
         if link:
             eval_in_emacs("eaf-copy-merriam-webster-phonetic", [link])
 
-    def _popweb_translate_select(self, marker):
+    def _popweb_anki_review(self, marker):
         sentence = self.get_text(marker)
         if sentence:
             eval_in_emacs("popweb-anki-review-show", [sentence])
@@ -1188,8 +1189,8 @@ class BrowserBuffer(Buffer):
             self.buffer_widget._send_merriam_webster_liju(result_content.strip())
         elif callback_tag == "copy_merriam_webster_phonetic":
             self.buffer_widget._copy_merriam_webster_phonetic(result_content.strip())
-        elif callback_tag == "popweb_translate_select":
-            self.buffer_widget._popweb_translate_select(result_content.strip())
+        elif callback_tag == "popweb_anki_review":
+            self.buffer_widget._popweb_anki_review(result_content.strip())
         else:
             return False
         return True
@@ -1208,7 +1209,7 @@ class BrowserBuffer(Buffer):
            callback_tag == "edit_url" or \
            callback_tag == "send_merriam_webster_liju" or \
            callback_tag == "copy_merriam_webster_phonetic" or \
-           callback_tag == "popweb_translate_select":
+           callback_tag == "popweb_anki_review":
             self.buffer_widget.cleanup_links_dom()
         elif callback_tag == "search_text_forward" or callback_tag == "search_text_backward":
             self.buffer_widget.clean_search_and_select()
@@ -1717,15 +1718,15 @@ class BrowserBuffer(Buffer):
         self.send_input_message("Copy link: ", "copy_merriam_webster_phonetic", "marker")
 
     @interactive
-    def popweb_dict_search_select(self):
+    def popweb_dict_translate_select(self):
         sentence = self.buffer_widget.selectedText()
         if sentence:
             eval_in_emacs('popweb-dict-eudic-dicts-input', [sentence])
 
     @interactive
-    def popweb_translate_select(self):
+    def popweb_anki_review(self):
         self.buffer_widget.get_text_markers()
-        self.send_input_message("Popweb tranlsate select: ", "popweb_translate_select", "marker")
+        self.send_input_message("Popweb tranlsate select: ", "popweb_anki_review", "marker")
 
 
 class ZoomSizeDb(object):

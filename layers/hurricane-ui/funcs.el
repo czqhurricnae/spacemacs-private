@@ -1,4 +1,4 @@
-(defun hurricane/layout-format-name (name pos)
+(defun hurricane//layout-format-name (name pos)
   "Format the layout name given by `name' for display in mode-line."
   (let* ((layout-name (if (file-directory-p name)
                           (file-name-nondirectory (directory-file-name name))
@@ -12,7 +12,7 @@
         (propertize (concat "★ " caption) 'face 'warning)
       caption)))
 
-(defun hurricane/layouts-for-title-bar ()
+(defun hurricane//layouts-for-title-bar ()
   "Return a one liner string containing all the layout names."
   (let* ((persp-list (or (persp-names-current-frame-fast-ordered)
                          (list persp-nil-name)))
@@ -22,7 +22,7 @@
          (formatted-persp-list
           (concat " "
                   (mapconcat (lambda (persp)
-                               (hurricane/layout-format-name
+                               (hurricane//layout-format-name
                                 persp (position persp persp-list)))
                              persp-list spaces)))
          (file (if (projectile-project-p)
@@ -35,7 +35,7 @@
                        (buffer-file-name)) (buffer-name)))))
     (concat file "     -     " formatted-persp-list)))
 
-(defun hurricane/default-title-bar ()
+(defun hurricane//default-title-bar ()
   (if (projectile-project-p)
       (concat
        (projectile-project-name)
@@ -49,10 +49,10 @@
 
 (defun hurricane/toggle-title-format ()
   (interactive)
-  (if (equal frame-title-format '(:eval (hurricane/layouts-for-title-bar)))
-      (setq frame-title-format '(:eval (hurricane/default-title-bar)))
-    (setq frame-title-format '(:eval (hurricane/layouts-for-title-bar))))
-  (redraw-frame))(defun hurricane/layout-format-name (name pos)
+  (if (equal frame-title-format '(:eval (hurricane//layouts-for-title-bar)))
+      (setq frame-title-format '(:eval (hurricane//default-title-bar)))
+    (setq frame-title-format '(:eval (hurricane//layouts-for-title-bar))))
+  (redraw-frame))(defun hurricane//layout-format-name (name pos)
   "Format the layout name given by `name' for display in mode-line."
   (let* ((layout-name (if (file-directory-p name)
                           (file-name-nondirectory (directory-file-name name))
@@ -66,7 +66,7 @@
         (propertize (concat "★ " caption) 'face 'warning)
       caption)))
 
-(defun hurricane/layouts-for-title-bar ()
+(defun hurricane//layouts-for-title-bar ()
   "Return a one liner string containing all the layout names."
   (let* ((persp-list (or (persp-names-current-frame-fast-ordered)
                          (list persp-nil-name)))
@@ -76,7 +76,7 @@
          (formatted-persp-list
           (concat " "
                   (mapconcat (lambda (persp)
-                               (hurricane/layout-format-name
+                               (hurricane//layout-format-name
                                 persp (position persp persp-list)))
                              persp-list spaces)))
          (file (if (projectile-project-p)
@@ -89,7 +89,7 @@
                        (buffer-file-name)) (buffer-name)))))
     (concat file "     -     " formatted-persp-list)))
 
-(defun hurricane/default-title-bar ()
+(defun hurricane//default-title-bar ()
   (if (projectile-project-p)
       (concat
        (projectile-project-name)
@@ -103,9 +103,9 @@
 
 (defun hurricane/toggle-title-format ()
   (interactive)
-  (if (equal frame-title-format '(:eval (hurricane/layouts-for-title-bar)))
-      (setq frame-title-format '(:eval (hurricane/default-title-bar)))
-    (setq frame-title-format '(:eval (hurricane/layouts-for-title-bar))))
+  (if (equal frame-title-format '(:eval (hurricane//layouts-for-title-bar)))
+      (setq frame-title-format '(:eval (hurricane//default-title-bar)))
+    (setq frame-title-format '(:eval (hurricane//layouts-for-title-bar))))
   (redraw-frame))
 
 ;; {{

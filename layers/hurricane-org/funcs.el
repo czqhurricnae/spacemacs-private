@@ -1316,3 +1316,44 @@ Show the heading too, if it is currently invisible."
 
     (kill-new (format "#+transclude: [[file:%s::%s]] :lines 1-%s :src c" (spacemacs--file-path) start-line (count-lines start end)))
     ))
+
+(defun hurricane/get-youtube-chapters (&optional file-path-or-url)
+  "Get YouTube video chapters using yt-dlp and output to an Org file."
+  (interactive (list (read-string "YouTube URL: " (or (hurricane//retrieve-chrome-current-tab-url) (mpv-get-property "path")))) "P")
+  (let* ((online-video-p (if (org-media-note--online-video-p file-path-or-url)
+                             (if (executable-find "yt-dlp")
+                                 t
+                               (error (concat "Warning: mpv needs the yt-dlp to play online videos."
+                                              "yt-dlp-danmaku is also needed if you want bilibili danmaku.")))
+                           nil))
+         (url (if online-video-p
+                  (org-media-note--remove-utm-parameters file-path-or-url)
+                (expand-file-name file-path-or-url)))
+         (filename (if (org-media-note-ref-cite-p)
+                       (let* ((ref-key (org-media-note--current-org-ref-key))
+                              (bib-entry (bibtex-completion-get-entry ref-key))
+                              (title (bibtex-completion-get-value "title" bib-entry)))
+                         title)
+                     (if (org-media-note--online-video-p url)
+                         (mpv-get-property "media-title")
+                       nil)))
+         (link-type (if (org-media-note--online-video-p url)
+                        "video" ;; TODO online audio?
+                      (org-media-note--file-media-type url)))
+         (json-output (shell-command-to-string
+                       (format "yt-dlp --dump-json --no-warnings --no-call-home --no-check-certificate --skip-download \"%s\" | jq '.chapters'" url)))
+         (chapters (json-read-from-string json-output)))
+    (mapc (lambda (chapter)
+            (let ((timestamp (org-media-note--seconds-to-timestamp (alist-get 'start_time chapter)))
+                  (title (alist-get 'title chapter)))
+              (insert org-media-note-link-prefix
+                      (format "%s\n"
+                              (format "[[%s:%s#%s][%s]]"
+                                      link-type
+                                      (org-media-note--link-base-file url)
+                                      timestamp
+                                      (org-media-note--link-formatter org-media-note-timestamp-link-format
+                                                                      `(("filename" . ,filename)
+                                                                        ("timestamp" . ,title)
+                                                                        ("file-path" . ,url))))))))
+          chapters)))

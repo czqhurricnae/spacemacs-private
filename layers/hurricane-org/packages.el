@@ -35,9 +35,9 @@
     ;;                    :fetcher github
     ;;                    :repo "Lindydancer/e2ansi"))
     (popweb :location (recipe
-                      :fetcher github
-                      :repo "czqhurricnae/popweb"
-                      :files ("*.*" "extension")))
+                       :fetcher github
+                       :repo "czqhurricnae/popweb"
+                       :files ("*.*" "extension")))
     ;; (org-latex-impatient :location (recipe
     ;;                                 :fetcher github
     ;;                                 :repo "yangsheng6810/org-latex-impatient"))
@@ -64,8 +64,8 @@
     ;;                              :fetcher github
     ;;                              :repo "alphapapa/org-super-agenda"))
     (anki-helper :location (recipe
-                                  :fetcher github
-                                  :repo "Elilif/emacs-anki-helper"))
+                            :fetcher github
+                            :repo "Elilif/emacs-anki-helper"))
     (org-noter :location (recipe
                           :fetcher github
                           :repo "org-noter/org-noter"
@@ -89,8 +89,8 @@
                            :fetcher github
                            :repo "nobiot/org-remark"))
     (org-modern-indent :location (recipe
-                           :fetcher github
-                           :repo "jdtsmith/org-modern-indent"))
+                                  :fetcher github
+                                  :repo "jdtsmith/org-modern-indent"))
     ;; (org-bars :location (recipe
     ;;                      :fetcher github
     ;;                      :repo "tonyaldon/org-bars"))
@@ -181,17 +181,17 @@
 
       (add-hook 'org-mode-hook #'(lambda () (spacemacs/toggle-line-numbers-off)) 'append)
       (add-hook 'org-mode-hook #'(lambda ()
-                                  ;; Keybinding for inserting code blocks.
-                                  (local-set-key (kbd "C-c s i")
-                                                 'hurricane/org-insert-src-block)
-                                  ;; Keybinding for editing source code blocks.
-                                  (local-set-key (kbd "C-c s e")
-                                                 'org-edit-special)
-                                  ;; Keybinding for executing source code blocks.
-                                  (local-set-key (kbd "C-c s r")
-                                                 'org-src-do-at-code-block)
-                                  (local-set-key (kbd "C-l")
-                                                 'evil-insert)))
+                                   ;; Keybinding for inserting code blocks.
+                                   (local-set-key (kbd "C-c s i")
+                                                  'hurricane/org-insert-src-block)
+                                   ;; Keybinding for editing source code blocks.
+                                   (local-set-key (kbd "C-c s e")
+                                                  'org-edit-special)
+                                   ;; Keybinding for executing source code blocks.
+                                   (local-set-key (kbd "C-c s r")
+                                                  'org-src-do-at-code-block)
+                                   (local-set-key (kbd "C-l")
+                                                  'evil-insert)))
 
       (setq org-latex-create-formula-image-program 'dvipng)
       (setq org-latex-listings 'minted)
@@ -481,9 +481,9 @@
       ;; @See: https://github.com/vascoferreira25/org-mode-incremental-reading
       ;; org-protocol support for opening a file - needed for ‘my-anki-editor-backlink’.
       (with-eval-after-load 'org-protocol
-       (add-to-list
-       'org-protocol-protocol-alist
-       '("org-noter-pdf" :protocol "open-pdf" :function org-protocol-open-pdf)))
+        (add-to-list
+         'org-protocol-protocol-alist
+         '("org-noter-pdf" :protocol "open-pdf" :function org-protocol-open-pdf)))
 
       (defun org-protocol-open-pdf(fname)
         "Process an org-protocol://open-file?url= style URL with FNAME.
@@ -599,9 +599,9 @@
   (use-package org2ctex
     :after org
     :config
-      (progn
-        (org2ctex-mode t)
-        (add-to-list 'org2ctex-latex-classes '("my-article" "\\documentclass[20pt]{ctexart}
+    (progn
+      (org2ctex-mode t)
+      (add-to-list 'org2ctex-latex-classes '("my-article" "\\documentclass[20pt]{ctexart}
                     [NO-DEFAULT-PACKAGES]
                     \\usepackage{xeCJK}
                     \\usepackage[T1]{fontenc}
@@ -667,24 +667,24 @@
                         number=\\alph{subsubsection},
                       }
                    }"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    (add-to-list 'org2ctex-latex-classes '("my-report"
-                   "\\documentclass[11pt]{ctexrep}
+                                             ("\\section{%s}" . "\\section*{%s}")
+                                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+      (add-to-list 'org2ctex-latex-classes '("my-report"
+                                             "\\documentclass[11pt]{ctexrep}
                     %设置段首不缩进并且段间间隔
                     \\setlength{\\parindent}{0pt}"
-                   ;; 自定义 LaTex 输出中文章节名
-                   ("\\chapter{%s}" .
-                    "{\\ctexset{chapter={numbering=false}}\\chapter{%s}}")
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")))
-    (add-to-list 'org2ctex-latex-classes '("my-exam"
-                   "\\documentclass[addpoints, answers]{exam}
+                                             ;; 自定义 LaTex 输出中文章节名
+                                             ("\\chapter{%s}" .
+                                              "{\\ctexset{chapter={numbering=false}}\\chapter{%s}}")
+                                             ("\\section{%s}" . "\\section*{%s}")
+                                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                                             ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+      (add-to-list 'org2ctex-latex-classes '("my-exam"
+                                             "\\documentclass[addpoints, answers]{exam}
                     [NO-DEFAULT-PACKAGES]
                     % 写中文要用到
                     \\usepackage{xeCJK}
@@ -722,9 +722,9 @@
                     \\renewcommand{\\questionlabel}{\\thequestion .}
                     \\renewcommand{\\thepartno}{\\arabic{partno}}
                     \\renewcommand{\\partlabel}{\\thepartno .}"
-                    ("\\section{%s}" . "\\section*{%s}")
-                    ("\\question{%s}" . "\\subsection*{%s}")
-                    ("\\begin{solution}{%s}\\end{solution}" . "\\subsubsection*{%s}"))))))
+                                             ("\\section{%s}" . "\\section*{%s}")
+                                             ("\\question{%s}" . "\\subsection*{%s}")
+                                             ("\\begin{solution}{%s}\\end{solution}" . "\\subsubsection*{%s}"))))))
 ;; }}
 
 (defun hurricane-org/init-ox-html ()
@@ -745,221 +745,221 @@
 ;; Version: 20220121.2350
 (defun hurricane-org/pre-init-org-roam ()
   (spacemacs|use-package-add-hook org-roam
-  :post-config
-  (setq org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
-  (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
-  (setq org-roam-capture-templates
-    '(
-      ("d" "default" plain "%?"
-       :target (file+head "${slug}.org"
-                          "#+ROAM_KEY:\n#+PDF_KEY:\n#+PAGE_KEY:\n\n")
-       :unnarrowed t)
-      ))
-  (setq org-roam-capture-ref-templates
-    '(
-      ("a" "Annotation" plain
-       "%U ${body}\n"
-       :target (file+head "${slug}.org"
-                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
-       ;; :immediate-finish t
-       :unnarrowed t
-       )
-      ("r" "ref" plain ""
-       :target (file+head "${slug}.org"
-                          "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
-       :unnarrowed t)
-      ))))
+    :post-config
+    (setq org-roam-directory (concat deft-dir (file-name-as-directory "notes")))
+    (setq org-roam-db-location (concat org-roam-directory "org-roam.db"))
+    (setq org-roam-capture-templates
+          '(
+            ("d" "default" plain "%?"
+             :target (file+head "${slug}.org"
+                                "#+ROAM_KEY:\n#+PDF_KEY:\n#+PAGE_KEY:\n\n")
+             :unnarrowed t)
+            ))
+    (setq org-roam-capture-ref-templates
+          '(
+            ("a" "Annotation" plain
+             "%U ${body}\n"
+             :target (file+head "${slug}.org"
+                                "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
+             ;; :immediate-finish t
+             :unnarrowed t
+             )
+            ("r" "ref" plain ""
+             :target (file+head "${slug}.org"
+                                "#+TITLE: ${title}\n#+ROAM_KEY: ${ref}\n\n")
+             :unnarrowed t)
+            ))))
 
 (defun hurricane-org/post-init-org-roam ()
   (with-eval-after-load 'org-roam
-   (progn
-    (defun hurricane//display-line-numbers-customize ()
-      (setq display-line-numbers 't)
-      (org-display-inline-images))
+    (progn
+      (defun hurricane//display-line-numbers-customize ()
+        (setq display-line-numbers 't)
+        (org-display-inline-images))
 
-    (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
+      (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
 
-    (advice-add #'org-roam-buffer-persistent-redisplay :before
-                #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
-    (advice-add #'org-roam-buffer-persistent-redisplay :after
-                #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+      (advice-add #'org-roam-buffer-persistent-redisplay :before
+                  #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+      (advice-add #'org-roam-buffer-persistent-redisplay :after
+                  #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
 
-    ;; (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
-    ;;   "Return the hierarchy for the node."
-    ;;   (let ((title (org-roam-node-title node))
-    ;;         (olp (nreverse (org-roam-node-olp node)))
-    ;;         (level (org-roam-node-level node))
-    ;;         (filetitle (org-roam-node-file-title node)))
-    ;;     (concat
-    ;;      title
-    ;;      (if (> level 1) (concat " < " (string-join olp " < ")))
-    ;;      (if (> level 0) (concat " < " filetitle ))
-    ;;      )))
+      ;; (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+      ;;   "Return the hierarchy for the node."
+      ;;   (let ((title (org-roam-node-title node))
+      ;;         (olp (nreverse (org-roam-node-olp node)))
+      ;;         (level (org-roam-node-level node))
+      ;;         (filetitle (org-roam-node-file-title node)))
+      ;;     (concat
+      ;;      title
+      ;;      (if (> level 1) (concat " < " (string-join olp " < ")))
+      ;;      (if (> level 0) (concat " < " filetitle ))
+      ;;      )))
 
-    (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
-      "Return hierarchy for NODE, constructed of its file title, OLP and direct title.
+      (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+        "Return hierarchy for NODE, constructed of its file title, OLP and direct title.
       If some elements are missing, they will be stripped out."
-      (let ((title     (org-roam-node-title node))
-            (olp       (nreverse (org-roam-node-olp node)))
-            (level     (org-roam-node-level node))
-            (filetitle (org-roam-node-file-title node))
-            (separator (propertize " < " 'face 'shadow))
-            )
-        (cl-case level
-          ;; node is a top-level file
-          (0 filetitle)
-          ;; node is a level 1 heading
-          (1 (concat title separator (propertize filetitle 'face '(shadow italic))))
-          ;; node is a heading with an arbitrary outline path
-          (t (concat title
-                     separator
-                     (propertize (string-join olp " < ") 'face '(shadow italic))
-                     separator
-                     (propertize filetitle 'face '(shadow italic))
-                      )))))
+        (let ((title     (org-roam-node-title node))
+              (olp       (nreverse (org-roam-node-olp node)))
+              (level     (org-roam-node-level node))
+              (filetitle (org-roam-node-file-title node))
+              (separator (propertize " < " 'face 'shadow))
+              )
+          (cl-case level
+            ;; node is a top-level file
+            (0 filetitle)
+            ;; node is a level 1 heading
+            (1 (concat title separator (propertize filetitle 'face '(shadow italic))))
+            ;; node is a heading with an arbitrary outline path
+            (t (concat title
+                       separator
+                       (propertize (string-join olp " < ") 'face '(shadow italic))
+                       separator
+                       (propertize filetitle 'face '(shadow italic))
+                       )))))
 
-    (defun hurricane//org-roam-node-formatter (node)
-      (let ((title     (org-roam-node-title node))
-            (olp       (nreverse (org-roam-node-olp node)))
-            (level     (org-roam-node-level node))
-            (filetitle (org-roam-node-file-title node))
-            (separator (propertize " < " 'face 'shadow))
-            )
-        (cl-case level
-          ;; node is a top-level file
-          (0 filetitle)
-          ;; node is a level 1 heading
-          (1 (concat title separator (propertize filetitle 'face '(shadow italic))))
-          ;; node is a heading with an arbitrary outline path
-          (t (concat title
-                     separator
-                     (propertize (string-join olp " < ") 'face '(shadow italic))
-                     separator
-                     (propertize filetitle 'face '(shadow italic))
-                     )))))
+      (defun hurricane//org-roam-node-formatter (node)
+        (let ((title     (org-roam-node-title node))
+              (olp       (nreverse (org-roam-node-olp node)))
+              (level     (org-roam-node-level node))
+              (filetitle (org-roam-node-file-title node))
+              (separator (propertize " < " 'face 'shadow))
+              )
+          (cl-case level
+            ;; node is a top-level file
+            (0 filetitle)
+            ;; node is a level 1 heading
+            (1 (concat title separator (propertize filetitle 'face '(shadow italic))))
+            ;; node is a heading with an arbitrary outline path
+            (t (concat title
+                       separator
+                       (propertize (string-join olp " < ") 'face '(shadow italic))
+                       separator
+                       (propertize filetitle 'face '(shadow italic))
+                       )))))
 
-    (setq org-roam-node-formatter #'hurricane//org-roam-node-formatter)
+      (setq org-roam-node-formatter #'hurricane//org-roam-node-formatter)
 
-    (defun hurricane//org-roam-node-formatter (node)
-      (let ((title     (org-roam-node-title node))
-            (olp       (org-roam-node-olp node))
-            (level     (org-roam-node-level node))
-            (filetitle (org-roam-node-file-title node))
-            (separator " > ")
-            )
-        (pcase level
-          ;; node is a top-level file
-          (0 filetitle)
-          ;; node is a level 1 heading
-          (1 (concat filetitle separator file))
-          ;; node is a heading with an arbitrary outline path
-          (_ (concat filetitle
-                     separator
-                     (string-join olp " > ")
-                     separator
-                     title
-                     )))))
+      (defun hurricane//org-roam-node-formatter (node)
+        (let ((title     (org-roam-node-title node))
+              (olp       (org-roam-node-olp node))
+              (level     (org-roam-node-level node))
+              (filetitle (org-roam-node-file-title node))
+              (separator " > ")
+              )
+          (pcase level
+            ;; node is a top-level file
+            (0 filetitle)
+            ;; node is a level 1 heading
+            (1 (concat filetitle separator file))
+            ;; node is a heading with an arbitrary outline path
+            (_ (concat filetitle
+                       separator
+                       (string-join olp " > ")
+                       separator
+                       title
+                       )))))
 
-    (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
-    (setq org-roam-extract-new-file-path "${slug}.org")
+      (setq org-roam-node-display-template "${hierarchy:*} ${tags:8}")
+      (setq org-roam-extract-new-file-path "${slug}.org")
 
-    (cl-defmethod org-roam-node-slug ((node org-roam-node))
-      "Return the slug of NODE."
-      (let ((title (org-roam-node-title node))
-            (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
-                               768 ; U+0300 COMBINING GRAVE ACCENT
-                               769 ; U+0301 COMBINING ACUTE ACCENT
-                               770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
-                               771 ; U+0303 COMBINING TILDE
-                               772 ; U+0304 COMBINING MACRON
-                               774 ; U+0306 COMBINING BREVE
-                               775 ; U+0307 COMBINING DOT ABOVE
-                               776 ; U+0308 COMBINING DIAERESIS
-                               777 ; U+0309 COMBINING HOOK ABOVE
-                               778 ; U+030A COMBINING RING ABOVE
-                               780 ; U+030C COMBINING CARON
-                               795 ; U+031B COMBINING HORN
-                               803 ; U+0323 COMBINING DOT BELOW
-                               804 ; U+0324 COMBINING DIAERESIS BELOW
-                               805 ; U+0325 COMBINING RING BELOW
-                               807 ; U+0327 COMBINING CEDILLA
-                               813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
-                               814 ; U+032E COMBINING BREVE BELOW
-                               816 ; U+0330 COMBINING TILDE BELOW
-                               817 ; U+0331 COMBINING MACRON BELOW
-                               )))
-        (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
-                   (strip-nonspacing-marks (s)
-                                             (string-glyph-compose
-                                              (apply #'string
-                                                     (seq-remove #'nonspacing-mark-p
-                                                                 (string-glyph-decompose s)))))
+      (cl-defmethod org-roam-node-slug ((node org-roam-node))
+        "Return the slug of NODE."
+        (let ((title (org-roam-node-title node))
+              (slug-trim-chars '(;; Combining Diacritical Marks https://www.unicode.org/charts/PDF/U0300.pdf
+                                 768 ; U+0300 COMBINING GRAVE ACCENT
+                                 769 ; U+0301 COMBINING ACUTE ACCENT
+                                 770 ; U+0302 COMBINING CIRCUMFLEX ACCENT
+                                 771 ; U+0303 COMBINING TILDE
+                                 772 ; U+0304 COMBINING MACRON
+                                 774 ; U+0306 COMBINING BREVE
+                                 775 ; U+0307 COMBINING DOT ABOVE
+                                 776 ; U+0308 COMBINING DIAERESIS
+                                 777 ; U+0309 COMBINING HOOK ABOVE
+                                 778 ; U+030A COMBINING RING ABOVE
+                                 780 ; U+030C COMBINING CARON
+                                 795 ; U+031B COMBINING HORN
+                                 803 ; U+0323 COMBINING DOT BELOW
+                                 804 ; U+0324 COMBINING DIAERESIS BELOW
+                                 805 ; U+0325 COMBINING RING BELOW
+                                 807 ; U+0327 COMBINING CEDILLA
+                                 813 ; U+032D COMBINING CIRCUMFLEX ACCENT BELOW
+                                 814 ; U+032E COMBINING BREVE BELOW
+                                 816 ; U+0330 COMBINING TILDE BELOW
+                                 817 ; U+0331 COMBINING MACRON BELOW
+                                 )))
+          (cl-flet* ((nonspacing-mark-p (char) (memq char slug-trim-chars))
+                     (strip-nonspacing-marks (s)
+                       (string-glyph-compose
+                        (apply #'string
+                               (seq-remove #'nonspacing-mark-p
+                                           (string-glyph-decompose s)))))
                      (cl-replace (title pair) (replace-regexp-in-string (car pair) (cdr pair) title)))
-          (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
-                          ;; ("--*" . "-")                   ;; remove sequential underscores
-                          ("^-" . "")                     ;; remove starting underscore
-                          ("-$" . "")))                   ;; remove ending underscore
-                 (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
-             slug))))
+            (let* ((pairs `(;; ("[^[:alnum:][:digit:]]" . "-") ;; convert anything not alphanumeric
+                            ;; ("--*" . "-")                   ;; remove sequential underscores
+                            ("^-" . "")                     ;; remove starting underscore
+                            ("-$" . "")))                   ;; remove ending underscore
+                   (slug (-reduce-from #'cl-replace (strip-nonspacing-marks title) pairs)))
+              slug))))
 
-    (defun hurricane//org-roam-strip-ANKI-CARD-drawers (s)
-      (with-temp-buffer
-        (insert s)
-        (goto-char (point-min))
-        (org-element-map (org-element-parse-buffer) 'drawer
-          (lambda (drawer)
-            (if (string= "ANKI-CARD" (org-element-property :drawer-name drawer))
-                (let* ((begin (org-element-property :begin drawer))
-                       (end (org-element-property :end drawer)))
-                  (delete-region begin end)))))
-        (buffer-string)))
+      (defun hurricane//org-roam-strip-ANKI-CARD-drawers (s)
+        (with-temp-buffer
+          (insert s)
+          (goto-char (point-min))
+          (org-element-map (org-element-parse-buffer) 'drawer
+            (lambda (drawer)
+              (if (string= "ANKI-CARD" (org-element-property :drawer-name drawer))
+                  (let* ((begin (org-element-property :begin drawer))
+                         (end (org-element-property :end drawer)))
+                    (delete-region begin end)))))
+          (buffer-string)))
 
-    (add-to-list 'org-roam-preview-postprocess-functions
-                 #'hurricane//org-roam-strip-ANKI-CARD-drawers)
+      (add-to-list 'org-roam-preview-postprocess-functions
+                   #'hurricane//org-roam-strip-ANKI-CARD-drawers)
 
-    (defun hurricane//org-roam-strip-property-drawers (s)
-      (with-temp-buffer
-        (insert s)
-        (goto-char (point-min))
-        (org-element-map (org-element-parse-buffer) 'property-drawer
-          (lambda (property-drawer)
-            (let* ((begin (org-element-property :begin property-drawer))
-                   (end (org-element-property :end property-drawer)))
-              (delete-region begin end))))
-        (buffer-string)))
+      (defun hurricane//org-roam-strip-property-drawers (s)
+        (with-temp-buffer
+          (insert s)
+          (goto-char (point-min))
+          (org-element-map (org-element-parse-buffer) 'property-drawer
+            (lambda (property-drawer)
+              (let* ((begin (org-element-property :begin property-drawer))
+                     (end (org-element-property :end property-drawer)))
+                (delete-region begin end))))
+          (buffer-string)))
 
-    (add-to-list 'org-roam-preview-postprocess-functions
-                 #'hurricane//org-roam-strip-property-drawers)
+      (add-to-list 'org-roam-preview-postprocess-functions
+                   #'hurricane//org-roam-strip-property-drawers)
 
-    (dolist (func org-roam-mode-section-functions)
-      (advice-add func :after #'(lambda (node) (org-display-inline-images))))
+      (dolist (func org-roam-mode-section-functions)
+        (advice-add func :after #'(lambda (node) (org-display-inline-images))))
 
-    ;; ;; @See: https://github.com/org-roam/org-roam/issues/2029
-    ;; (defun hurricane//org-roam-db-map-links (fns)
-    ;;   "Run FNS over all links in the current buffer."
-    ;;   (org-with-point-at 1
-    ;;     (while (re-search-forward org-link-any-re nil :no-error)
-    ;;       ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
-    ;;       ;; make the point be on the link.
-    ;;       (backward-char)
-    ;;       (let* ((element (org-element-context))
-    ;;              (type (org-element-type element))
-    ;;              link bounds)
-    ;;         (cond
-    ;;          ;; Links correctly recognized by Org Mode
-    ;;          ((eq type 'link)
-    ;;           (setq link element))
-    ;;          ;; Prevent self-referencing links in ROAM_REFS
-    ;;          ((and (eq type 'node-property)
-    ;;                (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
-    ;;           nil))
-    ;;         (when link
-    ;;           (dolist (fn fns)
-    ;;             (funcall fn link)))))))
+      ;; ;; @See: https://github.com/org-roam/org-roam/issues/2029
+      ;; (defun hurricane//org-roam-db-map-links (fns)
+      ;;   "Run FNS over all links in the current buffer."
+      ;;   (org-with-point-at 1
+      ;;     (while (re-search-forward org-link-any-re nil :no-error)
+      ;;       ;; `re-search-forward' let the cursor one character after the link, we need to go backward one char to
+      ;;       ;; make the point be on the link.
+      ;;       (backward-char)
+      ;;       (let* ((element (org-element-context))
+      ;;              (type (org-element-type element))
+      ;;              link bounds)
+      ;;         (cond
+      ;;          ;; Links correctly recognized by Org Mode
+      ;;          ((eq type 'link)
+      ;;           (setq link element))
+      ;;          ;; Prevent self-referencing links in ROAM_REFS
+      ;;          ((and (eq type 'node-property)
+      ;;                (org-roam-string-equal (org-element-property :key element) "ROAM_REFS"))
+      ;;           nil))
+      ;;         (when link
+      ;;           (dolist (fn fns)
+      ;;             (funcall fn link)))))))
 
-    ;; (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
-    (org-roam-db-autosync-mode)
-  )))
+      ;; (advice-add #'org-roam-db-map-links :override #'hurricane//org-roam-db-map-links)
+      (org-roam-db-autosync-mode)
+      )))
 
 (defun hurricane-org/post-init-org-transclusion ()
   (progn
@@ -974,8 +974,8 @@ Return nil if not found."
         (let* ((id (org-element-property :path link))
                (mkr (or (ignore-errors (org-id-find id t))
                         (with-current-buffer (find-file-noselect (aref (org-roam-node-from-id id) 1))
-                                             (goto-char (aref (org-roam-node-from-id id) 8))
-                                             (point-marker))))
+                          (goto-char (aref (org-roam-node-from-id id) 8))
+                          (point-marker))))
                (payload '(:tc-type "org-id"))
                (content (org-transclusion-content-org-marker mkr plist))
                (footnote-content))
@@ -1021,20 +1021,20 @@ Return nil if not found."
     :ensure t
     :hook (after-init . org-media-note-mode)
     :init
-    (spacemacs/set-leader-keys "av" #'org-media-note-pretty-hydra)
+    (spacemacs/set-leader-keys "av" #'org-media-note-pretty-hydra/body)
     :custom
     (org-media-note-mpv-online-website-options-alist
      '(("youtube\\.com"
-      ;; best audio and best video that is 4K or lower, not using the av01 codec.
-      "--ytdl-format=bestvideo[height<=?2160][vcodec!=?av01]+bestaudio/best"
-      ;; download both automatically generated and manually created subtitles.
-      "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:7890")
-     ("bilibili\\.com"
-      ;; download subtitles and danmaku
-      "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome,proxy=http://127.0.0.1:7890"
-      ;; "--ytdl-raw-options-append=proxy=http://127.0.0.1:7890"
-      ;; "--ytdl-raw-options=proxy=[http://127.0.0.1:7890]"
-      )))
+        ;; best audio and best video that is 4K or lower, not using the av01 codec.
+        "--ytdl-format=bestvideo[height<=?2160][vcodec!=?av01]+bestaudio/best"
+        ;; download both automatically generated and manually created subtitles.
+        "--ytdl-raw-options=write-subs=,write-auto-subs=,sub-langs=\"en,zh-Hans\",no-simulate=,skip-download=,proxy=http://127.0.0.1:7890")
+       ("bilibili\\.com"
+        ;; download subtitles and danmaku
+        "--ytdl-raw-options=use-postprocessor=danmaku:when=before_dl,write-subs=,sub-langs=all,all-subs=,no-simulate=,skip-download=,cookies-from-browser=chrome,proxy=http://127.0.0.1:7890"
+        ;; "--ytdl-raw-options-append=proxy=http://127.0.0.1:7890"
+        ;; "--ytdl-raw-options=proxy=[http://127.0.0.1:7890]"
+        )))
     :config
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)
     (require 'psearch)
@@ -1210,7 +1210,7 @@ Return nil if not found."
 (defun hurricane-org/init-popweb ()
   (use-package popweb
     :ensure t
-    :load-path ("elpa/29.3/develop/popweb-20231130.231202" "elpa/29.3/develop/popweb-20231130.231202/extension/latex" "elpa/29.3/develop/popweb-20231130.231202/extension/dict" "elpa/29.3/develop/popweb-20231130.231202/extension/org-roam" "elpa/29.3/develop/popweb-20231130.231202/extension/anki-review")
+    :load-path ("elpa/29.3/develop/popweb-20241016.22412" "elpa/29.3/develop/popweb-20241016.22412/extension/latex" "elpa/29.3/develop/popweb-20241016.22412/extension/dict" "elpa/29.3/develop/popweb-20241016.22412/extension/org-roam" "elpa/29.3/develop/popweb-20241016.22412/extension/anki-review")
     :init
     (require 'popweb-latex)
     (require 'popweb-dict)
@@ -1246,7 +1246,7 @@ Return nil if not found."
                         (concat
                          "document.querySelectorAll('[title=\"Advertisement\"]')[0].style.display='none';"
                          "Array.from(document.getElementsByClassName('adsbygoogle adsbygoogle-noablate')).forEach(e => { e.style.display = 'none' });"
-                        )
+                         )
                         (popweb-dict-js-file-path "eudic-liju.js"))
 
     (defun hurricane//popweb-translation-show (sentence translation)
@@ -1309,8 +1309,8 @@ Return nil if not found."
   (use-package org-ql))
 
 (defun hurricane-org/init-org-pandoc-import ()
- (use-package org-pandoc-import
-   :ensure t))
+  (use-package org-pandoc-import
+    :ensure t))
 
 (defun hurricane-org/init-org-roam-backlink-collections ()
   (use-package org-roam-backlink-collections))
@@ -1331,107 +1331,107 @@ Return nil if not found."
       (interactive)
       (org-gtd-core-prepare-agenda-buffers)
       (with-org-gtd-context
-          (let* ((project-format-prefix
-                  (format " %%i %%-%d:(org-gtd-agenda--prefix-format) "
-                          org-gtd-engage-prefix-width))
-                 (org-agenda-custom-commands
-                  `(("g" "Scheduled today and all NEXT items"
-                     ((agenda ""
-                              ((org-agenda-span 1)
-                               (org-agenda-start-day nil)
-                               (org-agenda-skip-additional-timestamps-same-entry t)
-                               (org-super-agenda-groups
-                                '((:name "Today"
-                                         :discard (:and (:todo "WAIT" :scheduled past :deadline past)
-                                                        :and (:todo "WAIT" :scheduled future :deadline past)
-                                                        :and (:todo "WAIT" :scheduled future :deadline future)
-                                                        :and (:todo "WAIT" :scheduled past :deadline future))
-                                         )
-                                  (:name "Overdue 超过截止日期"
-                                         :and (:scheduled past :deadline past))
-                                  (:name "Schedule past 超过起始日期"
-                                         :and (:scheduled past :deadline future))
-                                  (:name "Due Today 今日截至或者今日起始"
-                                         :deadline today
-                                         :scheduled today)
-                                  (:name "Due Soon 即将起始"
-                                         :and (:todo ("TODO" "NEXT") :scheduled future :deadline future))
-                                  (:name "Important"
-                                         :priority "A")))))
-                      (todo org-gtd-next
-                            ((org-agenda-overriding-header "All actions ready to be executed.")
-                             (org-super-agenda-groups
-                              '((:name "Filter"
-                                       :discard (:scheduled t :deadline t))
-                                (:name "Ready"
-                                       :anything)
-                                ))
-
-                             ;; (org-agenda-prefix-format
-                             ;;  '((todo . ,project-format-prefix)))
-
+       (let* ((project-format-prefix
+               (format " %%i %%-%d:(org-gtd-agenda--prefix-format) "
+                       org-gtd-engage-prefix-width))
+              (org-agenda-custom-commands
+               `(("g" "Scheduled today and all NEXT items"
+                  ((agenda ""
+                           ((org-agenda-span 1)
+                            (org-agenda-start-day nil)
+                            (org-agenda-skip-additional-timestamps-same-entry t)
+                            (org-super-agenda-groups
+                             '((:name "Today"
+                                      :discard (:and (:todo "WAIT" :scheduled past :deadline past)
+                                                     :and (:todo "WAIT" :scheduled future :deadline past)
+                                                     :and (:todo "WAIT" :scheduled future :deadline future)
+                                                     :and (:todo "WAIT" :scheduled past :deadline future))
+                                      )
+                               (:name "Overdue 超过截止日期"
+                                      :and (:scheduled past :deadline past))
+                               (:name "Schedule past 超过起始日期"
+                                      :and (:scheduled past :deadline future))
+                               (:name "Due Today 今日截至或者今日起始"
+                                      :deadline today
+                                      :scheduled today)
+                               (:name "Due Soon 即将起始"
+                                      :and (:todo ("TODO" "NEXT") :scheduled future :deadline future))
+                               (:name "Important"
+                                      :priority "A")))))
+                   (todo org-gtd-next
+                         ((org-agenda-overriding-header "All actions ready to be executed.")
+                          (org-super-agenda-groups
+                           '((:name "Filter"
+                                    :discard (:scheduled t :deadline t))
+                             (:name "Ready"
+                                    :anything)
                              ))
-                      (todo org-gtd-wait
-                            ((org-agenda-overriding-header "Delegated items.")
-                             (org-super-agenda-groups
-                              '(
-                                (:discard (:scheduled today :deadline today))
-                                (:name "Overdue 超过截止日期"
-                                       :and (:scheduled past :deadline past))
-                                (:name "Schedule past 超过起始日期"
-                                       :and (:scheduled past :deadline future))
-                                (:name "Due Soon 即将起始"
-                                       :and (:scheduled future :deadline future))
-                                ))))
-                      (search "Incubate"
-                       ((org-agenda-overriding-header "Blocked items.")
-                        (org-super-agenda-groups
-                              '(
-                                (:name "Blocked 搁置"
-                                       :children t
-                                       )
-                                ))))
 
-                      )))))
-            (org-agenda nil "g")
-            (goto-char (point-min))
-            )))
+                          ;; (org-agenda-prefix-format
+                          ;;  '((todo . ,project-format-prefix)))
 
-  (defun hurricane//org-gtd-delegate-item-at-point (&optional delegated-to checkin-date)
-    "Delegate item at point.  Use this if you do not want to refile the item.
+                          ))
+                   (todo org-gtd-wait
+                         ((org-agenda-overriding-header "Delegated items.")
+                          (org-super-agenda-groups
+                           '(
+                             (:discard (:scheduled today :deadline today))
+                             (:name "Overdue 超过截止日期"
+                                    :and (:scheduled past :deadline past))
+                             (:name "Schedule past 超过起始日期"
+                                    :and (:scheduled past :deadline future))
+                             (:name "Due Soon 即将起始"
+                                    :and (:scheduled future :deadline future))
+                             ))))
+                   (search "Incubate"
+                           ((org-agenda-overriding-header "Blocked items.")
+                            (org-super-agenda-groups
+                             '(
+                               (:name "Blocked 搁置"
+                                      :children t
+                                      )
+                               ))))
+
+                   )))))
+         (org-agenda nil "g")
+         (goto-char (point-min))
+         )))
+
+    (defun hurricane//org-gtd-delegate-item-at-point (&optional delegated-to checkin-date)
+      "Delegate item at point.  Use this if you do not want to refile the item.
 
   You can pass DELEGATED-TO as the name of the person to whom this was delegated
   and CHECKIN-DATE as the YYYY-MM-DD string of when you want `org-gtd' to remind
   you if you want to call this non-interactively.
   If you call this interactively, the function will ask for the name of the
   person to whom to delegate by using `org-gtd-delegate-read-func'."
-    (declare (modes org-mode)) ;; for 27.2 compatibility
-    (interactive)
-    (let ((delegated-to (or delegated-to
-                            (apply org-gtd-delegate-read-func nil)))
-          (date (or checkin-date
-                    (org-read-date t nil nil "When do you want to check in on this task? ")))
-          (org-inhibit-logging 'note))
-      (org-set-property org-gtd-delegate-property delegated-to)
-      (save-excursion
-        (org-back-to-heading)
-        (next-line)
-        (open-line 1)
-        (insert (format "DEADLINE: <%s> SCHEDULED: <%s>" date date)))
-      (org-todo org-gtd-wait)
-      (save-excursion
-        (goto-char (org-log-beginning t))
-        (insert (format "programmatically delegated to %s\n" delegated-to)))))
+      (declare (modes org-mode)) ;; for 27.2 compatibility
+      (interactive)
+      (let ((delegated-to (or delegated-to
+                              (apply org-gtd-delegate-read-func nil)))
+            (date (or checkin-date
+                      (org-read-date t nil nil "When do you want to check in on this task? ")))
+            (org-inhibit-logging 'note))
+        (org-set-property org-gtd-delegate-property delegated-to)
+        (save-excursion
+          (org-back-to-heading)
+          (next-line)
+          (open-line 1)
+          (insert (format "DEADLINE: <%s> SCHEDULED: <%s>" date date)))
+        (org-todo org-gtd-wait)
+        (save-excursion
+          (goto-char (org-log-beginning t))
+          (insert (format "programmatically delegated to %s\n" delegated-to)))))
 
-  (defun hurricane//org-gtd-incubate--apply (&optional reminder-date)
-    "Incubate this item through org-gtd.
+    (defun hurricane//org-gtd-incubate--apply (&optional reminder-date)
+      "Incubate this item through org-gtd.
 
 If you want to call this non-interactively,
 REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
 
-    (setq-local org-gtd--organize-type 'incubated)
-    (org-gtd-organize-apply-hooks)
-    (org-gtd-refile--do org-gtd-incubate org-gtd-incubate-template))
+      (setq-local org-gtd--organize-type 'incubated)
+      (org-gtd-organize-apply-hooks)
+      (org-gtd-refile--do org-gtd-incubate org-gtd-incubate-template))
 
     :config
     (advice-add #'org-gtd-engage :override #'hurricane//org-gtd-engage)
@@ -1445,70 +1445,70 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
 
 (defun hurricane-org/init-org-super-agenda ()
   (use-package org-super-agenda
-  :config
+    :config
     (setq project-format-prefix
-      (format " %%i %%-%d:(org-gtd-agenda--prefix-format) "
-              org-gtd-engage-prefix-width))
+          (format " %%i %%-%d:(org-gtd-agenda--prefix-format) "
+                  org-gtd-engage-prefix-width))
     (setq org-agenda-custom-commands
-     `(("g" "Scheduled today and all NEXT items"
-        ((agenda ""
-                 ((org-agenda-span 1)
-                  (org-agenda-start-day nil)
-                  (org-agenda-skip-additional-timestamps-same-entry t)
-                  (org-super-agenda-groups
-                   '((:name "Today"
-                            :discard (:and (:todo "WAIT" :scheduled past :deadline past)
-                                           :and (:todo "WAIT" :scheduled future :deadline past)
-                                           :and (:todo "WAIT" :scheduled future :deadline future)
-                                           :and (:todo "WAIT" :scheduled past :deadline future))
-                            )
-                     (:name "Overdue 超过截止日期"
-                            :and (:scheduled past :deadline past))
-                     (:name "Schedule past 超过起始日期"
-                            :and (:scheduled past :deadline future))
-                     (:name "Due Today 今日截至或者今日起始"
-                            :deadline today
-                            :scheduled today)
-                     (:name "Due Soon 即将起始"
-                            :and (:todo ("TODO" "NEXT") :scheduled future :deadline future))
-                     (:name "Important"
-                            :priority "A")))))
-         (todo org-gtd-next
-               ((org-agenda-overriding-header "All actions ready to be executed.")
-                (org-super-agenda-groups
-                 '((:name "Filter"
-                          :discard (:scheduled t :deadline t))
-                   (:name "Ready"
-                          :anything)
-                   ))
+          `(("g" "Scheduled today and all NEXT items"
+             ((agenda ""
+                      ((org-agenda-span 1)
+                       (org-agenda-start-day nil)
+                       (org-agenda-skip-additional-timestamps-same-entry t)
+                       (org-super-agenda-groups
+                        '((:name "Today"
+                                 :discard (:and (:todo "WAIT" :scheduled past :deadline past)
+                                                :and (:todo "WAIT" :scheduled future :deadline past)
+                                                :and (:todo "WAIT" :scheduled future :deadline future)
+                                                :and (:todo "WAIT" :scheduled past :deadline future))
+                                 )
+                          (:name "Overdue 超过截止日期"
+                                 :and (:scheduled past :deadline past))
+                          (:name "Schedule past 超过起始日期"
+                                 :and (:scheduled past :deadline future))
+                          (:name "Due Today 今日截至或者今日起始"
+                                 :deadline today
+                                 :scheduled today)
+                          (:name "Due Soon 即将起始"
+                                 :and (:todo ("TODO" "NEXT") :scheduled future :deadline future))
+                          (:name "Important"
+                                 :priority "A")))))
+              (todo org-gtd-next
+                    ((org-agenda-overriding-header "All actions ready to be executed.")
+                     (org-super-agenda-groups
+                      '((:name "Filter"
+                               :discard (:scheduled t :deadline t))
+                        (:name "Ready"
+                               :anything)
+                        ))
 
-                ;; (org-agenda-prefix-format
-                ;;  '((todo . ,project-format-prefix)))
+                     ;; (org-agenda-prefix-format
+                     ;;  '((todo . ,project-format-prefix)))
 
-                ))
-         (todo org-gtd-wait
-               ((org-agenda-overriding-header "Delegated items.")
-                (org-super-agenda-groups
-                 '(
-                   (:discard (:scheduled today :deadline today))
-                   (:name "Overdue 超过截止日期"
-                          :and (:scheduled past :deadline past))
-                   (:name "Schedule past 超过起始日期"
-                          :and (:scheduled past :deadline future))
-                   (:name "Due Soon 即将起始"
-                          :and (:scheduled future :deadline future))
-                   ))))
-         (search "Incubate"
-                 ((org-agenda-overriding-header "Blocked items.")
-                  (org-super-agenda-groups
-                   '(
-                     (:name "Blocked 搁置"
-                            :children t
-                            )
-                     ))))
+                     ))
+              (todo org-gtd-wait
+                    ((org-agenda-overriding-header "Delegated items.")
+                     (org-super-agenda-groups
+                      '(
+                        (:discard (:scheduled today :deadline today))
+                        (:name "Overdue 超过截止日期"
+                               :and (:scheduled past :deadline past))
+                        (:name "Schedule past 超过起始日期"
+                               :and (:scheduled past :deadline future))
+                        (:name "Due Soon 即将起始"
+                               :and (:scheduled future :deadline future))
+                        ))))
+              (search "Incubate"
+                      ((org-agenda-overriding-header "Blocked items.")
+                       (org-super-agenda-groups
+                        '(
+                          (:name "Blocked 搁置"
+                                 :children t
+                                 )
+                          ))))
 
-         ))))
-  (org-super-agenda-mode)))
+              ))))
+    (org-super-agenda-mode)))
 
 (defun hurricane-org/init-anki-helper ()
   (use-package anki-helper
@@ -1570,7 +1570,7 @@ REMINDER-DATE is the YYYY-MM-DD string for when you want this to come up again."
         ;; 对于 text: <a href="STM32F10xxx 参考手册（中文）.html#ID-1465F803-9159-4625-8D94-33570B46486D">14.4.7 捕获/比较模式寄存器 1(TIMx_CCMR1)</a>，是不会进入 when-let* 处理，所以以下的替换逻辑放在 when-let* 外。
         ;; 对于get-svg-xml 得到的 text 同样含有 # 字符，所以必须排除 svg 产生的 text。
         ;; 对于 text: <a href="STM32F10xxx 参考手册（中文）.html#ID-1465F803-9159-4625-8D94-33570B46486D">14.4.7 捕获/比较模式寄存器 1(TIMx_CCMR1)</a>，是不会进入 when-let* 处理，所以不能用 (not (string-suffix-p "edraw.svg" link-path))，
-        ;；必须使用 (setq link-path-property link-path)
+                                        ;；必须使用 (setq link-path-property link-path)
         (when (and (string-match "\\(#[^\"]*\\)" text)
                    (not (string-suffix-p "edraw.svg" link-path-property)))
           (setq text (format "%s%s" text (match-string 0 text))))
@@ -1629,7 +1629,7 @@ marked file."
                        (dired-get-filename))))
         (dolist (filename files)
           (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
-           (find-file filename))
+            (find-file filename))
           (save-excursion (org-noter))
           (bury-buffer))
         (other-frame 1)))
@@ -1639,20 +1639,20 @@ marked file."
     (defun hurricane//insert-org-drawio ()
       (interactive)
       (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))))
-          (if (file-exists-p relative-img-dir)
-              (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
-            (mkdir relative-img-dir))
-          (let ((temp-name (select-or-enter-file-name relative-img-dir)))
-            (setq name-base (file-name-base temp-name))
-            (insert (format "#+drawio:\"%s\" :input-dir \"%s\" :output-dir \"%s\"" name-base relative-img-dir relative-img-dir))
-            (newline-and-indent 1)
-            (previous-line 1)
-            (org-drawio-open))))
+        (if (file-exists-p relative-img-dir)
+            (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
+          (mkdir relative-img-dir))
+        (let ((temp-name (select-or-enter-file-name relative-img-dir)))
+          (setq name-base (file-name-base temp-name))
+          (insert (format "#+drawio:\"%s\" :input-dir \"%s\" :output-dir \"%s\"" name-base relative-img-dir relative-img-dir))
+          (newline-and-indent 1)
+          (previous-line 1)
+          (org-drawio-open))))
 
-  (defun hurricane//pdf-view-extract-region-image (regions &optional page size
-                                                    output-buffer no-display-p)
-        ;; TODO: what is "resp."? Avoid contractions.
-        "Create a PNG image of REGIONS.
+    (defun hurricane//pdf-view-extract-region-image (regions &optional page size
+                                                             output-buffer no-display-p)
+      ;; TODO: what is "resp."? Avoid contractions.
+      "Create a PNG image of REGIONS.
 
   REGIONS should have the same form as `pdf-view-active-region',
   which see.  PAGE and SIZE are the page resp. base-size of the
@@ -1666,63 +1666,63 @@ marked file."
   by joining them horizontally.  For this operation (and this only)
   the `convert' program is used."
 
-        (interactive
-         (list (if (pdf-view-active-region-p)
-                   (pdf-view-active-region t)
-                 '((0 0 1 1)))))
-        (unless page
-          (setq page (pdf-view-current-page)))
-        (unless size
-          (setq size (pdf-view-image-size)))
-        (unless output-buffer
-          (setq output-buffer (get-buffer-create (org-noter--session-notes-buffer org-noter--session))))
-        (setq notes-file-path (org-noter--session-notes-file-path org-noter--session))
-        (let* ((images (mapcar (lambda (edges)
-                                 (let ((file (make-temp-file "pdf-view"))
-                                       (coding-system-for-write 'binary))
-                                   (write-region
-                                    (pdf-info-renderpage
-                                     page (car size)
-                                     :crop-to edges)
-                                    nil file nil 'no-message)
-                                   file))
-                               regions))
-               result)
-          (unwind-protect
-              (progn
-                (if (= (length images) 1)
-                    (setq result (car images))
-                  (setq result (make-temp-file "pdf-view"))
-                  ;; Join the images horizontally with a gap of 10 pixel.
-                  (pdf-util-convert
-                   "-noop" ;; workaround limitations of this function
-                   result
-                   :commands `("("
-                               ,@images
-                               "-background" "white"
-                               "-splice" "0x10+0+0"
-                               ")"
-                               "-gravity" "Center"
-                               "-append"
-                               "+gravity"
-                               "-chop" "0x10+0+0")
-                   :apply '((0 0 0 0))))
+      (interactive
+       (list (if (pdf-view-active-region-p)
+                 (pdf-view-active-region t)
+               '((0 0 1 1)))))
+      (unless page
+        (setq page (pdf-view-current-page)))
+      (unless size
+        (setq size (pdf-view-image-size)))
+      (unless output-buffer
+        (setq output-buffer (get-buffer-create (org-noter--session-notes-buffer org-noter--session))))
+      (setq notes-file-path (org-noter--session-notes-file-path org-noter--session))
+      (let* ((images (mapcar (lambda (edges)
+                               (let ((file (make-temp-file "pdf-view"))
+                                     (coding-system-for-write 'binary))
+                                 (write-region
+                                  (pdf-info-renderpage
+                                   page (car size)
+                                   :crop-to edges)
+                                  nil file nil 'no-message)
+                                 file))
+                             regions))
+             result)
+        (unwind-protect
+            (progn
+              (if (= (length images) 1)
+                  (setq result (car images))
+                (setq result (make-temp-file "pdf-view"))
+                ;; Join the images horizontally with a gap of 10 pixel.
+                (pdf-util-convert
+                 "-noop" ;; workaround limitations of this function
+                 result
+                 :commands `("("
+                             ,@images
+                             "-background" "white"
+                             "-splice" "0x10+0+0"
+                             ")"
+                             "-gravity" "Center"
+                             "-append"
+                             "+gravity"
+                             "-chop" "0x10+0+0")
+                 :apply '((0 0 0 0))))
 
-                (with-current-buffer output-buffer
-                  (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/"))
-                         deck
-                         (elt (plist-get (org-element-at-point) 'headline))
-                         (front (string-join (org-get-outline-path t) " > "))
-                         (contents-begin (plist-get elt :contents-begin))
-                         (robust-begin (or (plist-get elt :robust-begin)
-                                           contents-begin))
-                         (beg (if (or (= contents-begin robust-begin)
-                                      (= (+ 2 contents-begin) robust-begin))
-                                  contents-begin
-                                (1+ robust-begin)))
-                         (contents-end (plist-get elt :contents-end))
-                         (back (buffer-substring-no-properties
-                                contents-begin (1- contents-end))))
+              (with-current-buffer output-buffer
+                (let* ((relative-img-dir (concat org-screenshot-image-dir-name "/" (file-name-sans-extension (file-name-nondirectory notes-file-path)) "/"))
+                       deck
+                       (elt (plist-get (org-element-at-point) 'headline))
+                       (front (string-join (org-get-outline-path t) " > "))
+                       (contents-begin (plist-get elt :contents-begin))
+                       (robust-begin (or (plist-get elt :robust-begin)
+                                         contents-begin))
+                       (beg (if (or (= contents-begin robust-begin)
+                                    (= (+ 2 contents-begin) robust-begin))
+                                contents-begin
+                              (1+ robust-begin)))
+                       (contents-end (plist-get elt :contents-end))
+                       (back (buffer-substring-no-properties
+                              contents-begin (1- contents-end))))
                   (progn
                     (if (file-exists-p relative-img-dir)
                         (print (format "Screnshot image directory: '%s' already exists." relative-img-dir))
@@ -1744,13 +1744,13 @@ marked file."
                         (setq deck (or (hurricane//extract-value-from-keyword "ANKI_DECK") (hurricane//headline-property "ANKI_DECK"))))
                       (eaf-open-image-occlusion (expand-file-name absolute-full-file-path) (list deck front back))
                       )))
-                  (unless no-display-p
-                    (pop-to-buffer (current-buffer))))
-                )
+                (unless no-display-p
+                  (pop-to-buffer (current-buffer))))
+              )
 
-            (dolist (f (cons result images))
-              (when (file-exists-p f)
-                (delete-file f))))))
+          (dolist (f (cons result images))
+            (when (file-exists-p f)
+              (delete-file f))))))
 
     (advice-add #'pdf-view-extract-region-image :override #'hurricane//pdf-view-extract-region-image)
 
@@ -1914,16 +1914,16 @@ marked file."
     :ensure t))
 
 (with-eval-after-load 'org-re-reveal
- (progn
-   (setq org-re-reveal-revealjs-version "4"
-         org-re-reveal-root "/reveal.js"
-         org-re-reveal-with-tts nil)
-   (setq org-re-reveal-extra-scripts '("https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.js" "https://unpkg.com/imsc@1.1.3/dist/imsc.all.min.js" "./reveal.js/third-party-plugins/imscJS.js" "./reveal.js/third-party-plugins/createSubtitle.js"))
-   (add-to-list 'org-re-reveal-plugin-config '(audioslideshow "RevealAudioSlideshow" "plugin/audio-slideshow/plugin.js"))
-   (add-to-list 'org-re-reveal-plugin-config '(audiorecorder "RevealAudioRecorder" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"))
-   (add-to-list 'org-re-reveal-plugin-config '(anything "RevealAnything" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js"))
-   (add-to-list 'org-re-reveal-plugin-config '(customcontrols "RevealCustomControls" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"))
-  ))
+  (progn
+    (setq org-re-reveal-revealjs-version "4"
+          org-re-reveal-root "/reveal.js"
+          org-re-reveal-with-tts nil)
+    (setq org-re-reveal-extra-scripts '("https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.js" "https://unpkg.com/imsc@1.1.3/dist/imsc.all.min.js" "./reveal.js/third-party-plugins/imscJS.js" "./reveal.js/third-party-plugins/createSubtitle.js"))
+    (add-to-list 'org-re-reveal-plugin-config '(audioslideshow "RevealAudioSlideshow" "plugin/audio-slideshow/plugin.js"))
+    (add-to-list 'org-re-reveal-plugin-config '(audiorecorder "RevealAudioRecorder" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js"))
+    (add-to-list 'org-re-reveal-plugin-config '(anything "RevealAnything" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js"))
+    (add-to-list 'org-re-reveal-plugin-config '(customcontrols "RevealCustomControls" "https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js"))
+    ))
 
 (defun hurricane-org/init-oer-reveal ()
   (use-package oer-reveal
@@ -1932,7 +1932,7 @@ marked file."
     (require 'oer-reveal-publish)
 
     (setq oer-reveal-plugin-4-config
-				  "audioslideshow RevealAudioSlideshow plugin/audio-slideshow/plugin.js
+          "audioslideshow RevealAudioSlideshow plugin/audio-slideshow/plugin.js
 audiorecorder RevealAudioRecorder https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/audio-slideshow/recorder.js
 anything RevealAnything https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/anything/plugin.js
 customcontrols RevealCustomControls https://cdn.jsdelivr.net/npm/reveal.js-plugins@latest/customcontrols/plugin.js")

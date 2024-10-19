@@ -111,7 +111,7 @@ This function should only modify configuration layer settings."
      ;;         python-test-runner '(nose pytest))
      ;; ipython-notebook
      ;; (c-c++ :variables
-            ;; c-c++-default-mode-for-headers 'c++-mode)
+     ;; c-c++-default-mode-for-headers 'c++-mode)
      ;; ycmd
      ;; common-lisp
      emacs-lisp
@@ -147,37 +147,38 @@ This function should only modify configuration layer settings."
           eaf-proxy-host "0.0.0.0"
           eaf-proxy-port "7890")
      pdf
+     (llm-client :variables llm-client-enable-gptel t)
      hurricane
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(sqlite3)
+   dotspacemacs-additional-packages '(sqlite3 eyebrowse)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
-                    magit-gh-pulls magit-gitflow org-projectile evil-mc realgud
-                    evil-args evil-ediff evil-exchange evil-unimpaired
-                    evil-indent-plus volatile-highlights
-                    holy-mode skewer-mode rainbow-delimiters
-                    highlight-indentation vi-tilde-fringe eyebrowse
-                    org-bullets smooth-scrolling org-repo-todo org-timer
-                    livid-mode git-gutter git-gutter-fringe evil-escape
-                    leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
-                    ac-ispell ace-jump-mode auto-complete auto-dictionary
-                    clang-format define-word google-translate disaster epic
-                    fancy-battery org-present orgit orglue
-                    helm-flyspell flyspell-correct-helm clean-aindent-mode
-                    helm-c-yasnippet ace-jump-helm-line magithub
-                    helm-swoop helm-spacemacs-help smeargle
-                    ido-vertical-mode flx-ido company-quickhelp
-                    counsel-projectile highlight-parentheses org-pdfview
-                    doc-view org-projectile slime pyim undo-tree
-                    company org-superstar)
+                                    magit-gh-pulls magit-gitflow org-projectile evil-mc realgud
+                                    evil-args evil-ediff evil-exchange evil-unimpaired
+                                    evil-indent-plus volatile-highlights
+                                    holy-mode skewer-mode rainbow-delimiters
+                                    highlight-indentation vi-tilde-fringe eyebrowse
+                                    org-bullets smooth-scrolling org-repo-todo org-timer
+                                    livid-mode git-gutter git-gutter-fringe evil-escape
+                                    leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon
+                                    ac-ispell ace-jump-mode auto-complete auto-dictionary
+                                    clang-format define-word google-translate disaster epic
+                                    fancy-battery org-present orgit orglue
+                                    helm-flyspell flyspell-correct-helm clean-aindent-mode
+                                    helm-c-yasnippet ace-jump-helm-line magithub
+                                    helm-swoop helm-spacemacs-help smeargle
+                                    ido-vertical-mode flx-ido company-quickhelp
+                                    counsel-projectile highlight-parentheses org-pdfview
+                                    doc-view org-projectile slime pyim undo-tree
+                                    company org-superstar)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -783,9 +784,7 @@ you should place your code here."
   (setq bookmark-file "~/.spacemacs.d/Backup/bookmarks")
   (dotimes (i 10)
     (remove-key winum-keymap (kbd (format "s-%s" i))))
-
-(put 'narrow-to-page 'disabled nil)
-)
+  (put 'narrow-to-page 'disabled nil))
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
 (defun dotspacemacs/emacs-custom-settings ()
@@ -793,4 +792,4 @@ you should place your code here."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-)
+  )

@@ -63,8 +63,8 @@
         ;;                                 :repo "czqhurricnae/ffmpeg-utils"))
         ;; engine-mode
         (emacs-azure-tts :location (recipe :fetcher github
-                                     :repo "czqhurricnae/emacs-azure-tts"
-                                     :files ("*.*")))
+                                           :repo "czqhurricnae/emacs-azure-tts"
+                                           :files ("*.*")))
         ;; (emacs-azure-tts :location local)
         (reverso :location (recipe :fetcher github
                                    :repo "SqrtMinusOne/reverso.el"))
@@ -90,6 +90,7 @@
         ;; (eaf-interleave :location local)
         (go-translate :location (recipe :fetcher github
                                         :repo "lorniu/go-translate"))
+        gptel
         ))
 
 (defconst sys/macp
@@ -105,13 +106,13 @@
 (defun hurricane-misc/init-highlight-global ()
   (use-package highlight-global
     :init
-      (spacemacs/set-leader-keys "hh" 'highlight-frame-toggle)
-      (spacemacs/set-leader-keys "hc" 'clear-highlight-frame)
-      (setq-default highlight-faces
-        '(('hi-red-b . 0)
-          ('hi-yellow . 0)
-          ('hi-pink . 0)
-          ('hi-blue-b . 0)))))
+    (spacemacs/set-leader-keys "hh" 'highlight-frame-toggle)
+    (spacemacs/set-leader-keys "hc" 'clear-highlight-frame)
+    (setq-default highlight-faces
+                  '(('hi-red-b . 0)
+                    ('hi-yellow . 0)
+                    ('hi-pink . 0)
+                    ('hi-blue-b . 0)))))
 
 (defun hurricane-misc/post-init-symbol-overlay ()
   (with-eval-after-load 'symbol-overlay
@@ -371,11 +372,11 @@
           (let ((default-directory dir))
             (spacemacs/helm-project-smart-do-search)))
         (define-key helm-projectile-projects-map
-          (kbd "C-s")
-          (lambda ()
-            (interactive)
-            (helm-exit-and-execute-action
-             'spacemacs/helm-project-smart-do-search-in-dir))))
+                    (kbd "C-s")
+                    (lambda ()
+                      (interactive)
+                      (helm-exit-and-execute-action
+                       'spacemacs/helm-project-smart-do-search-in-dir))))
       )
     :config
     (progn
@@ -595,7 +596,7 @@
     (define-key evil-visual-state-map (kbd "y") 'hurricane//evil-yank)
 
     (define-key evil-normal-state-map
-      (kbd "Y") 'hurricane/yank-to-end-of-line)
+                (kbd "Y") 'hurricane/yank-to-end-of-line)
 
     (define-key evil-normal-state-map (kbd "M-y") 'counsel-yank-pop)
 
@@ -801,44 +802,44 @@
 (defun hurricane-misc/post-init-prodigy ()
   (progn
     (prodigy-define-tag
-      :name 'jekyll
-      :env '(("LANG" "en_US.UTF-8")
-             ("LC_ALL" "en_US.UTF-8")))
+     :name 'jekyll
+     :env '(("LANG" "en_US.UTF-8")
+            ("LC_ALL" "en_US.UTF-8")))
 
     ;; Define service.
     (prodigy-define-service
-      :name "Blog index"
-      :command "grunt"
-      :args '("search-index")
-      :cwd blog-dir
-      :tags '(blog index)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
+     :name "Blog index"
+     :command "grunt"
+     :args '("search-index")
+     :cwd blog-dir
+     :tags '(blog index)
+     :kill-signal 'sigkill
+     :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
-      :name "Blog push"
-      :command "rsync"
-      :args '("-avzt" "--exclude=\"./.DS_Store\"" "." "c@182.61.145.178:/home/c/site/public/")
-      :cwd blog-dir
-      :tags '(blog push)
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
+     :name "Blog push"
+     :command "rsync"
+     :args '("-avzt" "--exclude=\"./.DS_Store\"" "." "c@182.61.145.178:/home/c/site/public/")
+     :cwd blog-dir
+     :tags '(blog push)
+     :kill-signal 'sigkill
+     :kill-process-buffer-on-stop t)
 
     (prodigy-define-service
-      :name "Blog preview"
-      :command "hugo"
-      :args '("serve")
-      :cwd deft-dir
-      :tags '(blog preview)
-      :init (lambda () (browse-url "http://localhost:1313"))
-      :kill-signal 'sigkill
-      :kill-process-buffer-on-stop t)
+     :name "Blog preview"
+     :command "hugo"
+     :args '("serve")
+     :cwd deft-dir
+     :tags '(blog preview)
+     :init (lambda () (browse-url "http://localhost:1313"))
+     :kill-signal 'sigkill
+     :kill-process-buffer-on-stop t)
 
     (defun hurricane//refresh-chrome-current-tab (beg end length-before)
       (call-interactively 'hurricane//browser-refresh--chrome-applescript))
-      ;; Add watch for prodigy-view-mode buffer change event.
-      (add-hook 'prodigy-view-mode-hook
-                #'(lambda() (set (make-local-variable 'after-change-functions) #'hurricane//refresh-chrome-current-tab)))))
+    ;; Add watch for prodigy-view-mode buffer change event.
+    (add-hook 'prodigy-view-mode-hook
+              #'(lambda() (set (make-local-variable 'after-change-functions) #'hurricane//refresh-chrome-current-tab)))))
 
 (defun hurricane-misc/init-moz-controller ()
   (use-package moz-controller
@@ -907,7 +908,7 @@
 
       (eval-after-load 'magit
         '(define-key magit-mode-map (kbd "C-c g")
-           #'hurricane//magit-visit-pull-request))
+                     #'hurricane//magit-visit-pull-request))
 
       (setq magit-process-popup-time 10))))
 
@@ -943,12 +944,12 @@
       ;; Fix, add colors and highlight text.
       (require 'ansi-color)
       (defun colorize-compilation-buffer ()
-      (toggle-read-only)
-      (ansi-color-apply-on-region (point-min) (point-max))
-      (toggle-read-only))
+        (toggle-read-only)
+        (ansi-color-apply-on-region (point-min) (point-max))
+        (toggle-read-only))
       (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
       (add-hook 'shell-mode-hook (lambda () (highlight-regexp
-                                       "\\[OK\\]" "hi-green-b")))
+                                        "\\[OK\\]" "hi-green-b")))
       ;; Make `URLs' clickable.
       (add-hook 'shell-mode-hook (lambda ()(goto-address-mode)))
 
@@ -1115,12 +1116,12 @@
     (setq rime-posframe-style 'simple)
     (setq rime-user-data-dir rime-dir)
     (setq rime-disable-predicates
-     '(rime-predicate-evil-mode-p
-       rime-predicate-prog-in-code-p
-       rime-predicate-ace-window-p
-       rime-predicate-hydra-p
-       rime-predicate-which-key-activate-p
-       rime-predicate-local-map-p))
+          '(rime-predicate-evil-mode-p
+            rime-predicate-prog-in-code-p
+            rime-predicate-ace-window-p
+            rime-predicate-hydra-p
+            rime-predicate-which-key-activate-p
+            rime-predicate-local-map-p))
 
     (defun +rime-force-enable ()
       "强制 `rime' 使用中文输入状态。
@@ -1178,8 +1179,8 @@
         (rime-inline-ascii)))
 
     (mapc #'dispatching-enchancer '(ivy-dispatching-done
-                                        ivy-dispatching-call
-                                        hydra-ivy/body))
+                                    ivy-dispatching-call
+                                    hydra-ivy/body))
 
     :custom
     (rime-librime-root "~/.emacs.d/librime/dist")
@@ -1303,16 +1304,16 @@
         (do-applescript
          (concat "tell application \"Adobe Acrobat\"\n"
                  "	try\n"
-         (format "		open \"%s\" options \"page=%s\"\n" eaf--buffer-url page-number)
+                 (format "		open \"%s\" options \"page=%s\"\n" eaf--buffer-url page-number)
                  "	on error\n"
-         (format "		display alert \"Cannot open the file\" & \"%s\" \n" eaf--buffer-url)
+                 (format "		display alert \"Cannot open the file\" & \"%s\" \n" eaf--buffer-url)
                  "		return false\n"
                  "	end try\n"
                  "end tell\n"
                  "\n"
                  "tell application \"Adobe Acrobat\"\n"
                  "	tell PDF Window 1\n"
-         (format "		goto page %s \n" page-number)
+                 (format "		goto page %s \n" page-number)
                  "	end tell\n"
                  "end tell\n"
                  ))))
@@ -1428,7 +1429,7 @@
        ((and (eq blink-search-grep-pdf-backend 'pdf-tools) (featurep 'pdf-tools) (not (string-empty-p submatches)))
         (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
           (blink-search-grep-pdf-pdftool-goto file page submatches)))
-      ((and (eq blink-search-grep-pdf-backend 'eaf-pdf-viewer) (featurep 'eaf-pdf-viewer))
+       ((and (eq blink-search-grep-pdf-backend 'eaf-pdf-viewer) (featurep 'eaf-pdf-viewer))
         (eaf-pdf-jump-to-page file page))
        ;; TODO support other pdf backends
        (t (message "Unknown backend %s" blink-search-grep-pdf-backend))))
@@ -1470,27 +1471,27 @@
       (setq subed-screenshot-arg (format "<img src=\"%s\">" (file-name-nondirectory subed-screenshot)))
 
       (let* ((final-cmd final-cmd)
-            (buffer (get-buffer-create "*subed send sentence to Anki*"))
-            (process
-             (start-process-shell-command
-              "hurricane/subed-send-sentence-to-Anki"
-              buffer
-              final-cmd)))
+             (buffer (get-buffer-create "*subed send sentence to Anki*"))
+             (process
+              (start-process-shell-command
+               "hurricane/subed-send-sentence-to-Anki"
+               buffer
+               final-cmd)))
 
-       (message "%s" final-cmd)
+        (message "%s" final-cmd)
 
-       (set-process-sentinel
-        process
-        (lambda (proc event)
-          (when (equal event "finished\n")
-            (anki-add-card Anki-deck-name
-                           (format "[sound:%s]" (file-name-nondirectory subed-mp3))
-                           subed-sentence
-                           subed-translation
-                           subed-screenshot-arg
-                           "subs2srs")
-            )))
-       t))
+        (set-process-sentinel
+         process
+         (lambda (proc event)
+           (when (equal event "finished\n")
+             (anki-add-card Anki-deck-name
+                            (format "[sound:%s]" (file-name-nondirectory subed-mp3))
+                            subed-sentence
+                            subed-translation
+                            subed-screenshot-arg
+                            "subs2srs")
+             )))
+        t))
 
     (defun hurricane/subed-send-sentence-to-Anki ()
       (interactive)
@@ -1523,7 +1524,7 @@
                                                                   (replace-regexp-in-string
                                                                    "[\t\n\r]+" " "
                                                                    (substring-no-properties
-                                                                   (subed-subtitle-text)))
+                                                                    (subed-subtitle-text)))
                                                                   "get_property" "path")))
 
     (defun hurricane//subed-popweb-anki-review-show ()
@@ -1540,23 +1541,23 @@
     ;; 如果是观看 B 站解析的视频链接，就不需要代理。
     ;; (add-to-list 'subed-mpv-arguments (format "--stream-lavf-o-append=%s_proxy=%s://%s:%s" provixy-type provixy-type provixy-host provixy-port))
     ;; Remember cursor position between sessions
-	  (add-hook 'subed-mode-hook 'save-place-local-mode)
-	  ;; Break lines automatically while typing
-	  (add-hook 'subed-mode-hook 'turn-on-auto-fill)
-	  ;; Break lines at 40 characters
-	  (add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40)))
-	  ;; Some reasonable defaults
-	  (add-hook 'subed-mode-hook 'subed-enable-pause-while-typing)
-	  ;; As the player moves, update the point to show the current subtitle
-	  (add-hook 'subed-mode-hook 'subed-enable-sync-point-to-player)
-	  ;; As your point moves in Emacs, update the player to start at the current subtitle
-	  (add-hook 'subed-mode-hook 'subed-enable-sync-player-to-point)
-	  ;; Replay subtitles as you adjust their start or stop time with M-[, M-], M-{, or M-}
-	  (add-hook 'subed-mode-hook 'subed-enable-replay-adjusted-subtitle)
-	  ;; Loop over subtitles
-	  (add-hook 'subed-mode-hook 'subed-enable-loop-over-current-subtitle)
-	  ;; Show characters per second
-	  (add-hook 'subed-mode-hook 'subed-enable-show-cps)
+    (add-hook 'subed-mode-hook 'save-place-local-mode)
+    ;; Break lines automatically while typing
+    (add-hook 'subed-mode-hook 'turn-on-auto-fill)
+    ;; Break lines at 40 characters
+    (add-hook 'subed-mode-hook (lambda () (setq-local fill-column 40)))
+    ;; Some reasonable defaults
+    (add-hook 'subed-mode-hook 'subed-enable-pause-while-typing)
+    ;; As the player moves, update the point to show the current subtitle
+    (add-hook 'subed-mode-hook 'subed-enable-sync-point-to-player)
+    ;; As your point moves in Emacs, update the player to start at the current subtitle
+    (add-hook 'subed-mode-hook 'subed-enable-sync-player-to-point)
+    ;; Replay subtitles as you adjust their start or stop time with M-[, M-], M-{, or M-}
+    (add-hook 'subed-mode-hook 'subed-enable-replay-adjusted-subtitle)
+    ;; Loop over subtitles
+    (add-hook 'subed-mode-hook 'subed-enable-loop-over-current-subtitle)
+    ;; Show characters per second
+    (add-hook 'subed-mode-hook 'subed-enable-show-cps)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-n") #'subed-forward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "M-p") #'subed-backward-subtitle-text)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-a") #'subed-jump-to-subtitle-text)
@@ -1592,10 +1593,10 @@
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c .") #'subed-toggle-sync-point-to-player)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c ,") #'subed-toggle-sync-player-to-point)
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-c C-t") (let ((html-tag-keymap (make-sparse-keymap)))
-                                                                             (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-t") #'subed-insert-html-tag)
-                                                                             (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-i") #'subed-insert-html-tag-italic)
-                                                                             (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-b") #'subed-insert-html-tag-bold)
-                                                                             html-tag-keymap))
+                                                                                    (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-t") #'subed-insert-html-tag)
+                                                                                    (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-i") #'subed-insert-html-tag-italic)
+                                                                                    (evil-define-key '(normal insert emacs motion) html-tag-keymap (kbd "C-b") #'subed-insert-html-tag-bold)
+                                                                                    html-tag-keymap))
     (evil-define-key '(normal insert emacs motion) subed-mode-map (kbd "C-M-s") #'hurricane/subed-send-sentence-to-Anki)
 
     ;; 该部分定义用于和软件 Enjoyable 配合，使用游戏手柄控制。
@@ -1684,32 +1685,32 @@ Works only in youtube-sub-extractor-mode buffer."
         (dictionary-overlay-mark-word-unknown)))
 
     (defun hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle ()
-        (interactive)
-        (if (derived-mode-p 'subed-srt-mode)
-            (progn
-             (dictionary-overlay-jump-next-unknown-word)
-             (sleep-for 2)
-             (subed-mpv-jump-to-current-subtitle))
-          (dictionary-overlay-jump-next-unknown-word)))
+      (interactive)
+      (if (derived-mode-p 'subed-srt-mode)
+          (progn
+            (dictionary-overlay-jump-next-unknown-word)
+            (sleep-for 2)
+            (subed-mpv-jump-to-current-subtitle))
+        (dictionary-overlay-jump-next-unknown-word)))
 
     (defun hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle ()
-        (interactive)
-        (if (derived-mode-p 'subed-srt-mode)
-            (progn
-             (dictionary-overlay-jump-prev-unknown-word)
-             (sleep-for 2)
-             (subed-mpv-jump-to-current-subtitle))
-          (dictionary-overlay-jump-prev-unknown-word)))
+      (interactive)
+      (if (derived-mode-p 'subed-srt-mode)
+          (progn
+            (dictionary-overlay-jump-prev-unknown-word)
+            (sleep-for 2)
+            (subed-mpv-jump-to-current-subtitle))
+        (dictionary-overlay-jump-prev-unknown-word)))
     :bind
     ("C-c d" . dictionary-overlay-render-buffer)
     ("C-c y" . hurricane/popweb-translate-and-mark-unknown-word)
     (:map dictionary-overlay-map
-                ("y" . hurricane/popweb-translate-and-mark-unknown-word)
-                ("u" . dictionary-overlay-mark-word-known)
-                ("S" . hurricane/youdao-search-at-point)
-                ("n" . hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle)
-                ("p" . hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle)
-                )))
+          ("y" . hurricane/popweb-translate-and-mark-unknown-word)
+          ("u" . dictionary-overlay-mark-word-known)
+          ("S" . hurricane/youdao-search-at-point)
+          ("n" . hurricane/dictionary-overlay-jump-next-unknown-word-and-current-subtitle)
+          ("p" . hurricane/dictionary-overlay-jump-previous-unknown-word-and-current-subtitle)
+          )))
 
 (defun hurricane-misc/init-websocket ()
   (use-package websocket
@@ -1733,23 +1734,23 @@ Works only in youtube-sub-extractor-mode buffer."
     (require 'anki-editor)
 
     (with-eval-after-load 'anki-editor
-     (defun emacs-azure-tts-add-card (deck front back translation)
-      (let ((bytes (with-temp-buffer
-                     (insert-file-contents-literally front)
-                     (buffer-string))))
-       (thread-last
-        (anki-editor-api-with-multi
-         (anki-editor-api-enqueue 'storeMediaFile
-                                  :filename (file-name-nondirectory front)
-                                  :data (base64-encode-string bytes))
-         (anki-editor-api-enqueue 'addNote
-                                  :note (list `("deckName" . ,deck)
-                                               '("modelName" . "Antimoon without expression")
-                                               `("fields" . ,(list `("audio" . ,(format "[sound:%s]" (file-name-nondirectory front)))
-                                                                   `("sentence" . ,back)
-                                                                   `("translation" . ,translation)))
-                                               `("options" . ,(list
-                                                               '("allowDuplicate" . t))))))))))
+      (defun emacs-azure-tts-add-card (deck front back translation)
+        (let ((bytes (with-temp-buffer
+                       (insert-file-contents-literally front)
+                       (buffer-string))))
+          (thread-last
+            (anki-editor-api-with-multi
+             (anki-editor-api-enqueue 'storeMediaFile
+                                      :filename (file-name-nondirectory front)
+                                      :data (base64-encode-string bytes))
+             (anki-editor-api-enqueue 'addNote
+                                      :note (list `("deckName" . ,deck)
+                                                  '("modelName" . "Antimoon without expression")
+                                                  `("fields" . ,(list `("audio" . ,(format "[sound:%s]" (file-name-nondirectory front)))
+                                                                      `("sentence" . ,back)
+                                                                      `("translation" . ,translation)))
+                                                  `("options" . ,(list
+                                                                  '("allowDuplicate" . t))))))))))
     :config
     (add-to-list 'emacs-azure-tts-after-speak-functions (apply-partially #'emacs-azure-tts-add-card Anki-deck-name))
     (add-to-list 'emacs-azure-tts-after-speak-functions #'(lambda (front back translation) (ignore-errors (if (get-buffer-window goldendict-buffer-name) (and (winum-select-window-2) (evil-exit-visual-state))))))
@@ -1790,23 +1791,23 @@ Works only in youtube-sub-extractor-mode buffer."
     :ensure t))
 
 (defun hurricane-misc/init-elfeed-tube ()
- (use-package elfeed-tube
-   :ensure t ;; or :straight t
-   :after elfeed
-   :demand t
-   :config
-   ;; (setq elfeed-tube-auto-save-p nil) ; default value
-   ;; (setq elfeed-tube-auto-fetch-p t)  ; default value
-   (elfeed-tube-setup)
+  (use-package elfeed-tube
+    :ensure t ;; or :straight t
+    :after elfeed
+    :demand t
+    :config
+    ;; (setq elfeed-tube-auto-save-p nil) ; default value
+    ;; (setq elfeed-tube-auto-fetch-p t)  ; default value
+    (elfeed-tube-setup)
 
-   :bind (:map elfeed-show-mode-map
-           ("F" . elfeed-tube-fetch)
-           ("C-c C-f" . elfeed-tube-mpv-follow-mode)
-           ("C-c C-w" . elfeed-tube-mpv-where)
-           ([remap save-buffer] . elfeed-tube-save)
-           :map elfeed-search-mode-map
-           ("F" . elfeed-tube-fetch)
-           ([remap save-buffer] . elfeed-tube-save))))
+    :bind (:map elfeed-show-mode-map
+                ("F" . elfeed-tube-fetch)
+                ("C-c C-f" . elfeed-tube-mpv-follow-mode)
+                ("C-c C-w" . elfeed-tube-mpv-where)
+                ([remap save-buffer] . elfeed-tube-save)
+                :map elfeed-search-mode-map
+                ("F" . elfeed-tube-fetch)
+                ([remap save-buffer] . elfeed-tube-save))))
 
 (defun hurricane-misc/init-tabspaces ()
   (use-package tabspaces
@@ -1851,34 +1852,34 @@ Works only in youtube-sub-extractor-mode buffer."
             image-href-attr
             new-full-file-path
             content)
-       (with-temp-buffer
-        (insert-file-contents full-file-path)
-        (setq content (buffer-string))
-        (cl-loop for child in (dom-by-tag (libxml-parse-html-region (point-min) (point-max)) 'image)
-                 do (progn
-                      (setq image-href-attr (dom-attr child 'xlink:href))
-                      (setq new-file-name (md5 (format "%s" (random))))
-                      (setq new-full-file-path (file-name-with-extension new-file-name (file-name-extension image-href-attr)))
+        (with-temp-buffer
+          (insert-file-contents full-file-path)
+          (setq content (buffer-string))
+          (cl-loop for child in (dom-by-tag (libxml-parse-html-region (point-min) (point-max)) 'image)
+                   do (progn
+                        (setq image-href-attr (dom-attr child 'xlink:href))
+                        (setq new-file-name (md5 (format "%s" (random))))
+                        (setq new-full-file-path (file-name-with-extension new-file-name (file-name-extension image-href-attr)))
 
-                      (copy-file image-href-attr
-                                 (file-name-concat
-                                  anki-helper-media-directory
-                                  new-full-file-path)
-                                 t)
+                        (copy-file image-href-attr
+                                   (file-name-concat
+                                    anki-helper-media-directory
+                                    new-full-file-path)
+                                   t)
 
-                      (setq content (string-replace (string-as-unibyte image-href-attr) new-full-file-path (string-as-unibyte content)))
-                      ;; (save-excursion
-                      ;;   (goto-char (point-min))
-                      ;;   (while (re-search-forward
-                      ;;           image-href-attr
-                      ;;           (point-max)
-                      ;;           t)
-                      ;;     (replace-match (file-name-with-extension new-file-name (file-name-extension image-href-attr)) t nil nil nil)))
-                      ))
-        (erase-buffer)
-        (insert content)
-        (write-file full-file-path nil)
-        content)))
+                        (setq content (string-replace (string-as-unibyte image-href-attr) new-full-file-path (string-as-unibyte content)))
+                        ;; (save-excursion
+                        ;;   (goto-char (point-min))
+                        ;;   (while (re-search-forward
+                        ;;           image-href-attr
+                        ;;           (point-max)
+                        ;;           t)
+                        ;;     (replace-match (file-name-with-extension new-file-name (file-name-extension image-href-attr)) t nil nil nil)))
+                        ))
+          (erase-buffer)
+          (insert content)
+          (write-file full-file-path nil)
+          content)))
     :config
     (with-eval-after-load 'org
       (require 'edraw-org)
@@ -1940,11 +1941,11 @@ Works only in youtube-sub-extractor-mode buffer."
     (cl-defmethod gt-text :around ((taker gt-taker) translator)
       "Extend the original gt-text method to handle pdf-view-mode."
       (cond ((and (eq major-mode 'pdf-view-mode) (not (pdf-view-active-region-p)))
-              (mapconcat (lambda (text) (replace-regexp-in-string "[\t\n\r]+" " " text))
-                       (-map (lambda (edge) (pdf-info-gettext (pdf-view-current-page) edge))
-                             (merge-sublists-with-same-first-element
-                              (pdf-info-getselection (pdf-view-current-page) '(0 0 1 1) 'line nil)))
-                       "\r\n"))
+             (mapconcat (lambda (text) (replace-regexp-in-string "[\t\n\r]+" " " text))
+                        (-map (lambda (edge) (pdf-info-gettext (pdf-view-current-page) edge))
+                              (merge-sublists-with-same-first-element
+                               (pdf-info-getselection (pdf-view-current-page) '(0 0 1 1) 'line nil)))
+                        "\r\n"))
             ((eq major-mode 'pdf-view-mode)
              (gt-text-at-point nil 'pdf-view-mode))
             (t (cl-call-next-method))))
@@ -2014,3 +2015,24 @@ Works only in youtube-sub-extractor-mode buffer."
 
           )
     ))
+
+(defun hurricane-misc/post-init-gptel ()
+  (with-eval-after-load 'gptel
+    (setq gptel-model "deepseek-chat")
+    (setq gptel-default-mode 'org-mode)
+    (setq gptel-backend
+          (gptel-make-openai "DeepSeek"       ;Any name you want
+            :host "api.deepseek.com"
+            :endpoint "/chat/completions"
+            :stream t
+            :key (funcall (lambda ()
+                            (if-let* ((auth-info (car (auth-source-search
+                                                       :host "api.deepseek.com"
+                                                       :user "apikey"
+                                                       :require '(:secret))))
+                                      (secret (plist-get auth-info :secret)))
+                                (if (functionp secret)
+                                    (encode-coding-string (funcall secret) 'utf-8)
+                                  secret)
+                              (user-error "No `gptel-api-key' found in the auth source"))))
+            :models '("deepseek-chat" "deepseek-coder")))))

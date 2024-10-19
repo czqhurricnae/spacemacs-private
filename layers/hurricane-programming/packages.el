@@ -19,7 +19,7 @@
                            :build (:not compile)))
     ;; (lsp-bridge :location local)
     (color-rg :location (recipe :fetcher github
-                              :repo "manateelazycat/color-rg"))
+                                :repo "manateelazycat/color-rg"))
     (stm32 :location (recipe :fetcher github
                              :repo "SL-RU/stm32-emacs"))
     friendly-shell-command
@@ -69,11 +69,11 @@
     (add-hook 'js2-mode-hook (lambda () (setq js2-strict-missing-semi-warning nil)))
     (web-mode-toggle-current-element-highlight)
     (web-mode-dom-errors-show)))
-    (setq company-backends-web-mode '((company-dabbrev-code
-                                       company-keywords
-                                       company-etags)
-                                       company-files
-                                       company-dabbrev))
+(setq company-backends-web-mode '((company-dabbrev-code
+                                   company-keywords
+                                   company-etags)
+                                  company-files
+                                  company-dabbrev))
 
 ;; {{
 ;; @See: https://github.com/slime/slime
@@ -116,12 +116,12 @@
       ;;                            (flycheck-select-checker 'javascript-eslint)))
       ;; (add-hook 'rjsx-mode-hook  'web-mode-init-hook)
       (add-hook 'rjsx-mode-hook (lambda ()
-        (setq exec-path (cons "/usr/local/bin/node" exec-path))
-        (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
-        (setq sgml-basic-offset 2)
-        (setq js-indent-level 2)
-        (web-mode-init-hook)
-        (flycheck-select-checker 'javascript-standard)))
+                                  (setq exec-path (cons "/usr/local/bin/node" exec-path))
+                                  (setq exec-path (cons "/usr/local/bin/eslint" exec-path))
+                                  (setq sgml-basic-offset 2)
+                                  (setq js-indent-level 2)
+                                  (web-mode-init-hook)
+                                  (flycheck-select-checker 'javascript-standard)))
       )))
 ;; }}
 
@@ -242,45 +242,45 @@
          ;;@See: https://emacs-china.org/t/lsp-bridge-find-references-which-function/27144
          (progn
            (defun exec/lsp-which-function(file line column)
-	           (with-current-buffer
-		             (find-file-noselect file)
-	             (goto-line line)
-	             (move-to-column column)
+             (with-current-buffer
+                 (find-file-noselect file)
+               (goto-line line)
+               (move-to-column column)
                (which-function)))
 
            (defun get-function-name-and-overlay (file line column)
-	           "Find the function name at a specific line and column in a file and put an overlay."
-	           (let* ((function-name (exec/lsp-which-function file line column))
-		                (ov (make-overlay (line-beginning-position) (1+ (line-beginning-position)) nil t))
-		                (text (format "%30s │" (if function-name function-name "")))
-		                )
-	             ;; (delete-all-overlays (current-buffer))
+             "Find the function name at a specific line and column in a file and put an overlay."
+             (let* ((function-name (exec/lsp-which-function file line column))
+                    (ov (make-overlay (line-beginning-position) (1+ (line-beginning-position)) nil t))
+                    (text (format "%30s │" (if function-name function-name "")))
+                    )
+               ;; (delete-all-overlays (current-buffer))
                (overlay-put ov 'before-string
-				                    (propertize text 'face 'font-lock-string-face)
-				                    )
-	             (overlay-put ov 'evaporate t)
-	             ))
+                            (propertize text 'face 'font-lock-string-face)
+                            )
+               (overlay-put ov 'evaporate t)
+               ))
 
            (defun parse-buffer-and-overlay-function-name (&optional a b c)
-	           "Parse the buffer content to get file, line number, column and make an overlay of function name."
-	           (interactive)
-	           (save-excursion
+             "Parse the buffer content to get file, line number, column and make an overlay of function name."
+             (interactive)
+             (save-excursion
                (goto-char (point-min))
                (let ((current-file nil))
-		             (while (not (eobp)) ; while not end of buffer
+                 (while (not (eobp)) ; while not end of buffer
                    ;; check if current line is a file path
                    (if (looking-at "^/.+?$")
                        ;; update the current file
-			                 (setq current-file (buffer-substring-no-properties
-								                           (line-beginning-position) (line-end-position)))
-			               (progn
-			                 ;; else check if it's a line:col
-			                 (when (and current-file (looking-at "^\\([0-9]+\\):\\([0-9]+\\):"))
-				                 ;; call your function with the captured groups as arguments
-				                 (get-function-name-and-overlay
-				                  current-file
-				                  (string-to-number (match-string 1))
-				                  (string-to-number (match-string 2))))))
+                       (setq current-file (buffer-substring-no-properties
+                                           (line-beginning-position) (line-end-position)))
+                     (progn
+                       ;; else check if it's a line:col
+                       (when (and current-file (looking-at "^\\([0-9]+\\):\\([0-9]+\\):"))
+                         ;; call your function with the captured groups as arguments
+                         (get-function-name-and-overlay
+                          current-file
+                          (string-to-number (match-string 1))
+                          (string-to-number (match-string 2))))))
                    (forward-line 1)))))
 
            (advice-add 'lsp-bridge-references--popup :after 'parse-buffer-and-overlay-function-name)
@@ -297,16 +297,16 @@
     (lsp-bridge-enable-org-babel t)))
 
 (defun hurricane-programming/init-color-rg ()
- (use-package color-rg
-   :ensure t
-   :load-path ("~/.emacs.d/elpa/29.3/develop/color-rg-20240331.104519")
-   :config
-   (eval-after-load 'color-rg
-     '(progn
-        (evil-make-overriding-map color-rg-mode-map 'normal)
-        (add-hook 'color-rg-mode-hook #'evil-normalize-keymaps)))
+  (use-package color-rg
+    :ensure t
+    :load-path ("~/.emacs.d/elpa/29.3/develop/20241007.15754")
+    :config
+    (eval-after-load 'color-rg
+      '(progn
+         (evil-make-overriding-map color-rg-mode-map 'normal)
+         (add-hook 'color-rg-mode-hook #'evil-normalize-keymaps)))
 
-   (define-key isearch-mode-map (kbd "M-s M-s") 'isearch-toggle-color-rg)))
+    (define-key isearch-mode-map (kbd "M-s M-s") 'isearch-toggle-color-rg)))
 
 (defun hurricane-programming/init-stm32 ()
   (use-package stm32
@@ -372,13 +372,13 @@
   (use-package msgu
     :ensure t))
 
-(defun hurricane-programming/init-ts-docstr ()
-  (use-package ts-docstr
-    :ensure t
-    :custom
-    (setq ts-docstr-desc-summary "@brief        \n*   @note")
-    (setq ts-docstr-desc-param "")
-    (setq ts-docstr-desc-return "      无")))
+;; (defun hurricane-programming/init-ts-docstr ()
+;;   (use-package ts-docstr
+;;     :ensure t
+;;     :custom
+;;     (setq ts-docstr-desc-summary "@brief        \n*   @note")
+;;     (setq ts-docstr-desc-param "")
+;;     (setq ts-docstr-desc-return "      无")))
 
 (defun hurricane-programming/init-treesit-auto ()
   (use-package treesit-auto

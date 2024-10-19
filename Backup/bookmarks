@@ -327,11 +327,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Hands On RTOS with Microcontrollers Building real time embedded systems using FreeRTOS, STM32 MCUs, and SEGGER debug tools.org")
- (front-context-string . "\n* Hands On RTOS")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/使用 Arduino 测量电感.org")
+ (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 549)
- (last-modified 26381 25678 286564 0))
+ (position . 335)
+ (last-modified 26387 23610 899182 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

@@ -1036,7 +1036,29 @@ Return nil if not found."
         ;; "--ytdl-raw-options=proxy=[http://127.0.0.1:7890]"
         )))
     :config
+    (defun hurricane//move-cursor-after-link ()
+      "Move cursor to the position immediately after a link text in Org mode."
+      (interactive)
+      (let ((pos (point)))
+        (when (org-in-regexp org-link-any-re 1)
+          (goto-char (match-end 0))
+          (when (looking-at " ")
+            (forward-char))
+          (insert " ")
+          (sleep-for 1))))
+
+    (defun hurricane//org-media-note--insert-file-link-advice (orig-fun &rest args)
+      "Advice to call move-cursor-after-link before the second insert in org-media-note--insert-file-link."
+      (let ((result (apply orig-fun args)))
+        (hurricane//move-cursor-after-link)
+        result))
+
+    (advice-add 'org-media-note--insert-file-link :around #'hurricane//org-media-note--insert-file-link-advice)
+
+    ;; (advice-add 'org-media-note--open :before #'(lambda (&rest _) (org-media-note-pretty-hydra/body)))
+
     (make-variable-buffer-local 'org-media-note-screenshot-image-dir)
+
     (require 'psearch)
 
     ;; (with-eval-after-load 'psearch
@@ -1057,7 +1079,7 @@ Return nil if not found."
       (psearch-patch org-media-note--insert-file-link
         (psearch-replace '`(format "[[file:%s]]"
                                    (org-media-note--format-file-path file-path))
-                         '`(format "[[file:%s]] "
+                         '`(format " [[file:%s]]"
                                    (org-media-note--format-file-path file-path)))))
 
     (require 'pretty-hydra)
@@ -1078,6 +1100,8 @@ Return nil if not found."
           ("T"
            (mpv-cycle-property "ontop")
            "toggle ontop")
+          ("f" (mpv-cycle-property "fullscreen")
+           "toggle fullscreen")
           ("]"
            (org-media-note-change-speed-by 0.1)
            "increase speed")

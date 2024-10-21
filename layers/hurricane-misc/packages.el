@@ -949,7 +949,7 @@
         (toggle-read-only))
       (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
       (add-hook 'shell-mode-hook (lambda () (highlight-regexp
-                                        "\\[OK\\]" "hi-green-b")))
+                                             "\\[OK\\]" "hi-green-b")))
       ;; Make `URLs' clickable.
       (add-hook 'shell-mode-hook (lambda ()(goto-address-mode)))
 
@@ -1966,8 +1966,8 @@ Works only in youtube-sub-extractor-mode buffer."
           gt-buffer-render-follow-p t
           gt-buffer-render-window-config
           '((display-buffer-reuse-window display-buffer-in-direction)
-            (direction . right)
-            (window-width . 0.5))
+            (direction . below)
+            (window-height . 0.3))
           gt-buffer-prompt-window-config
           '(display-buffer-reuse-window (inhibit-same-window . nil))
 

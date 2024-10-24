@@ -71,6 +71,10 @@
    ["#FDF6E3" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#556b72"])
  '(safe-local-variable-values
    '((eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/Magit 通过配置好的 ssh 推送代码到 github，还是出现 permission deny 错误/"))
+     (eval setq org-media-note-screenshot-image-dir
+           (concat default-directory "./static/YouTube Subscriptions to RSS by OPML file/"))
+     (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/PCB KiCad 入门/"))
      (eval setq org-media-note-screenshot-image-dir
            (concat default-directory "./static/MPV 调用 cjson 出现错误 Symbol not found: _luaL_setfuncs/"))

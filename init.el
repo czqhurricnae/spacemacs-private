@@ -67,9 +67,9 @@ This function should only modify configuration layer settings."
      ;;                 spell-checking-enable-by-default nil)
      (vinegar :variables
               vinegar-reuse-dired-buffer t)
-     ;; (spacemacs-layouts :variables
-     ;;                    layouts-enable-autosave nil
-     ;;                    layouts-autosave-delay 300)
+     (spacemacs-layouts :variables
+                        layouts-enable-autosave nil
+                        layouts-autosave-delay 300)
      (git :variables
           git-magit-status-fullscreen t
           magit-push-always-verify nil
@@ -131,9 +131,6 @@ This function should only modify configuration layer settings."
      ;; Must ensure fasd installed first.
      ;; brew install fasd
      fasd
-     ;; (spacemacs-layouts :variables
-     ;;                    layouts-enable-autosave nil
-     ;;                    layouts-autosave-delay 300)
      ;; theming
      (chinese :variables
               chinese-default-input-method nil
@@ -154,7 +151,7 @@ This function should only modify configuration layer settings."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(sqlite3 eyebrowse)
+   dotspacemacs-additional-packages '(sqlite3)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -165,7 +162,7 @@ This function should only modify configuration layer settings."
                                     evil-args evil-ediff evil-exchange evil-unimpaired
                                     evil-indent-plus volatile-highlights
                                     holy-mode skewer-mode rainbow-delimiters
-                                    highlight-indentation vi-tilde-fringe eyebrowse
+                                    highlight-indentation vi-tilde-fringe
                                     org-bullets smooth-scrolling org-repo-todo org-timer
                                     livid-mode git-gutter git-gutter-fringe evil-escape
                                     leuven-theme gh-md evil-lisp-state spray lorem-ipsum symon

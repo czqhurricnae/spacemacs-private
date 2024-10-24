@@ -1072,10 +1072,11 @@ Return nil if not found."
 
     (with-eval-after-load 'psearch
       (require 'org-media-note-mpv)
+      (require 'elfeed-tube)
 
       (psearch-patch org-media-note-play-online-video
         (psearch-replace '`(read-string "Url to play: ")
-                         '`(read-string "Url to play: " (hurricane//retrieve-chrome-current-tab-url))))
+                         '`(read-string "Url to play: " (or (and (elfeed-tube--get-entries) (elfeed-entry-link (car (elfeed-tube--get-entries)))) (hurricane//retrieve-chrome-current-tab-url)))))
       (psearch-patch org-media-note--insert-file-link
         (psearch-replace '`(format "[[file:%s]]"
                                    (org-media-note--format-file-path file-path))

@@ -327,11 +327,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/PCB KiCad 入门.org")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Magit 通过配置好的 ssh 推送代码到 github，还是出现 permission deny 错误.org")
  (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 329)
- (last-modified 26388 31958 960337 0))
+ (position . 538)
+ (last-modified 26394 40508 290854 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

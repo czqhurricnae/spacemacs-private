@@ -91,6 +91,7 @@
         (go-translate :location (recipe :fetcher github
                                         :repo "lorniu/go-translate"))
         gptel
+        dogears
         ))
 
 (defconst sys/macp
@@ -1784,7 +1785,9 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-elfeed ()
   (use-package elfeed
-    :ensure t))
+    :ensure t
+    :config
+    (setq elfeed-log-level 'debug)))
 
 (defun hurricane-misc/init-aio ()
   (use-package aio
@@ -1798,6 +1801,10 @@ Works only in youtube-sub-extractor-mode buffer."
     :config
     ;; (setq elfeed-tube-auto-save-p nil) ; default value
     ;; (setq elfeed-tube-auto-fetch-p t)  ; default value
+    (setq elfeed-tube-invidious-url "inv.nadeko.net")
+    ;; (setq elfeed-tube-invidious-url "invidious.jing.rocks")
+    (setq elfeed-tube-auto-fetch-p nil)
+
     (elfeed-tube-setup)
 
     :bind (:map elfeed-show-mode-map
@@ -2036,3 +2043,23 @@ Works only in youtube-sub-extractor-mode buffer."
                                   secret)
                               (user-error "No `gptel-api-key' found in the auth source"))))
             :models '("deepseek-chat" "deepseek-coder")))))
+
+(defun hurricane-misc/init-dogears ()
+  (use-package dogears
+    :hook (after-init . dogears-mode)
+    :config
+    (setq dogears-idle 1
+          dogears-limit 200
+          dogears-position-delta 20)
+    (setq dogears-functions '(find-file recenter-top-bottom
+                                        other-window switch-to-buffer
+                                        aw-select toggle-window-split
+                                        windmove-do-window-select
+                                        pager-page-down pager-page-up
+                                        tab-bar-select-tab
+                                        pop-to-mark-command
+                                        pop-global-mark
+                                        goto-last-change
+                                        xref-go-back
+                                        xref-find-definitions
+                                        xref-find-references))))

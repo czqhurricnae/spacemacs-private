@@ -87,7 +87,7 @@
                                        :repo "misohena/el-easydraw"))
         ;; (sketch-mode :location (recipe :fetcher github
         ;;                                :repo "dalanicolai/sketch-mode"))
-        ;; (eaf-interleave :location local)
+        (eaf-interleave :location local)
         (go-translate :location (recipe :fetcher github
                                         :repo "lorniu/go-translate"))
         gptel
@@ -1227,9 +1227,11 @@
       (ivy-set-actions
        'hurricane/counsel-goto-recent-directory
        '(("o" fasd-find-file-action "find-file")
-         ("s" ivy-search-from-action "search-from")
+         ;; ("s" ivy-search-from-action "search-from")
+         ("s" make-search-frame "search-from")
          ("e" eaf-open-in-file-manager "@ Open file in eaf file manager")
          ("t" find-file-other-tab "@ find-file-other-tab")
+         ("c" gptel-context-add-file "@ gptel-context-add-file")
          )))))
 
 (defun hurricane-misc/init-auto-save ()
@@ -1904,6 +1906,8 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/init-eaf-interleave ()
   (use-package eaf-interleave
+    :config
+    (setq eaf-interleave--page-note-prop "NOTER_PAGE")
     :custom
     (eaf-interleave-org-notes-dir-list (list (concat deft-dir (file-name-as-directory "notes"))))
     :after eaf))
@@ -1982,12 +1986,13 @@ Works only in youtube-sub-extractor-mode buffer."
           `((default . ,(gt-translator
                          :taker (list (gt-taker :pick nil :if 'selection)
                                       ;; (gt-taker :text 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode))
-                                      (gt-taker :text 'buffer :pick 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode eww-mode))
+                                      (gt-taker :text 'buffer :pick 'paragraph :if '(Info-mode telega-webpage-mode help-mode helpful-mode devdocs-mode eww-mode elfeed-show-mode))
                                       (gt-taker :text #'(lambda () (eaf-call-sync "execute_function" eaf--buffer-id "get_page_text")) :if '(eaf-mode))
                                       (gt-taker :text 'word))
                          :engines (list (gt-chatgpt-engine))
-                         :render  (list (gt-overlay-render :if '(Info-mode help-mode telega-webpage-mode helpful-mode devdocs-mode eww-mode))
-                                        (gt-buffer-render))))
+                         :render  (list
+                                   (gt-overlay-render :if '(Info-mode help-mode telega-webpage-mode helpful-mode devdocs-mode eww-mode elfeed-show-mode))
+                                   (gt-buffer-render))))
             ;; gt-insert-render
             (after-source-insert . ,(gt-translator
                                      :taker (gt-taker :text 'buffer :pick 'paragraph)

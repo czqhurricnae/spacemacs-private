@@ -45,7 +45,7 @@
     (add-hook 'youdao-dictionary-mode-hook
               (lambda ()
                 (define-key evil-normal-state-local-map
-                  (kbd "h") #'youdao-dictionary-hydra/body)))
+                            (kbd "h") #'youdao-dictionary-hydra/body)))
     (setq url-proxy-services
           '(("http"     . "localhost:7890")
             ("https"     . "localhost:7890")
@@ -62,24 +62,24 @@
 (defun hurricane-better-defaults/post-init-recentf ()
   (progn
     (setq recentf-exclude
-      '("COMMIT_MSG"
-        "COMMIT_EDITMSG"
-        "github.*txt$"
-        "/tmp/"
-        "/ssh:"
-        "/sudo:"
-        "/TAGS$"
-        "/GTAGS$"
-        "/GRAGS$"
-        "/GPATH$"
-        "\\.mkv$"
-        "\\.mp[34]$"
-        "\\.avi$"
-        "\\.pdf$"
-        "\\.sub$"
-        "\\.srt$"
-        "\\.ass$"
-        ".*png$"))
+          '("COMMIT_MSG"
+            "COMMIT_EDITMSG"
+            "github.*txt$"
+            "/tmp/"
+            "/ssh:"
+            "/sudo:"
+            "/TAGS$"
+            "/GTAGS$"
+            "/GRAGS$"
+            "/GPATH$"
+            "\\.mkv$"
+            "\\.mp[34]$"
+            "\\.avi$"
+            "\\.pdf$"
+            "\\.sub$"
+            "\\.srt$"
+            "\\.ass$"
+            ".*png$"))
     (setq recentf-max-saved-items 2048)))
 
 (defun hurricane-better-defaults/post-init-dired ()
@@ -170,9 +170,9 @@
 
 (defun hurricane-better-defaults/post-init-occur-mode ()
   "Auto switch to `occur buffer'."
-    (add-hook 'occur-hook
-              '(lambda ()
-                 (switch-to-buffer-other-window "*Occur*"))))
+  (add-hook 'occur-hook
+            '(lambda ()
+               (switch-to-buffer-other-window "*Occur*"))))
 
 (defun hurricane-better-defaults/post-init-counsel ()
   (with-eval-after-load 'counsel
@@ -189,15 +189,18 @@
        ("m" hurricane//find-file-move-file-to "@ Move to")
        ("E" hurricane/find-file-html-or-markdown-to-org "@ Convert to org")
        ("p" hurricane//find-file-org-pandoc-import-to-org "@ Import to org")
-       ("t" find-file-other-tab "@ find-file-other-tab")))
+       ("t" find-file-other-tab "@ find-file-other-tab")
+       ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
      'counsel-recentf
-     '(("t" find-file-other-tab "@ find-file-other-tab")))
+     '(("t" find-file-other-tab "@ find-file-other-tab")
+       ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
      'spacemacs/counsel-recentf
-     '(("t" find-file-other-tab "@ find-file-other-tab")))
+     '(("t" find-file-other-tab "@ find-file-other-tab")
+       ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
      'counsel-bookmark
@@ -212,7 +215,8 @@
        ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")
        ("d" hurricane//file-jump-delete-file "@ Delete file")
        ("C" hurricane//dired-copy-file-to "@ Copy to")
-       ("m" hurricane//dired-move-file-to "@ Move to")))
+       ("m" hurricane//dired-move-file-to "@ Move to")
+       ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
      'counsel-git
@@ -221,12 +225,14 @@
        ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")
        ("d" hurricane//file-jump-delete-file "@ Delete file")
        ("C" hurricane//dired-copy-file-to "@ Copy to")
-       ("m" hurricane//dired-move-file-to "@ Move to")))
+       ("m" hurricane//dired-move-file-to "@ Move to")
+       ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (dolist (action '(spacemacs/counsel-search counsel-rg counsel-ag))
       (ivy-add-actions
        action
-       '(("t" hurricane//find-file-other-tab "@ find-file-other-tab"))))
+       '(("t" hurricane//find-file-other-tab "@ find-file-other-tab")
+         ("c" gptel-context-add-file "@ gptel-context-add-file"))))
 
     (setq ivy-initial-inputs-alist nil)))
 

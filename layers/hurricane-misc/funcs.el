@@ -258,17 +258,17 @@ e.g. `Sunday, September 17, 2000'."
 (defun hurricane/ash-term-hooks ()
   ;; Dabbrev-expand in term.
   (define-key term-raw-escape-map "/"
-    (lambda ()
-      (interactive)
-      (let ((beg (point)))
-        (dabbrev-expand nil)
-        (kill-region beg (point)))
-      (term-send-raw-string (substring-no-properties (current-kill 0)))))
+              (lambda ()
+                (interactive)
+                (let ((beg (point)))
+                  (dabbrev-expand nil)
+                  (kill-region beg (point)))
+                (term-send-raw-string (substring-no-properties (current-kill 0)))))
   ;; Yank in term (bound to C-c C-y).
   (define-key term-raw-escape-map "\C-y"
-    (lambda ()
-      (interactive)
-      (term-send-raw-string (current-kill 0)))))
+              (lambda ()
+                (interactive)
+                (term-send-raw-string (current-kill 0)))))
 
 (defun hurricane/terminal ()
   "Switch to terminal. Launch if nonexistent."
@@ -308,7 +308,7 @@ e.g. `Sunday, September 17, 2000'."
                                                                 (buffer-substring-no-properties (point-min) (point-max))))
               (setq v-buffer-string (buffer-substring-no-properties (point-min) (point-max))))
             (replace-regexp-in-string (format "^ *%s *.+" comment-start) "" v-buffer-string)))
-                                          ;; 把注释行删掉 (不把注释算进字数内).
+         ;; 把注释行删掉 (不把注释算进字数内).
          (chinese-char-and-punc 0)
          (chinese-punc 0)
          (english-word 0)
@@ -361,7 +361,7 @@ with PREFIX, cd to project root."
   (interactive (list (read-shell-command
                       "iTerm Shell Command: ")
                      current-prefix-arg))
-(let* ((dir (if prefix (hurricane//git-project-root)
+  (let* ((dir (if prefix (hurricane//git-project-root)
                 default-directory))
          ;; If `command' is empty, just change directory.
          (cmd (format "cd \\\"%s\\\" ;%s" (expand-file-name dir) command)))
@@ -518,7 +518,7 @@ Error out if this isn't a GitHub repo."
   (let* ((input-file (shell-quote-argument input-file-name))
          (output-file (shell-quote-argument output-file-name))
          (command-string (concat "pandoc " input-file " -f " read-format " -t "
-                                write-format " -s -o " output-file)))
+                                 write-format " -s -o " output-file)))
     (shell-command command-string)))
 
 (defun install-monitor (file secs func)
@@ -537,16 +537,16 @@ If a change in `file-attributes' happended call FUNC."
 
 (defun install-monitor-file-exists (file secs func)
   (setq inner-timer
-    (run-with-idle-timer
-     secs t
-     (lambda (file func)
-       (let ((file file)
-             (func func))
-        (unless (not (file-exists-p file))
-          (progn
-            (funcall func)
-            (cancel-timer inner-timer)))))
-     file func)))
+        (run-with-idle-timer
+         secs t
+         (lambda (file func)
+           (let ((file file)
+                 (func func))
+             (unless (not (file-exists-p file))
+               (progn
+                 (funcall func)
+                 (cancel-timer inner-timer)))))
+         file func)))
 
 (defun replace-unexpected-string-in-file (file-name replace-string-rule-lists)
   (with-temp-buffer
@@ -577,9 +577,9 @@ Else, returns STRING."
     (insert-file-contents (concat file-name ".org"))
     (let ((image-directory (concat org-screenshot-image-dir-name "/" file-name)))
       (dolist (url-file-path-map url-and-file-path-map-list)
-      (progn
-        (goto-char (point-min))
-        (replace-string (unshift-prefix-if-necessary (car url-file-path-map) "http" "file:") (concat "file:" image-directory "/" (cdr url-file-path-map))))))
+        (progn
+          (goto-char (point-min))
+          (replace-string (unshift-prefix-if-necessary (car url-file-path-map) "http" "file:") (concat "file:" image-directory "/" (cdr url-file-path-map))))))
     (write-file (concat file-name ".org"))))
 
 (defvar stackoverflow-question-string-pattern-list
@@ -595,22 +595,22 @@ Else, returns STRING."
 ;; Used to replace unexpected strings in raw extracted html file.
 (defvar stackoverflow-html-replace-string-rule-lists
   '(("<span class=\"comment-date\" dir=\"ltr\">\.*" . "")
-                                         ("<span\[^>\]*>" . "<blockquote>")
-                                         ("</span\[^>\]*>" . "</blockquote>")
-                                         ("<h1>" . "")
-                                         ("<h2>" . "")
-                                         ("<h3>" . "")
-                                         ("<h4>" . "")
-                                         ("<h5>" . "")
-                                         ("<h6>" . "")
-                                         ("</h1>" . "")
-                                         ("</h2>" . "")
-                                         ("</h3>" . "")
-                                         ("</h4>" . "")
-                                         ("</h5>" . "")
-                                         ("</h6>" . "")
-                                         ("{%" . "<")
-                                         ("%}" . ">")))
+    ("<span\[^>\]*>" . "<blockquote>")
+    ("</span\[^>\]*>" . "</blockquote>")
+    ("<h1>" . "")
+    ("<h2>" . "")
+    ("<h3>" . "")
+    ("<h4>" . "")
+    ("<h5>" . "")
+    ("<h6>" . "")
+    ("</h1>" . "")
+    ("</h2>" . "")
+    ("</h3>" . "")
+    ("</h4>" . "")
+    ("</h5>" . "")
+    ("</h6>" . "")
+    ("{%" . "<")
+    ("%}" . ">")))
 
 (defun hurricane/extract-content-from-stackoverflow-to-org-file (src-code-type)
   (interactive
@@ -622,90 +622,90 @@ Else, returns STRING."
             "scheme" "sqlite" "graphviz")))
      (list (ido-completing-read "Source code type: " src-code-type))))
 
-    (setq begin-marker "" url "" html-file-name "" org-file-name "")
+  (setq begin-marker "" url "" html-file-name "" org-file-name "")
 
-    ;; Read `url' string from minibuffer, while the string read is empty, this loop will not stop.
-    (setq url "")
-    (while (string-equal url "")
-      (setq url (read-string "Please input the StackOverFlow url to extract: "
-                             nil nil "" nil)))
+  ;; Read `url' string from minibuffer, while the string read is empty, this loop will not stop.
+  (setq url "")
+  (while (string-equal url "")
+    (setq url (read-string "Please input the StackOverFlow url to extract: "
+                           nil nil "" nil)))
 
-    ;; Get `file-name' from `url' to create html and org file.
-    (setq file-name (replace-regexp-in-string
-                     "-"
-                     "_"
-                     (get-file-name-from-url url)))
-    (setq html-file-name (concat
-                          file-name
-                          ".html")
-          org-file-name (concat
-                         file-name
-                         ".org"))
+  ;; Get `file-name' from `url' to create html and org file.
+  (setq file-name (replace-regexp-in-string
+                   "-"
+                   "_"
+                   (get-file-name-from-url url)))
+  (setq html-file-name (concat
+                        file-name
+                        ".html")
+        org-file-name (concat
+                       file-name
+                       ".org"))
 
-    ;; Used to replace unexpected strings in org file generated by pandoc.
-    (setq org-image-url-template (concat "[[file:./static/" file-name "/\\1"))
-    (setq org-replace-string-rule-lists '(("#\\+BEGIN_QUOTE\[\t\r\n \]*#\\+END_QUOTE" . "")
-                                          ("\\\\_" . "_")
-                                          ("#\\+END_EXAMPLE" . "#+END_SRC")
-                                          ;; ("\\[\\[http.*/" . "[[file:./static/")
-                                          ))
-    (add-to-list 'org-replace-string-rule-lists `("\\[\\[\.*jpeg\.*/\\(.*\\)\\]\\]" . ,org-image-url-template))
+  ;; Used to replace unexpected strings in org file generated by pandoc.
+  (setq org-image-url-template (concat "[[file:./static/" file-name "/\\1"))
+  (setq org-replace-string-rule-lists '(("#\\+BEGIN_QUOTE\[\t\r\n \]*#\\+END_QUOTE" . "")
+                                        ("\\\\_" . "_")
+                                        ("#\\+END_EXAMPLE" . "#+END_SRC")
+                                        ;; ("\\[\\[http.*/" . "[[file:./static/")
+                                        ))
+  (add-to-list 'org-replace-string-rule-lists `("\\[\\[\.*jpeg\.*/\\(.*\\)\\]\\]" . ,org-image-url-template))
 
-    ;; Create begin-marker used to replace unexpected string `#+BEGIN_EXAMPLE'.
-    (cond ((string-equal src-code-type "")
-           (setq begin-marker (concat "#+BEGIN_SRC " "python")))
-          (t
-           (setq begin-marker (concat "#+BEGIN_SRC " src-code-type))))
-    (add-to-list 'org-replace-string-rule-lists `("#\\+BEGIN_EXAMPLE" . ,begin-marker))
+  ;; Create begin-marker used to replace unexpected string `#+BEGIN_EXAMPLE'.
+  (cond ((string-equal src-code-type "")
+         (setq begin-marker (concat "#+BEGIN_SRC " "python")))
+        (t
+         (setq begin-marker (concat "#+BEGIN_SRC " src-code-type))))
+  (add-to-list 'org-replace-string-rule-lists `("#\\+BEGIN_EXAMPLE" . ,begin-marker))
 
-    ;; Extract content to file.
-    (with-current-buffer (url-retrieve-synchronously url)
-      ;; Remove the `^M' character in html file.
-      (dos2unix)
-      ;; Extract question strings to file.
-      (progn
-        (goto-char 0)
-        (setq question-start (re-search-forward (car stackoverflow-question-string-pattern-list)))
-        (goto-char question-start)
-        (setq question-end (re-search-forward (cdr stackoverflow-question-string-pattern-list)))
-        (setq question-string (buffer-substring question-start (- question-end 6)))
-        (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
-        (append-string-to-file question-string html-file-name))
-      ;; Extract image and comment strings to file.
-      (let ((answer-search-origin 0) (answer-number 1))
-        (while (string-match (car stackoverflow-answer-string-pattern-list) (buffer-string) answer-search-origin)
-          (progn
-            (goto-char answer-search-origin)
-            (setq answer-string-start (re-search-forward (car stackoverflow-answer-string-pattern-list)))
-            (setq answer-string-end (re-search-forward (cdr stackoverflow-answer-string-pattern-list)))
-            (setq answer-string (buffer-substring answer-string-start (- answer-string-end 6)))
-            (if answer-string
-                (progn
-                  (if (string-suffix-p "</span>" (replace-regexp-in-string "[\t\n\r ]+" "" answer-string))
-                      (append-string-to-file "{%h2%}Comment{%/h2%}" html-file-name)
-                    (progn
-                      (append-string-to-file (concat (concat "{%h1%}Answer" (number-to-string answer-number)) "{%/h1%}") html-file-name)
-                      (setq answer-number (+ 1 answer-number))))
-                  (append-string-to-file answer-string html-file-name)
-                  (setq answer-search-origin (match-end 0))))))))
+  ;; Extract content to file.
+  (with-current-buffer (url-retrieve-synchronously url)
+    ;; Remove the `^M' character in html file.
+    (dos2unix)
+    ;; Extract question strings to file.
+    (progn
+      (goto-char 0)
+      (setq question-start (re-search-forward (car stackoverflow-question-string-pattern-list)))
+      (goto-char question-start)
+      (setq question-end (re-search-forward (cdr stackoverflow-question-string-pattern-list)))
+      (setq question-string (buffer-substring question-start (- question-end 6)))
+      (append-string-to-file "{%h1%}Question{%/h1%}" html-file-name)
+      (append-string-to-file question-string html-file-name))
+    ;; Extract image and comment strings to file.
+    (let ((answer-search-origin 0) (answer-number 1))
+      (while (string-match (car stackoverflow-answer-string-pattern-list) (buffer-string) answer-search-origin)
+        (progn
+          (goto-char answer-search-origin)
+          (setq answer-string-start (re-search-forward (car stackoverflow-answer-string-pattern-list)))
+          (setq answer-string-end (re-search-forward (cdr stackoverflow-answer-string-pattern-list)))
+          (setq answer-string (buffer-substring answer-string-start (- answer-string-end 6)))
+          (if answer-string
+              (progn
+                (if (string-suffix-p "</span>" (replace-regexp-in-string "[\t\n\r ]+" "" answer-string))
+                    (append-string-to-file "{%h2%}Comment{%/h2%}" html-file-name)
+                  (progn
+                    (append-string-to-file (concat (concat "{%h1%}Answer" (number-to-string answer-number)) "{%/h1%}") html-file-name)
+                    (setq answer-number (+ 1 answer-number))))
+                (append-string-to-file answer-string html-file-name)
+                (setq answer-search-origin (match-end 0))))))))
 
-    (replace-unexpected-string-in-file html-file-name stackoverflow-html-replace-string-rule-lists)
+  (replace-unexpected-string-in-file html-file-name stackoverflow-html-replace-string-rule-lists)
 
-    (setq stackoverflow-all-images-url-list (hurricane//get-all-images-url html-file-name stackoverflow-image-url-pattern-list))
-    (message "%s" stackoverflow-all-images-url-list)
+  (setq stackoverflow-all-images-url-list (hurricane//get-all-images-url html-file-name stackoverflow-image-url-pattern-list))
+  (message "%s" stackoverflow-all-images-url-list)
 
-    ;; Download all images.
-    (with-proxy (download-all-images stackoverflow-all-images-url-list file-name))
+  ;; Download all images.
+  (with-proxy (download-all-images stackoverflow-all-images-url-list file-name))
 
-    (pandoc-converter html-file-name org-file-name "html" "org")
+  (pandoc-converter html-file-name org-file-name "html" "org")
 
-    (replace-url-with-file-path-in-org file-name stackoverflow-all-images-url-list)
+  (replace-url-with-file-path-in-org file-name stackoverflow-all-images-url-list)
 
-    (defun callback-replace-unexpected-string-in-file ()
-      (replace-unexpected-string-in-file org-file-name org-replace-string-rule-lists))
+  (defun callback-replace-unexpected-string-in-file ()
+    (replace-unexpected-string-in-file org-file-name org-replace-string-rule-lists))
 
-    (install-monitor-file-exists org-file-name 1 #'callback-replace-unexpected-string-in-file)
-    (insert-header-to-org-content file-name))
+  (install-monitor-file-exists org-file-name 1 #'callback-replace-unexpected-string-in-file)
+  (insert-header-to-org-content file-name))
 
 (defun hurricane//org-as-mac-iTerm2-get-link ()
   (do-applescript
@@ -788,9 +788,9 @@ Else, returns STRING."
             "end tell")
           "\n")))
     (thread-first script
-      (do-applescript)
-      (string-trim "\"\n" "\n\"")
-      (split-string "\r"))))
+                  (do-applescript)
+                  (string-trim "\"\n" "\n\"")
+                  (split-string "\r"))))
 
 ;; (hurricane//chrome-tabs)
 ;; => ("1⋘⋙1⋘⋙Google⋘⋙www.google.com" "1⋘⋙2⋘⋙Home - BBC News⋘⋙www.bbc.com")
@@ -866,12 +866,12 @@ Else, returns STRING."
             ))
 
 (with-eval-after-load 'ivy
- (ivy-add-actions
- 'hurricane/manage-chrome-tabs
- '(("d" hurricane//chrome-close-tab-action "close tab(s)")
-   ("y" hurricane//chrome-copy-tab-url-action "copy tab(s) url")
-   ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url")
-   )))
+  (ivy-add-actions
+   'hurricane/manage-chrome-tabs
+   '(("d" hurricane//chrome-close-tab-action "close tab(s)")
+     ("y" hurricane//chrome-copy-tab-url-action "copy tab(s) url")
+     ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url")
+     )))
 
 (defun hurricane/open-noter-page ()
   (interactive)
@@ -918,61 +918,61 @@ Work in macOS only."
 
 
 (cond (sys/macp
-   (progn
-    (eval-and-compile
-      (if (fboundp 'window-inside-edges)
-          ;; Emacs devel.
-          (defalias 'th-window-edges
-            'window-inside-edges)
-        ;; Emacs 21.
-        (defalias 'th-window-edges
-          'window-edges)
-        ))
+       (progn
+         (eval-and-compile
+           (if (fboundp 'window-inside-edges)
+               ;; Emacs devel.
+               (defalias 'th-window-edges
+                 'window-inside-edges)
+             ;; Emacs 21.
+             (defalias 'th-window-edges
+               'window-edges)
+             ))
 
-    (defun th-point-position ()
-      "Return the location of POINT as positioned on the selected frame.
+         (defun th-point-position ()
+           "Return the location of POINT as positioned on the selected frame.
     Return a cons cell `(x . y)'."
-      (let* ((w (selected-window))
-             (f (selected-frame))
-             (edges (th-window-edges w))
-             (col (current-column))
-             (row (count-lines (window-start w) (point)))
-             (x (+ (car edges) col))
-             (y (+ (car (cdr edges)) row)))
-        (cons x y)))
+           (let* ((w (selected-window))
+                  (f (selected-frame))
+                  (edges (th-window-edges w))
+                  (col (current-column))
+                  (row (count-lines (window-start w) (point)))
+                  (x (+ (car edges) col))
+                  (y (+ (car (cdr edges)) row)))
+             (cons x y)))
 
-    (defun get-point-pixel-position ()
-      "Return the position of point in pixels within the frame."
-      (let ((point-pos (th-point-position)))
-        (th-get-pixel-position (car point-pos) (cdr point-pos))))
+         (defun get-point-pixel-position ()
+           "Return the position of point in pixels within the frame."
+           (let ((point-pos (th-point-position)))
+             (th-get-pixel-position (car point-pos) (cdr point-pos))))
 
 
-    (defun th-get-pixel-position (x y)
-      "Return the pixel position of location X Y (1-based) within the frame."
-      (let ((old-mouse-pos (mouse-position)))
-        (set-mouse-position (selected-frame)
-                            ;; The fringe is the 0th column, so x is OK
-                            x
-                            (1- y))
-        (let ((point-x (car (cdr (mouse-pixel-position))))
-              (point-y (cdr (cdr (mouse-pixel-position)))))
-          ;; On Linux with the Enlightenment window manager restoring the
-          ;; mouse coordinates didn't work well, so for the time being it
-          ;; is enabled for Windows only.
-          (when (eq window-system 'w32)
-            (set-mouse-position
-             (selected-frame)
-             (cadr old-mouse-pos)
-             (cddr old-mouse-pos)))
-          (cons point-x point-y))))
+         (defun th-get-pixel-position (x y)
+           "Return the pixel position of location X Y (1-based) within the frame."
+           (let ((old-mouse-pos (mouse-position)))
+             (set-mouse-position (selected-frame)
+                                 ;; The fringe is the 0th column, so x is OK
+                                 x
+                                 (1- y))
+             (let ((point-x (car (cdr (mouse-pixel-position))))
+                   (point-y (cdr (cdr (mouse-pixel-position)))))
+               ;; On Linux with the Enlightenment window manager restoring the
+               ;; mouse coordinates didn't work well, so for the time being it
+               ;; is enabled for Windows only.
+               (when (eq window-system 'w32)
+                 (set-mouse-position
+                  (selected-frame)
+                  (cadr old-mouse-pos)
+                  (cddr old-mouse-pos)))
+               (cons point-x point-y))))
 
-    (defun hurricane//display-current-input-method-title (arg1 &optional arg2 arg3)
-      "Display current input method name."
-      (when current-input-method-title
-        (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
-        (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
+         (defun hurricane//display-current-input-method-title (arg1 &optional arg2 arg3)
+           "Display current input method name."
+           (when current-input-method-title
+             (set-mouse-position (selected-frame) (car (th-point-position)) (cdr (th-point-position)))
+             (x-show-tip current-input-method-title (selected-frame) nil 1  20 -30)))
 
-    (advice-add 'evil-insert :after 'hurricane//display-current-input-method-title))))
+         (advice-add 'evil-insert :after 'hurricane//display-current-input-method-title))))
 
 (defvar official-accounts-all-images-url-list)
 
@@ -1008,13 +1008,13 @@ Image file name is generated from `match-end' position string."
 (defun download-all-images (url-list file-name)
   "Use `org-download--image' to download image from URL-LIST,FILE-NAME be used to format directory name."
   (let ((image-directory (concat org-screenshot-image-dir-name "/" file-name)))
-   (cl-loop for url in url-list
-           do (progn
-                (unless (file-exists-p image-directory)
-                  (make-directory image-directory t))
-                (ignore-errors (org-download--image (car url) (concat image-directory "/" (cdr url))))
-                (message "Begin to download: %s" url)
-                (sleep-for 1)))))
+    (cl-loop for url in url-list
+             do (progn
+                  (unless (file-exists-p image-directory)
+                    (make-directory image-directory t))
+                  (ignore-errors (org-download--image (car url) (concat image-directory "/" (cdr url))))
+                  (message "Begin to download: %s" url)
+                  (sleep-for 1)))))
 
 (defun insert-header-to-org-content (file-name)
   (with-temp-buffer
@@ -1029,18 +1029,18 @@ Image file name is generated from `match-end' position string."
       (write-file (concat file-name ".org")))))
 
 (setq html-image-url-pattern-list
-  '(" src=\"\\|\]\(" . "\"\\|)"))
+      '(" src=\"\\|\]\(" . "\"\\|)"))
 
 (defun hurricane/find-file-html-or-markdown-to-org (&optional in-file)
   (interactive)
   (setq in-file-org (if (and in-file (file-exists-p in-file))
                         (concat (file-name-nondirectory (file-name-sans-extension in-file)) ".org")
-                          (concat (read-string "Please input the Org file name: "
-                                       nil nil "" t) ".org")))
+                      (concat (read-string "Please input the Org file name: "
+                                           nil nil "" t) ".org")))
   (setq in-file (if (not in-file)
-                   (if (derived-mode-p 'dired-mode)
-                       (dired-get-file-for-visit)
-                     buffer-file-name)
+                    (if (derived-mode-p 'dired-mode)
+                        (dired-get-file-for-visit)
+                      buffer-file-name)
                   in-file))
   (setq in-file-extension (pcase (file-name-extension in-file)
                             ("md" "markdown")
@@ -1067,46 +1067,46 @@ Image file name is generated from `match-end' position string."
 
 (defun hurricane/extract-content-from-official-accounts-to-org-file ()
   (interactive)
-    ;; Read `url' string from minibuffer, while the string read is empty, this loop will not stop.
-    (setq url "")
-    (setq file-name "")
-    (while (string-equal url "")
-      (setq url (read-string "Please input the Official Accounts url to extract: "
-                             nil nil "" nil)))
-    (while (string-equal file-name "")
-      (setq file-name (read-string "Please input the File name: "
-                             nil nil "" nil)))
-    (setq html-file-name (concat file-name ".html")
-          org-file-name  (concat file-name ".org"))
+  ;; Read `url' string from minibuffer, while the string read is empty, this loop will not stop.
+  (setq url "")
+  (setq file-name "")
+  (while (string-equal url "")
+    (setq url (read-string "Please input the Official Accounts url to extract: "
+                           nil nil "" nil)))
+  (while (string-equal file-name "")
+    (setq file-name (read-string "Please input the File name: "
+                                 nil nil "" nil)))
+  (setq html-file-name (concat file-name ".html")
+        org-file-name  (concat file-name ".org"))
 
-    ;; Extract content to file.
-    (with-current-buffer (url-retrieve-synchronously url)
-      ;; Remove the `^M' character in html file.
-      (dos2unix)
-      (progn
-        (goto-char 0)
-        (setq content-start (re-search-forward (car official-accounts-content-pattern-list)))
-        (goto-char content-start)
-        (setq content-end (re-search-forward (cdr official-accounts-content-pattern-list)))
-        (setq content-string (buffer-substring content-start (- content-end 6)))
-        (append-string-to-file content-string html-file-name)))
+  ;; Extract content to file.
+  (with-current-buffer (url-retrieve-synchronously url)
+    ;; Remove the `^M' character in html file.
+    (dos2unix)
+    (progn
+      (goto-char 0)
+      (setq content-start (re-search-forward (car official-accounts-content-pattern-list)))
+      (goto-char content-start)
+      (setq content-end (re-search-forward (cdr official-accounts-content-pattern-list)))
+      (setq content-string (buffer-substring content-start (- content-end 6)))
+      (append-string-to-file content-string html-file-name)))
 
-    (setq official-accounts-all-images-url-list (hurricane//get-all-images-url html-file-name official-accounts-image-url-pattern-list))
-    (message "%s" official-accounts-all-images-url-list)
+  (setq official-accounts-all-images-url-list (hurricane//get-all-images-url html-file-name official-accounts-image-url-pattern-list))
+  (message "%s" official-accounts-all-images-url-list)
 
-    ;; Download all images.
-    (download-all-images official-accounts-all-images-url-list file-name)
+  ;; Download all images.
+  (download-all-images official-accounts-all-images-url-list file-name)
 
-    (replace-unexpected-string-in-file html-file-name '(("data-src" . "src")))
-    (sleep-for 1)
-    (pandoc-converter html-file-name org-file-name "html" "org")
+  (replace-unexpected-string-in-file html-file-name '(("data-src" . "src")))
+  (sleep-for 1)
+  (pandoc-converter html-file-name org-file-name "html" "org")
 
-    (replace-url-with-file-path-in-org file-name official-accounts-all-images-url-list)
+  (replace-url-with-file-path-in-org file-name official-accounts-all-images-url-list)
 
-    (defun callback-insert-header-to-org-content ()
-      (insert-header-to-org-content file-name))
+  (defun callback-insert-header-to-org-content ()
+    (insert-header-to-org-content file-name))
 
-    (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content))
+  (install-monitor-file-exists org-file-name 1 #'callback-insert-header-to-org-content))
 
 ;;{{
 (defvar hurricane-proxy  "127.0.0.1:1080")
@@ -1229,7 +1229,7 @@ Can be used in `rime-disable-predicates' and `rime-inline-predicates'."
                                                                  `("translation" . ,translation)
                                                                  `("image" . ,screenshot)))
                                              `("options" . ,(list
-                                                                  '("allowDuplicate" . t)))
+                                                             '("allowDuplicate" . t)))
                                              `("tags" . ,(list tag)))))))
     (request (format "%s:%s" Anki-connect-host anki-connect-port)
       :type "POST"
@@ -1417,13 +1417,13 @@ Version 2019-02-12 2021-08-09"
     (setq media-clip-file-name
           (concat
            (replace-regexp-in-string "\\]" "_"
-            (replace-regexp-in-string "\\[" "_"
-                                      (org-media-note--format-picture-file-name
-                                       (concat (file-name-base processed-media-path)
-                                        " - clip - "
-                                        ;; (org-media-note--get-current-timestamp)
-                                        timestamp-a "--" timestamp-b (format-time-string "_%-I_%M_%p")))))
-                               "." "mp3"))
+                                     (replace-regexp-in-string "\\[" "_"
+                                                               (org-media-note--format-picture-file-name
+                                                                (concat (file-name-base processed-media-path)
+                                                                        " - clip - "
+                                                                        ;; (org-media-note--get-current-timestamp)
+                                                                        timestamp-a "--" timestamp-b (format-time-string "_%-I_%M_%p")))))
+           "." "mp3"))
     (setq media-clip-target-path
           (cond
            ((eq org-media-note-screenshot-save-method 'attach)
@@ -1480,32 +1480,32 @@ Version 2019-02-12 2021-08-09"
   (let ((video-id (if (string-match "v=\\([^&]+\\)" url) (match-string 1 url) nil))
         (buffer (generate-new-buffer "*youtube_transcript_api*")))
     (if video-id
-      (progn
-        (with-current-buffer (url-retrieve-synchronously url)
-          (dos2unix)
-          (progn
-            (goto-char 0)
-            (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
-            (goto-char title-start)
-            (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
-            (setq raw-title-string (buffer-substring title-start (- title-end 2)))
-            (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
-            (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
-            ))
+        (progn
+          (with-current-buffer (url-retrieve-synchronously url)
+            (dos2unix)
+            (progn
+              (goto-char 0)
+              (setq title-start (re-search-forward (car youtube-title-string-pattern-list)))
+              (goto-char title-start)
+              (setq title-end (re-search-forward (cdr youtube-title-string-pattern-list)))
+              (setq raw-title-string (buffer-substring title-start (- title-end 2)))
+              (setq title-string (replace-regexp-in-string "[^[:alnum:][:digit:][:space:]]" "" raw-title-string))
+              (setq youtube-transcript-filename (expand-file-name (concat title-string ".srt") mpv-storage-dir))
+              ))
 
-       (make-process
-        :name "youtube_transcript_api"
-        :command (append '("youtube_transcript_api") `(,video-id "--languages" "en" "--format" "srt"))
-        :buffer buffer
-        :sentinel `(lambda (p e)
-                     (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))
-                     (set-buffer ',buffer)
-                     (goto-char (point-min))
-                     (append-string-to-file (buffer-string) ',youtube-transcript-filename)))
+          (make-process
+           :name "youtube_transcript_api"
+           :command (append '("youtube_transcript_api") `(,video-id "--languages" "en" "--format" "srt"))
+           :buffer buffer
+           :sentinel `(lambda (p e)
+                        (message "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e))
+                        (set-buffer ',buffer)
+                        (goto-char (point-min))
+                        (append-string-to-file (buffer-string) ',youtube-transcript-filename)))
 
-        (let ((buf (find-file-noselect youtube-transcript-filename)))
-          (with-current-buffer buf
-            (set (make-local-variable 'youtube-transcript-url) url))))
+          (let ((buf (find-file-noselect youtube-transcript-filename)))
+            (with-current-buffer buf
+              (set (make-local-variable 'youtube-transcript-url) url))))
       (message (format "Unavailable URL: %s" url)))))
 
 (defun hurricane/mpv-play (&optional url)
@@ -1598,41 +1598,41 @@ Version 2019-02-12 2021-08-09"
     (message "%s" final-cmd)
 
     (if (and (and subtitle-file-path (file-exists-p subtitle-file-path)) play-now)
-     (let ((buf (find-file-noselect subtitle-file-path)))
-      (with-current-buffer buf
-        (when (subed-mpv--server-started-p)
-          (subed-mpv-kill))
+        (let ((buf (find-file-noselect subtitle-file-path)))
+          (with-current-buffer buf
+            (when (subed-mpv--server-started-p)
+              (subed-mpv-kill))
 
-        (condition-case err
-            (setq subed-mpv--server-proc (make-process :name "you-get"
-                                                       :buffer nil
-                                                       :command final-cmd
-                                                       ;; :connection-type 'pty
-                                                       ;; :filter 'comint-output-filter
-                                                       :noquery t
-                                                       ))
-          (error
-           (error "%s" (mapconcat #'indentity (cdr (cdr err)) ": "))))
+            (condition-case err
+                (setq subed-mpv--server-proc (make-process :name "you-get"
+                                                           :buffer nil
+                                                           :command final-cmd
+                                                           ;; :connection-type 'pty
+                                                           ;; :filter 'comint-output-filter
+                                                           :noquery t
+                                                           ))
+              (error
+               (error "%s" (mapconcat #'indentity (cdr (cdr err)) ": "))))
 
-        (message ">>> you-get is going to play <<<")
+            (message ">>> you-get is going to play <<<")
 
-        (setq subed-mpv-media-file video-url)
-        (setq subed-mpv--retry-delays '(2 2 2 2 2 5 5 5 5 5 5 5 5 5 5))
-        (subed-mpv--client-connect subed-mpv--retry-delays)
-        (if (file-exists-p subtitle-file-path)
-            (subed-mpv-add-subtitles subtitle-file-path)
-          (add-hook 'after-save-hook #'subed-mpv--add-subtitle-after-first-save :append :local))
-        (subed-mpv--client-send `(observe_property 1 time-pos))
-        (subed-mpv-playback-speed subed-playback-speed-while-not-typing)
-        ))
-     (make-process :name "you-get"
-                   :buffer buffer
-                   :command final-cmd
-                   :connection-type 'pty
-                   ;; :filter 'comint-output-filter
-                   :sentinel (lambda (p e)
-                               (message
-                                "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e)))))
+            (setq subed-mpv-media-file video-url)
+            (setq subed-mpv--retry-delays '(2 2 2 2 2 5 5 5 5 5 5 5 5 5 5))
+            (subed-mpv--client-connect subed-mpv--retry-delays)
+            (if (file-exists-p subtitle-file-path)
+                (subed-mpv-add-subtitles subtitle-file-path)
+              (add-hook 'after-save-hook #'subed-mpv--add-subtitle-after-first-save :append :local))
+            (subed-mpv--client-send `(observe_property 1 time-pos))
+            (subed-mpv-playback-speed subed-playback-speed-while-not-typing)
+            ))
+      (make-process :name "you-get"
+                    :buffer buffer
+                    :command final-cmd
+                    :connection-type 'pty
+                    ;; :filter 'comint-output-filter
+                    :sentinel (lambda (p e)
+                                (message
+                                 "Process %s %s" p (replace-regexp-in-string "\n\\'" "" e)))))
     ))
 ;; }}
 
@@ -1859,13 +1859,13 @@ Version 2019-02-12 2021-08-09"
     (select-window (active-minibuffer-window))))
 
 (with-eval-after-load 'evil-evilified-state
- (evilified-state-evilify-map goldendict-mode-map
- :mode goldendict-mode
- :bindings
- "q" #'hurricane//goldendict-quit-window-and-switch-to-minibuffer-window
- "y" #'hurricane//evil-yank
- "Y" #'hurricane/yank-to-end-of-line
- ))
+  (evilified-state-evilify-map goldendict-mode-map
+    :mode goldendict-mode
+    :bindings
+    "q" #'hurricane//goldendict-quit-window-and-switch-to-minibuffer-window
+    "y" #'hurricane//evil-yank
+    "Y" #'hurricane/yank-to-end-of-line
+    ))
 
 (defun hurricane/goldendict-find (&optional query)
   (interactive (list (read-string "GoldenDict query: " (hurricane//region-or-word))))
@@ -1891,21 +1891,21 @@ Version 2019-02-12 2021-08-09"
          (popweb-org-roam-link-popup-window-width-scale 0.8)
          (html-string (goldendict--query-api-call suggestion))
          (html-replace-string-rule-lists
-           '(("<font face=\"Kingsoft Phonetic Plain, Tahoma\" color=#FF6600>[^>]*?>" . "")
-             ("<audio\[^>\]*>" . "")
-             ("<span" . "<div")
-             ("</span>" . "</div>"))))
+          '(("<font face=\"Kingsoft Phonetic Plain, Tahoma\" color=#FF6600>[^>]*?>" . "")
+            ("<audio\[^>\]*>" . "")
+            ("<span" . "<div")
+            ("</span>" . "</div>"))))
 
     (if html-string
         (if (not (eq html-string popweb-org-roam-link-preview--previous-html))
             (progn
               (setq popweb-org-roam-link-preview--previous-html html-string)
               (setq processed-html-string
-               (with-temp-buffer
-                 (insert html-string)
-                 (dolist (replace-string-rule goldendict-html-replace-string-rule-lists)
-                   (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
-                 (buffer-string)))
+                    (with-temp-buffer
+                      (insert html-string)
+                      (dolist (replace-string-rule goldendict-html-replace-string-rule-lists)
+                        (replace-region-or-buffer (car replace-string-rule) (cdr replace-string-rule) nil))
+                      (buffer-string)))
               (if popweb-org-roam-link-preview-window-visible-p
                   (progn
                     (setq popweb-org-roam-link-preview-window-visible-p nil)
@@ -1923,52 +1923,52 @@ Version 2019-02-12 2021-08-09"
         (audio-duration (unless if-get-timestamp-from-property (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start))))))
     ;; 适用于剪切过渡动画素材，没有对应的 tts 文件 AUDIO_DURATION_MS 做参考，需要手动设置 start，stop。
     (if if-get-timestamp-from-property
-      (progn
-        (setq video-timestamp-start (* 1000 (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_START"))))
-        (setq video-timestamp-stop (* 1000 (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_STOP"))))
-        (setq audio-duration (- video-timestamp-stop video-timestamp-start))))
+        (progn
+          (setq video-timestamp-start (* 1000 (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_START"))))
+          (setq video-timestamp-stop (* 1000 (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_STOP"))))
+          (setq audio-duration (- video-timestamp-stop video-timestamp-start))))
     (and (org-entry-get (point) "MATERIAL_VIDEO") (setq full-file-path (expand-file-name (org-entry-get (point) "MATERIAL_VIDEO") reveal-project-directory)))
     (make-directory (file-name-concat reveal-project-directory "static" (file-name-sans-extension (buffer-name)) "temp") t)
     (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
-                                                         ;; output full file path
-                                                         (or full-file-path
-                                                          (format
-                                                          "%sstatic/%s/temp/material_video_cut_%s.mp4"
-                                                          (expand-file-name reveal-project-directory)
-                                                          (file-name-sans-extension (buffer-name))
-                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p")))
-                                                         ;; start timestamp
-                                                         (if if-get-timestamp-from-property
+                                                    ;; output full file path
+                                                    (or full-file-path
+                                                        (format
+                                                         "%sstatic/%s/temp/material_video_cut_%s.mp4"
+                                                         (expand-file-name reveal-project-directory)
+                                                         (file-name-sans-extension (buffer-name))
+                                                         (format-time-string "%Y_%m_%d_%-I_%M_%p")))
+                                                    ;; start timestamp
+                                                    (if if-get-timestamp-from-property
+                                                        (replace-regexp-in-string
+                                                         "," "."
+                                                         (compile-media-msecs-to-timestamp
+                                                          video-timestamp-start))
+                                                      (and subed-mpv-playback-position
                                                            (replace-regexp-in-string
                                                             "," "."
                                                             (compile-media-msecs-to-timestamp
-                                                             video-timestamp-start))
-                                                          (and subed-mpv-playback-position
-                                                               (replace-regexp-in-string
-                                                               "," "."
-                                                               (compile-media-msecs-to-timestamp
-                                                                subed-mpv-playback-position))))
-                                                         ;; stop timestamp
-                                                         (if if-get-timestamp-from-property
+                                                             subed-mpv-playback-position))))
+                                                    ;; stop timestamp
+                                                    (if if-get-timestamp-from-property
+                                                        (replace-regexp-in-string
+                                                         "," "."
+                                                         (compile-media-msecs-to-timestamp
+                                                          video-timestamp-stop))
+                                                      (and subed-mpv-playback-position
                                                            (replace-regexp-in-string
                                                             "," "."
                                                             (compile-media-msecs-to-timestamp
-                                                             video-timestamp-stop))
-                                                          (and subed-mpv-playback-position
-                                                               (replace-regexp-in-string
-                                                               "," "."
-                                                               (compile-media-msecs-to-timestamp
-                                                                ;；多剪切6 秒钟留白。
-                                                                (+ 4000
-                                                                   subed-mpv-playback-position
-                                                                   audio-duration)))))
-                                                         ;; duration
-                                                         ;；多剪切6 秒钟留白。
-                                                         (if if-get-timestamp-from-property
-                                                             audio-duration
-                                                           (+ 4000 audio-duration))
-                                                         "get_property"
-                                                         "path"))))
+                                        ;；多剪切6 秒钟留白。
+                                                             (+ 4000
+                                                                subed-mpv-playback-position
+                                                                audio-duration)))))
+                                                    ;; duration
+                                        ;；多剪切6 秒钟留白。
+                                                    (if if-get-timestamp-from-property
+                                                        audio-duration
+                                                      (+ 4000 audio-duration))
+                                                    "get_property"
+                                                    "path"))))
 
 (defun hurricane/reveal-cut-backgroundmusic ()
   (interactive)
@@ -1977,31 +1977,31 @@ Version 2019-02-12 2021-08-09"
         (audio-duration (or (and (org-entry-get (point) "AUDIO_DURATION_MS") (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS"))) (- (subed-subtitle-msecs-stop) (subed-subtitle-msecs-start)))))
     (when (string-match "data-backgroundmusic-src=\"\\(.+?\\)\"" prop)
       (setq full-file-path (expand-file-name (match-string 1 prop) reveal-project-directory)))
-   (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
-                                                         ;; output full file path
-                                                         (or full-file-path
-                                                          (format
-                                                          "%sstatic/%s/temp/backgroundmusic_cut_%s.mp3"
-                                                          (expand-file-name reveal-project-directory)
-                                                          (file-name-sans-extension (buffer-name))
-                                                          (format-time-string "%Y_%m_%d_%-I_%M_%p")))
-                                                         ;; start timestamp
-                                                         (and subed-mpv-playback-position
-                                                          (replace-regexp-in-string
+    (python-bridge-call-async "mpv_cut_video" (list (subed-mpv--socket)
+                                                    ;; output full file path
+                                                    (or full-file-path
+                                                        (format
+                                                         "%sstatic/%s/temp/backgroundmusic_cut_%s.mp3"
+                                                         (expand-file-name reveal-project-directory)
+                                                         (file-name-sans-extension (buffer-name))
+                                                         (format-time-string "%Y_%m_%d_%-I_%M_%p")))
+                                                    ;; start timestamp
+                                                    (and subed-mpv-playback-position
+                                                         (replace-regexp-in-string
                                                           "," "."
                                                           (compile-media-msecs-to-timestamp
                                                            subed-mpv-playback-position)))
-                                                         ;; stop timestamp
-                                                         (and subed-mpv-playback-position
-                                                          (replace-regexp-in-string
-                                                           "," "."
-                                                           (compile-media-msecs-to-timestamp
-                                                            (+ subed-mpv-playback-position
-                                                               audio-duration))))
-                                                         ;; duration
-                                                         audio-duration
-                                                         "get_property"
-                                                         "path"))))
+                                                    ;; stop timestamp
+                                                    (and subed-mpv-playback-position
+                                                         (replace-regexp-in-string
+                                                          "," "."
+                                                          (compile-media-msecs-to-timestamp
+                                                           (+ subed-mpv-playback-position
+                                                              audio-duration))))
+                                                    ;; duration
+                                                    audio-duration
+                                                    "get_property"
+                                                    "path"))))
 
 (defun hurricane/reveal--cut-media (final-cmd full-file-path)
   (setq reveal-cut-media-output-file full-file-path)
@@ -2020,10 +2020,10 @@ Version 2019-02-12 2021-08-09"
      (lambda (proc event)
        (when (equal event "finished\n")
          (if (equal "mp4" (file-name-extension reveal-cut-media-output-file))
-          (progn
-            (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-media-output-file "\">"))
-            (hurricane/slide-material-video (string-trim reveal-cut-media-output-file) nil))
-          (message "Cut media %s finished." reveal-cut-media-output-file))
+             (progn
+               (insert (concat "#+REVEAL_HTML: <video muted width=\"100%\" height=\"100%\" preload=\"auto\" src=\"" reveal-cut-media-output-file "\">"))
+               (hurricane/slide-material-video (string-trim reveal-cut-media-output-file) nil))
+           (message "Cut media %s finished." reveal-cut-media-output-file))
          )))
     t))
 
@@ -2054,14 +2054,14 @@ Version 2019-02-12 2021-08-09"
 (defun hurricane/count-words-in-notes ()
   (interactive)
   (let ((notes (hurricane//org-collect-notes)))
-      (with-temp-buffer
-        (insert (string-join notes "\n"))
-        (let ((num (count-words-region (point-min) (point-max))))
-          (message "%d words (%.f%% of %d, %d to go)"
-                   num
-                   (/ (* 100.0 num) hurricane//note-words-target)
-                   my-note-words-target
-                   (- hurricane//note-words-target num))))))
+    (with-temp-buffer
+      (insert (string-join notes "\n"))
+      (let ((num (count-words-region (point-min) (point-max))))
+        (message "%d words (%.f%% of %d, %d to go)"
+                 num
+                 (/ (* 100.0 num) hurricane//note-words-target)
+                 my-note-words-target
+                 (- hurricane//note-words-target num))))))
 
 (defun hurricane//reveal-slide-id ()
   (replace-regexp-in-string
@@ -2088,22 +2088,22 @@ Version 2019-02-12 2021-08-09"
 
 (defun hurricane/reveal-comment-block-translate ()
   (interactive)
-   (org-block-map
-    (lambda ()
-      (unless (org-in-commented-heading-p)
+  (org-block-map
+   (lambda ()
+     (unless (org-in-commented-heading-p)
        (let ((text (org-element-property :value (org-element-at-point)))
              (position (point)))
          (when (and text position)
            (add-to-list 'reveal-comment-block-position-list position t)
-          )))))
-   (mapcar
-    (lambda (comment-pos)
-      (progn
+           )))))
+  (mapcar
+   (lambda (comment-pos)
+     (progn
        (goto-char comment-pos)
        (insert (format "#+begin_notes\n%s\n#+end_notes\n" (mapconcat (lambda (trans) (concat "" trans)) (assoc-default 'translation (youdao-dictionary--request (org-element-property :value (org-element-at-point)))) "\n")))
        (newline-and-indent)
        ))
-    (reverse reveal-comment-block-position-list)))
+   (reverse reveal-comment-block-position-list)))
 
 (defun hurricane/reveal-notes-tts ()
   (interactive)
@@ -2131,7 +2131,7 @@ Version 2019-02-12 2021-08-09"
                    (setq audio-output (expand-file-name (match-string 1 prop) default-directory))))
                (emacs-azure-tts text audio-output t)
                ))))))
-      ))
+    ))
 
 (defun hurricane/cache-media-duration (&optional video)
   (interactive "P")
@@ -2142,10 +2142,10 @@ Version 2019-02-12 2021-08-09"
          (when (and prop (string-match (format "static/%s/[-A-Za-z0-9]+?\\.%s" (file-name-sans-extension (buffer-name)) (if video "mp4" "opus")) prop))
            (message "%s" (expand-file-name (match-string 0 prop) proj-dir))
            (org-entry-put (point) (if video "VIDEO_DURATION_MS" "AUDIO_DURATION_MS")
-              (number-to-string
-               (compile-media-get-file-duration-ms
-                (expand-file-name (match-string 0 prop)
-                      proj-dir)))))))
+                          (number-to-string
+                           (compile-media-get-file-duration-ms
+                            (expand-file-name (match-string 0 prop)
+                                              proj-dir)))))))
      "REVEAL_EXTRA_ATTR={.}")))
 
 ;; 以下格式才能获取成功
@@ -2158,47 +2158,47 @@ Version 2019-02-12 2021-08-09"
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\(?:video:\\([-~/A-Za-z0-9]+.webm\\)\\|\\(https:[^ ]+\\.gif\\)\\|file:\\([-A-Za-z0-9:]+.gif\\)\\)" nil t)
-      (unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION_MS")))
-        (org-entry-put (point) "VIDEO_DURATION_MS"
-           (number-to-string
-            (compile-media-get-file-duration-ms
-             (or (expand-file-name (match-string 1))
-                 (match-string 2)
-                 (expand-file-name (match-string 3) proj-dir))))))))))
+        (unless (and (null force) (save-match-data (org-entry-get (point) "VIDEO_DURATION_MS")))
+          (org-entry-put (point) "VIDEO_DURATION_MS"
+                         (number-to-string
+                          (compile-media-get-file-duration-ms
+                           (or (expand-file-name (match-string 1))
+                               (match-string 2)
+                               (expand-file-name (match-string 3) proj-dir))))))))))
 
 (defun hurricane/reveal-notes-vtt ()
   (interactive)
   (let ((ms 0)
-	results)
+        results)
     (org-block-map
      (lambda ()
        (unless (org-in-commented-heading-p)
-	 (let ((elem (org-element-at-point)))
-	   (when (string= (org-element-property :type elem) "notes")
-	     (let ((text (string-trim
-			  (buffer-substring-no-properties
-			   (org-element-property :contents-begin elem)
-			   (org-element-property :contents-end elem))))
-		   audio-output
-		   prev-fragment
-		   prev-heading
-		   prop)
-	       (save-excursion (setq prev-heading (org-back-to-heading)))
-	       (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
-	       (if prev-fragment
-		   (setq audio-output (match-string 1))
-		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+         (let ((elem (org-element-at-point)))
+           (when (string= (org-element-property :type elem) "notes")
+             (let ((text (string-trim
+                          (buffer-substring-no-properties
+                           (org-element-property :contents-begin elem)
+                           (org-element-property :contents-end elem))))
+                   audio-output
+                   prev-fragment
+                   prev-heading
+                   prop)
+               (save-excursion (setq prev-heading (org-back-to-heading)))
+               (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+               (if prev-fragment
+                   (setq audio-output (match-string 1))
+                 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
                  (setq audio-duration (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS")))
                  (setq material-video (org-entry-get (point) "MATERIAL_VIDEO"))
-		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
-		   (setq audio-output (match-string 1 prop))))
-	       (add-to-list
-          'results
-          (list nil ms (+ audio-duration ms)
-                text
-                (format "#+OUTPUT: %s\n#+MATERIAL_VIDEO: %s" audio-output material-video))
-          t)
-	       (setq ms (+ audio-duration ms))))))))
+                 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+                   (setq audio-output (match-string 1 prop))))
+               (add-to-list
+                'results
+                (list nil ms (+ audio-duration ms)
+                      text
+                      (format "#+OUTPUT: %s\n#+MATERIAL_VIDEO: %s" audio-output material-video))
+                t)
+               (setq ms (+ audio-duration ms))))))))
     (with-current-buffer (get-buffer-create (format "%s.vtt" (file-name-sans-extension (buffer-name))))
       (erase-buffer)
       (subed-vtt-mode)
@@ -2211,35 +2211,35 @@ Version 2019-02-12 2021-08-09"
   (org-narrow-to-subtree)
   (let ((ms 0)
         audio-output
-	results)
+        results)
     (org-block-map
      (lambda ()
        (unless (org-in-commented-heading-p)
-	 (let ((elem (org-element-at-point)))
-	   (when (string= (org-element-property :type elem) "notes")
-	     (let ((text (string-trim
-			  (buffer-substring-no-properties
-			   (org-element-property :contents-begin elem)
-			   (org-element-property :contents-end elem))))
-		   prev-fragment
-		   prev-heading
-		   prop)
-	       (save-excursion (setq prev-heading (org-back-to-heading)))
-	       (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
-	       (if prev-fragment
-		   (setq audio-output (match-string 1))
-		 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+         (let ((elem (org-element-at-point)))
+           (when (string= (org-element-property :type elem) "notes")
+             (let ((text (string-trim
+                          (buffer-substring-no-properties
+                           (org-element-property :contents-begin elem)
+                           (org-element-property :contents-end elem))))
+                   prev-fragment
+                   prev-heading
+                   prop)
+               (save-excursion (setq prev-heading (org-back-to-heading)))
+               (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
+               (if prev-fragment
+                   (setq audio-output (match-string 1))
+                 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
                  (setq audio-duration (string-to-number (org-entry-get (point) "AUDIO_DURATION_MS")))
                  (setq material-video (org-entry-get (point) "MATERIAL_VIDEO"))
-		 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
-		   (setq audio-output (match-string 1 prop))))
-	       (add-to-list
-          'results
-          (list nil ms (+ audio-duration ms)
-		      text
-		      (format "#+OUTPUT: %s\n#+MATERIAL_VIDEO: %s" audio-output material-video))
-          t)
-	       (setq ms (+ audio-duration ms))))))))
+                 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+                   (setq audio-output (match-string 1 prop))))
+               (add-to-list
+                'results
+                (list nil ms (+ audio-duration ms)
+                      text
+                      (format "#+OUTPUT: %s\n#+MATERIAL_VIDEO: %s" audio-output material-video))
+                t)
+               (setq ms (+ audio-duration ms))))))))
     (with-current-buffer (find-file-noselect (format "%s.vtt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
       (erase-buffer)
       (subed-vtt-mode)
@@ -2249,8 +2249,8 @@ Version 2019-02-12 2021-08-09"
 
 ;; aeneas 中文识别使用 eSpeak-ng
 ;; 安装：sudo port install espeak-ng
-;；使用：https://github.com/espeak-ng/espeak-ng/blob/master/src/espeak-ng.1.ronn
-;；使用：https://github.com/readbeyond/aeneas/issues/214
+                                        ;；使用：https://github.com/espeak-ng/espeak-ng/blob/master/src/espeak-ng.1.ronn
+                                        ;；使用：https://github.com/readbeyond/aeneas/issues/214
 (defun hurricane/reveal-slide-txt ()
   (interactive)
   (org-narrow-to-subtree)
@@ -2266,20 +2266,20 @@ Version 2019-02-12 2021-08-09"
          (let ((elem (org-element-at-point)))
            (when (string= (org-element-property :type elem) "notes")
              (let ((text (string-trim
-              (buffer-substring-no-properties
-               (org-element-property :contents-begin elem)
-               (org-element-property :contents-end elem))))
-             prev-fragment
-             prev-heading
-             prop)
+                          (buffer-substring-no-properties
+                           (org-element-property :contents-begin elem)
+                           (org-element-property :contents-end elem))))
+                   prev-fragment
+                   prev-heading
+                   prop)
                (save-excursion (setq prev-heading (org-back-to-heading)))
                (save-excursion (setq prev-fragment (re-search-backward "#\\+ATTR_REVEAL:.*:audio \\(.+\\)" prev-heading t)))
                (if prev-fragment
-             (setq audio-output (match-string 1))
-           (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
-           (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
-             (setq audio-output (match-string 1 prop))))
-                     (setq results text)))))))
+                   (setq audio-output (match-string 1))
+                 (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
+                 (when (string-match "data-audio-src=\"\\(.+?\\)\"" prop)
+                   (setq audio-output (match-string 1 prop))))
+               (setq results text)))))))
     (with-current-buffer (find-file-noselect (format "%s.txt" (expand-file-name (file-name-sans-extension audio-output) reveal-project-directory)))
       (erase-buffer)
       (insert results)
@@ -2316,7 +2316,7 @@ Version 2019-02-12 2021-08-09"
 
 (defun hurricane//slide--material-video-timestamp (point start-or-stop sec)
   (progn
-   (goto-char (string-to-number point))
+    (goto-char (string-to-number point))
     (org-entry-put
      (point)
      start-or-stop
@@ -2329,14 +2329,14 @@ Version 2019-02-12 2021-08-09"
         video-timestamp-stop
         video-segment-name
         (result (make-hash-table :test 'equal)))
-      (org-map-entries
-       (lambda ()
-         (unless (org-in-commented-heading-p)
-           (setq losslesscut-material-video (org-entry-get (point) "LOSSLESSCUT_MATERIAL_VIDEO"))
-           (setq video-timestamp-start (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_START")))
-           (setq video-timestamp-stop (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_STOP")))
-           (setq video-segment-name (expand-file-name (format "static/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)) reveal-project-directory))
-           (if (gethash `,losslesscut-material-video result)
+    (org-map-entries
+     (lambda ()
+       (unless (org-in-commented-heading-p)
+         (setq losslesscut-material-video (org-entry-get (point) "LOSSLESSCUT_MATERIAL_VIDEO"))
+         (setq video-timestamp-start (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_START")))
+         (setq video-timestamp-stop (string-to-number (org-entry-get (point) "MATERIAL_TIMESTAMP_STOP")))
+         (setq video-segment-name (expand-file-name (format "static/%s/%s.mp4" (file-name-sans-extension (buffer-name)) (hurricane//reveal-slide-id)) reveal-project-directory))
+         (if (gethash `,losslesscut-material-video result)
              (progn
                (setq cut-segments (plist-get (gethash `,losslesscut-material-video result) :cutSegments))
                ;; push 不能 append，所以使用 add-to-list，注意细微区别，cut-segments 的处理。
@@ -2345,15 +2345,15 @@ Version 2019-02-12 2021-08-09"
                (remhash `,losslesscut-material-video result)
                (puthash `,losslesscut-material-video `(:version 1 :mediaFileName ,losslesscut-material-video :cutSegments ,new-segments) result)
                )
-             (puthash `,losslesscut-material-video `(:version 1 :mediaFileName ,losslesscut-material-video :cutSegments (((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)))) result ))
-           )))
-      (maphash
-       (lambda (k v)
-         (with-current-buffer (find-file-noselect (expand-file-name (format "static/%s/%s.llc" (file-name-sans-extension (buffer-name)) k) reveal-project-directory))
+           (puthash `,losslesscut-material-video `(:version 1 :mediaFileName ,losslesscut-material-video :cutSegments (((:start . ,video-timestamp-start) (:end . ,video-timestamp-stop) (:name . ,video-segment-name)))) result ))
+         )))
+    (maphash
+     (lambda (k v)
+       (with-current-buffer (find-file-noselect (expand-file-name (format "static/%s/%s.llc" (file-name-sans-extension (buffer-name)) k) reveal-project-directory))
          (erase-buffer)
          (insert (json-encode v))
          (display-buffer (current-buffer))))
-               result)))
+     result)))
 
 (defun hurricane/convert-fade-images-to-video ()
   (interactive)
@@ -2380,8 +2380,8 @@ Version 2019-02-12 2021-08-09"
 
       (if (equal 1 image-file-source-list-length)
           (progn
-           (setq filter-complex-configurations-prefix "[0:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v0];")
-           (setq filter-complex-configurations-append "[v0]"))
+            (setq filter-complex-configurations-prefix "[0:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fade=t=in:st=0:d=1[v0];")
+            (setq filter-complex-configurations-append "[v0]"))
         (while (< index image-file-source-list-length)
           (if (equal (+ 1 index) image-file-source-list-length)
               (progn
@@ -2394,7 +2394,7 @@ Version 2019-02-12 2021-08-09"
           ))
 
       (dolist (image-file-source (nreverse image-file-source-list))
-       (setq image-configurations (concat image-configurations " -loop 1 -t 5 " "-i " "\"" image-file-source "\"")))
+        (setq image-configurations (concat image-configurations " -loop 1 -t 5 " "-i " "\"" image-file-source "\"")))
 
       (setq prop (org-entry-get (point) "REVEAL_EXTRA_ATTR"))
       (when (string-match "data-video-src=\"\\(.+?\\)\"" prop)
@@ -2630,11 +2630,11 @@ Version 2019-02-12 2021-08-09"
              (setq remove-cmd (format "ffmpeg -i \"%s\" -c:v copy -an -y \"%s\"" material-video without-audio-temp-output))
              ;; 配音声音在画面出现两秒后出现。
              (setq tts-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1:a] adelay=2000|2000 [voice];[voice] amix=inputs=1:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" without-audio-temp-output audio-source tts-temp-output))
-              ;; 合并字幕文件。
+             ;; 合并字幕文件。
              (setq track-cmd (format "ffmpeg -i \"%s\" -vf ass=\"%s\" -c:v h264 -b:v 6m -c:a copy -y \"%s\"" tts-temp-output track-source track-temp-output))
-              ;; 合并背景音乐文件。
+             ;; 合并背景音乐文件。
              (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex '[1]volume=0.01[aud1];[aud1]afade=t=in:st=0:d=3[aud2];[aud2]afade=t=out:st=%s:d=3[aud3];[0:a][aud3]amix=inputs=2:duration=longest' -c:v copy -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) synthetic-process-output))
-            (setq final-cmd (concat remove-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
+             (setq final-cmd (concat remove-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
           (t
            (setq final-cmd (format "ffmpeg -i \"%s\" -c:v copy -an -y \"%s\"" material-video synthetic-process-output))
            ))
@@ -2769,8 +2769,8 @@ Version 2019-02-12 2021-08-09"
 (defun is-opening-bracket (char)
   (= char ?[))
 
-(defun is-closing-bracket (char)
-  (= char ?]))
+  (defun is-closing-bracket (char)
+    (= char ?]))
 
 (defun delayed-add-space-between-chinese-and-english ()
   "延迟执行，在中英文之间自动添加空格。"
@@ -2793,3 +2793,85 @@ Version 2019-02-12 2021-08-09"
     (goto-char (point-min))
     (while (re-search-forward "\\([[:multibyte:]]\\) +\\([[:multibyte:]]\\)" nil t)
       (replace-match "\\1\\2"))))
+
+(defun hurricane/recursively-convert-source-files-from-GBK-to-UTF-8 ()
+  "递归的把当前目录的源文件的编码从GBK转成UTF-8。"
+  (interactive)
+  (let* ((local-root (or (hurricane//git-project-root) default-directory))
+         (result nil))
+    (when (yes-or-no-p (format "Do you want to execute the command in the directory: %s?" local-root))
+      (setq default-directory local-root)
+      (let* ((command (list "python3" (expand-file-name gbk2utf-8-Python-file)))
+             (output-buffer (generate-new-buffer "*gbk2utf-8-output*"))
+             (exit-code (apply 'call-process (car command) nil output-buffer t (cdr command))))
+        (if (eq exit-code 0)
+            (progn
+              (setq result (with-current-buffer output-buffer
+                             (buffer-string)))
+              (message "result: %s" result)
+              (kill-buffer output-buffer))
+          (message "Error running command. Check *gbk2utf-8-output* buffer for details.")
+          (switch-to-buffer output-buffer))))
+    result))
+
+(defun hurricane/recursively-convert-comments ()
+  (interactive)
+  (let* ((local-root (or (hurricane//git-project-root) default-directory))
+         (result nil))
+    (when (yes-or-no-p (format "Do you want to execute the command in the directory: %s?" local-root))
+      (setq default-directory local-root)
+      (let* ((command (list "python3" (expand-file-name convert-comments-Python-file)))
+             (output-buffer (generate-new-buffer "*convert-comments*"))
+             (exit-code (apply 'call-process (car command) nil output-buffer t (cdr command))))
+        (if (eq exit-code 0)
+            (progn
+              (setq result (with-current-buffer output-buffer
+                             (buffer-string)))
+              (message "result: %s" result)
+              (kill-buffer output-buffer))
+          (message "Error running command. Check *convert-comments* buffer for details.")
+          (switch-to-buffer output-buffer))))
+    result))
+
+(defun make-search-frame (x)
+  (let (summary
+        doc-frame
+        x-pos y-pos
+          ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        ;; 1. Find the absolute position of the current beginning of the symbol at point, ;;
+        ;; in pixels.                                                                     ;;
+          ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (abs-pixel-pos (save-excursion
+                         ;; (beginning-of-thing 'symbol)
+                         (window-absolute-pixel-position))))
+    (setq x-pos (car abs-pixel-pos))
+    ;; (setq y (cdr abs-pixel-pos))
+    (setq y-pos (+ (cdr abs-pixel-pos) (frame-char-height)))
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; 2. Create a new invisible frame, with the current buffer in it. ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (setq doc-frame (make-frame '((minibuffer . t)
+                                  (name . "*Search Peek*")
+                                  (width . 80)
+                                  (visibility . nil)
+                                  (height . 15))))
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; 3. Position the new frame right under the beginning of the symbol at point. ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (set-frame-position doc-frame x-pos y-pos)
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; 4. Jump to the symbol at point. ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (with-selected-frame doc-frame
+      (ivy-search-from-action x)
+      ;; (read-only-mode)
+      (recenter-top-bottom 0))
+
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; 5. Make frame visible again ;;
+      ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    (make-frame-visible doc-frame)
+    (select-frame-set-input-focus doc-frame)))

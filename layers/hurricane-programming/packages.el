@@ -372,13 +372,13 @@
   (use-package msgu
     :ensure t))
 
-;; (defun hurricane-programming/init-ts-docstr ()
-;;   (use-package ts-docstr
-;;     :ensure t
-;;     :custom
-;;     (setq ts-docstr-desc-summary "@brief        \n*   @note")
-;;     (setq ts-docstr-desc-param "")
-;;     (setq ts-docstr-desc-return "      无")))
+(defun hurricane-programming/init-ts-docstr ()
+  (use-package ts-docstr
+    :ensure t
+    :custom
+    (setq ts-docstr-desc-summary "@brief        \n*   @note")
+    (setq ts-docstr-desc-param "")
+    (setq ts-docstr-desc-return "      无")))
 
 (defun hurricane-programming/init-treesit-auto ()
   (use-package treesit-auto

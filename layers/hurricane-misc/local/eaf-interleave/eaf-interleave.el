@@ -299,22 +299,22 @@ re-centered to the page heading.
 It (possibly) narrows the subtree when found."
   (with-current-buffer eaf-interleave-org-buffer
     (let ((property-list (org-map-entries (lambda ()
-                                        (let ((url (org-entry-get-with-inheritance eaf-interleave--url-prop))
-                                              (page (org-entry-get-with-inheritance eaf-interleave--page-note-prop)))
-                                          (cons url page)))))
+                                            (let ((url (org-entry-get-with-inheritance eaf-interleave--url-prop))
+                                                  (page (org-entry-get-with-inheritance eaf-interleave--page-note-prop)))
+                                              (cons url page)))))
           point)
       (ignore-error
-       (catch 'find-property
-        (dolist (property property-list)
-          (when (and (string= (car property) url)
-                     (string= (cdr property) (number-to-string page)))
-            (widen)
-            (org-back-to-heading t)
-            (eaf-interleave--narrow-to-subtree)
-            (org-show-subtree)
-            (org-cycle-hide-drawers t)
-            (setq point (point))
-            (throw 'find-property nil)))))
+          (catch 'find-property
+            (dolist (property property-list)
+              (when (and (string= (car property) url)
+                         (string= (cdr property) (number-to-string page)))
+                (widen)
+                (org-back-to-heading t)
+                (eaf-interleave--narrow-to-subtree)
+                (org-show-subtree)
+                (org-cycle-hide-drawers t)
+                (setq point (point))
+                (throw 'find-property nil)))))
       point)))
 
 (defun eaf-interleave--narrow-to-subtree (&optional force)
@@ -375,34 +375,34 @@ Return the position of the newly inserted heading."
 (defun eaf-interleave--create-new-note (url &optional title page)
   "Create a new headline for current EAF url."
   (with-current-buffer eaf-interleave-org-buffer
-   (save-excursion
-   (let* (
-         (ast (org-noter--parse-root))
-         (level
-           (1+ (or (org-element-property :level ast) 0)))
-         (org-noter-property-note-location eaf-interleave--page-note-prop)
-         (title (format "Notes for %s" title))
-         (newlines-number 1)
-         (initial-level (org-element-property :level (org-element-at-point)))
-         (changer (if (> level initial-level) 'org-do-demote 'org-do-promote))
-         (number-of-times (abs (- level initial-level)))
-         (location (cons page 0))
-         (new-note-position))
-     (org-insert-heading nil t)
-     (dotimes (_ number-of-times) (funcall changer))
-     (insert (org-trim (replace-regexp-in-string "\n" " " title)))
-     (org-end-of-subtree)
-     (unless (bolp) (insert "\n"))
-     (org-N-empty-lines-before-current (1- newlines-number))
-      (when location
-            (org-set-property eaf-interleave--url-prop url)
-            (org-entry-put nil org-noter-property-note-location (format "%s" location))
+    (save-excursion
+      (let* (
+             (ast (org-noter--parse-root))
+             (level
+              (1+ (or (org-element-property :level ast) 0)))
+             (org-noter-property-note-location eaf-interleave--page-note-prop)
+             (title (format "Notes for %s" title))
+             (newlines-number 1)
+             (initial-level (org-element-property :level (org-element-at-point)))
+             (changer (if (> level initial-level) 'org-do-demote 'org-do-promote))
+             (number-of-times (abs (- level initial-level)))
+             (location (cons page 0))
+             (new-note-position))
+        (org-insert-heading nil t)
+        (dotimes (_ number-of-times) (funcall changer))
+        (insert (org-trim (replace-regexp-in-string "\n" " " title)))
+        (org-end-of-subtree)
+        (unless (bolp) (insert "\n"))
+        (org-N-empty-lines-before-current (1- newlines-number))
+        (when location
+          (org-set-property eaf-interleave--url-prop url)
+          (org-entry-put nil org-noter-property-note-location (format "%s" location))
           )))))
 
 (defun eaf-interleave-sync-browser-url-current ()
   "Sync current note url for browser"
   (let* ((web-url (org-entry-get-with-inheritance eaf-interleave--url-prop))
-        (buffer (eaf-interleave--find-buffer web-url)))
+         (buffer (eaf-interleave--find-buffer web-url)))
     (if buffer
         (eaf-interleave--display-buffer buffer)
       (eaf-interleave--select-split-function)
@@ -410,7 +410,7 @@ Return the position of the newly inserted heading."
 
 (defun eaf-interleave--display-buffer (buffer)
   "Use already used window display buffer"
-  (eaf-interleave--narrow-to-subtree)
+  ;; (eaf-interleave--narrow-to-subtree)
   (display-buffer-reuse-mode-window buffer '(("mode" . "eaf-interleave-app-mode")))
   (eaf-interleave--ensure-buffer-window buffer))
 
@@ -460,8 +460,8 @@ Consider a headline with property PROPERTY as parent headline."
   "find EAF buffer base url"
   (let (current-buffer)
     (catch 'find-buffer
-    (dolist (buffer (buffer-list))
-      (with-current-buffer buffer
+      (dolist (buffer (buffer-list))
+        (with-current-buffer buffer
           (when (and
                  (derived-mode-p 'eaf-mode)
                  (equal eaf--buffer-url url))

@@ -32,7 +32,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(;; javascript
+   '(php
+     ;; javascript
      ;; yaml
      ;; sql
      ;; lua
@@ -110,8 +111,8 @@ This function should only modify configuration layer settings."
      ;; (python :variables
      ;;         python-test-runner '(nose pytest))
      ;; ipython-notebook
-     ;; (c-c++ :variables
-     ;; c-c++-default-mode-for-headers 'c++-mode)
+     (c-c++ :variables
+            c-c++-default-mode-for-headers 'c++-mode)
      ;; ycmd
      ;; common-lisp
      emacs-lisp

@@ -1888,6 +1888,7 @@ marked file."
                     (quote (nth 2 info))
                     (desc (concat (file-name-nondirectory file) ": Page " page (when quote (concat "; Quoting: " quote))))
                     (link (format "%s:%s#%s" org-noter-property-note-location file location)))
+               (kill-new (format "[[%s]][[%s]]" link desc))
                (org-link-store-props
                 :type org-noter-property-note-location
                 :link link

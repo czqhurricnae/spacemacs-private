@@ -21,7 +21,8 @@
     (color-rg :location (recipe :fetcher github
                                 :repo "manateelazycat/color-rg"))
     (stm32 :location (recipe :fetcher github
-                             :repo "SL-RU/stm32-emacs"))
+                             :repo "SL-RU/stm32-emacs"
+                             :pin "e3f1e17"))
     friendly-shell-command
     (dap-mode :location (recipe
                          :fetcher github

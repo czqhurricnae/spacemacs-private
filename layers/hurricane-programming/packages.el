@@ -236,6 +236,7 @@
 
     (advice-add #'lsp-bridge-define--jump :around #'make-peek-frame)
 
+    (add-hook 'prog-mode-hook #'(lambda () (local-set-key (kbd "<f2>") #'hurricane/open-corresponding-file)))
     (add-hook 'prog-mode-hook #'(lambda () (local-set-key (kbd "<f3>") #'lsp-bridge-find-def)))
 
     (eval-after-load 'lsp-bridge

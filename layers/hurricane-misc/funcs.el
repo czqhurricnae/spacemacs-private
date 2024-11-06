@@ -875,7 +875,9 @@ Else, returns STRING."
 
 (defun hurricane/open-noter-page ()
   (interactive)
-  (let* (($inputStr (if (use-region-p)
+  (let* ((page-location (org-noter--parse-location-property (org-entry-get-with-inheritance org-noter-property-note-location)))
+         (pdf-url (org-entry-get-with-inheritance org-noter-property-doc-file))
+         ($inputStr (if (use-region-p)
                         (buffer-substring-no-properties (region-beginning) (region-end))
                       (let ($p0 $p1 $p2
                                 ($pathStarts "\\[\\[")
@@ -889,7 +891,9 @@ Else, returns STRING."
                         (goto-char $p0)
                         (buffer-substring-no-properties $p1 $p2))))
          )
-    (org-link-open-from-string $inputStr)))
+    (if (and pdf-url page-location)
+        (org-link-open-from-string (format "[[%s:%s#%s]]" org-noter-property-note-location pdf-url page-location))
+      (org-link-open-from-string $inputStr))))
 
 (defun hurricane/open-link-in-chrome ()
   "Open `url' under cursor in Chrome.

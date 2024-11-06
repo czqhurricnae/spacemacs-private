@@ -52,7 +52,7 @@
                      (file-name-directory (file-relative-name file make-file))))
            (delete-dups)
            (mapcar (lambda (directory) (progn (insert (concat directory " \\"))
-                                         (newline-and-indent))))))))
+                                              (newline-and-indent))))))))
 
 ;; @See: https://emacs.stackexchange.com/questions/62/hide-compilation-window
 (add-hook 'compilation-finish-functions
@@ -121,3 +121,24 @@
 ;;   (add-to-list 'compilation-finish-functions 'exec/rg-hint-all))
 
 ;; (add-hook 'rg-mode-hook 'exec/setup-rg-hint)
+
+(defun hurricane/open-corresponding-file ()
+  "Open the corresponding .c or .h file based on the current buffer's file."
+  (interactive)
+  (let* ((current-file (or (buffer-file-name) (dired-get-filename)))
+         (base-name (file-name-sans-extension (file-name-nondirectory current-file)))
+         (extension (file-name-extension current-file))
+         (directory-name (file-name-nondirectory
+                          (directory-file-name
+                           (file-name-directory current-file))))
+         (corresponding-file-candicate-0 (concat (file-name-directory
+                                                  (directory-file-name
+                                                   (file-name-directory current-file)))
+                                                 (if (string= directory-name "Src") "Inc/" "Src/")
+                                                 base-name
+                                                 (if (string= extension "c") ".h" ".c")))
+         (corresponding-file-candicate-1 (concat (file-name-directory current-file) "/" base-name (if (string= extension "c") ".h" ".c"))))
+    (cond
+     ((file-exists-p corresponding-file-candicate-0) (find-file corresponding-file-candicate-0))
+     ((file-exists-p corresponding-file-candicate-1) (find-file corresponding-file-candicate-1))
+     (t (message "Corresponding file does not exist: %s" corresponding-file)))))

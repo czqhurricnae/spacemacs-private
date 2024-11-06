@@ -327,11 +327,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/使用 color-rg-replace-all-matches 出现 Text is read only.org")
- (front-context-string . "注释 color-rg-swit")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/Elfeed PR.org")
+ (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 409)
- (last-modified 26402 12832 194908 0))
+ (position . 323)
+ (last-modified 26407 3211 838445 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

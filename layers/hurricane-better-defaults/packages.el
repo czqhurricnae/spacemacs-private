@@ -144,6 +144,7 @@
 
     ;; (evil-define-key 'normal dired-mode-map (kbd "W") #'hurricane//dired-copy-filename-as-kill)
     (evil-define-key 'normal dired-mode-map (kbd "/") #'hurricane/open-file-with-projectile-or-counsel-git)
+    (evil-define-key 'normal dired-mode-map (kbd "<f2>") #'hurricane/open-corresponding-file)
 
     ;; FIXME: Evilify dired mode will lead to startup warnings.
     (evilified-state-evilify-map dired-mode-map
@@ -159,6 +160,7 @@
       "c" #'hurricane/dired-copy-file-here
       "/" #'hurricane/open-file-with-projectile-or-counsel-git
       ")" #'dired-omit-mode
+      "<f2>" #'hurricane/open-corresponding-file
       ;; "W" #'hurricane//dired-copy-filename-as-kill
       )))
 

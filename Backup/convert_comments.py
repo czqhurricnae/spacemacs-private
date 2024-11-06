@@ -15,6 +15,53 @@ def getDirFiles(dir):
                 fileList.append(os.path.join(dir, ff))
     return fileList
 
+def convert_punctuation(text):
+    # 定义非中文标点符号到中文标点符号的映射
+    punctuation_map = {
+        ',': '，',
+        '.': '。',
+        '!': '！',
+        '?': '？',
+        ':': '：',
+        ';': '；',
+        # '(': '（',
+        # ')': '）',
+        # '[': '【',
+        # ']': '】',
+        # '{': '｛',
+        # '}': '｝',
+        # '<': '《',
+        '>': '》',
+        '"': '“',
+        "'": '‘',
+        '-': '－',
+        # '_': '＿',
+        '/': '／',
+        '\\': '＼',
+        '@': '＠',
+        '#': '＃',
+        '$': '＄',
+        '%': '％',
+        '^': '＾',
+        '&': '＆',
+        # '*': '＊',
+        # '+': '＋',
+        # '=': '＝',
+        '~': '～',
+        '`': '｀',
+        # '|': '｜'
+    }
+
+    # 使用正则表达式替换非中文标点符号
+    def replace_punctuation(match):
+        char = match.group(0)
+        return punctuation_map.get(char, char)
+
+    pattern = re.compile('|'.join(re.escape(p) for p in punctuation_map.keys()))
+    converted_text = pattern.sub(replace_punctuation, text)
+
+    return converted_text
+
 def convert_comments(code):
     # 匹配双反斜杠风格的注释
     pattern = re.compile(r'(\s*)(.*?)//(.*)')
@@ -27,7 +74,8 @@ def convert_comments(code):
             # 如果匹配到注释
             indent, code_part, comment = match.groups()
             # 将注释转换为 C++ 风格
-            new_comment = f'/* {re.sub(r'//|\s+', '', comment).strip()} */'
+            new_raw_comment = re.sub(r'//|\s+', '', comment).strip()
+            new_comment = f'/* {convert_punctuation(new_raw_comment)} */'
             # 如果注释在代码之后，将注释放在上面
             if code_part.strip():
                 new_lines.append(f'{indent}{new_comment}')

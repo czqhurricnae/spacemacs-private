@@ -587,7 +587,7 @@
     (setq org-download-heading-lvl nil)
     (setq org-download-screenshot-file (expand-file-name "screenshot.jpg" temporary-file-directory))
     ;; Drag-and-drop to `dired`.
-    (add-hook 'dired-mode-hook 'org-download-enable)
+    (add-hook 'dired-mode-hook #'org-download-enable)
     ;; Disable DOWNLOADED attribute.
     (setq org-download-annotate-function (lambda (_link) ""))
     (spacemacs/set-leader-keys-for-major-mode 'org-mode
@@ -780,9 +780,9 @@
       (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)
 
       (advice-add #'org-roam-buffer-persistent-redisplay :before
-                  #'(lambda () (remove-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+                  #'(lambda () (remove-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)))
       (advice-add #'org-roam-buffer-persistent-redisplay :after
-                  #'(lambda () (add-hook 'org-mode-hook 'hurricane//display-line-numbers-customize)))
+                  #'(lambda () (add-hook 'org-mode-hook #'hurricane//display-line-numbers-customize)))
 
       ;; (cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
       ;;   "Return the hierarchy for the node."

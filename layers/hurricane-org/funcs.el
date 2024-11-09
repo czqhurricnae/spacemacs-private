@@ -1,3 +1,6 @@
+(require 'cl-lib)
+(require 'avl-tree)
+
 (defvar killed-file-list nil
   "List of recently killed files.")
 
@@ -55,10 +58,10 @@
 (defun select-or-enter-file-name (img-dir &optional init-input)
   (ivy-read
    "please selete or enter a name (Ctrl-n for next item, Ctrl-p for previous item)"
-            (delete ".."
-                    (delete "."
-                            (directory-files-recursively img-dir ".")))
-            :initial-input init-input))
+   (delete ".."
+           (delete "."
+                   (directory-files-recursively img-dir ".")))
+   :initial-input init-input))
 
 (defun trim-space-in-string (string)
   (replace-regexp-in-string "[\t\n ]+" "" string))
@@ -189,12 +192,12 @@ just like `((name begin-position end-position))'"
          (begin-end-list (hurricane//find-org-link-begin-and-end link-list (concat relative-img-dir temp-name))))
     (progn
       (if (yes-or-no-p "Do you want to delete the image link?")
-        (hurricane//do-delete-link-function begin-end-list))
+          (hurricane//do-delete-link-function begin-end-list))
       (if (yes-or-no-p
            "Do you really want to delete the image file? This can't be revert!")
-        (progn
-          (delete-file file-full-path)
-          )))))
+          (progn
+            (delete-file file-full-path)
+            )))))
 
 (defun hurricane/org-delete-screenshot-image-file-and-link ()
   (interactive)
@@ -294,62 +297,62 @@ just like `((name begin-position end-position))'"
               (nth 9 x)
               )))) graph \"\\n\"))")
       (org-edit-src-exit)
-  )))
+      )))
 
 (defun hurricane/org-insert-src-block (src-code-type)
   "Insert a `src-code-type' type source code block in org-mode."
   (interactive
-    (let ((src-code-types
+   (let ((src-code-types
           '("ipython" "example" "value" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
             "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
             "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
             "haskell" "latex" "lisp" "matlab" "ocaml" "perl" "ruby"
             "scheme" "sqlite" "graphviz" "html" "call")))
-      (list (ido-completing-read "Source code type: " src-code-types))))
+     (list (ido-completing-read "Source code type: " src-code-types))))
   (catch 'return-catch
-  (progn
-    (setq region-active-flag nil)
-    (if (region-active-p)
-        (progn
-          (clipboard-kill-region (region-beginning) (region-end))
-          (setq region-active-flag t)))
-    (newline-and-indent)
+    (progn
+      (setq region-active-flag nil)
+      (if (region-active-p)
+          (progn
+            (clipboard-kill-region (region-beginning) (region-end))
+            (setq region-active-flag t)))
+      (newline-and-indent)
       (cond ((equal src-code-type "ipython")
-              (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session\n" src-code-type)))
             ((equal src-code-type "example")
-              (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session example\n"))
+             (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session example\n"))
             ((equal src-code-type "value")
-              (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer values list :exports no-eval :session\n"))
+             (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer values list :exports no-eval :session\n"))
             ((equal src-code-type "js")
              (insert (format "#+BEGIN_SRC %s :results values list :exports no-eval\n" src-code-type)))
             ((equal src-code-type "C")
-              (insert "#+header: :cmdline :includes <stdio.h> \"/Users/c/Unix/error_function.c\" \"/Users/c/Unix/get_num.c\"\n")
-              (insert (format "#+BEGIN_SRC %s :results output list :exports no-eval\n" src-code-type)))
+             (insert "#+header: :cmdline :includes <stdio.h> \"/Users/c/Unix/error_function.c\" \"/Users/c/Unix/get_num.c\"\n")
+             (insert (format "#+BEGIN_SRC %s :results output list :exports no-eval\n" src-code-type)))
             ((equal src-code-type "sql")
-              (insert (format "#+BEGIN_SRC %s :results value table :exports no-eval\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :results value table :exports no-eval\n" src-code-type)))
             ((equal src-code-type "dot")
-              (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
             ((equal src-code-type "call")
              (insert "#+CALL: createTree(toInclude=\"*.*\", toExclude=\"\", directory=\"\", createLink=\"true\")"))
             ((equal src-code-type "graphviz")
-              (hurricane/create-graphviz)
-            (throw 'return-catch "I will not going any where else."))
+             (hurricane/create-graphviz)
+             (throw 'return-catch "I will not going any where else."))
             (t (insert (format "#+BEGIN_SRC %s :results raw drawer values list :exports no-eval\n" src-code-type))))
-    (newline-and-indent)
-    (insert "#+END_SRC\n")
-    (previous-line 2)
-    (org-edit-src-code)
-    (if region-active-flag
-        (clipboard-yank)))))
+      (newline-and-indent)
+      (insert "#+END_SRC\n")
+      (previous-line 2)
+      (org-edit-src-code)
+      (if region-active-flag
+          (clipboard-yank)))))
 
 (defun save-buffer-filter ()
   "Replace the expected charaters except `funcs.el<hurricane-org>' file."
   (interactive)
   (save-buffer)
   (and (not (string-equal (buffer-file-name) "/Users/c/.spacemacs.d/layers/hurricane-org/funcs.el"))
-      (progn
-        (dolist (replace-string-rule buffer-replace-string-rule-lists)
-          (replace-region-or-buffer (cdr replace-string-rule) (car replace-string-rule) nil)))))
+       (progn
+         (dolist (replace-string-rule buffer-replace-string-rule-lists)
+           (replace-region-or-buffer (cdr replace-string-rule) (car replace-string-rule) nil)))))
 
 (defun is-useless-buffer (buffer-to-be-inspected useless-buffer-name)
   "Check is the buffer useless one.
@@ -599,160 +602,160 @@ and insert a link to this file."
   (interactive)
   (set (make-local-variable 'org-publish-project-alist)
        `(("orgfiles"
-         ;; Sources and destinations for files.
-         ;; local org files directory.
-         :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
-         :publishing-directory ,(concat deft-dir (file-name-as-directory "public"))
-         ;; :preparation-function
-         ;; :complete-function
+          ;; Sources and destinations for files.
+          ;; local org files directory.
+          :base-directory ,(concat deft-dir (file-name-as-directory "notes"))
+          :publishing-directory ,(concat deft-dir (file-name-as-directory "public"))
+          ;; :preparation-function
+          ;; :complete-function
 
-         ;; Selecting files.
-         :base-extension "org"
-         ;; :exclude "PrivatePage.org"
-         ;; :include
-         :recursive t
+          ;; Selecting files.
+          :base-extension "org"
+          ;; :exclude "PrivatePage.org"
+          ;; :include
+          :recursive t
 
-         ;; Publishing action.
-         :publishing-function org-html-publish-to-html
-         :htmlized-source nil
+          ;; Publishing action.
+          :publishing-function org-html-publish-to-html
+          :htmlized-source nil
 
-         ;; Options for the exporters.
+          ;; Options for the exporters.
 
-         ;; {{
-         ;; Generic properties.
-         ;; :archived-trees org-export-with-archived-trees
-         ;; :exclude-tags org-export-exclude-tags
-         ;; org-export-headline-levels.
-         :headline-levels 4
-         ;; :language org-export-default-language
-         ;; :preserve-breaks org-export-preserve-breaks
-         ;; org-export-with-section-numbers.
-         :section-numbers nil
-         ;; :select-tags org-export-select-tags
-         ;; org-export-with-author.
-         ;; :with-author "Hurricane Chen"
-         ;; :with-broken-links org-export-with-broken-links
-         ;; org-export-with-clocks.
-         ;; :with-clocks t
-         ;; org-export-with-creator.
-         ;; :with-creator nil
-         ;; :with-date org-export-with-date
-         ;; :with-drawers org-export-with-drawers
-         ;; :with-email org-export-with-email
-         ;; :with-emphasize org-export-with-emphasize
-         ;; :with-fixed-width org-export-with-fixed-width
-         :with-footnotes org-export-with-footnotes
-         ;; :with-latex org-export-with-latex
-         ;; :with-planning org-export-with-planning
-         ;; org-export-with-priority.
-         :with-priority t
-         ;; :with-properties org-export-with-properties
-         ;; :with-special-strings org-export-with-special-strings
-         ;; :with-sub-superscript org-export-with-sub-superscripts
-         ;; :with-tables org-export-with-tables
-         ;; :with-tags org-export-with-tags
-         ;; :with-tasks org-export-with-tasks
-         ;; :with-timestamps org-export-with-timestamps
-         ;; :with-title org-export-with-title
-         ;; org-export-with-toc.
-         :with-toc t
-         ;; :with-todo-keywords org-export-with-todo-keywords
-         ;; }}
+          ;; {{
+          ;; Generic properties.
+          ;; :archived-trees org-export-with-archived-trees
+          ;; :exclude-tags org-export-exclude-tags
+          ;; org-export-headline-levels.
+          :headline-levels 4
+          ;; :language org-export-default-language
+          ;; :preserve-breaks org-export-preserve-breaks
+          ;; org-export-with-section-numbers.
+          :section-numbers nil
+          ;; :select-tags org-export-select-tags
+          ;; org-export-with-author.
+          ;; :with-author "Hurricane Chen"
+          ;; :with-broken-links org-export-with-broken-links
+          ;; org-export-with-clocks.
+          ;; :with-clocks t
+          ;; org-export-with-creator.
+          ;; :with-creator nil
+          ;; :with-date org-export-with-date
+          ;; :with-drawers org-export-with-drawers
+          ;; :with-email org-export-with-email
+          ;; :with-emphasize org-export-with-emphasize
+          ;; :with-fixed-width org-export-with-fixed-width
+          :with-footnotes org-export-with-footnotes
+          ;; :with-latex org-export-with-latex
+          ;; :with-planning org-export-with-planning
+          ;; org-export-with-priority.
+          :with-priority t
+          ;; :with-properties org-export-with-properties
+          ;; :with-special-strings org-export-with-special-strings
+          ;; :with-sub-superscript org-export-with-sub-superscripts
+          ;; :with-tables org-export-with-tables
+          ;; :with-tags org-export-with-tags
+          ;; :with-tasks org-export-with-tasks
+          ;; :with-timestamps org-export-with-timestamps
+          ;; :with-title org-export-with-title
+          ;; org-export-with-toc.
+          :with-toc t
+          ;; :with-todo-keywords org-export-with-todo-keywords
+          ;; }}
 
-         ;; {{
-         ;;  HTML specific properties
-         ;; :html-allow-name-attribute-in-anchors org-html-allow-name-attribute-in-anchors
-         ;; :html-checkbox-type org-html-checkbox-type
-         :html-container "section"
-         ;; :html-divs org-html-divs
-         ;; org-html-doctype.
-         :html-doctype "html5"
-         ;; :html-extension org-html-extension
-         ;; org-html-footnote-format.
-         ;; :html-footnote-format nil
-         ;; :html-footnote-separator org-html-footnote-separator
-         ;; :html-footnotes-section org-html-footnotes-section
-         ;; :html-format-drawer-function org-html-format-drawer-function
-         ;; :html-format-headline-function org-html-format-headline-function
-         ;; :html-format-inlinetask-function org-html-format-inlinetask-function
-         :html-head-extra ,hurricane/head-extra
-         ;; :html-head-include-default-style nil
-         ;; :html-head-include-scripts nil
-         ;; :html-head org-html-head
-         ;; :html-home/up-format org-html-home/up-format
-         ;; :html-html5-fancy t
-         ;; :html-indent org-html-indent
-         ;; :html-infojs-options org-html-infojs-options
-         ;; :html-infojs-template org-html-infojs-template
-         ;; :html-inline-image-rules org-html-inline-image-rules
-         ;; :html-inline-images org-html-inline-images
-         ;; :html-link-home org-html-link-home
-         ;; :html-link-org-files-as-html org-html-link-org-files-as-html
-         ;; :html-link-up org-html-link-up
-         ;; :html-link-use-abs-url org-html-link-use-abs-url
-         ;; :html-mathjax-options org-html-mathjax-options
-         ;; :html-mathjax-template org-html-mathjax-template
-         ;; :html-metadata-timestamp-format org-html-metadata-timestamp-format
-         ;; org-html-postamble-format.
-         ;; :html-postamble-format t
-         ;; org-html-postamble.
-         :html-postamble ,hurricane/postamble
-         ;; :html-preamble-format org-html-preamble-format
-         ;; org-html-preamble.
-         :html-preamble ,hurricane/preamble
-         ;; :html-self-link-headlines org-html-self-link-headlines
-         ;; :html-table-align-individual-field de{org-html-table-align-individual-fields
-         ;; :html-table-attributes org-html-table-default-attributes
-         ;; :html-table-caption-above org-html-table-caption-above
-         ;; :html-table-data-tags org-html-table-data-tags
-         ;; :html-table-header-tags org-html-table-header-tags
-         ;; :html-table-row-tags org-html-table-row-tags
-         ;; :html-table-use-header-tags-for-first-column org-html-table-use-header-tags-for-first-column
-         ;; :html-tag-class-prefix org-html-tag-class-prefix
-         ;; :html-text-markup-alist org-html-text-markup-alist
-         ;; :html-todo-kwd-class-prefix org-html-todo-kwd-class-prefix
-         ;; :html-toplevel-hlevel org-html-toplevel-hlevel
-         ;; :html-use-infojs org-html-use-infojs
-         ;; :html-validation-link org-html-validation-link
-         ;; :html-viewport org-html-viewport
-         ;; :html-wrap-src-lines org-html-wrap-src-lines
-         ;; :html-xml-declaration org-html-xml-declaration
-         ;; }}
+          ;; {{
+          ;;  HTML specific properties
+          ;; :html-allow-name-attribute-in-anchors org-html-allow-name-attribute-in-anchors
+          ;; :html-checkbox-type org-html-checkbox-type
+          :html-container "section"
+          ;; :html-divs org-html-divs
+          ;; org-html-doctype.
+          :html-doctype "html5"
+          ;; :html-extension org-html-extension
+          ;; org-html-footnote-format.
+          ;; :html-footnote-format nil
+          ;; :html-footnote-separator org-html-footnote-separator
+          ;; :html-footnotes-section org-html-footnotes-section
+          ;; :html-format-drawer-function org-html-format-drawer-function
+          ;; :html-format-headline-function org-html-format-headline-function
+          ;; :html-format-inlinetask-function org-html-format-inlinetask-function
+          :html-head-extra ,hurricane/head-extra
+          ;; :html-head-include-default-style nil
+          ;; :html-head-include-scripts nil
+          ;; :html-head org-html-head
+          ;; :html-home/up-format org-html-home/up-format
+          ;; :html-html5-fancy t
+          ;; :html-indent org-html-indent
+          ;; :html-infojs-options org-html-infojs-options
+          ;; :html-infojs-template org-html-infojs-template
+          ;; :html-inline-image-rules org-html-inline-image-rules
+          ;; :html-inline-images org-html-inline-images
+          ;; :html-link-home org-html-link-home
+          ;; :html-link-org-files-as-html org-html-link-org-files-as-html
+          ;; :html-link-up org-html-link-up
+          ;; :html-link-use-abs-url org-html-link-use-abs-url
+          ;; :html-mathjax-options org-html-mathjax-options
+          ;; :html-mathjax-template org-html-mathjax-template
+          ;; :html-metadata-timestamp-format org-html-metadata-timestamp-format
+          ;; org-html-postamble-format.
+          ;; :html-postamble-format t
+          ;; org-html-postamble.
+          :html-postamble ,hurricane/postamble
+          ;; :html-preamble-format org-html-preamble-format
+          ;; org-html-preamble.
+          :html-preamble ,hurricane/preamble
+          ;; :html-self-link-headlines org-html-self-link-headlines
+          ;; :html-table-align-individual-field de{org-html-table-align-individual-fields
+          ;; :html-table-attributes org-html-table-default-attributes
+          ;; :html-table-caption-above org-html-table-caption-above
+          ;; :html-table-data-tags org-html-table-data-tags
+          ;; :html-table-header-tags org-html-table-header-tags
+          ;; :html-table-row-tags org-html-table-row-tags
+          ;; :html-table-use-header-tags-for-first-column org-html-table-use-header-tags-for-first-column
+          ;; :html-tag-class-prefix org-html-tag-class-prefix
+          ;; :html-text-markup-alist org-html-text-markup-alist
+          ;; :html-todo-kwd-class-prefix org-html-todo-kwd-class-prefix
+          ;; :html-toplevel-hlevel org-html-toplevel-hlevel
+          ;; :html-use-infojs org-html-use-infojs
+          ;; :html-validation-link org-html-validation-link
+          ;; :html-viewport org-html-viewport
+          ;; :html-wrap-src-lines org-html-wrap-src-lines
+          ;; :html-xml-declaration org-html-xml-declaration
+          ;; }}
 
-         ;; {{
-         ;; Markdown specific properties.
-         ;; :md-footnote-format org-md-footnote-format
-         ;; :md-footnotes-section org-md-footnotes-section
-         ;; :md-headline-style org-md-headline-style
-         ;; }}
+          ;; {{
+          ;; Markdown specific properties.
+          ;; :md-footnote-format org-md-footnote-format
+          ;; :md-footnotes-section org-md-footnotes-section
+          ;; :md-headline-style org-md-headline-style
+          ;; }}
 
-         ;; {{
-         ;; Other options
-         :table-of-contents t
-         ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
-         ;; }}
-         :auto-sitemap nil
-         :exclude "node_modules"
-         :sitemap-title "Hurricane"
-         :sitemap-sort-files anti-chronologically
-         ;; :sitemap-function hurricane/org-publish-sitemap
-         ;; :sitemap-format-entry sitemap-format-entry
-         :sitemap-filename "index.org"
-         )
+          ;; {{
+          ;; Other options
+          :table-of-contents t
+          ;; :style "<link rel=\"stylesheet\" href=\"../other/mystyle.css\" type=\"text/css\" />"
+          ;; }}
+          :auto-sitemap nil
+          :exclude "node_modules"
+          :sitemap-title "Hurricane"
+          :sitemap-sort-files anti-chronologically
+          ;; :sitemap-function hurricane/org-publish-sitemap
+          ;; :sitemap-format-entry sitemap-format-entry
+          :sitemap-filename "index.org"
+          )
 
-        ;; Static assets.
-        ("images"
-         :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "./static"))
-         :base-extension "css\\|js\\|png\\|jpg\\|gif\\|svg\\|svg\\|json\\|pdf"
-         :publishing-directory ,(concat blog-dir (file-name-as-directory "./static"))
-         :exclude "node_modules"
-         :recursive t
-         :publishing-function org-publish-attachment
-         )
+         ;; Static assets.
+         ("images"
+          :base-directory ,(concat deft-dir (file-name-as-directory "notes") (file-name-as-directory "./static"))
+          :base-extension "css\\|js\\|png\\|jpg\\|gif\\|svg\\|svg\\|json\\|pdf"
+          :publishing-directory ,(concat blog-dir (file-name-as-directory "./static"))
+          :exclude "node_modules"
+          :recursive t
+          :publishing-function org-publish-attachment
+          )
 
-        ("website" :components ("orgfiles" "images"))
-        ("statics" :components ("images"))
-        )))
+         ("website" :components ("orgfiles" "images"))
+         ("statics" :components ("images"))
+         )))
 
 (add-to-list 'safe-local-eval-forms '(blog-site-project-setup))
 
@@ -832,8 +835,8 @@ epoch to the beginning of today (00:00)."
                                                   (mapconcat #'org-link-display-format outline " > ")))
                                      (point (org-roam-backlink-point backlink))
                                      (text (org-roam-preview-get-contents
-                                                                source-file
-                                                                point))
+                                            source-file
+                                            point))
                                      (reference (format "%s [[id:%s][%s]]\n%s\n%s\n\n"
                                                         (s-repeat (+ (org-roam-node-level node) 2) "*")
                                                         (org-roam-node-id source-node)
@@ -860,9 +863,9 @@ epoch to the beginning of today (00:00)."
           (goto-char end-position)
           (insert (format "%s\n%s\n%s\n%s" heading details-tag-heading (string-join content-and-footnote-string-list "\n") details-tag-ending)))))))
 
-(add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
-(add-hook 'org-export-before-processing-hook 'org-transclusion-add-all)
-(add-hook 'org-export-before-processing-hook 'org-transclusion-inhibit-read-only)
+(add-hook 'org-export-before-processing-hook #'hurricane//collect-backlinks-string)
+(add-hook 'org-export-before-processing-hook #'org-transclusion-add-all)
+(add-hook 'org-export-before-processing-hook #'org-transclusion-inhibit-read-only)
 
 (defun hurricane/publish ()
   (interactive)
@@ -875,7 +878,7 @@ epoch to the beginning of today (00:00)."
 ;; (for example, if you want backlinks to be regenerated).
 (defun hurricane/republish ()
   (interactive)
- (let ((current-prefix-arg 4))
+  (let ((current-prefix-arg 4))
     (rassq-delete-all 'web-mode auto-mode-alist)
     (fset 'web-mode (symbol-function 'fundamental-mode))
     (call-interactively 'org-publish-all)))
@@ -956,87 +959,87 @@ that the point is already within a string."
   (add-to-list 'org-export-filter-special-block-functions
                #'hurricane//html-process-field-blocks))
 
-(defun hurricane//org-image-link-open (orgfn context &optional args)
+(defun hurricane//org-image-link-open (origfunc context &optional args)
   (when-let ((link (plist-get context 'link))
              (type (plist-get link ':type))
              (path (plist-get link ':path)))
     (if (string-match "\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\|svg\\)" path)
-	      (ignore-errors
+        (ignore-errors
           (funcall
-	          (helm :sources
-		              `((name . "Action")
-		                (candidates . ,(append
-				                            '(
-                                      ("@ Preview file" . (lambda (path) (eaf-open path)))
-                                      ("@ EAF image occlusion" . (lambda (path)
-                                                                   (save-excursion
-                                                                     (org-back-to-heading-or-point-min)
-                                                                     (let* ((deck (hurricane//extract-value-from-keyword "ANKI_DECK"))
-                                                                            (elt (plist-get (org-element-at-point) 'headline))
-                                                                            (front (string-join (org-get-outline-path t) " > "))
-                                                                            (contents-begin (plist-get elt :contents-begin))
-                                                                            (robust-begin (or (plist-get elt :robust-begin)
-                                                                                              contents-begin))
-                                                                            (beg (if (or (= contents-begin robust-begin)
-                                                                                         (= (+ 2 contents-begin) robust-begin))
-                                                                                     contents-begin
-                                                                                   (1+ robust-begin)))
-                                                                            (contents-end (plist-get elt :contents-end))
-                                                                            (back (buffer-substring-no-properties
-                                                                                   contents-begin (1- contents-end))))
-                                                                       (eaf-open-image-occlusion (expand-file-name path) (list deck front back))
-                                                                       ))
-                                                                   ))
-                                      ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
-                                                                                                                                            (next-line)
-                                                                                                                                            (newline-and-indent)
-                                                                                                                                            (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
-                                                                                                                                            (newline-and-indent)
-                                                                                                                                            (previous-line)
-                                                                                                                                            (edraw-org-edit-regular-file-link)
-                                                                                                                                            (edraw-editor-select-tool-image)
-                                                                                                                                            (kill-new (format "%s" (file-name-nondirectory path)))
-                                                                                                                                            )
-                                                                                          (edraw-org-edit-regular-file-link))))
-                                      ("@ Delete image file and link" . (lambda (path)
-                                                                        (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
-                                                                                            (lambda (link)
-                                                                                              (when (string= (org-element-property :type link) "file")
-                                                                                                (list (org-element-property :path link)
-                                                                                                      (org-element-property :begin link)
-                                                                                                      (org-element-property :end link))))))
-                                                                               (file-full-path (concat default-directory "/" path))
-                                                                               (begin-end-list (hurricane//find-org-link-begin-and-end link-list path)))
-                                                                          (progn
-                                                                            (if (yes-or-no-p "Do you want to delete the image link?")
-                                                                                (hurricane//do-delete-link-function begin-end-list))
-                                                                            (if (yes-or-no-p
-                                                                                 "Do you really want to delete the image file? This can't be revert!")
-                                                                                (progn
-                                                                                  (delete-file file-full-path)
-                                                                                  ))))))
-                                      ("@ Copy file link" . (lambda (path)
-                                                            (kill-new (format "%s" (concat default-directory "/" path)))))
-                                      ("@ Copy file name" . (lambda (path)
-                                                              (kill-new (format "%s" (file-name-nondirectory path)))))
-                                      ("@ Copy org link" . (lambda (path)
-							                                             (kill-new (format "[[file:%s]]" path))))
-                                      ("@ Eaf open in file manager" . (lambda (path) (eaf-open-in-file-manager path)))
-                                      ("@ Dired" . (lambda (path)
-						                                       (dired (file-name-directory path))
-						                                       (re-search-forward (file-name-nondirectory path))))
-                                      ("@ Open in external app" . (lambda (path) (spacemacs//open-in-external-app path)))
+           (helm :sources
+                 `((name . "Action")
+                   (candidates . ,(append
+                                   '(
+                                     ("@ Preview file" . (lambda (path) (eaf-open path)))
+                                     ("@ EAF image occlusion" . (lambda (path)
+                                                                  (save-excursion
+                                                                    (org-back-to-heading-or-point-min)
+                                                                    (let* ((deck (hurricane//extract-value-from-keyword "ANKI_DECK"))
+                                                                           (elt (plist-get (org-element-at-point) 'headline))
+                                                                           (front (string-join (org-get-outline-path t) " > "))
+                                                                           (contents-begin (plist-get elt :contents-begin))
+                                                                           (robust-begin (or (plist-get elt :robust-begin)
+                                                                                             contents-begin))
+                                                                           (beg (if (or (= contents-begin robust-begin)
+                                                                                        (= (+ 2 contents-begin) robust-begin))
+                                                                                    contents-begin
+                                                                                  (1+ robust-begin)))
+                                                                           (contents-end (plist-get elt :contents-end))
+                                                                           (back (buffer-substring-no-properties
+                                                                                  contents-begin (1- contents-end))))
+                                                                      (eaf-open-image-occlusion (expand-file-name path) (list deck front back))
+                                                                      ))
+                                                                  ))
+                                     ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
+                                                                                                                                           (next-line)
+                                                                                                                                           (newline-and-indent)
+                                                                                                                                           (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
+                                                                                                                                           (newline-and-indent)
+                                                                                                                                           (previous-line)
+                                                                                                                                           (edraw-org-edit-regular-file-link)
+                                                                                                                                           (edraw-editor-select-tool-image)
+                                                                                                                                           (kill-new (format "%s" (file-name-nondirectory path)))
+                                                                                                                                           )
+                                                                                              (edraw-org-edit-regular-file-link))))
+                                     ("@ Delete image file and link" . (lambda (path)
+                                                                         (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
+                                                                                             (lambda (link)
+                                                                                               (when (string= (org-element-property :type link) "file")
+                                                                                                 (list (org-element-property :path link)
+                                                                                                       (org-element-property :begin link)
+                                                                                                       (org-element-property :end link))))))
+                                                                                (file-full-path (concat default-directory "/" path))
+                                                                                (begin-end-list (hurricane//find-org-link-begin-and-end link-list path)))
+                                                                           (progn
+                                                                             (if (yes-or-no-p "Do you want to delete the image link?")
+                                                                                 (hurricane//do-delete-link-function begin-end-list))
+                                                                             (if (yes-or-no-p
+                                                                                  "Do you really want to delete the image file? This can't be revert!")
+                                                                                 (progn
+                                                                                   (delete-file file-full-path)
+                                                                                   ))))))
+                                     ("@ Copy file link" . (lambda (path)
+                                                             (kill-new (format "%s" (concat default-directory "/" path)))))
+                                     ("@ Copy file name" . (lambda (path)
+                                                             (kill-new (format "%s" (file-name-nondirectory path)))))
+                                     ("@ Copy org link" . (lambda (path)
+                                                            (kill-new (format "[[file:%s]]" path))))
+                                     ("@ Eaf open in file manager" . (lambda (path) (eaf-open-in-file-manager path)))
+                                     ("@ Dired" . (lambda (path)
+                                                    (dired (file-name-directory path))
+                                                    (re-search-forward (file-name-nondirectory path))))
+                                     ("@ Open in external app" . (lambda (path) (spacemacs//open-in-external-app path)))
 
-                                      )
-                                    (loop for f in '(find-file
-						                                         org-open-file)
-					                                collect (cons (symbol-name f) f))))
-		                (action . identity)))
-	          path))
-      (funcall orgfn context))
-      ))
+                                     )
+                                   (loop for f in '(find-file
+                                                    org-open-file)
+                                         collect (cons (symbol-name f) f))))
+                   (action . identity)))
+           path))
+      (funcall origfunc context))
+    ))
 
-(advice-add 'org-link-open :around #'hurricane//org-image-link-open)
+(advice-add #'org-link-open :around #'hurricane//org-image-link-open)
 
 (defun hurricane/html-table-to-org-table-converter ()
   (interactive)
@@ -1097,7 +1100,7 @@ that the point is already within a string."
 (defun hurricane//region-or-word ()
   "Return region or word around point.
 If `mark-active' on, return region string.
-Otherwise return word around point."
+Otherwise word around point."
   (if mark-active
       (buffer-substring-no-properties (region-beginning)
                                       (region-end))
@@ -1126,21 +1129,21 @@ Otherwise return word around point."
                                            :query (or query ""))))
     (unless nids
       (if (display-graphic-p)
-       (progn
-         (require 'dictionary-overlay)
+          (progn
+            (require 'dictionary-overlay)
 
-         (popweb-dict-eudic-dicts-input query (lc-corpus--sentence))
-         (ignore-errors
-          (dictionary-overlay-mark-word-unknown)))))
+            (popweb-dict-eudic-dicts-input query (lc-corpus--sentence))
+            (ignore-errors
+              (dictionary-overlay-mark-word-unknown)))))
     (if (and nids (called-interactively-p 'interactive))
         (ignore-errors
           (ivy-read "Select a card to preview: "
                     (anki-editor-collect-content-from-result
                      (anki-editor-api-call-result 'notesInfo :notes nids) arg)
                     :action (lambda (content) (-map (lambda (group-number)
-                                                     (ignore-errors
-                                                       ;; play-sound-file 该函数在特定Emacs版本不被支持
-                                                       (mpv-play
+                                                      (ignore-errors
+                                                        ;; play-sound-file 该函数在特定Emacs版本不被支持
+                                                        (mpv-play
                                                          (format "%s%s"
                                                                  Anki-media-dir
                                                                  (and
@@ -1199,7 +1202,7 @@ Show the heading too, if it is currently invisible."
                                (point-max)
                              (point)))
                          nil)))
-(advice-add 'outline-show-entry :override #'hurricane//outline-show-entry)
+(advice-add #'outline-show-entry :override #'hurricane//outline-show-entry)
 ;; }}
 
 ;; @See: https://github.com/yuchen-lea/org-media-note/pull/41/files
@@ -1278,27 +1281,571 @@ Show the heading too, if it is currently invisible."
     (ignore-errors (pdf-view-bookmark-jump (alist-get b hurricane//bookmarks))))
 
   (define-key pdf-view-mode-map (kbd "<C-f1>")
-    (lambda ()
-      (interactive)
-      (hurricane//save-pdf-position)))
+              (lambda ()
+                (interactive)
+                (hurricane//save-pdf-position)))
 
   (define-key pdf-view-mode-map (kbd "<C-f2>")
-    (lambda ()
-      (interactive)
-      (hurricane//load-pdf-position)))
+              (lambda ()
+                (interactive)
+                (hurricane//load-pdf-position)))
 
   (define-key pdf-view-mode-map (kbd "<C-f3>")
-    (lambda (b) (interactive "cSaving to bookmark name (single character): ")
-      (hurricane//save-pdf-position b)))
+              (lambda (b) (interactive "cSaving to bookmark name (single character): ")
+                (hurricane//save-pdf-position b)))
 
   (define-key pdf-view-mode-map (kbd "<C-f4>")
-    (lambda (b) (interactive "cLoading from bookmark name (single character): ")
-      (hurricane//load-pdf-position b))))
+              (lambda (b) (interactive "cLoading from bookmark name (single character): ")
+                (hurricane//load-pdf-position b))))
 
-  (global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register hurricane//default-bookmark)))
-  (global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register hurricane//default-bookmark)))
-  (global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
-  (global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
+(global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register hurricane//default-bookmark)))
+(global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register hurricane//default-bookmark)))
+(global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
+(global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
+
+;; {{
+;;@See: https://github.com/larsen/emacs-configuration/blob/29f024e49b751568b31d17650561b8fa9220b6b2/lisp/larsen-functions.el#L232
+;; Caveman args list parsing
+(defun arg-resolver (arg-properties idx)
+  (cond ((eq :default (car arg-properties))
+         `(or (nth ,idx command-line-args)
+              ,(cadr arg-properties)))
+        ((eq :mandatory (car arg-properties))
+         `(or (nth ,idx command-line-args)
+              (error (or ,(cadr arg-properties)
+                         "Undefined error"))))
+        (t (nth idx command-line-args))))
+
+(defmacro with-positional-args (arglist &rest body)
+  "Execute the forms in BODY after lexically binding command line
+arguments in order, according to what is specified in ARGLIST.
+ARGLIST is the list of variables that will be bound to the
+corresponding command line argument."
+  `(let ,(cl-loop for a in arglist
+                  for idx from 3
+                  collect (let ((arg-name (car a))
+                                (arg-properties (cdr a)))
+                            `(,arg-name ,(arg-resolver
+                                          arg-properties idx))))
+     ,@body))
+
+(defun annotation-contents (annot)
+  "Return the text content in ANNOT. Newlines are converted to
+spaces."
+  (replace-regexp-in-string "\n" " " (cdr (assoc 'contents annot))))
+
+(defun get-all-annotations-from-pdf (&optional file)
+  "Return all annotations saved in FILE, as a concatenation of
+their contents."
+  (let* ((annots (with-current-buffer (or (and file (find-file))
+                                          (current-buffer))
+                   (pdf-view-mode)
+                   (ignore-errors (pdf-annot-getannots nil nil nil)))))
+    (if (listp annots)
+        annots
+      ;; 如果返回的不是列表，返回一个空列表
+      (message "No annotations found or unexpected return value from pdf-annot-getannots.")
+      nil)))
+
+;; (defun pdf-tools-collect-content-from-result (annotsinfo &optional arg)
+;;   (mapcar
+;;    (lambda (x)
+;;      (let* ((page (cdr (assoc 'page x)))
+;;             (edges (cdr (assoc 'edges x)))
+;;             (contents (replace-regexp-in-string "\n" " " (cdr (assoc 'contents x)))))
+;;        (list
+;;         (format "%s" contents)
+;;         page
+;;         edges)))
+;;    annotsinfo))
+
+(defun pdf-tools-collect-content-from-result (annotsinfo &optional arg)
+  (mapcar
+   (lambda (x)
+     (let* ((page (pdf-tools-annotations-entry-page x))
+            (edges (pdf-tools-annotations-entry-edges x))
+            (contents (replace-regexp-in-string "\n" " " (pdf-tools-annotations-entry-contents x)))
+            (full-filepath (pdf-tools-annotations-entry-full-filepath x)))
+       (list
+        (format "%s%s" contents (propertize (concat " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
+        page
+        edges
+        full-filepath)))
+   annotsinfo))
+
+(defun hurricane/pdf-tools-find-annotations (&optional arg query)
+  "Find notes with QUERY."
+  (interactive)
+  (ivy-read "Pdf-tools annotations query: "
+            (pdf-tools-collect-content-from-result
+             (pdf-tools-annotations-db-get-all-entries))
+            :initial-input (or query (hurricane//region-or-word))
+            :action (lambda (content)
+                      (org-link-open-from-string
+                       (format "[[%s:%s#%s]]" org-noter-property-note-location (elt content 3)
+                               (cons
+                                (elt content 1)
+                                (cons (nth 1 (elt content 2))
+                                      (nth 0 (elt content 2))))))
+                      )))
+;; }}
+
+;; {{
+(defcustom pdf-tools-annotations-db-directory dotspacemacs-directory
+  "Directory where will store its database."  )
+
+(defvar pdf-tools-annotations-db nil)
+
+(defvar pdf-tools-annotations-db-entries nil
+  "Entries hash table, part of `pdf-tools-annotations-db'.")
+
+(defvar pdf-tools-annotations-db-index nil
+  "Collection of all entries sorted by date, part of `pdf-tools-annotations-db'.")
+
+(defvar pdf-tools-annotations-db-version
+  ;; If records are avaiable (Emacs 26), use the newer database format
+  (if (functionp 'record)
+      4
+    "0.0.3")
+  "The database version this version expects to use.")
+
+(defvar pdf-tools-annotations-ref-archive nil
+  "Index of archived/packed content.")
+
+(defvar pdf-tools-annotations-ref-cache nil
+  "Temporary storage of the full archive content.")
+
+(cl-defstruct (pdf-tools-annotations-entry (:constructor pdf-tools-annotations-entry--create))
+  id page edges type contents modified full-filepath)
+
+(cl-defstruct (pdf-tools-annotations-ref (:constructor pdf-tools-annotations-ref--create))
+  id)
+
+(defun pdf-tools-annotations-entry-merge (a b)
+  "Merge B into A, preserving A's tags. Return true if an actual
+update occurred, not counting content."
+  (setf (pdf-tools-annotations-entry-contents a) (pdf-tools-annotations-entry-contents b))
+  (not
+   (zerop
+    (cl-loop for i from 1 below (length a)
+             for part-a = (aref a i)
+             for part-b = (aref b i)
+             count (not (equal part-a part-b))
+             do (setf (aref a i) part-b)))))
+
+(defun pdf-tools-annotations-ref--file (ref)
+  "Determine the storage filename for REF."
+  (let* ((id (pdf-tools-annotations-ref-id ref))
+         (root (expand-file-name "data" pdf-tools-annotations-db-directory))
+         (subdir (expand-file-name (substring id 0 2) root)))
+    (expand-file-name id subdir)))
+
+(cl-defun pdf-tools-annotations-ref-archive-filename (&optional (suffix ""))
+  "Return the base filename of the archive files."
+  (concat (expand-file-name "data/archive" pdf-tools-annotations-db-directory) suffix))
+
+(defun pdf-tools-annotations-ref-archive-load ()
+  "Load the archived ref index."
+  (let ((archive-index (pdf-tools-annotations-ref-archive-filename ".index")))
+    (if (file-exists-p archive-index)
+        (with-temp-buffer
+          (insert-file-contents archive-index)
+          (setf pdf-tools-annotations-ref-archive (read (current-buffer))))
+      (setf pdf-tools-annotations-ref-archive :empty))))
+
+(defun pdf-tools-annotations-ref-archive-ensure ()
+  "Ensure that the archive index is loaded."
+  (when (null pdf-tools-annotations-ref-archive) (pdf-tools-annotations-ref-archive-load)))
+
+(defun pdf-tools-annotations-ref-archive-load ()
+  "Load the archived ref index."
+  (let ((archive-index (pdf-tools-annotations-ref-archive-filename ".index")))
+    (if (file-exists-p archive-index)
+        (with-temp-buffer
+          (insert-file-contents archive-index)
+          (setf pdf-tools-annotations-ref-archive (read (current-buffer))))
+      (setf pdf-tools-annotations-ref-archive :empty))))
+
+(defun pdf-tools-annotations-ref-archive-ensure ()
+  "Ensure that the archive index is loaded."
+  (when (null pdf-tools-annotations-ref-archive) (pdf-tools-annotations-ref-archive-load)))
+
+(defun pdf-tools-annotations-ref-exists-p (ref)
+  "Return true if REF can be dereferenced."
+  (pdf-tools-annotations-ref-archive-ensure)
+  (or (and (hash-table-p pdf-tools-annotations-ref-archive)
+           (not (null (gethash (pdf-tools-annotations-ref-id ref) pdf-tools-annotations-ref-archive))))
+      (file-exists-p (pdf-tools-annotations-ref--file ref))))
+
+(defun pdf-tools-annotations-deref (ref)
+  "Fetch the content behind the reference, or nil if non-existent."
+  (pdf-tools-annotations-ref-archive-ensure)
+  (if (not (pdf-tools-annotations-ref-p ref))
+      ref
+    (let ((index (and (hash-table-p pdf-tools-annotations-ref-archive)
+                      (gethash (pdf-tools-annotations-ref-id ref) pdf-tools-annotations-ref-archive)))
+          (archive-file (pdf-tools-annotations-ref-archive-filename ".gz"))
+          (coding-system-for-read 'utf-8))
+      (if (and index (file-exists-p archive-file))
+          (progn
+            (when (null pdf-tools-annotations-ref-cache)
+              (with-temp-buffer
+                (insert-file-contents archive-file)
+                (setf pdf-tools-annotations-ref-cache (buffer-string)))
+              ;; Clear cache on next turn.
+              (run-at-time 0 nil (lambda () (setf pdf-tools-annotations-ref-cache nil))))
+            (substring pdf-tools-annotations-ref-cache (car index) (cdr index)))
+        (let ((file (pdf-tools-annotations-ref--file ref)))
+          (when (file-exists-p file)
+            (with-temp-buffer
+              (insert-file-contents file)
+              (buffer-string))))))))
+
+(defun pdf-tools-annotations-ref (content)
+  "Create a reference to CONTENT, to be persistently stored."
+  (if (pdf-tools-annotations-ref-p content)
+      content
+    (let* ((id (secure-hash 'sha1 (encode-coding-string content 'utf-8 t)))
+           (ref (pdf-tools-annotations-ref--create :id id))
+           (file (pdf-tools-annotations-ref--file ref)))
+      (prog1 ref
+        (unless (pdf-tools-annotations-ref-exists-p ref)
+          (mkdir (file-name-directory file) t)
+          (let ((coding-system-for-write 'utf-8)
+                ;; Content data loss is a tolerable risk.
+                ;; Fsync will occur soon on index write anyway.
+                (write-region-inhibit-fsync t))
+            (with-temp-file file
+              (insert content))))))))
+
+(defun pdf-tools-annotations-deref-entry (entry)
+  "Move ENTRY's content to filesystem storage. Return the entry."
+  (let ((contents (pdf-tools-annotations-entry-contents entry)))
+    (prog1 entry
+      (when (stringp contents)
+        (setf (pdf-tools-annotations-entry-contents entry) (pdf-tools-annotations-ref contents))))))
+
+(defun pdf-tools-annotations-db-get-entry (id)
+  "Get the entry for ID."
+  (pdf-tools-annotations-db-ensure)
+  (gethash id pdf-tools-annotations-db-entries))
+
+(defun pdf-tools-annotations-db-compare (a b)
+  "Return true if entry A is newer than entry B."
+  (let* ((entry-a (pdf-tools-annotations-db-get-entry a))
+         (entry-b (pdf-tools-annotations-db-get-entry b))
+         (date-a (nth 0 (pdf-tools-annotations-entry-modified entry-a)))
+         (date-b (nth 0 (pdf-tools-annotations-entry-modified entry-b)))
+         (time-a (nth 1 (pdf-tools-annotations-entry-modified entry-a)))
+         (time-b (nth 1 (pdf-tools-annotations-entry-modified entry-b))))
+    (if (= date-a date-b)
+        (if (= time-a time-b)
+            (string< (prin1-to-string b) (prin1-to-string a))
+          (> time-a time-b))
+      (> date-a date-b))))
+
+(defun pdf-tools-annotations-db-delete-compare (a b)
+  (equal (prin1-to-string b) (prin1-to-string a)))
+
+(defun pdf-tools-annotations-db-set-update-time ()
+  "Update the database last-update time."
+  (setf pdf-tools-annotations-db (plist-put pdf-tools-annotations-db :last-update (float-time))))
+
+(defun pdf-tools-annotations-db--dummy ()
+  "Create an empty dummy database for Emacs 25 and earlier."
+  (list :version "0.0.3"
+        :feeds #s(hash-table size 65
+                             test equal
+                             rehash-size 1.5
+                             rehash-threshold 0.8
+                             data ())
+        :entries #s(hash-table size 65
+                               test equal
+                               rehash-size 1.5
+                               rehash-threshold 0.8
+                               data ())
+        :index [cl-struct-avl-tree- [nil nil nil 0] pdf-tools-annotations-db-compare]))
+
+(defun pdf-tools-annotations-db-upgrade (db)
+  "Upgrade the database from a previous format."
+  (if (not (vectorp (plist-get db :index)))
+      db  ; Database is already in record format
+    (let* ((new-db (pdf-tools-annotations-db--empty))
+           ;; Dynamically bind for other functions
+           (pdf-tools-annotations-db-entries (plist-get new-db :entries))
+           (pdf-tools-annotations-db-index (plist-get new-db :index)))
+      ;; Fix up entries
+      (cl-loop with table = (plist-get new-db :entries)
+               with index = (plist-get new-db :index)
+               for entry hash-values of (plist-get db :entries)
+               for id = (aref entry 1)
+               for contents = (aref entry 5)
+               for fixed = (pdf-tools-annotations-entry--create
+                            :id id
+                            :page (aref entry 2)
+                            :edges (aref entry 3)
+                            :type (aref entry 4)
+                            :contents (aref contents 1)
+                            :modified (aref entry 6)
+                            )
+               do (setf (gethash id table) fixed)
+               do (avl-tree-enter index id))
+      (plist-put new-db :last-update (plist-get db :last-update)))))
+
+(defun pdf-tools-annotations-db--empty ()
+  "Create an empty database object."
+  `(:version ,pdf-tools-annotations-db-version
+             :feeds ,(make-hash-table :test 'equal)
+             :entries ,(make-hash-table :test 'equal)
+             ;; Compiler may warn about this (bug#15327):
+             :index ,(avl-tree-create #'pdf-tools-annotations-db-compare)))
+
+(defun pdf-tools-annotations-db-load ()
+  "Load the database index from the filesystem."
+  (let ((index (expand-file-name "index" pdf-tools-annotations-db-directory))
+        (enable-local-variables nil)) ; don't set local variables from index!
+    (if (not (file-exists-p index))
+        (setf pdf-tools-annotations-db (pdf-tools-annotations-db--empty))
+      ;; Override the default value for major-mode. There is no
+      ;; preventing find-file-noselect from starting the default major
+      ;; mode while also having it handle buffer conversion. Some
+      ;; major modes crash Emacs when enabled in large buffers (e.g.
+      ;; org-mode). This includes the Elfeed index, so we must not let
+      ;; this happen.
+      (cl-letf (((default-value 'major-mode) 'fundamental-mode))
+        (with-current-buffer (find-file-noselect index :nowarn)
+          (goto-char (point-min))
+          (if (eql pdf-tools-annotations-db-version 4)
+              ;; May need to skip over dummy database
+              (let ((db-1 (read (current-buffer)))
+                    (db-2 (ignore-errors (read (current-buffer)))))
+                (setf pdf-tools-annotations-db (or db-2 db-1)))
+            ;; Just load first database
+            (setf pdf-tools-annotations-db (read (current-buffer))))
+          (kill-buffer))))
+    ;; Perform an upgrade if necessary and possible
+    (unless (equal (plist-get pdf-tools-annotations-db :version) pdf-tools-annotations-db-version)
+      (ignore-errors
+        (copy-file index (concat index ".backup")))
+      (message "Upgrading pdf-tools annotations index for Emacs 26 ...")
+      (setf pdf-tools-annotations-db (pdf-tools-annotations-db-upgrade pdf-tools-annotations-db))
+      (message "Pdf-tools annotations index upgrade complete."))
+    (setf
+     pdf-tools-annotations-db-entries (plist-get pdf-tools-annotations-db :entries)
+     pdf-tools-annotations-db-index (plist-get pdf-tools-annotations-db :index)
+     ;; Internal function use required for security!
+     (avl-tree--cmpfun pdf-tools-annotations-db-index) #'pdf-tools-annotations-db-compare)))
+
+(defun pdf-tools-annotations-db-ensure ()
+  "Ensure that the database has been loaded."
+  (when (null pdf-tools-annotations-db)
+    (pdf-tools-annotations-db-load)))
+
+(defun pdf-tools-annotations--entry-create (full-filepath entry-data)
+  (pdf-tools-annotations-entry--create
+   :id  (cdr (assq 'id entry-data))
+   :page (cdr (assq 'page entry-data))
+   :edges (cdr (assq 'edges entry-data))
+   :type (cdr (assq 'type entry-data))
+   :contents (cdr (assq 'contents entry-data))
+   :modified (cdr (assq 'modified entry-data))
+   :full-filepath full-filepath
+   ))
+
+(defun pdf-tools-annotations-db-add (full-filepath entries)
+  "Add ENTRIES to the database."
+  (pdf-tools-annotations-db-ensure)
+  (cl-loop for entry in entries
+           for id = (format "%s#%s" full-filepath (pdf-tools-annotations-entry-id entry))
+           for original = (gethash id pdf-tools-annotations-db-entries)
+           for new-date = (nth 0 (pdf-tools-annotations-entry-modified entry))
+           for new-time = (nth 1 (pdf-tools-annotations-entry-modified entry))
+           for original-date = (and original (nth 0 (pdf-tools-annotations-entry-modified original)))
+           for original-time = (and original (nth 1 (pdf-tools-annotations-entry-modified original)))
+           ;; do (pdf-tools-annotations-deref-entry entry)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add id: %s]" id)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add entry: %s]" entry)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add original: %s]" original)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add new-date: %s]" new-date)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add original-date: %s]" original-date)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add new-time: %s]" new-time)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add original-time: %s]" original-time)
+           when original count
+           (if (and original-date
+                    original-time
+                    (= new-date original-date)
+                    (= new-time original-time))
+               (progn
+                 (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add when if: %s]" 1)
+                 (condition-case err
+                     (pdf-tools-annotations-entry-merge original entry)
+                   (error
+                    (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err))))
+             (progn
+               (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add when if: %s]" 0)
+               (condition-case err
+                   (if (avl-tree-member pdf-tools-annotations-db-index id)
+                       (avl-tree-delete pdf-tools-annotations-db-index id)
+                     (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add id not found in the tree: %s]" id))
+                 (error
+                  (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err))))
+             (prog1
+                 (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add when if: %s]" "prog1")
+               (condition-case err
+                   (progn
+                     (pdf-tools-annotations-entry-merge original entry)
+                     (avl-tree-enter pdf-tools-annotations-db-index id))
+                 (error
+                  (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err)))
+               ))
+           into change-count
+
+           else count
+           (progn
+             (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add else: %s]" 1)
+             (condition-case err
+                 (setf (gethash id pdf-tools-annotations-db-entries) entry)
+               (error
+                (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err))))
+           into change-count
+
+           and do
+           (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add and do: %s]" 1)
+           (condition-case err
+               (progn
+                 (avl-tree-enter pdf-tools-annotations-db-index id))
+             (error
+              (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err)))
+
+           finally
+           (unless (zerop change-count)
+             (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add finally: %s]" 1)
+             )
+           )
+  :success)
+
+(defun elfeed-db--dummy ()
+  "Create an empty dummy database for Emacs 25 and earlier."
+  (list :version "0.0.3"
+        :feeds #s(hash-table size 65
+                             test equal
+                             rehash-size 1.5
+                             rehash-threshold 0.8
+                             data ())
+        :entries #s(hash-table size 65
+                               test equal
+                               rehash-size 1.5
+                               rehash-threshold 0.8
+                               data ())
+        :index [cl-struct-avl-tree- [nil nil nil 0] elfeed-db-compare]))
+
+(defun pdf-tools-annotations-db-save ()
+  "Write the database index to the filesystem."
+  (pdf-tools-annotations-db-ensure)
+  (setf pdf-tools-annotations-db (plist-put pdf-tools-annotations-db :version pdf-tools-annotations-db-version))
+  (mkdir pdf-tools-annotations-db-directory t)
+  (let ((coding-system-for-write 'utf-8))
+    (with-temp-file (expand-file-name "index" pdf-tools-annotations-db-directory)
+      (let ((standard-output (current-buffer))
+            (print-level nil)
+            (print-length nil)
+            (print-circle nil))
+        (princ (format ";;; Elfeed Database Index (version %s)\n\n"
+                       pdf-tools-annotations-db-version))
+        (when (eql pdf-tools-annotations-db-version 4)
+          ;; Put empty dummy index in front
+          (princ ";; Dummy index for backwards compatablity:\n")
+          (prin1 (pdf-tools-annotations-db--dummy))
+          (princ "\n\n;; Real index:\n"))
+        (prin1 pdf-tools-annotations-db)
+        :success))))
+
+(defun pdf-tools-annotations-db-delete (key)
+  (pdf-tools-annotations-db-ensure)
+  (let ((coding-system-for-write 'utf-8))
+    (with-temp-file (expand-file-name "index" pdf-tools-annotations-db-directory)
+      (let ((standard-output (current-buffer))
+            (print-level nil)
+            (print-length nil)
+            (print-circle nil))
+        (remhash key pdf-tools-annotations-db-entries)
+        (let ((original-cmpfun (avl-tree--cmpfun pdf-tools-annotations-db-index)))
+          (setf (avl-tree--cmpfun pdf-tools-annotations-db-index) #'pdf-tools-annotations-db-delete-compare)
+          (avl-tree-delete pdf-tools-annotations-db-index key)
+          (setf (avl-tree--cmpfun pdf-tools-annotations-db-index) original-cmpfun))
+        (princ (format ";;; Elfeed Database Index (version %s)\n\n"
+                       pdf-tools-annotations-db-version))
+        (when (eql pdf-tools-annotations-db-version 4)
+          ;; Put empty dummy index in front
+          (princ ";; Dummy index for backwards compatablity:\n")
+          (prin1 (pdf-tools-annotations-db--dummy))
+          (princ "\n\n;; Real index:\n"))
+        (prin1 pdf-tools-annotations-db)
+        :success))))
+
+(defun convert-to-plist (annotations)
+  "Convert an annotation to a plist."
+  (let ((plist (list)))
+    (dolist (item annotations)
+      (let ((key (car item))
+            (value (cdr item)))
+        (setq plist (plist-put plist key value))))
+    plist))
+
+(defun remove-buffer-alist (annotation)
+  "Remove the 'buffer' alist from an annotation."
+  (assq-delete-all 'buffer annotation))
+
+(defun filter-annotations (annotations)
+  "Filter annotations to remove those with 'contents' as nil or empty string."
+  (seq-filter (lambda (annotation)
+                (let ((contents (cdr (assq 'contents annotation))))
+                  (and contents (not (string-empty-p contents)))))
+              annotations))
+
+(defun convert-annotations-to-vector (annotations)
+  "Convert a list of annotations to a vector of plists."
+  (apply 'vector (mapcar (lambda (annotation)
+                           (convert-to-plist (remove-buffer-alist annotation)))
+                         (filter-annotations annotations))))
+
+(defun pdf-tools-get-pdf-full-filepath ()
+  (if pdf-annot-list-document-buffer
+      (with-current-buffer (get-buffer pdf-annot-list-document-buffer)
+        (buffer-file-name))
+    (buffer-file-name)))
+
+(defun pdf-tools-get-available-annotations ()
+  (filter-annotations (get-all-annotations-from-pdf)))
+
+(defun pdf-tools-annotations-add (full-filepath)
+  (->>
+   (get-all-annotations-from-pdf)
+   (filter-annotations)
+   (mapcar (lambda (data) (pdf-tools-annotations--entry-create full-filepath data)))
+   (funcall (apply-partially #'pdf-tools-annotations-db-add full-filepath)))
+  (pdf-tools-annotations-db-save))
+
+(add-hook 'kill-buffer-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
+(add-hook 'quit-window-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
+
+(defun pdf-tools-annotations-delete (origfunc id &optional file-or-buffer)
+  (funcall origfunc id file-or-buffer)
+  (ignore-errors (pdf-tools-annotations-db-delete (format "%s#%s" (pdf-tools-get-pdf-full-filepath) id))))
+
+(advice-add #'pdf-info-delannot :around #'pdf-tools-annotations-delete)
+
+(defun not-nil (x)
+  (not (null x)))
+
+(defun pdf-tools-annotations-db-get-all-entries ()
+  (pdf-tools-annotations-db-ensure)
+  (let ((entries))
+    (avl-tree-mapc
+     (lambda (id)
+       (push (pdf-tools-annotations-db-get-entry id) entries))
+     pdf-tools-annotations-db-index)
+    (seq-filter 'not-nil (nreverse entries))))
 ;; }}
 
 (defun hurricane//format-org-transclude-src ()

@@ -128,7 +128,7 @@
           (goto-char end-position)
           (insert (format "%s\n%s\n%s\n%s" heading details-tag-heading (string-join content-and-footnote-string-list "\n") details-tag-ending)))))))
 
-(add-hook 'org-export-before-processing-hook 'hurricane//collect-backlinks-string)
+(add-hook 'org-export-before-processing-hook #'hurricane//collect-backlinks-string)
 
 (defun hurricane//org-html-wrap-blocks-in-code (src backend info)
   "Wrap a source block in <pre><code class=\"lang\">.</code></pre>"

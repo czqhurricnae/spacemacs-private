@@ -1856,6 +1856,30 @@ marked file."
     (defun hurricane//org-noter-get-link ()
       (format "%s:%s#%s" org-noter-property-note-location (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window)))))
 
+    (defun hurricane//org-noter-get-hierarchy-of-outline-reversely (page outlines)
+      (let ((next-outline nil)
+            (current-outline nil)
+            (outline-captured nil)
+            (depth-reference nil)
+            (result '()))
+        (dolist (item (nreverse outlines))
+          (when (and item (> (nth 2 item) 0))
+            (if (> (nth 2 item) page)
+                (setq next-outline (nth 1 item))
+              (progn
+                (unless outline-captured
+                  (setq outline-captured t)
+                  (setq depth-reference (1- (nth 0 item)))
+                  (setq current-outline (nth 1 item))
+                  (push current-outline result)
+                  )
+                (if (<= (nth 0 item) depth-reference)
+                    (progn
+                      (setq depth-reference (1- (nth 0 item)))
+                      (push (nth 1 item) result)))
+                ))))
+        (nreverse result)))
+
     (defun hurricane//org-noter-store-link ()
       (interactive)
       (cond ((eq major-mode 'pdf-view-mode)
@@ -1867,10 +1891,17 @@ marked file."
                              (org-noter-pdf--pdf-view-get-precise-info
                               'pdf-view-mode
                               (get-buffer-window))))))
+                    (outlines (mapconcat
+                               #'identity
+                               (get-hierarchy-of-outline-reversely
+                                (string-to-number page)
+                                (pdf-info-outline))
+                               " < "))
                     (quote (if (pdf-view-active-region-p)
                                (replace-regexp-in-string "\n" " "
                                                          (mapconcat 'identity (pdf-view-active-region-text) ? ))))
-                    (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
+                    ;; (desc (concat file ".pdf: Page " page (when quote (concat "; Quoting: " quote))))
+                    (desc (concat (when quote (concat quote " < ")) outlines " < " file ".pdf"))
                     (link (hurricane//org-noter-get-link)))
                (if pdf-view--have-rectangle-region
                    (kill-new (format "<a onclick=\"(function() {javascript:location.href = \'org-protocol://open-pdf?pdf-tools=%s\'})()\">%s</a>" (url-hexify-string (format "[[%s]]" link)) (or desc link)))
@@ -1883,10 +1914,18 @@ marked file."
              (let* ((info (eaf-call-sync "execute_function" eaf--buffer-id "store_link"))
                     (file (nth 0 info))
                     (raw-location (nth 1 info))
+                    (pdf-info-raw-toc (nth 2 info))
                     (page (number-to-string (car raw-location)))
+                    (outlines (mapconcat
+                               #'identity
+                               (hurricane//org-noter-get-hierarchy-of-outline-reversely
+                                (string-to-number page)
+                                pdf-info-raw-toc)
+                               " < "))
                     (location (cons page (cons (car (cdr raw-location)) (cadr (cdr raw-location)))))
-                    (quote (nth 2 info))
-                    (desc (concat (file-name-nondirectory file) ": Page " page (when quote (concat "; Quoting: " quote))))
+                    (quote (nth 3 info))
+                    ;; (desc (concat (file-name-nondirectory file) ": Page " page (when quote (concat "; Quoting: " quote))))
+                    (desc (concat (when quote (concat quote " < ")) outlines " < " (file-name-nondirectory file)))
                     (link (format "%s:%s#%s" org-noter-property-note-location file location)))
                (kill-new (format "[[%s]][[%s]]" link desc))
                (org-link-store-props

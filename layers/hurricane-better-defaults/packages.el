@@ -179,7 +179,7 @@
 (defun hurricane-better-defaults/post-init-counsel ()
   (with-eval-after-load 'counsel
     (ivy-add-actions
-     'counsel-find-file
+     #'counsel-find-file
      '(("!" hurricane//open-file-in-external-app "@ Open file in external app")
        ("d" hurricane//find-file-delete-file "@ Delete file")
        ("g" hurricane//find-file-in-git-repo "@ Find file in git repo")
@@ -195,23 +195,23 @@
        ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
-     'counsel-recentf
+     #'counsel-recentf
      '(("t" find-file-other-tab "@ find-file-other-tab")
        ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
-     'spacemacs/counsel-recentf
+     #'spacemacs/counsel-recentf
      '(("t" find-file-other-tab "@ find-file-other-tab")
        ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
-     'counsel-bookmark
+     #'counsel-bookmark
      '(("s" hurricane//bookmark-search-from-action "@search-from")
        ("e" hurricane//bookmark-open-in-file-manager-action "@ Open file in eaf file manager")
        ("b" hurricane//browse-url "@browse url")))
 
     (ivy-add-actions
-     'counsel-file-jump
+     #'counsel-file-jump
      '(("w" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
        ("W" hurricane//file-jump-copy-abs-filename-as-kill "@ Copy absolute filename")
        ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")
@@ -221,7 +221,7 @@
        ("c" gptel-context-add-file "@ gptel-context-add-file")))
 
     (ivy-add-actions
-     'counsel-git
+     #'counsel-git
      '(("w" hurricane//file-jump-copy-filename-as-kill "@ Copy filename")
        ("W" hurricane//file-jump-copy-abs-filename-as-kill "@ Copy absolute filename")
        ("!" hurricane//file-jump-open-file-in-external-app "@ Open file in external app")

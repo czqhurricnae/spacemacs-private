@@ -1170,7 +1170,7 @@ Otherwise word around point."
 (defun hurricane//anki-editor-gui-edit-note-action (x)
   (anki-editor-api-call 'guiEditNote :note (nth 1 x)))
 
-(defun hurricane//anki-editor-popup-note-at-point (x)
+(defun hurricane//anki-editor-popup-note-at-point-action (x)
   (goldendict--render-html (nth 0 x)))
 
 (defun hurricane//anki-editor-gui-delete-note-action (x)
@@ -1178,9 +1178,9 @@ Otherwise word around point."
 
 (with-eval-after-load 'ivy
   (ivy-add-actions
-   'hurricane/anki-editor-find-notes
+   #'hurricane/anki-editor-find-notes
    '(("b" hurricane//anki-editor-gui-edit-note-action "Gui edit note")
-     ("p" hurricane//anki-editor-popup-note-at-point "Popup note")
+     ("p" hurricane//anki-editor-popup-note-at-point-action "Popup note")
      ("d" hurricane//anki-editor-gui-delete-note-action "Delete note")
      ("y" hurricane/popweb-translate-and-mark-unknown-word "Search outer"))))
 
@@ -1320,18 +1320,6 @@ their contents."
       (message "No annotations found or unexpected return value from pdf-annot-getannots.")
       nil)))
 
-;; (defun pdf-tools-collect-content-from-result (annotsinfo &optional arg)
-;;   (mapcar
-;;    (lambda (x)
-;;      (let* ((page (cdr (assoc 'page x)))
-;;             (edges (cdr (assoc 'edges x)))
-;;             (contents (replace-regexp-in-string "\n" " " (cdr (assoc 'contents x)))))
-;;        (list
-;;         (format "%s" contents)
-;;         page
-;;         edges)))
-;;    annotsinfo))
-
 (defun pdf-tools-collect-content-from-result (annotsinfo &optional arg)
   (mapcar
    (lambda (x)
@@ -1344,24 +1332,40 @@ their contents."
         (format "%s%s" contents (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
         page
         edges
-        full-filepath)))
+        contents
+        full-filepath
+        outlines)))
    annotsinfo))
 
 (defun hurricane/pdf-tools-find-annotations (&optional arg query)
-  "Find notes with QUERY."
+  "Find pdf annotations with QUERY."
   (interactive)
   (ivy-read "Pdf-tools annotations query: "
             (pdf-tools-collect-content-from-result
              (pdf-tools-annotations-db-get-all-entries))
             :initial-input (or query (hurricane//region-or-word))
-            :action (lambda (content)
+            :action (lambda (data)
                       (org-link-open-from-string
-                       (format "[[%s:%s#%s]]" org-noter-property-note-location (elt content 3)
+                       (format "[[%s:%s#%s]]" org-noter-property-note-location (elt data 4)
                                (cons
-                                (elt content 1)
-                                (cons (nth 1 (elt content 2))
-                                      (nth 0 (elt content 2))))))
+                                (elt data 1)
+                                (cons (nth 1 (elt data 2))
+                                      (nth 0 (elt data 2))))))
                       )))
+
+(defun hurricane//pdf-tools-insert-noter-page-link-action (x)
+  (insert
+   (format "[[%s:%s#%s][%s]]" org-noter-property-note-location (elt x 4)
+           (cons
+            (elt x 1)
+            (cons (nth 1 (elt x 2))
+                  (nth 0 (elt x 2))))
+           (concat (elt x 3) " < " (elt x 5) " < " (file-name-nondirectory (elt x 4))))))
+
+(with-eval-after-load 'ivy
+  (ivy-add-actions
+   #'hurricane/pdf-tools-find-annotations
+   '(("I" hurricane//pdf-tools-insert-noter-page-link-action "@Insert annotation link"))))
 ;; }}
 
 ;; {{
@@ -1829,7 +1833,7 @@ update occurred, not counting content."
     (nreverse result)))
 ;; }}
 
-(defun hurricane//format-org-transclude-src ()
+(defun hurricane/format-org-transclude-src ()
   (interactive)
   (progn
     (setq start (point-min))

@@ -867,11 +867,10 @@ Else, returns STRING."
 
 (with-eval-after-load 'ivy
   (ivy-add-actions
-   'hurricane/manage-chrome-tabs
+   #'hurricane/manage-chrome-tabs
    '(("d" hurricane//chrome-close-tab-action "close tab(s)")
      ("y" hurricane//chrome-copy-tab-url-action "copy tab(s) url")
-     ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url")
-     )))
+     ("I" hurricane//chrome-insert-tab-url-action "insert tab(s) url"))))
 
 (defun hurricane/open-noter-page ()
   (interactive)

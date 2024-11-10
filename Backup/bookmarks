@@ -327,11 +327,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/pdf-info--tq-workaround 函数打印错误 Error while processing tq callback: Wrong type argument: listp, t.org")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/A list of assoc list 转换成 a vector of plist.org")
  (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 497)
- (last-modified 26415 37475 387334 0))
+ (position . 389)
+ (last-modified 26416 9611 749936 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

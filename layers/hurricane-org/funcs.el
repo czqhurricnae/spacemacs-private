@@ -1206,7 +1206,7 @@ Show the heading too, if it is currently invisible."
 ;; }}
 
 ;; @See: https://github.com/yuchen-lea/org-media-note/pull/41/files
-;;; cut media clip
+;; cut media clip
 (defun org-media-note-insert-clip (timestamp-a timestamp-b)
   "Clip between A-B loop then insert into Org-mode note."
   (interactive)
@@ -1304,36 +1304,9 @@ Show the heading too, if it is currently invisible."
 (global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
 
 ;; {{
-;;@See: https://github.com/larsen/emacs-configuration/blob/29f024e49b751568b31d17650561b8fa9220b6b2/lisp/larsen-functions.el#L232
+;; @See: https://github.com/larsen/bin/blob/master/pdfsearch.el
+;; @See: https://github.com/larsen/emacs-configuration/blob/29f024e49b751568b31d17650561b8fa9220b6b2/lisp/larsen-functions.el#L232
 ;; Caveman args list parsing
-(defun arg-resolver (arg-properties idx)
-  (cond ((eq :default (car arg-properties))
-         `(or (nth ,idx command-line-args)
-              ,(cadr arg-properties)))
-        ((eq :mandatory (car arg-properties))
-         `(or (nth ,idx command-line-args)
-              (error (or ,(cadr arg-properties)
-                         "Undefined error"))))
-        (t (nth idx command-line-args))))
-
-(defmacro with-positional-args (arglist &rest body)
-  "Execute the forms in BODY after lexically binding command line
-arguments in order, according to what is specified in ARGLIST.
-ARGLIST is the list of variables that will be bound to the
-corresponding command line argument."
-  `(let ,(cl-loop for a in arglist
-                  for idx from 3
-                  collect (let ((arg-name (car a))
-                                (arg-properties (cdr a)))
-                            `(,arg-name ,(arg-resolver
-                                          arg-properties idx))))
-     ,@body))
-
-(defun annotation-contents (annot)
-  "Return the text content in ANNOT. Newlines are converted to
-spaces."
-  (replace-regexp-in-string "\n" " " (cdr (assoc 'contents annot))))
-
 (defun get-all-annotations-from-pdf (&optional file)
   "Return all annotations saved in FILE, as a concatenation of
 their contents."
@@ -1365,9 +1338,10 @@ their contents."
      (let* ((page (pdf-tools-annotations-entry-page x))
             (edges (pdf-tools-annotations-entry-edges x))
             (contents (replace-regexp-in-string "\n" " " (pdf-tools-annotations-entry-contents x)))
-            (full-filepath (pdf-tools-annotations-entry-full-filepath x)))
+            (full-filepath (pdf-tools-annotations-entry-full-filepath x))
+            (outlines (pdf-tools-annotations-entry-outlines x)))
        (list
-        (format "%s%s" contents (propertize (concat " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
+        (format "%s%s" contents (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
         page
         edges
         full-filepath)))
@@ -1416,7 +1390,7 @@ their contents."
   "Temporary storage of the full archive content.")
 
 (cl-defstruct (pdf-tools-annotations-entry (:constructor pdf-tools-annotations-entry--create))
-  id page edges type contents modified full-filepath)
+  id page edges type contents modified full-filepath outlines)
 
 (cl-defstruct (pdf-tools-annotations-ref (:constructor pdf-tools-annotations-ref--create))
   id)
@@ -1650,6 +1624,7 @@ update occurred, not counting content."
    :contents (cdr (assq 'contents entry-data))
    :modified (cdr (assq 'modified entry-data))
    :full-filepath full-filepath
+   :outlines (mapconcat #'identity (get-hierarchy-of-outline-reversely (cdr (assq 'page entry-data)) (pdf-info-outline)) " < ")
    ))
 
 (defun pdf-tools-annotations-db-add (full-filepath entries)
@@ -1783,31 +1758,12 @@ update occurred, not counting content."
         (prin1 pdf-tools-annotations-db)
         :success))))
 
-(defun convert-to-plist (annotations)
-  "Convert an annotation to a plist."
-  (let ((plist (list)))
-    (dolist (item annotations)
-      (let ((key (car item))
-            (value (cdr item)))
-        (setq plist (plist-put plist key value))))
-    plist))
-
-(defun remove-buffer-alist (annotation)
-  "Remove the 'buffer' alist from an annotation."
-  (assq-delete-all 'buffer annotation))
-
 (defun filter-annotations (annotations)
   "Filter annotations to remove those with 'contents' as nil or empty string."
   (seq-filter (lambda (annotation)
                 (let ((contents (cdr (assq 'contents annotation))))
                   (and contents (not (string-empty-p contents)))))
               annotations))
-
-(defun convert-annotations-to-vector (annotations)
-  "Convert a list of annotations to a vector of plists."
-  (apply 'vector (mapcar (lambda (annotation)
-                           (convert-to-plist (remove-buffer-alist annotation)))
-                         (filter-annotations annotations))))
 
 (defun pdf-tools-get-pdf-full-filepath ()
   (if pdf-annot-list-document-buffer
@@ -1846,6 +1802,31 @@ update occurred, not counting content."
        (push (pdf-tools-annotations-db-get-entry id) entries))
      pdf-tools-annotations-db-index)
     (seq-filter 'not-nil (nreverse entries))))
+
+(defun get-hierarchy-of-outline-reversely (page outlines)
+  (let ((next-outline nil)
+        (current-outline nil)
+        (outline-captured nil)
+        (depth-reference nil)
+        (result '()))
+    (dolist (item (nreverse outlines))
+      (let-alist item
+        (when (and (eq .type 'goto-dest) (> .page 0))
+          (if (> .page page)
+              (setq next-outline .title)
+            (progn
+              (unless outline-captured
+                (setq outline-captured t)
+                (setq depth-reference (1- .depth))
+                (setq current-outline .title)
+                (push current-outline result)
+                )
+              (if (<= .depth depth-reference)
+                  (progn
+                    (setq depth-reference (1- .depth))
+                    (push .title result)))
+              )))))
+    (nreverse result)))
 ;; }}
 
 (defun hurricane//format-org-transclude-src ()

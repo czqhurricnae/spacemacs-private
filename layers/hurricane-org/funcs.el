@@ -1307,42 +1307,29 @@ Show the heading too, if it is currently invisible."
 ;; @See: https://github.com/larsen/bin/blob/master/pdfsearch.el
 ;; @See: https://github.com/larsen/emacs-configuration/blob/29f024e49b751568b31d17650561b8fa9220b6b2/lisp/larsen-functions.el#L232
 ;; Caveman args list parsing
-(defun get-all-annotations-from-pdf (&optional file)
-  "Return all annotations saved in FILE, as a concatenation of
-their contents."
-  (let* ((annots (with-current-buffer (or (and file (find-file))
-                                          (current-buffer))
-                   (pdf-view-mode)
-                   (ignore-errors (pdf-annot-getannots nil nil nil)))))
-    (if (listp annots)
-        annots
-      ;; 如果返回的不是列表，返回一个空列表
-      (message "No annotations found or unexpected return value from pdf-annot-getannots.")
-      nil)))
-
-(defun pdf-tools-collect-content-from-result (annotsinfo &optional arg)
+(defun pdf-tools-collect-annotations-for-ivy (annotsinfo &optional arg)
   (mapcar
    (lambda (x)
      (let* ((page (pdf-tools-annotations-entry-page x))
             (edges (pdf-tools-annotations-entry-edges x))
-            (contents (replace-regexp-in-string "\n" " " (pdf-tools-annotations-entry-contents x)))
+            (content (replace-regexp-in-string "\n" " " (pdf-tools-annotations-entry-content x)))
             (full-filepath (pdf-tools-annotations-entry-full-filepath x))
             (outlines (pdf-tools-annotations-entry-outlines x)))
        (list
-        (format "%s%s" contents (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
+        (format "%s%s" content (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
         page
         edges
-        contents
+        content
         full-filepath
         outlines)))
    annotsinfo))
 
-(defun hurricane/pdf-tools-find-annotations (&optional arg query)
+(defun hurricane/pdf-tools-find-annotations (&optional query)
   "Find pdf annotations with QUERY."
   (interactive)
   (ivy-read "Pdf-tools annotations query: "
-            (pdf-tools-collect-content-from-result
-             (pdf-tools-annotations-db-get-all-entries))
+            (pdf-tools-collect-annotations-for-ivy
+             (pdf-tools-annotations-db--get-all-entries))
             :initial-input (or query (hurricane//region-or-word))
             :action (lambda (data)
                       (org-link-open-from-string
@@ -1394,15 +1381,19 @@ their contents."
   "Temporary storage of the full archive content.")
 
 (cl-defstruct (pdf-tools-annotations-entry (:constructor pdf-tools-annotations-entry--create))
-  id page edges type contents modified full-filepath outlines)
+  id page edges type content modified full-filepath outlines)
 
 (cl-defstruct (pdf-tools-annotations-ref (:constructor pdf-tools-annotations-ref--create))
   id)
 
-(defun pdf-tools-annotations-entry-merge (a b)
+(cl-defun pdf-tools-annotations-ref-archive-filename (&optional (suffix ""))
+  "Return the base filename of the archive files."
+  (concat (expand-file-name "data/archive" pdf-tools-annotations-db-directory) suffix))
+
+(defun pdf-tools-annotations-entry--merge (a b)
   "Merge B into A, preserving A's tags. Return true if an actual
 update occurred, not counting content."
-  (setf (pdf-tools-annotations-entry-contents a) (pdf-tools-annotations-entry-contents b))
+  (setf (pdf-tools-annotations-entry-content a) (pdf-tools-annotations-entry-content b))
   (not
    (zerop
     (cl-loop for i from 1 below (length a)
@@ -1417,10 +1408,6 @@ update occurred, not counting content."
          (root (expand-file-name "data" pdf-tools-annotations-db-directory))
          (subdir (expand-file-name (substring id 0 2) root)))
     (expand-file-name id subdir)))
-
-(cl-defun pdf-tools-annotations-ref-archive-filename (&optional (suffix ""))
-  "Return the base filename of the archive files."
-  (concat (expand-file-name "data/archive" pdf-tools-annotations-db-directory) suffix))
 
 (defun pdf-tools-annotations-ref-archive-load ()
   "Load the archived ref index."
@@ -1498,20 +1485,20 @@ update occurred, not counting content."
 
 (defun pdf-tools-annotations-deref-entry (entry)
   "Move ENTRY's content to filesystem storage. Return the entry."
-  (let ((contents (pdf-tools-annotations-entry-contents entry)))
+  (let ((content (pdf-tools-annotations-entry-content entry)))
     (prog1 entry
-      (when (stringp contents)
-        (setf (pdf-tools-annotations-entry-contents entry) (pdf-tools-annotations-ref contents))))))
+      (when (stringp content)
+        (setf (pdf-tools-annotations-entry-content entry) (pdf-tools-annotations-ref content))))))
 
-(defun pdf-tools-annotations-db-get-entry (id)
+(defun pdf-tools-annotations-db--get-entry (id)
   "Get the entry for ID."
-  (pdf-tools-annotations-db-ensure)
+  (pdf-tools-annotations-db--ensure)
   (gethash id pdf-tools-annotations-db-entries))
 
-(defun pdf-tools-annotations-db-compare (a b)
+(defun pdf-tools-annotations-db--compare (a b)
   "Return true if entry A is newer than entry B."
-  (let* ((entry-a (pdf-tools-annotations-db-get-entry a))
-         (entry-b (pdf-tools-annotations-db-get-entry b))
+  (let* ((entry-a (pdf-tools-annotations-db--get-entry a))
+         (entry-b (pdf-tools-annotations-db--get-entry b))
          (date-a (nth 0 (pdf-tools-annotations-entry-modified entry-a)))
          (date-b (nth 0 (pdf-tools-annotations-entry-modified entry-b)))
          (time-a (nth 1 (pdf-tools-annotations-entry-modified entry-a)))
@@ -1522,10 +1509,10 @@ update occurred, not counting content."
           (> time-a time-b))
       (> date-a date-b))))
 
-(defun pdf-tools-annotations-db-delete-compare (a b)
+(defun pdf-tools-annotations-db--delete-compare (a b)
   (equal (prin1-to-string b) (prin1-to-string a)))
 
-(defun pdf-tools-annotations-db-set-update-time ()
+(defun pdf-tools-annotations-db--set-update-time ()
   "Update the database last-update time."
   (setf pdf-tools-annotations-db (plist-put pdf-tools-annotations-db :last-update (float-time))))
 
@@ -1542,9 +1529,9 @@ update occurred, not counting content."
                                rehash-size 1.5
                                rehash-threshold 0.8
                                data ())
-        :index [cl-struct-avl-tree- [nil nil nil 0] pdf-tools-annotations-db-compare]))
+        :index [cl-struct-avl-tree- [nil nil nil 0] pdf-tools-annotations-db--compare]))
 
-(defun pdf-tools-annotations-db-upgrade (db)
+(defun pdf-tools-annotations-db--upgrade (db)
   "Upgrade the database from a previous format."
   (if (not (vectorp (plist-get db :index)))
       db  ; Database is already in record format
@@ -1557,13 +1544,13 @@ update occurred, not counting content."
                with index = (plist-get new-db :index)
                for entry hash-values of (plist-get db :entries)
                for id = (aref entry 1)
-               for contents = (aref entry 5)
+               for content = (aref entry 5)
                for fixed = (pdf-tools-annotations-entry--create
                             :id id
                             :page (aref entry 2)
                             :edges (aref entry 3)
                             :type (aref entry 4)
-                            :contents (aref contents 1)
+                            :content (aref content 1)
                             :modified (aref entry 6)
                             )
                do (setf (gethash id table) fixed)
@@ -1576,9 +1563,9 @@ update occurred, not counting content."
              :feeds ,(make-hash-table :test 'equal)
              :entries ,(make-hash-table :test 'equal)
              ;; Compiler may warn about this (bug#15327):
-             :index ,(avl-tree-create #'pdf-tools-annotations-db-compare)))
+             :index ,(avl-tree-create #'pdf-tools-annotations-db--compare)))
 
-(defun pdf-tools-annotations-db-load ()
+(defun pdf-tools-annotations-db--load ()
   "Load the database index from the filesystem."
   (let ((index (expand-file-name "index" pdf-tools-annotations-db-directory))
         (enable-local-variables nil)) ; don't set local variables from index!
@@ -1606,208 +1593,20 @@ update occurred, not counting content."
       (ignore-errors
         (copy-file index (concat index ".backup")))
       (message "Upgrading pdf-tools annotations index for Emacs 26 ...")
-      (setf pdf-tools-annotations-db (pdf-tools-annotations-db-upgrade pdf-tools-annotations-db))
+      (setf pdf-tools-annotations-db (pdf-tools-annotations-db--upgrade pdf-tools-annotations-db))
       (message "Pdf-tools annotations index upgrade complete."))
     (setf
      pdf-tools-annotations-db-entries (plist-get pdf-tools-annotations-db :entries)
      pdf-tools-annotations-db-index (plist-get pdf-tools-annotations-db :index)
      ;; Internal function use required for security!
-     (avl-tree--cmpfun pdf-tools-annotations-db-index) #'pdf-tools-annotations-db-compare)))
+     (avl-tree--cmpfun pdf-tools-annotations-db-index) #'pdf-tools-annotations-db--compare)))
 
-(defun pdf-tools-annotations-db-ensure ()
+(defun pdf-tools-annotations-db--ensure ()
   "Ensure that the database has been loaded."
   (when (null pdf-tools-annotations-db)
-    (pdf-tools-annotations-db-load)))
+    (pdf-tools-annotations-db--load)))
 
-(defun pdf-tools-annotations--entry-create (full-filepath entry-data)
-  (pdf-tools-annotations-entry--create
-   :id  (cdr (assq 'id entry-data))
-   :page (cdr (assq 'page entry-data))
-   :edges (cdr (assq 'edges entry-data))
-   :type (cdr (assq 'type entry-data))
-   :contents (cdr (assq 'contents entry-data))
-   :modified (cdr (assq 'modified entry-data))
-   :full-filepath full-filepath
-   :outlines (mapconcat #'identity (get-hierarchy-of-outline-reversely (cdr (assq 'page entry-data)) (pdf-info-outline)) " < ")
-   ))
-
-(defun pdf-tools-annotations-db-add (full-filepath entries)
-  "Add ENTRIES to the database."
-  (pdf-tools-annotations-db-ensure)
-  (cl-loop for entry in entries
-           for id = (format "%s#%s" full-filepath (pdf-tools-annotations-entry-id entry))
-           for original = (gethash id pdf-tools-annotations-db-entries)
-           for new-date = (nth 0 (pdf-tools-annotations-entry-modified entry))
-           for new-time = (nth 1 (pdf-tools-annotations-entry-modified entry))
-           for original-date = (and original (nth 0 (pdf-tools-annotations-entry-modified original)))
-           for original-time = (and original (nth 1 (pdf-tools-annotations-entry-modified original)))
-           ;; do (pdf-tools-annotations-deref-entry entry)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add id: %s]" id)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add entry: %s]" entry)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add original: %s]" original)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add new-date: %s]" new-date)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add original-date: %s]" original-date)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add new-time: %s]" new-time)
-           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add original-time: %s]" original-time)
-           when original count
-           (if (and original-date
-                    original-time
-                    (= new-date original-date)
-                    (= new-time original-time))
-               (progn
-                 (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add when if: %s]" 1)
-                 (condition-case err
-                     (pdf-tools-annotations-entry-merge original entry)
-                   (error
-                    (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err))))
-             (progn
-               (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add when if: %s]" 0)
-               (condition-case err
-                   (if (avl-tree-member pdf-tools-annotations-db-index id)
-                       (avl-tree-delete pdf-tools-annotations-db-index id)
-                     (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add id not found in the tree: %s]" id))
-                 (error
-                  (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err))))
-             (prog1
-                 (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add when if: %s]" "prog1")
-               (condition-case err
-                   (progn
-                     (pdf-tools-annotations-entry-merge original entry)
-                     (avl-tree-enter pdf-tools-annotations-db-index id))
-                 (error
-                  (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err)))
-               ))
-           into change-count
-
-           else count
-           (progn
-             (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add else: %s]" 1)
-             (condition-case err
-                 (setf (gethash id pdf-tools-annotations-db-entries) entry)
-               (error
-                (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err))))
-           into change-count
-
-           and do
-           (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add and do: %s]" 1)
-           (condition-case err
-               (progn
-                 (avl-tree-enter pdf-tools-annotations-db-index id))
-             (error
-              (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add 捕捉到错误: %S]" err)))
-
-           finally
-           (unless (zerop change-count)
-             (elfeed-tube-log 'debug "[pdf-tools-annotations-db-add finally: %s]" 1)
-             )
-           )
-  :success)
-
-(defun elfeed-db--dummy ()
-  "Create an empty dummy database for Emacs 25 and earlier."
-  (list :version "0.0.3"
-        :feeds #s(hash-table size 65
-                             test equal
-                             rehash-size 1.5
-                             rehash-threshold 0.8
-                             data ())
-        :entries #s(hash-table size 65
-                               test equal
-                               rehash-size 1.5
-                               rehash-threshold 0.8
-                               data ())
-        :index [cl-struct-avl-tree- [nil nil nil 0] elfeed-db-compare]))
-
-(defun pdf-tools-annotations-db-save ()
-  "Write the database index to the filesystem."
-  (pdf-tools-annotations-db-ensure)
-  (setf pdf-tools-annotations-db (plist-put pdf-tools-annotations-db :version pdf-tools-annotations-db-version))
-  (mkdir pdf-tools-annotations-db-directory t)
-  (let ((coding-system-for-write 'utf-8))
-    (with-temp-file (expand-file-name "index" pdf-tools-annotations-db-directory)
-      (let ((standard-output (current-buffer))
-            (print-level nil)
-            (print-length nil)
-            (print-circle nil))
-        (princ (format ";;; Elfeed Database Index (version %s)\n\n"
-                       pdf-tools-annotations-db-version))
-        (when (eql pdf-tools-annotations-db-version 4)
-          ;; Put empty dummy index in front
-          (princ ";; Dummy index for backwards compatablity:\n")
-          (prin1 (pdf-tools-annotations-db--dummy))
-          (princ "\n\n;; Real index:\n"))
-        (prin1 pdf-tools-annotations-db)
-        :success))))
-
-(defun pdf-tools-annotations-db-delete (key)
-  (pdf-tools-annotations-db-ensure)
-  (let ((coding-system-for-write 'utf-8))
-    (with-temp-file (expand-file-name "index" pdf-tools-annotations-db-directory)
-      (let ((standard-output (current-buffer))
-            (print-level nil)
-            (print-length nil)
-            (print-circle nil))
-        (remhash key pdf-tools-annotations-db-entries)
-        (let ((original-cmpfun (avl-tree--cmpfun pdf-tools-annotations-db-index)))
-          (setf (avl-tree--cmpfun pdf-tools-annotations-db-index) #'pdf-tools-annotations-db-delete-compare)
-          (avl-tree-delete pdf-tools-annotations-db-index key)
-          (setf (avl-tree--cmpfun pdf-tools-annotations-db-index) original-cmpfun))
-        (princ (format ";;; Elfeed Database Index (version %s)\n\n"
-                       pdf-tools-annotations-db-version))
-        (when (eql pdf-tools-annotations-db-version 4)
-          ;; Put empty dummy index in front
-          (princ ";; Dummy index for backwards compatablity:\n")
-          (prin1 (pdf-tools-annotations-db--dummy))
-          (princ "\n\n;; Real index:\n"))
-        (prin1 pdf-tools-annotations-db)
-        :success))))
-
-(defun filter-annotations (annotations)
-  "Filter annotations to remove those with 'contents' as nil or empty string."
-  (seq-filter (lambda (annotation)
-                (let ((contents (cdr (assq 'contents annotation))))
-                  (and contents (not (string-empty-p contents)))))
-              annotations))
-
-(defun pdf-tools-get-pdf-full-filepath ()
-  (if pdf-annot-list-document-buffer
-      (with-current-buffer (get-buffer pdf-annot-list-document-buffer)
-        (buffer-file-name))
-    (buffer-file-name)))
-
-(defun pdf-tools-get-available-annotations ()
-  (filter-annotations (get-all-annotations-from-pdf)))
-
-(defun pdf-tools-annotations-add (full-filepath)
-  (->>
-   (get-all-annotations-from-pdf)
-   (filter-annotations)
-   (mapcar (lambda (data) (pdf-tools-annotations--entry-create full-filepath data)))
-   (funcall (apply-partially #'pdf-tools-annotations-db-add full-filepath)))
-  (pdf-tools-annotations-db-save))
-
-(add-hook 'kill-buffer-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
-(add-hook 'quit-window-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
-
-(defun pdf-tools-annotations-delete (origfunc id &optional file-or-buffer)
-  (funcall origfunc id file-or-buffer)
-  (ignore-errors (pdf-tools-annotations-db-delete (format "%s#%s" (pdf-tools-get-pdf-full-filepath) id))))
-
-(advice-add #'pdf-info-delannot :around #'pdf-tools-annotations-delete)
-
-(defun not-nil (x)
-  (not (null x)))
-
-(defun pdf-tools-annotations-db-get-all-entries ()
-  (pdf-tools-annotations-db-ensure)
-  (let ((entries))
-    (avl-tree-mapc
-     (lambda (id)
-       (push (pdf-tools-annotations-db-get-entry id) entries))
-     pdf-tools-annotations-db-index)
-    (seq-filter 'not-nil (nreverse entries))))
-
-(defun get-hierarchy-of-outline-reversely (page outlines)
+(defun pdf-tools-get-hierarchy-of-outline-reversely (page outlines)
   (let ((next-outline nil)
         (current-outline nil)
         (outline-captured nil)
@@ -1831,6 +1630,192 @@ update occurred, not counting content."
                     (push .title result)))
               )))))
     (nreverse result)))
+
+(defun pdf-tools-annotations--entry-create (full-filepath entry-data)
+  (pdf-tools-annotations-entry--create
+   :id  (cdr (assq 'id entry-data))
+   :page (cdr (assq 'page entry-data))
+   :edges (cdr (assq 'edges entry-data))
+   :type (cdr (assq 'type entry-data))
+   :content (cdr (assq 'contents entry-data))
+   :modified (cdr (assq 'modified entry-data))
+   :full-filepath full-filepath
+   :outlines (mapconcat #'identity (pdf-tools-get-hierarchy-of-outline-reversely (cdr (assq 'page entry-data)) (pdf-info-outline)) " < ")
+   ))
+
+(defun pdf-tools-annotations-db--add (full-filepath entries)
+  "Add ENTRIES to the database."
+  (pdf-tools-annotations-db--ensure)
+  (cl-loop for entry in entries
+           for id = (format "%s#%s" full-filepath (pdf-tools-annotations-entry-id entry))
+           for original = (gethash id pdf-tools-annotations-db-entries)
+           for new-date = (nth 0 (pdf-tools-annotations-entry-modified entry))
+           for new-time = (nth 1 (pdf-tools-annotations-entry-modified entry))
+           for original-date = (and original (nth 0 (pdf-tools-annotations-entry-modified original)))
+           for original-time = (and original (nth 1 (pdf-tools-annotations-entry-modified original)))
+           ;; do (pdf-tools-annotations-deref-entry entry)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add id: %s]" id)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add entry: %s]" entry)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add original: %s]" original)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add new-date: %s]" new-date)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add original-date: %s]" original-date)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add new-time: %s]" new-time)
+           do (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add original-time: %s]" original-time)
+           when original count
+           (if (and original-date
+                    original-time
+                    (= new-date original-date)
+                    (= new-time original-time))
+               (progn
+                 (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add when if: %s]" 1)
+                 (condition-case err
+                     (pdf-tools-annotations-entry--merge original entry)
+                   (error
+                    (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add 捕捉到错误: %S]" err))))
+             (progn
+               (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add when if: %s]" 0)
+               (condition-case err
+                   (if (avl-tree-member pdf-tools-annotations-db-index id)
+                       (avl-tree-delete pdf-tools-annotations-db-index id)
+                     (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add id not found in the tree: %s]" id))
+                 (error
+                  (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add 捕捉到错误: %S]" err))))
+             (prog1
+                 (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add when if: %s]" "prog1")
+               (condition-case err
+                   (progn
+                     (pdf-tools-annotations-entry--merge original entry)
+                     (avl-tree-enter pdf-tools-annotations-db-index id))
+                 (error
+                  (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add 捕捉到错误: %S]" err)))
+               ))
+           into change-count
+
+           else count
+           (progn
+             (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add else: %s]" 1)
+             (condition-case err
+                 (setf (gethash id pdf-tools-annotations-db-entries) entry)
+               (error
+                (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add 捕捉到错误: %S]" err))))
+           into change-count
+
+           and do
+           (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add and do: %s]" 1)
+           (condition-case err
+               (progn
+                 (avl-tree-enter pdf-tools-annotations-db-index id))
+             (error
+              (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add 捕捉到错误: %S]" err)))
+
+           finally
+           (unless (zerop change-count)
+             (elfeed-tube-log 'debug "[pdf-tools-annotations-db--add finally: %s]" 1)
+             )
+           )
+  :success)
+
+(defun pdf-tools-annotations-db--save ()
+  "Write the database index to the filesystem."
+  (pdf-tools-annotations-db--ensure)
+  (setf pdf-tools-annotations-db (plist-put pdf-tools-annotations-db :version pdf-tools-annotations-db-version))
+  (mkdir pdf-tools-annotations-db-directory t)
+  (let ((coding-system-for-write 'utf-8))
+    (with-temp-file (expand-file-name "index" pdf-tools-annotations-db-directory)
+      (let ((standard-output (current-buffer))
+            (print-level nil)
+            (print-length nil)
+            (print-circle nil))
+        (princ (format ";;; Elfeed Database Index (version %s)\n\n"
+                       pdf-tools-annotations-db-version))
+        (when (eql pdf-tools-annotations-db-version 4)
+          ;; Put empty dummy index in front
+          (princ ";; Dummy index for backwards compatablity:\n")
+          (prin1 (pdf-tools-annotations-db--dummy))
+          (princ "\n\n;; Real index:\n"))
+        (prin1 pdf-tools-annotations-db)
+        :success))))
+
+(defun pdf-tools-annotations-db--delete (key)
+  (pdf-tools-annotations-db--ensure)
+  (let ((coding-system-for-write 'utf-8))
+    (with-temp-file (expand-file-name "index" pdf-tools-annotations-db-directory)
+      (let ((standard-output (current-buffer))
+            (print-level nil)
+            (print-length nil)
+            (print-circle nil))
+        (remhash key pdf-tools-annotations-db-entries)
+        (let ((original-cmpfun (avl-tree--cmpfun pdf-tools-annotations-db-index)))
+          (setf (avl-tree--cmpfun pdf-tools-annotations-db-index) #'pdf-tools-annotations-db--delete-compare)
+          (avl-tree-delete pdf-tools-annotations-db-index key)
+          (setf (avl-tree--cmpfun pdf-tools-annotations-db-index) original-cmpfun))
+        (princ (format ";;; Elfeed Database Index (version %s)\n\n"
+                       pdf-tools-annotations-db-version))
+        (when (eql pdf-tools-annotations-db-version 4)
+          ;; Put empty dummy index in front
+          (princ ";; Dummy index for backwards compatablity:\n")
+          (prin1 (pdf-tools-annotations-db--dummy))
+          (princ "\n\n;; Real index:\n"))
+        (prin1 pdf-tools-annotations-db)
+        :success))))
+
+(defun not-nil (x)
+  (not (null x)))
+
+(defun pdf-tools-annotations-db--get-all-entries ()
+  (pdf-tools-annotations-db--ensure)
+  (let ((entries))
+    (avl-tree-mapc
+     (lambda (id)
+       (push (pdf-tools-annotations-db--get-entry id) entries))
+     pdf-tools-annotations-db-index)
+    (seq-filter 'not-nil (nreverse entries))))
+
+(defun get-all-annotations-from-pdf (&optional file)
+  "Return all annotations saved in FILE, as a concatenation of
+their contents."
+  (let* ((annots (with-current-buffer (or (and file (find-file))
+                                          (current-buffer))
+                   (pdf-view-mode)
+                   (ignore-errors (pdf-annot-getannots nil nil nil)))))
+    (if (listp annots)
+        annots
+      ;; 如果返回的不是列表，返回一个空列表
+      (message "No annotations found or unexpected return value from pdf-annot-getannots.")
+      nil)))
+
+(defun pdf-tools-filte-empty-annotations (annotations)
+  "Filter annotations to remove those with 'content' as nil or empty string."
+  (seq-filter (lambda (annotation)
+                (let ((content (cdr (assq 'contents annotation))))
+                  (and content (not (string-empty-p content)))))
+              annotations))
+
+(defun pdf-tools-get-pdf-full-filepath ()
+  (if pdf-annot-list-document-buffer
+      (with-current-buffer (get-buffer pdf-annot-list-document-buffer)
+        (buffer-file-name))
+    (buffer-file-name)))
+
+(defun pdf-tools-get-available-annotations ()
+  (pdf-tools-filte-empty-annotations (get-all-annotations-from-pdf)))
+
+(defun pdf-tools-annotations-add (full-filepath)
+  (->>
+   (get-all-annotations-from-pdf)
+   (pdf-tools-filte-empty-annotations)
+   (mapcar (lambda (data) (pdf-tools-annotations--entry-create full-filepath data)))
+   (funcall (apply-partially #'pdf-tools-annotations-db--add full-filepath)))
+  (pdf-tools-annotations-db--save))
+
+(add-hook 'kill-buffer-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
+(add-hook 'quit-window-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
+
+(defun pdf-tools-annotations-delete (origfunc id &optional file-or-buffer)
+  (funcall origfunc id file-or-buffer)
+  (ignore-errors (pdf-tools-annotations-db--delete (format "%s#%s" (pdf-tools-get-pdf-full-filepath) id))))
+
+(advice-add #'pdf-info-delannot :around #'pdf-tools-annotations-delete)
 ;; }}
 
 (defun hurricane/format-org-transclude-src ()

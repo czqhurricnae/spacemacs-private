@@ -303,7 +303,8 @@ just like `((name begin-position end-position))'"
   "Insert a `src-code-type' type source code block in org-mode."
   (interactive
    (let ((src-code-types
-          '("ipython" "example" "value" "emacs-lisp" "python" "comment" "C" "sh" "java" "js" "clojure" "C++" "css"
+          '("ipython" "example" "value" "emacs-lisp" "python" "comment"
+            "C" "sh" "java" "js" "clojure" "C++" "css"
             "calc" "asymptote" "dot" "gnuplot" "ledger" "lilypond" "mscgen"
             "octave" "oz" "plantuml" "R" "sass" "screen" "sql" "awk" "ditaa"
             "haskell" "latex" "lisp" "matlab" "ocaml" "perl" "ruby"
@@ -318,28 +319,26 @@ just like `((name begin-position end-position))'"
             (setq region-active-flag t)))
       (newline-and-indent)
       (cond ((equal src-code-type "ipython")
-             (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session\n\n#+END_SRC\n" src-code-type)))
             ((equal src-code-type "example")
-             (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session example\n"))
+             (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer output list :exports no-eval :session example\n\n#+END_SRC\n"))
             ((equal src-code-type "value")
-             (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer values list :exports no-eval :session\n"))
+             (insert "#+BEGIN_SRC python :preamble # -*- coding: utf-8 -*- :results raw drawer values list :exports no-eval :session\n\n#+END_SRC\n"))
             ((equal src-code-type "js")
-             (insert (format "#+BEGIN_SRC %s :results values list :exports no-eval\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :results values list :exports no-eval\n\n#+END_SRC\n" src-code-type)))
             ((equal src-code-type "C")
              (insert "#+header: :cmdline :includes <stdio.h> \"/Users/c/Unix/error_function.c\" \"/Users/c/Unix/get_num.c\"\n")
-             (insert (format "#+BEGIN_SRC %s :results output list :exports no-eval\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :results output list :exports no-eval\n\n#+END_SRC\n" src-code-type)))
             ((equal src-code-type "sql")
-             (insert (format "#+BEGIN_SRC %s :results value table :exports no-eval\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :results value table :exports no-eval\n\n#+END_SRC\n" src-code-type)))
             ((equal src-code-type "dot")
-             (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n" src-code-type)))
+             (insert (format "#+BEGIN_SRC %s :file /Users/c/dotimg/example.png :cmdline -Kdot -Tpng\n\n#+END_SRC\n" src-code-type)))
             ((equal src-code-type "call")
              (insert "#+CALL: createTree(toInclude=\"*.*\", toExclude=\"\", directory=\"\", createLink=\"true\")"))
             ((equal src-code-type "graphviz")
              (hurricane/create-graphviz)
              (throw 'return-catch "I will not going any where else."))
-            (t (insert (format "#+BEGIN_SRC %s :results raw drawer values list :exports no-eval\n" src-code-type))))
-      (newline-and-indent)
-      (insert "#+END_SRC\n")
+            (t (insert (format "#+BEGIN_SRC %s :results raw drawer values list :exports no-eval\n\n#+END_SRC\n" src-code-type))))
       (previous-line 2)
       (org-edit-src-code)
       (if region-active-flag

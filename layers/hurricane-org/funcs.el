@@ -852,8 +852,8 @@ epoch to the beginning of today (00:00)."
                                       (with-temp-buffer
                                         (insert-file-contents source-file)
                                         (-map (lambda (label) (buffer-substring-no-properties
-                                                               (nth 1 (org-footnote-get-definition label))
-                                                               (nth 2 (org-footnote-get-definition label))))
+                                                          (nth 1 (org-footnote-get-definition label))
+                                                          (nth 2 (org-footnote-get-definition label))))
                                               label-list)))
                                      (footnote-string-list (string-join footnote-list "\n"))
                                      (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
@@ -990,16 +990,16 @@ that the point is already within a string."
                                                                       ))
                                                                   ))
                                      ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
-                                                                                                                                           (next-line)
-                                                                                                                                           (newline-and-indent)
-                                                                                                                                           (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
-                                                                                                                                           (newline-and-indent)
-                                                                                                                                           (previous-line)
-                                                                                                                                           (edraw-org-edit-regular-file-link)
-                                                                                                                                           (edraw-editor-select-tool-image)
-                                                                                                                                           (kill-new (format "%s" (file-name-nondirectory path)))
-                                                                                                                                           )
-                                                                                              (edraw-org-edit-regular-file-link))))
+                                                                                                                                      (next-line)
+                                                                                                                                      (newline-and-indent)
+                                                                                                                                      (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
+                                                                                                                                      (newline-and-indent)
+                                                                                                                                      (previous-line)
+                                                                                                                                      (edraw-org-edit-regular-file-link)
+                                                                                                                                      (edraw-editor-select-tool-image)
+                                                                                                                                      (kill-new (format "%s" (file-name-nondirectory path)))
+                                                                                                                                      )
+                                                                                         (edraw-org-edit-regular-file-link))))
                                      ("@ Delete image file and link" . (lambda (path)
                                                                          (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
                                                                                              (lambda (link)
@@ -1140,30 +1140,30 @@ Otherwise word around point."
                     (anki-editor-collect-content-from-result
                      (anki-editor-api-call-result 'notesInfo :notes nids) arg)
                     :action (lambda (content) (-map (lambda (group-number)
-                                                      (ignore-errors
-                                                        ;; play-sound-file 该函数在特定Emacs版本不被支持
-                                                        (mpv-play
-                                                         (format "%s%s"
-                                                                 Anki-media-dir
-                                                                 (and
-                                                                  (string-match
-                                                                   (rx
-                                                                    string-start
-                                                                    "[sound:"
-                                                                    (group (zero-or-more (not (any "]"))))
-                                                                    "]" (zero-or-more blank)
-                                                                    (zero-or-more
-                                                                     "[sound:"
-                                                                     (group (zero-or-more (not (any "]"))))
-                                                                     "]"
-                                                                     )
-                                                                    string-end
-                                                                    )
-                                                                   (elt content 2))
-                                                                  (match-string group-number (elt content 2)))))))
-                                                    ;; '(1 2)，只播放 sound 字段，不播放 pronunciation 字段，所以 group-number 只需要 1
-                                                    '(1)
-                                                    ))))
+                                                 (ignore-errors
+                                                   ;; play-sound-file 该函数在特定Emacs版本不被支持
+                                                   (mpv-play
+                                                    (format "%s%s"
+                                                            Anki-media-dir
+                                                            (and
+                                                             (string-match
+                                                              (rx
+                                                               string-start
+                                                               "[sound:"
+                                                               (group (zero-or-more (not (any "]"))))
+                                                               "]" (zero-or-more blank)
+                                                               (zero-or-more
+                                                                "[sound:"
+                                                                (group (zero-or-more (not (any "]"))))
+                                                                "]"
+                                                                )
+                                                               string-end
+                                                               )
+                                                              (elt content 2))
+                                                             (match-string group-number (elt content 2)))))))
+                                               ;; '(1 2)，只播放 sound 字段，不播放 pronunciation 字段，所以 group-number 只需要 1
+                                               '(1)
+                                               ))))
       nids)))
 
 (defun hurricane//anki-editor-gui-edit-note-action (x)
@@ -1267,40 +1267,40 @@ Show the heading too, if it is currently invisible."
 (defconst hurricane//default-bookmark ?1
   "This is the default bookmark name")
 
-(with-eval-after-load 'pdf-tools
-  (defun hurricane//save-pdf-position (&optional b)
-    "Saves the current PDF position of pdf-tools at a bookmark named B."
-    (unless b (setq b hurricane//default-bookmark))
-    (setf (alist-get b hurricane//bookmarks)
-          (pdf-view-bookmark-make-record)))
+;; (with-eval-after-load 'pdf-tools
+;;   (defun hurricane//save-pdf-position (&optional b)
+;;     "Saves the current PDF position of pdf-tools at a bookmark named B."
+;;     (unless b (setq b hurricane//default-bookmark))
+;;     (setf (alist-get b hurricane//bookmarks)
+;;           (pdf-view-bookmark-make-record)))
 
-  (defun hurricane//load-pdf-position (&optional b)
-    "Loads the PDF position saved at the bookmark named B."
-    (unless b (setq b hurricane//default-bookmark))
-    (ignore-errors (pdf-view-bookmark-jump (alist-get b hurricane//bookmarks))))
+;;   (defun hurricane//load-pdf-position (&optional b)
+;;     "Loads the PDF position saved at the bookmark named B."
+;;     (unless b (setq b hurricane//default-bookmark))
+;;     (ignore-errors (pdf-view-bookmark-jump (alist-get b hurricane//bookmarks))))
 
-  (define-key pdf-view-mode-map (kbd "<C-f1>")
-              (lambda ()
-                (interactive)
-                (hurricane//save-pdf-position)))
+;;   (define-key pdf-view-mode-map (kbd "<C-f1>")
+;;               (lambda ()
+;;                 (interactive)
+;;                 (hurricane//save-pdf-position)))
 
-  (define-key pdf-view-mode-map (kbd "<C-f2>")
-              (lambda ()
-                (interactive)
-                (hurricane//load-pdf-position)))
+;;   (define-key pdf-view-mode-map (kbd "<C-f2>")
+;;               (lambda ()
+;;                 (interactive)
+;;                 (hurricane//load-pdf-position)))
 
-  (define-key pdf-view-mode-map (kbd "<C-f3>")
-              (lambda (b) (interactive "cSaving to bookmark name (single character): ")
-                (hurricane//save-pdf-position b)))
+;;   (define-key pdf-view-mode-map (kbd "<C-f3>")
+;;               (lambda (b) (interactive "cSaving to bookmark name (single character): ")
+;;                 (hurricane//save-pdf-position b)))
 
-  (define-key pdf-view-mode-map (kbd "<C-f4>")
-              (lambda (b) (interactive "cLoading from bookmark name (single character): ")
-                (hurricane//load-pdf-position b))))
+;;   (define-key pdf-view-mode-map (kbd "<C-f4>")
+;;               (lambda (b) (interactive "cLoading from bookmark name (single character): ")
+;;                 (hurricane//load-pdf-position b))))
 
-(global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register hurricane//default-bookmark)))
-(global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register hurricane//default-bookmark)))
-(global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
-(global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
+;; (global-set-key (kbd "<C-f1>") (lambda () (interactive) (point-to-register hurricane//default-bookmark)))
+;; (global-set-key (kbd "<C-f2>") (lambda () (interactive) (jump-to-register hurricane//default-bookmark)))
+;; (global-set-key (kbd "<C-f3>") (lambda (r) (interactive "cSaving to register: ") (point-to-register r)))
+;; (global-set-key (kbd "<C-f4>") (lambda (r) (interactive "cLoading from register: ") (jump-to-register r)))
 
 ;; {{
 ;; @See: https://github.com/larsen/bin/blob/master/pdfsearch.el
@@ -1807,8 +1807,8 @@ their contents."
    (funcall (apply-partially #'pdf-tools-annotations-db--add full-filepath)))
   (pdf-tools-annotations-db--save))
 
-(add-hook 'kill-buffer-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
-(add-hook 'quit-window-hook #'(lambda () (when (and (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
+(add-hook 'kill-buffer-hook #'(lambda () (when (and (not (eq major-mode 'eaf-mode)) (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
+(add-hook 'quit-window-hook #'(lambda () (when (and (not (eq major-mode 'eaf-mode)) (string-suffix-p "pdf" (buffer-name)) (> (length (pdf-tools-get-available-annotations)) 0)) (pdf-tools-annotations-add (buffer-file-name)))))
 
 (defun pdf-tools-annotations-delete (origfunc id &optional file-or-buffer)
   (funcall origfunc id file-or-buffer)

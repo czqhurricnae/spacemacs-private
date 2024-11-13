@@ -657,6 +657,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;;'unless you set the ycmd-server-command variable to the path to a ycmd install'.
   (setq ycmd-server-command `("python" ,(expand-file-name "~/YouCompleteMe/third_party/ycmd/ycmd/")))
   (setq evil-want-C-w-delete t)
+  (setq eaf-deferred-debug t)
 
   (defun spaceline-custom-theme (&rest additional-segments)
     "My custom spaceline theme."

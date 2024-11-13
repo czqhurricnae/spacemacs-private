@@ -30,7 +30,6 @@
 ;; (global-set-key (kbd "C-c i c") 'hurricane/org-insert-caption-and-target)
 ;; (global-set-key (kbd "C-c i e") 'yas-expand)
 ;; (global-set-key (kbd "C-c i s") 'hurricane/org-insert-src-block)
-(global-set-key (kbd "C-h z") #'shackle-last-popup-buffer)
 (global-set-key [(shift return)] 'hurricane/insert-space-after-point)
 ;; (global-set-key (kbd "C-c C-x t") 'hurricane/org-clock-sum-today-by-tags)
 

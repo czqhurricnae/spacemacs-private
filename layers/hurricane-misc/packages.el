@@ -950,7 +950,7 @@
         (toggle-read-only))
       (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
       (add-hook 'shell-mode-hook (lambda () (highlight-regexp
-                                             "\\[OK\\]" "hi-green-b")))
+                                        "\\[OK\\]" "hi-green-b")))
       ;; Make `URLs' clickable.
       (add-hook 'shell-mode-hook (lambda ()(goto-address-mode)))
 
@@ -2053,18 +2053,16 @@ Works only in youtube-sub-extractor-mode buffer."
   (use-package dogears
     :hook (after-init . dogears-mode)
     :config
-    (setq dogears-idle 1
-          dogears-limit 200
-          dogears-position-delta 20)
-    (setq dogears-functions '(find-file recenter-top-bottom
-                                        other-window switch-to-buffer
-                                        aw-select toggle-window-split
-                                        windmove-do-window-select
-                                        pager-page-down pager-page-up
-                                        tab-bar-select-tab
-                                        pop-to-mark-command
-                                        pop-global-mark
-                                        goto-last-change
-                                        xref-go-back
-                                        xref-find-definitions
-                                        xref-find-references))))
+    (setq dogears-idle nil
+          dogears-limit 200)
+    (global-set-key (kbd "<C-f1>") #'(lambda () (interactive) (command-execute #'dogears-remember 'record)))
+    (global-set-key (kbd "<C-f2>") #'(lambda () (interactive) (command-execute #'dogears-list 'record)))
+
+    (with-eval-after-load 'dogears
+      (evil-define-key '(normal insert emacs motion) dogears-list-mode-map
+        (kbd "j") #'next-line
+        (kbd "k") #'previous-line
+        (kbd "d") #'dogears-list-delete
+        (kbd "RET") #'dogears-list-go
+        (kbd "q") #'quit-window
+        ))))

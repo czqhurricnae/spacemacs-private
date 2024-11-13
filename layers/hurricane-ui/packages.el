@@ -5,11 +5,11 @@
     ;; (hide-mode-line :location (recipe :fetcher github
     ;;                                   :repo "hlissner/emacs-hide-mode-line"))
     pangu-spacing
-    ;; (shackle :location (recipe :fetcher github
-    ;;                            :repo "wasamasa/shackle"))
     pretty-hydra
     (activities :location (recipe :fetcher github
                                   :repo "alphapapa/activities.el"))
+    (popper :location (recipe :fetcher github
+                              :repo "karthink/popper"))
     ))
 
 ;; {{
@@ -43,14 +43,13 @@
 ;; @See: https://github.com/hlissner/emacs-hide-mode-line
 (defun hurricane-ui/init-hide-mode-line ()
   (use-package hide-mode-line
-    :defer t
     :hook
     ((neotree-mode
       imenu-list-minor-mode
       minimap-mode
       ibuffer-mode
-      help-mode
-      ) . hide-mode-line-mode)))
+      help-mode)
+     . hide-mode-line-mode)))
 ;; }}
 
 (defun hurricane-ui/post-init-pangu-spacing ()
@@ -66,8 +65,8 @@
       :evil-leader "ots")
     (add-hook 'org-mode-hook
               '(lambda ()
-                  (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
-                  (spacemacs/toggle-pangu-spaceing-on)))))
+                 (set (make-local-variable 'pangu-spacing-real-insert-separtor) t)
+                 (spacemacs/toggle-pangu-spaceing-on)))))
 
 ;; {{
 ;; @See: https://github.com/manateelazycat/awesome-tab/blob/master/README.md
@@ -79,115 +78,6 @@
     (setq key (pop bindings) def (pop bindings))))
 ;; }}
 
-;; Enforce rules for popups.
-(defvar shackle--popup-window-list nil) ; All popup windows.
-(defvar-local shackle--current-popup-window nil) ; Current popup window.
-(put 'shackle--current-popup-window 'permanent-local t)
-
-(defun hurricane-ui/init-shackle ()
-  (use-package shackle
-  :functions org-switch-to-buffer-other-window
-  :commands shackle-display-buffer
-  :hook (after-init . shackle-mode)
-  :config
-  (eval-and-compile
-    (defun shackle-last-popup-buffer ()
-      "View last popup buffer."
-      (interactive)
-      (ignore-errors
-        (display-buffer shackle-last-buffer)))
-
-    ;; Add keyword: `autoclose'.
-    (defun shackle-display-buffer-hack (fn buffer alist plist)
-      (let ((window (funcall fn buffer alist plist)))
-        (setq shackle--current-popup-window window)
-
-        (when (plist-get plist :autoclose)
-          (push (cons window buffer) shackle--popup-window-list))
-        window))
-
-    (defun shackle-close-popup-window-hack (&rest _)
-      "Close current popup window via `C-g'."
-      (setq shackle--popup-window-list
-            (cl-loop for (window . buffer) in shackle--popup-window-list
-                     if (and (window-live-p window)
-                             (equal (window-buffer window) buffer))
-                     collect (cons window buffer)))
-      ;; `C-g' can deactivate region.
-      (when (and (called-interactively-p 'interactive)
-                 (not (region-active-p)))
-        (let (window buffer)
-          (if (one-window-p)
-              (progn
-                (setq window (selected-window))
-                (when (equal (buffer-local-value 'shackle--current-popup-window
-                                                 (window-buffer window))
-                             window)
-                  (winner-undo)))
-            (setq window (caar shackle--popup-window-list))
-            (setq buffer (cdar shackle--popup-window-list))
-            (when (and (window-live-p window)
-                       (equal (window-buffer window) buffer))
-              (progn
-                (delete-window window)
-                (pop shackle--popup-window-list))
-                )))))
-
-    (advice-add #'keyboard-quit :before #'shackle-close-popup-window-hack)
-    (advice-add #'shackle-display-buffer :around #'shackle-display-buffer-hack))
-
-  ;; HACK: Compatibility issuw with `org-switch-to-buffer-other-window'.
-  (advice-add #'org-switch-to-buffer-other-window :override #'switch-to-buffer-other-window)
-
-  ;; Rules.
-  (setq shackle-default-size 0.4
-        shackle-default-alignment 'below
-        shackle-default-rule nil
-        shackle-rules
-        '(("*Help*" :select t :size 0.3 :align 'below :autoclose t)
-          ("*Apropos*" :select t :size 0.3 :align 'below :autoclose t)
-          ("*compilation*" :select t :size 0.3 :align 'below :autoclose t)
-          ("*Completions*" :size 0.3 :align 'below :autoclose t)
-          ("*Pp Eval Output*" :size 15 :align 'below :autoclose t)
-          ("*ert*" :align 'below :autoclose t)
-          ("*Backtrace*" :select t :size 15 :align 'below)
-          ("*Warnings*" :size 0.3 :align 'below :autoclose t)
-          ("*Messages*" :size 0.3 :align 'below :autoclose t)
-          ("^\\*.*Shell Command.*\\*$" :regexp t :size 0.3 :align 'below :autoclose t)
-          ("\\*[Wo]*Man.*\\*" :regexp t :select t :align 'below :autoclose t)
-          ("*Calendar*" :select t :size 0.3 :align 'below)
-          ("\\*ivy-occur .*\\*" :regexp t :size 0.4 :select t :align 'below)
-          (" *undo-tree*" :select t)
-          ("*Paradox Report*" :size 0.3 :align 'below :autoclose t)
-          ("*quickrun*" :select t :size 15 :align 'below)
-          ("*tldr*" :align 'below :autoclose t)
-          ("*Youdao Dictionary*" :size 0.3 :align 'below :autoclose t)
-          ("*Finder*" :select t :size 0.3 :align 'below :autoclose t)
-          ("^\\*elfeed-entry" :regexp t :size 0.7 :align 'below :autoclose t)
-          ("*lsp-help*" :size 0.3 :align 'below :autoclose t)
-          ("*lsp session*" :size 0.4 :align 'below :autoclose t)
-          (" *Org todo*" :select t :size 4 :align 'below :autoclose t)
-          ("*Org Dashboard*" :select t :size 0.4 :align 'below :autoclose t)
-          ("^\\*macro expansion\\**" :regexp t :size 0.4 :align 'below)
-          (" *Install vterm" :size 0.3 :align 'below)
-
-          (ag-mode :select t :align 'below)
-          (grep-mode :select t :align 'below)
-          (pt-mode :select t :align 'below)
-          (rg-mode :select t :align 'below)
-
-          (flycheck-error-list-mode :select t :size 0.3 :align 'below :autoclose t)
-          (flymake-diagnostics-buffer-mode :select t :size 0.3 :align 'below :autoclose t)
-
-          (Buffer-menu-mode :select t :size 20 :align 'below :autoclose t)
-          (comint-mode :align 'below)
-          (helpful-mode :select t :size 0.3 :align 'below :autoclose t)
-          (process-menu-mode :select t :size 0.3 :align 'below :autoclose t)
-          (cargo-process-mode :select t :size 0.3 :align 'below :autoclose t)
-          (list-environment-mode :select t :size 0.3 :align 'below :autoclose t)
-          (profiler-report-mode :select t :size 0.5 :align 'below)
-          (tabulated-list-mode :align 'below)))))
-
 (defun icons-displayable-p ()
   "Return non-nil if `all-the-icons' is displayable."
   (and hurricane-icon
@@ -197,21 +87,118 @@
 (defun hurricane-ui/init-pretty-hydra ()
   (use-package pretty-hydra
     :ensure t))
+
 (defun hurricane-ui/init-activities ()
   (use-package activities
-     :init
-     (activities-mode)
-     (activities-tabs-mode)
-     ;; Prevent `edebug' default bindings from interfering.
-     (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+    :init
+    (activities-mode)
+    (activities-tabs-mode)
+    ;; Prevent `edebug' default bindings from interfering.
+    (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
-     :bind
-     ("C-x C-a C-n" . activities-new)
-     ("C-x C-a C-d" . activities-define)
-     ("C-x C-a C-a" . activities-resume)
-     ("C-x C-a C-s" . activities-suspend)
-     ("C-x C-a C-k" . activities-kill)
-     ("C-x C-a RET" . activities-switch)
-     ("C-x C-a b" . activities-switch-buffer)
-     ("C-x C-a g" . activities-revert)
-     ("C-x C-a l" . activities-list)))
+    :bind
+    ("C-x C-a C-n" . activities-new)
+    ("C-x C-a C-d" . activities-define)
+    ("C-x C-a C-a" . activities-resume)
+    ("C-x C-a C-s" . activities-suspend)
+    ("C-x C-a C-k" . activities-kill)
+    ("C-x C-a RET" . activities-switch)
+    ("C-x C-a b" . activities-switch-buffer)
+    ("C-x C-a g" . activities-revert)
+    ("C-x C-a l" . activities-list)))
+
+(defun hurricane-ui/init-popper ()
+  (use-package popper
+    :custom
+    (popper-group-function #'popper-group-by-directory)
+    (popper-echo-dispatch-actions t)
+    :bind (:map popper-mode-map
+                ("C-h z"       . popper-toggle)
+                ("C-M-<tab>"     . popper-cycle))
+    :hook (emacs-startup . popper-echo-mode)
+    :init
+    (setq popper-reference-buffers
+          '("\\*Messages\\*$"
+            "Output\\*$" "\\*Pp Eval Output\\*$"
+            "^\\*eldoc.*\\*$"
+            "\\*Compile-Log\\*$"
+            "\\*Completions\\*$"
+            "\\*Warnings\\*$"
+            "\\*Async Shell Command\\*$"
+            "\\*Apropos\\*$"
+            "\\*Backtrace\\*$"
+            "\\*Calendar\\*$"
+            "\\*Fd\\*$" "\\*Find\\*$" "\\*Finder\\*$"
+            "\\*Kill Ring\\*$"
+            "\\*Embark \\(Collect\\|Live\\):.*\\*$"
+
+            bookmark-bmenu-mode
+            comint-mode
+            compilation-mode
+            help-mode helpful-mode
+            tabulated-list-mode
+            Buffer-menu-mode
+
+            flymake-diagnostics-buffer-mode
+            flycheck-error-list-mode flycheck-verify-mode
+
+            gnus-article-mode devdocs-mode
+            grep-mode occur-mode rg-mode deadgrep-mode ag-mode pt-mode
+            youdao-dictionary-mode osx-dictionary-mode fanyi-mode
+            "^\\*gt-result\\*$" "^\\*gt-log\\*$"
+
+            "^\\*Process List\\*$" process-menu-mode
+            list-environment-mode cargo-process-mode
+
+            "^\\*.*eshell.*\\*.*$"
+            "^\\*.*shell.*\\*.*$"
+            "^\\*.*terminal.*\\*.*$"
+            "^\\*.*vterm[inal]*.*\\*.*$"
+
+            "\\*DAP Templates\\*$" dap-server-log-mode
+            "\\*ELP Profiling Restuls\\*" profiler-report-mode
+            "\\*Paradox Report\\*$" "\\*package update results\\*$" "\\*Package-Lint\\*$"
+            "\\*[Wo]*Man.*\\*$"
+            "\\*ert\\*$" overseer-buffer-mode
+            "\\*gud-debug\\*$"
+            "\\*lsp-help\\*$" "\\*lsp session\\*$"
+            "\\*quickrun\\*$"
+            "\\*tldr\\*$"
+            "\\*vc-.*\\**"
+            "\\*diff-hl\\**"
+            "^\\*macro expansion\\**"
+
+            "\\*Agenda Commands\\*" "\\*Org Select\\*" "\\*Capture\\*" "^CAPTURE-.*\\.org*"
+            "\\*Gofmt Errors\\*$" "\\*Go Test\\*$" godoc-mode
+            "\\*docker-.+\\*"
+            "\\*prolog\\*" inferior-python-mode inf-ruby-mode swift-repl-mode
+            "\\*rustfmt\\*$" rustic-compilation-mode rustic-cargo-clippy-mode
+            rustic-cargo-outdated-mode rustic-cargo-run-mode rustic-cargo-test-mode
+            "\\*Dogears List\\*$" dogears-list-mode
+            "\\*DeepSeek\\*$"))
+    :config
+    (with-no-warnings
+      (defun hurricane//popper-fit-window-height (win)
+        "Determine the height of popup window WIN by fitting it to the buffer's content."
+        (fit-window-to-buffer
+         win
+         (floor (frame-height) 3)
+         (floor (frame-height) 3)))
+      (setq popper-window-height #'hurricane//popper-fit-window-height)
+
+      (defun popper-close-window-advice (&rest _)
+        "Close popper window via `C-g'."
+        ;; `C-g' can deactivate region
+        (when (and ;(called-interactively-p 'interactive)
+               (not (region-active-p))
+               popper-open-popup-alist)
+          (when-let* ((window (caar popper-open-popup-alist))
+                      (buffer (cdar popper-open-popup-alist)))
+            (when (and (with-current-buffer buffer
+                         (not (derived-mode-p 'eshell-mode
+                                              'shell-mode
+                                              'term-mode
+                                              'vterm-mode)))
+                       (window-live-p window))
+              (delete-window window)))))
+      (advice-add #'keyboard-quit :before #'popper-close-window-advice))))

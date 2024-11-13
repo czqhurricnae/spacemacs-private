@@ -327,11 +327,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/使用 document-contents-extractor 提取目录.org")
- (front-context-string)
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/位带操作.org")
+ (front-context-string . "\n#+header: :cmdl")
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 406)
- (last-modified 26418 50251 896950 0))
+ (position . 313)
+ (last-modified 26420 27260 726604 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

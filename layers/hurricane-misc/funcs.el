@@ -2878,3 +2878,11 @@ Version 2019-02-12 2021-08-09"
       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     (make-frame-visible doc-frame)
     (select-frame-set-input-focus doc-frame)))
+
+(defun hurricane//dogears-go-delete-place-action (x)
+  (print x))
+
+(with-eval-after-load 'ivy
+  (ivy-add-actions
+   #'dogears-go
+   '(("d" hurricane//dogears-go-delete-place-action "@Delete place"))))

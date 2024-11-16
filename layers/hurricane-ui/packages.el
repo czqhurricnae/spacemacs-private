@@ -8,8 +8,16 @@
     pretty-hydra
     (activities :location (recipe :fetcher github
                                   :repo "alphapapa/activities.el"))
+    (bufler :location (recipe :fetcher github
+                              :repo "alphapapa/bufler.el"
+                              :files (:defaults (:exclude "helm-bufler.el"))))
+    (helm-bufler :location (recipe :fetcher github
+                                   :repo "alphapapa/bufler.el"
+                                   :files ("helm-bufler.el")))
     (popper :location (recipe :fetcher github
                               :repo "karthink/popper"))
+    (trivial-copy :location (recipe :fetcher github
+                                    :repo "casouri/trivial-copy"))
     ))
 
 ;; {{
@@ -175,7 +183,9 @@
             "\\*rustfmt\\*$" rustic-compilation-mode rustic-cargo-clippy-mode
             rustic-cargo-outdated-mode rustic-cargo-run-mode rustic-cargo-test-mode
             "\\*Dogears List\\*$" dogears-list-mode
-            "\\*DeepSeek\\*$"))
+            "\\*DeepSeek\\*$" "\\*convert-comments-style\\*" "\\*gbk2utf-8-output\\*"
+            "\\*clean-comments\\*"
+            ))
     :config
     (with-no-warnings
       (defun hurricane//popper-fit-window-height (win)
@@ -202,3 +212,31 @@
                        (window-live-p window))
               (delete-window window)))))
       (advice-add #'keyboard-quit :before #'popper-close-window-advice))))
+
+(defun hurricane-ui/init-bufler ()
+  (use-package bufler
+    :init (require 'helm)
+    :after helm
+    :config
+    (setq bufler-switch-buffer-include-recent-buffers t)
+    (with-eval-after-load 'dogears
+      (evil-define-key '(normal insert emacs motion) bufler-list-mode-map
+        (kbd "j") #'next-line
+        (kbd "k") #'previous-line
+        (kbd "RET") #'bufler-list-buffer-switch
+        (kbd "C-SPC") #'bufler-list-buffer-peek
+        (kbd "?") #'hydra:bufler/body
+        (kbd "F") #'bufler-list-group-make-frame
+        (kbd "N") #'bufler-list-buffer-name-workspace
+        (kbd "f") #'bufler-list-group-frame
+        (kbd "g") #'bufler
+        (kbd "d") #'bufler-list-buffer-kill
+        (kbd "s") #'bufler-list-buffer-save
+        ))
+    :bind
+    (("C-x C-b" . bufler)
+     ("C-c p-c" . bufler-switch-buffer)
+     )))
+
+(defun hurricane-ui/init-trivial-copy ()
+  (use-package trivial-copy))

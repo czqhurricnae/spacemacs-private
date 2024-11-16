@@ -379,9 +379,6 @@ end tell
   " cmd))))
 ;; }}
 
-(defadvice persp-switch (after my-quit-helm-perspectives activate)
-  (setq hydra-deactivate t))
-
 (defun hurricane//mc-mark-next-like-this ()
   (interactive)
   (if (region-active-p)
@@ -2817,14 +2814,19 @@ Version 2019-02-12 2021-08-09"
           (switch-to-buffer output-buffer))))
     result))
 
-(defun hurricane/recursively-convert-comments ()
+(defun hurricane/recursively-convert-comments-style ()
   (interactive)
   (let* ((local-root (or (hurricane//git-project-root) default-directory))
+         (marked-files (dired-get-marked-files))
          (result nil))
-    (when (yes-or-no-p (format "Do you want to execute the command in the directory: %s?" local-root))
+    (when (yes-or-no-p (format "Do you want to execute the command with these files or in the directory: %s?"
+                               (or
+                                (and (not (null (dired-get-marked-files)))
+                                     (mapconcat 'identity (dired-get-marked-files) " ") )
+                                local-root)))
       (setq default-directory local-root)
-      (let* ((command (list "python3" (expand-file-name convert-comments-Python-file)))
-             (output-buffer (generate-new-buffer "*convert-comments*"))
+      (let* ((command (append (list "python3" (expand-file-name convert-comments-style-Python-file)) marked-files))
+             (output-buffer (generate-new-buffer "*convert-comments-style*"))
              (exit-code (apply 'call-process (car command) nil output-buffer t (cdr command))))
         (if (eq exit-code 0)
             (progn
@@ -2832,9 +2834,34 @@ Version 2019-02-12 2021-08-09"
                              (buffer-string)))
               (message "result: %s" result)
               (kill-buffer output-buffer))
-          (message "Error running command. Check *convert-comments* buffer for details.")
+          (message "Error running command. Check *convert-comments-style* buffer for details.")
           (switch-to-buffer output-buffer))))
     result))
+
+(defun hurricane/recursively-clean-comments ()
+  (interactive)
+  (let* ((local-root (or (hurricane//git-project-root) default-directory))
+         (marked-files (dired-get-marked-files))
+         (result nil))
+    (when (yes-or-no-p (format "Do you want to execute the command with these files or in the directory: %s?"
+                               (or
+                                (and (not (null (dired-get-marked-files)))
+                                     (mapconcat 'identity (dired-get-marked-files) " ") )
+                                local-root)))
+      (setq default-directory local-root)
+      (let* ((command (append (list "python3" (expand-file-name clean-comments-Python-file)) marked-files))
+             (output-buffer (generate-new-buffer "*clean-comments*"))
+             (exit-code (apply 'call-process (car command) nil output-buffer t (cdr command))))
+        (if (eq exit-code 0)
+            (progn
+              (setq result (with-current-buffer output-buffer
+                             (buffer-string)))
+              (message "result: %s" result)
+              (kill-buffer output-buffer))
+          (message "Error running command. Check *clean-comments* buffer for details.")
+          (switch-to-buffer output-buffer))))
+    result))
+
 
 (defun make-search-frame (x)
   (let (summary

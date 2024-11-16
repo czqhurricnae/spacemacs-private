@@ -176,7 +176,7 @@ This function should only modify configuration layer settings."
                                     ido-vertical-mode flx-ido company-quickhelp
                                     counsel-projectile highlight-parentheses org-pdfview
                                     doc-view org-projectile slime pyim undo-tree
-                                    company org-superstar)
+                                    company org-superstar perspective)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused

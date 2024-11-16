@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 
 def getDirFiles(dir):
     fileList = []
@@ -21,9 +22,9 @@ def convert_punctuation(text):
         ',': '，',
         '.': '。',
         '!': '！',
-        '?': '？',
+        # '?': '？',
         ':': '：',
-        ';': '；',
+        # ';': '；',
         # '(': '（',
         # ')': '）',
         # '[': '【',
@@ -31,7 +32,7 @@ def convert_punctuation(text):
         # '{': '｛',
         # '}': '｝',
         # '<': '《',
-        '>': '》',
+        # '>': '》',
         '"': '“',
         "'": '‘',
         '-': '－',
@@ -43,12 +44,12 @@ def convert_punctuation(text):
         '$': '＄',
         '%': '％',
         '^': '＾',
-        '&': '＆',
+        # '&': '＆',
         # '*': '＊',
         # '+': '＋',
         # '=': '＝',
-        '~': '～',
-        '`': '｀',
+        # '~': '～',
+        # '`': '｀',
         # '|': '｜'
     }
 
@@ -62,7 +63,7 @@ def convert_punctuation(text):
 
     return converted_text
 
-def convert_comments(code):
+def convert_comments_style(code):
     # 匹配双反斜杠风格的注释
     pattern = re.compile(r'(\s*)(.*?)//(.*)')
     lines = code.split('\n')
@@ -74,7 +75,7 @@ def convert_comments(code):
             # 如果匹配到注释
             indent, code_part, comment = match.groups()
             # 将注释转换为 C++ 风格
-            new_raw_comment = re.sub(r'//|\s+', '', comment).strip()
+            new_raw_comment = re.sub(r'//', '', comment).strip()
             new_comment = f'/* {convert_punctuation(new_raw_comment)} */'
             # 如果注释在代码之后，将注释放在上面
             if code_part.strip():
@@ -89,15 +90,37 @@ def convert_comments(code):
 
 originEncodeList = ['gbk', 'Big5', 'iso-latin-1-dos', 'gb2312']
 
-if __name__ == '__main__':
-    objFiles = getDirFiles('.')
-    failList = []
-    for f in objFiles:
-        if f.endswith('.c') or f.endswith('.h'):
-            with open(f, 'r', encoding='utf-8') as file:
-                code = file.read()
-            converted_code = convert_comments(code)
-            with open(f.rsplit('.', 1)[0] + '_converted.' + f.rsplit('.', 1)[1], 'w', encoding='utf-8') as file:
-                file.write(converted_code)
+def hex_to_lower(text):
+    # 定义正则表达式模式，匹配以 0x 或 0X 开头的十六进制数字
+    pattern = r'(0[xX])([0-9A-Fa-f]+)'
 
-    print('All Done!')
+    # 使用 re.sub 进行替换，将匹配到的十六进制数字中的大写字母转换为小写
+    result = re.sub(pattern, lambda match: match.group(1).lower() + match.group(2).lower(), text)
+
+    return result
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        objFiles = getDirFiles('.')
+        failList = []
+        for f in objFiles:
+            if f.endswith('.c') or f.endswith('.h'):
+                with open(f, 'r', encoding='utf-8') as file:
+                    code = file.read()
+                converted_text = convert_comments_style(code)
+                converted_text = hex_to_lower(converted_text)
+                with open(f.rsplit('.', 1)[0] + '_converted.' + f.rsplit('.', 1)[1], 'w', encoding='utf-8') as file:
+                    file.write(converted_text)
+
+        print('All Done!')
+    else:
+        for f in sys.argv[1:]:
+            if f.endswith('.c') or f.endswith('.h'):
+                with open(f, 'r', encoding='utf-8') as file:
+                    code = file.read()
+                    converted_text = convert_comments_style(code)
+                    converted_text = hex_to_lower(converted_text)
+                with open(f.rsplit('.', 1)[0] + '_converted.' + f.rsplit('.', 1)[1], 'w', encoding='utf-8') as file:
+                    file.write(converted_text)
+
+        print('All Done!')

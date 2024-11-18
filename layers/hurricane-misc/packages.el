@@ -1384,6 +1384,38 @@
 
     (eaf-bind-key eaf-browser-youtube-video-pause-toggle "K" eaf-browser-keybinding)
     (eaf-bind-key eaf-browser-youtube-video-pause-and-translate-caption "C-k" eaf-browser-keybinding))
+
+  (defun pdf-tools-open-pdf-from-history ()
+    "A wrapper around `eaf-open' that provides pdf history candidates.
+This function works best if paired with a fuzzy search package."
+    (interactive)
+    (let* ((pdf-history-file-path
+            (concat eaf-config-location
+                    (file-name-as-directory "pdf")
+                    (file-name-as-directory "history")
+                    "log.txt"))
+           (history-pattern "^\\(.+\\)\\.pdf$")
+           (history-file-exists (file-exists-p pdf-history-file-path))
+           (eaf-files-opened (mapcar (lambda (buf)
+                                       (buffer-local-value 'eaf--buffer-url buf))
+                                     (eaf--get-eaf-buffers)))
+           (history-pdf (completing-read
+                         "[EAF/pdf] Search || History: "
+                         (cl-remove-if (lambda (x)
+                                         (or (null x)
+                                             (member x eaf-files-opened)))
+                                       (if history-file-exists
+                                           (mapcar
+                                            (lambda (h) (when (string-match history-pattern h)
+                                                     (if (file-exists-p h)
+                                                         (format "%s" h))))
+                                            (with-temp-buffer (insert-file-contents pdf-history-file-path)
+                                                              (split-string (buffer-string) "\n" t)))
+                                         (make-directory (file-name-directory pdf-history-file-path) t)
+                                         (with-temp-file pdf-history-file-path ""))))))
+      (if history-pdf
+          (let ((eaf-pdf-extension-list '("xps" "oxps" "cbz" "epub" "fb2" "fbz")))
+            (find-file history-pdf)))))
   )
 
 (defun hurricane-misc/init-dupan ()

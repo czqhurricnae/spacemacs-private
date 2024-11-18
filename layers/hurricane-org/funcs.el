@@ -852,8 +852,8 @@ epoch to the beginning of today (00:00)."
                                       (with-temp-buffer
                                         (insert-file-contents source-file)
                                         (-map (lambda (label) (buffer-substring-no-properties
-                                                          (nth 1 (org-footnote-get-definition label))
-                                                          (nth 2 (org-footnote-get-definition label))))
+                                                               (nth 1 (org-footnote-get-definition label))
+                                                               (nth 2 (org-footnote-get-definition label))))
                                               label-list)))
                                      (footnote-string-list (string-join footnote-list "\n"))
                                      (reference-and-footnote-string (format "%s\n%s" reference footnote-string-list)))
@@ -990,16 +990,16 @@ that the point is already within a string."
                                                                       ))
                                                                   ))
                                      ("@ Edraw-org-edit-regular-file-link" . (lambda (path) (if (not (string-suffix-p "edraw.svg" path)) (progn
-                                                                                                                                      (next-line)
-                                                                                                                                      (newline-and-indent)
-                                                                                                                                      (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
-                                                                                                                                      (newline-and-indent)
-                                                                                                                                      (previous-line)
-                                                                                                                                      (edraw-org-edit-regular-file-link)
-                                                                                                                                      (edraw-editor-select-tool-image)
-                                                                                                                                      (kill-new (format "%s" (file-name-nondirectory path)))
-                                                                                                                                      )
-                                                                                         (edraw-org-edit-regular-file-link))))
+                                                                                                                                           (next-line)
+                                                                                                                                           (newline-and-indent)
+                                                                                                                                           (org-insert-link nil (concat "file:" (file-name-sans-extension path) ".edraw.svg") nil)
+                                                                                                                                           (newline-and-indent)
+                                                                                                                                           (previous-line)
+                                                                                                                                           (edraw-org-edit-regular-file-link)
+                                                                                                                                           (edraw-editor-select-tool-image)
+                                                                                                                                           (kill-new (format "%s" (file-name-nondirectory path)))
+                                                                                                                                           )
+                                                                                              (edraw-org-edit-regular-file-link))))
                                      ("@ Delete image file and link" . (lambda (path)
                                                                          (let* ((link-list (org-element-map (org-element-parse-buffer) 'link
                                                                                              (lambda (link)
@@ -1140,30 +1140,30 @@ Otherwise word around point."
                     (anki-editor-collect-content-from-result
                      (anki-editor-api-call-result 'notesInfo :notes nids) arg)
                     :action (lambda (content) (-map (lambda (group-number)
-                                                 (ignore-errors
-                                                   ;; play-sound-file 该函数在特定Emacs版本不被支持
-                                                   (mpv-play
-                                                    (format "%s%s"
-                                                            Anki-media-dir
-                                                            (and
-                                                             (string-match
-                                                              (rx
-                                                               string-start
-                                                               "[sound:"
-                                                               (group (zero-or-more (not (any "]"))))
-                                                               "]" (zero-or-more blank)
-                                                               (zero-or-more
-                                                                "[sound:"
-                                                                (group (zero-or-more (not (any "]"))))
-                                                                "]"
-                                                                )
-                                                               string-end
-                                                               )
-                                                              (elt content 2))
-                                                             (match-string group-number (elt content 2)))))))
-                                               ;; '(1 2)，只播放 sound 字段，不播放 pronunciation 字段，所以 group-number 只需要 1
-                                               '(1)
-                                               ))))
+                                                      (ignore-errors
+                                                        ;; play-sound-file 该函数在特定Emacs版本不被支持
+                                                        (mpv-play
+                                                         (format "%s%s"
+                                                                 Anki-media-dir
+                                                                 (and
+                                                                  (string-match
+                                                                   (rx
+                                                                    string-start
+                                                                    "[sound:"
+                                                                    (group (zero-or-more (not (any "]"))))
+                                                                    "]" (zero-or-more blank)
+                                                                    (zero-or-more
+                                                                     "[sound:"
+                                                                     (group (zero-or-more (not (any "]"))))
+                                                                     "]"
+                                                                     )
+                                                                    string-end
+                                                                    )
+                                                                   (elt content 2))
+                                                                  (match-string group-number (elt content 2)))))))
+                                                    ;; '(1 2)，只播放 sound 字段，不播放 pronunciation 字段，所以 group-number 只需要 1
+                                                    '(1)
+                                                    ))))
       nids)))
 
 (defun hurricane//anki-editor-gui-edit-note-action (x)
@@ -1261,11 +1261,11 @@ Show the heading too, if it is currently invisible."
 
 ;; {{
 ;; @See: https://sachachua.com/blog/2021/02/guest-post-bookmarking-pdfs-in-emacs-with-¡pdf-tools-and-registers/
-(defvar hurricane//bookmarks nil
-  "List of bookmarks, useful for pdf-mode where I save my positions with <C-f1> etc.")
+;; (defvar hurricane//bookmarks nil
+;; "List of bookmarks, useful for pdf-mode where I save my positions with <C-f1> etc.")
 
-(defconst hurricane//default-bookmark ?1
-  "This is the default bookmark name")
+;; (defconst hurricane//default-bookmark ?1
+;; "This is the default bookmark name")
 
 ;; (with-eval-after-load 'pdf-tools
 ;;   (defun hurricane//save-pdf-position (&optional b)
@@ -1815,6 +1815,19 @@ their contents."
   (ignore-errors (pdf-tools-annotations-db--delete (format "%s#%s" (pdf-tools-get-pdf-full-filepath) id))))
 
 (advice-add #'pdf-info-delannot :around #'pdf-tools-annotations-delete)
+
+(defun hurricane//pdf-view-goto-page (n)
+  (interactive "nEnter an integer: ")
+  (if (integerp n)
+      (pdf-view-goto-page n)
+    (message "Please enter a valid integer.")))
+
+(with-eval-after-load 'pdf-tools
+  (evil-define-key '(normal insert emacs motion) pdf-view-mode-map
+    (kbd "p") #'hurricane//pdf-view-goto-page
+    (kbd "j") #'pdf-view-next-line-or-next-page
+    (kbd "k") #'pdf-view-previous-line-or-previous-page
+    ))
 ;; }}
 
 (defun hurricane/format-org-transclude-src ()

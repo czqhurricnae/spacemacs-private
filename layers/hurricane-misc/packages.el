@@ -381,7 +381,7 @@
       )
     :config
     (progn
-      (advice-add 'helm-ag--save-results :after 'spacemacs//gne-init-helm-ag)
+      (advice-add #'helm-ag--save-results :after #'spacemacs//gne-init-helm-ag)
       (evil-define-key 'normal helm-ag-map "SPC" spacemacs-default-map)
       ;; Evilify the helm-grep buffer.
       (evilified-state-evilify-map helm-grep-mode-map
@@ -950,7 +950,7 @@
         (toggle-read-only))
       (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
       (add-hook 'shell-mode-hook (lambda () (highlight-regexp
-                                        "\\[OK\\]" "hi-green-b")))
+                                             "\\[OK\\]" "hi-green-b")))
       ;; Make `URLs' clickable.
       (add-hook 'shell-mode-hook (lambda ()(goto-address-mode)))
 
@@ -2065,4 +2065,174 @@ Works only in youtube-sub-extractor-mode buffer."
         (kbd "d") #'dogears-list-delete
         (kbd "RET") #'dogears-list-go
         (kbd "q") #'quit-window
-        ))))
+        )
+
+      (defun hurricane//dogears--place (&optional manualp)
+        "Return record for current buffer at point."
+        (when-let ((record (or (ignore-errors
+                                 (funcall bookmark-make-record-function))
+                               (dogears--buffer-record))))
+          (pcase (car record)
+            ;; Like `bookmark-make-record', we may have to add a string ourselves.
+            ;; And we want every record to have one as its first element, for
+            ;; consistency.  And sometimes, records have a nil name rather than an
+            ;; empty string, depending on the bookmark-make-record-function (I'm
+            ;; not sure if there are defined standards for what the first element
+            ;; of a bookmark record should be).
+            ((pred stringp)
+             ;; Record already has a string as its first element: do nothing.
+             nil)
+            (`nil (setf (car record) ""))
+            (_ (push "" record)))
+          (setf (map-elt (cdr record) 'manualp) manualp)
+          (unless (map-elt (cdr record) 'buffer)
+            (setf (map-elt (cdr record) 'buffer) (buffer-name)))
+          (when-let ((within (or (funcall dogears-within-function)
+                                 (dogears--within)
+                                 (car record))))
+            (setf (map-elt (cdr record) 'within) within))
+          (setf (map-elt (cdr record) 'mode) major-mode
+                (map-elt (cdr record) 'line) (buffer-substring-no-properties
+                                              (point-at-bol) (point-at-eol)))
+          ;; Add support for pdf-tools
+          (when (eq major-mode 'pdf-view-mode)
+            (setf (map-elt (cdr record) 'page) (pdf-view-current-page)))
+          record))
+
+      (advice-add #'dogears--place :override #'hurricane//dogears--place)
+
+      (defun hurricane//dogears--buffer-record ()
+        "Return a bookmark-like record for the current buffer.
+Intended as a fallback for when `bookmark-make-record-function'
+returns nil."
+        (list (buffer-name)
+              (cons 'buffer (current-buffer))
+              (cons 'location (buffer-name))
+              (cons 'within (buffer-name))
+              (cons 'mode major-mode)
+              (cons 'position (point))
+              ;; Add support for pdf-tools
+              (when (eq major-mode 'pdf-view-mode)
+                (cons 'page (pdf-view-current-page)))))
+
+      (advice-add #'dogears--buffer-record :override #'hurricane//dogears--buffer-record)
+
+      (defun hurricane//dogears-go (place)
+        "Go to dogeared PLACE.
+Interactively, select PLACE with completion; with universal
+prefix, offer all places, otherwise only ones relevant to current
+context.  PLACE should be a bookmark record."
+        (interactive (let* ((filter-fn (if current-prefix-arg
+                                           #'identity
+                                         (lambda (list)
+                                           (cl-remove-if (lambda (place)
+                                                           (string-empty-p (dogears--relevance place)))
+                                                         list))))
+                            (collection (cl-loop for i from 0
+                                                 for place in (funcall filter-fn dogears-list)
+                                                 for key = (format "%2.2s: %s"i
+                                                                   (dogears--format-record place))
+                                                 collect (cons key place)))
+                            ;; TODO: Disable completion sorting (so they're always in order).
+                            (choice (completing-read "Place: " collection nil t)))
+                       (list (alist-get choice collection nil nil #'equal))))
+        (or (ignore-errors
+              (bookmark-jump place))
+            (when-let ((buffer (map-elt (cdr place) 'buffer)))
+              (when (stringp buffer)
+                (setf buffer (get-buffer buffer)))
+              (if (buffer-live-p buffer)
+                  (switch-to-buffer buffer)
+                (user-error "Buffer no longer exists: %s" buffer)))
+            ;; Add support for pdf-tools
+            (when-let ((page (map-elt (cdr place) 'page)))
+              (pdf-view-goto-page page)))
+        (dogears--update-list-buffer))
+
+      (advice-add #'dogears-go :override #'hurricane//dogears-go)
+
+      (defun hurricane//dogears--format-record (record)
+        "Return bookmark RECORD formatted."
+        (pcase-let* ((`(,manual ,buffer ,line ,relevance ,within ,mode ,position ,dir ,page)
+                      (dogears--format-record-list record)))
+          (format "%s  %15.15s [%9.9s]  (%35.35s)  \"%35.35s\"  %12.12s %5.5s:%s %5.5s"
+                  manual buffer line page relevance within mode position dir)))
+
+      (advice-add #'dogears--format-record :override #'hurricane//dogears--format-record)
+
+      (defun hurricane//dogears--format-record-list (record)
+        "Return a list of elements in RECORD formatted."
+        (cl-labels ((face-propertize (string face)
+                      ;; Return copy of STRING with FACE appended, but only if it doesn't already
+                      ;; contain FACE.  (I don't know a better way to prevent faces being added
+                      ;; repeatedly, which eventually, drastically slows down redisplay).
+                      (setf string (copy-sequence string))
+                      (let ((property (get-text-property 0 'face string)))
+                        (unless (or (equal face property)
+                                    (and (listp property) (member face property)))
+                          (add-face-text-property 0 (length string) face 'append string)))
+                      string))
+          (pcase-let* ((`(,name . ,(map filename line manualp mode position within page)) record)
+                       (manual (if manualp "✓" " "))
+                       (buffer (face-propertize (if filename
+                                                    (file-name-nondirectory filename)
+                                                  name)
+                                                'font-lock-constant-face))
+                       (line (string-trim line))
+                       (mode (face-propertize (string-remove-suffix "-mode" (symbol-name mode))
+                                              'font-lock-type-face))
+                       (position (if position
+                                     (number-to-string position)
+                                   ""))
+                       (relevance (face-propertize (dogears--relevance record)
+                                                   'font-lock-keyword-face))
+                       (within (if within
+                                   (face-propertize within 'font-lock-function-name-face)
+                                 ""))
+                       ;; The filename may not always *be* a filename; e.g. somehow in
+                       ;; EWXM buffers it gets set to " - no file -", instead of just nil.
+                       (dir (when filename
+                              (file-name-directory filename)))
+                       (page (if page
+                                 (number-to-string page)
+                               "")))
+            (if dir
+                (setf dir (split-string dir "/" t)
+                      dir (nreverse dir)
+                      dir (cl-loop for d in dir
+                                   concat (truncate-string-to-width d 10 nil nil t)
+                                   concat "\\")
+                      dir (face-propertize dir 'font-lock-comment-face))
+              (setf dir ""))
+            (list manual buffer line page relevance within mode position dir))))
+
+      (advice-add #'dogears--format-record-list :override #'hurricane//dogears--format-record-list)
+
+      (define-derived-mode dogears-list-mode tabulated-list-mode
+        "Dogears-List"
+        :group 'dogears
+        (setf tabulated-list-format (vector
+                                     '("#" 3 (lambda (a b)
+                                               (< (string-to-number (elt (cadr a) 0))
+                                                  (string-to-number (elt (cadr b) 0)))))
+                                     (list (propertize "✓" 'help-echo "Manually remembered") 1 t)
+                                     '("Buffer" 20 t)
+                                     '("Line" 20 t)
+                                     '("Page" 5 t :right-align t)
+                                     '("Relevance" 10 t :right-align t)
+                                     '("Within" 25 t)
+                                     '("Mode" 12 t :right-align t)
+                                     '("Pos" 5 t :right-align t)
+                                     '("Directory" 25 t)
+                                     )
+              tabulated-list-sort-key '("#" . nil)
+              truncate-string-ellipsis dogears-ellipsis)
+        (add-hook 'tabulated-list-revert-hook
+                  (lambda ()
+                    (setf tabulated-list-entries
+                          (with-current-buffer (window-buffer (get-mru-window t nil nil))
+                            (dogears-list--entries))))
+                  nil 'local)
+        (tabulated-list-init-header)
+        (tabulated-list-revert))
+      )))

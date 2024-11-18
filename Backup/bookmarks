@@ -2,7 +2,13 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("Workspace: inverse_thermal_camera-develop"
+(("参考文档"
+ (filename . "~/onedrive/参考文档/")
+ (front-context-string . "Cortex-M3 权威指南.p")
+ (rear-context-string . " Nov 13 16:51   ")
+ (position . 133)
+ (last-modified 26424 14148 48494 0))
+("Workspace: inverse_thermal_camera-develop"
  (url . "emacs+burly+windows:?%28%28%28min-height%20.%204%29%20%28min-width%20.%2010%29%20%28min-height-ignore%20.%203%29%20%28min-width-ignore%20.%204%29%20%28min-height-safe%20.%201%29%20%28min-width-safe%20.%202%29%20%28min-pixel-height%20.%20124%29%20%28min-pixel-width%20.%20140%29%20%28min-pixel-height-ignore%20.%2093%29%20%28min-pixel-width-ignore%20.%2056%29%20%28min-pixel-height-safe%20.%2031%29%20%28min-pixel-width-safe%20.%2028%29%29%20leaf%20%28pixel-width%20.%201906%29%20%28pixel-height%20.%20961%29%20%28total-width%20.%20136%29%20%28total-height%20.%2031%29%20%28normal-height%20.%201.0%29%20%28normal-width%20.%201.0%29%20%28parameters%20%28burly-url%20.%20%22emacs%2Bburly%2Bbookmark%3A%2F%2Fov7670_converted.h%3Ffilename%3D%2522~%252FDownloads%252FSTM32Project%252Finverse_thermal_camera-develop%252FSrc%252Fov7670_converted.h%2522%26front-context-string%3D%2522%2523pragma%2520once%250A%250A%2523i%2522%26rear-context-string%3Dnil%26position%3D1%26last-modified%3D%252826421%252036816%2520714500%25200%2529%26defaults%3D%2528%2522ov7670_converted.h%2522%2529%26burly-buffer-local-variables%3D%2528%2528bufler-workspace-name%2529%2529%22%29%29%20%28buffer%20%22ov7670_converted.h%22%20%28selected%20.%20t%29%20%28hscroll%20.%200%29%20%28fringes%208%208%20nil%20nil%29%20%28margins%20nil%29%20%28scroll-bars%20nil%200%20t%20nil%200%20t%20nil%29%20%28vscroll%20.%200%29%20%28dedicated%29%20%28point%20.%201%29%20%28start%20.%201%29%29%20%28prev-buffers%20%28%22ov7670_converted.c%22%209524%209690%29%20%28%22%2ADeepSeek%2A%22%201%202%29%20%28%22%2Aspacemacs%2A%22%201%20262%29%20%28%22ov7670_converted.h%22%201%2035%29%20%28%22%2Ascratch%2A%22%201%201%29%29%29")
  (handler . bufler-workspace-bookmark-handler)
  (bufler-workspace-name . "Workspace: inverse_thermal_camera-develop"))

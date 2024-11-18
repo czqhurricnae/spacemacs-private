@@ -1856,6 +1856,7 @@ marked file."
     (defun hurricane//org-noter-get-link ()
       (format "%s:%s#%s" org-noter-property-note-location (buffer-file-name) (org-noter-pdf--approx-location-cons 'pdf-view-mode (org-noter-pdf--pdf-view-get-precise-info 'pdf-view-mode (get-buffer-window)))))
 
+    ;; 这个函数只处理EAF 获得的PDF TOC，不适合处理 pdf-tools
     (defun hurricane//org-noter-get-hierarchy-of-outline-reversely (page outlines)
       (let ((next-outline nil)
             (current-outline nil)
@@ -1893,7 +1894,7 @@ marked file."
                               (get-buffer-window))))))
                     (outlines (mapconcat
                                #'identity
-                               (get-hierarchy-of-outline-reversely
+                               (pdf-tools-get-hierarchy-of-outline-reversely
                                 (string-to-number page)
                                 (pdf-info-outline))
                                " < "))

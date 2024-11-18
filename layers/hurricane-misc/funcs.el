@@ -2913,3 +2913,23 @@ Version 2019-02-12 2021-08-09"
   (ivy-add-actions
    #'dogears-go
    '(("d" hurricane//dogears-go-delete-place-action "@Delete place"))))
+
+(defun hurricane/document-contents-extractor ()
+  (interactive)
+  (let* ((first-page (read-string "Please enter first page: "))
+         (last-page (read-string "Please enter last page: "))
+         (document-contents-extractor-command "extract_contents")
+         (lang "chi_sim")
+         (pdf-full-file-path (or eaf--buffer-id buffer-file-name))
+         (full-command (list document-contents-extractor-command "-l" lang (expand-file-name pdf-full-file-path) first-page last-page))
+         (output-buffer (generate-new-buffer "*document-contents-extractor*"))
+         (exit-code (apply 'call-process (car full-command) nil output-buffer t (cdr full-command))))
+
+    (if (eq exit-code 0)
+        (progn
+          (setq result (with-current-buffer output-buffer
+                         (buffer-string)))
+          (message "result: %s" result)
+          (kill-buffer output-buffer))
+      (message "Error running command. Check *document-contents-extractor* buffer for details.")
+      (switch-to-buffer output-buffer))))

@@ -215,7 +215,6 @@
 
 (defun hurricane-ui/init-bufler ()
   (use-package bufler
-    :init (require 'helm)
     :after helm
     :config
     (setq bufler-switch-buffer-include-recent-buffers t)

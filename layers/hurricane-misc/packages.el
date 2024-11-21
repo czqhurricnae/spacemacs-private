@@ -784,10 +784,15 @@
 (defun hurricane-misc/post-init-projectile ()
   (progn
     (with-eval-after-load 'projectile
-      (progn
-        (setq projectile-completion-system 'ivy)
-        (add-to-list 'projectile-other-file-alist '("html" "js"))
-        (add-to-list 'projectile-other-file-alist '("js" "html"))))
+      (setq projectile-completion-system 'ivy)
+      (add-to-list 'projectile-other-file-alist '("html" "js"))
+      (add-to-list 'projectile-other-file-alist '("js" "html"))
+
+      (defun hurricane//projectile-project-p (dir)
+        "Check if DIR is a project by looking for a .project file."
+        (locate-dominating-file dir ".project"))
+
+      (add-to-list 'projectile-project-root-functions 'hurricane//projectile-project-p))
 
     (defvar hurricane-simple-todo-regex "\\<\\(FIXME\\|TODO\\|BUG\\):")
 
@@ -1407,8 +1412,8 @@ This function works best if paired with a fuzzy search package."
                                        (if history-file-exists
                                            (mapcar
                                             (lambda (h) (when (string-match history-pattern h)
-                                                     (if (file-exists-p h)
-                                                         (format "%s" h))))
+                                                          (if (file-exists-p h)
+                                                              (format "%s" h))))
                                             (with-temp-buffer (insert-file-contents pdf-history-file-path)
                                                               (split-string (buffer-string) "\n" t)))
                                          (make-directory (file-name-directory pdf-history-file-path) t)

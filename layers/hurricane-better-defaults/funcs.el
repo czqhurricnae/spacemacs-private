@@ -146,14 +146,14 @@ After this command has been run, any buffers it's modified will remain open and 
             (car org-stored-links))))
        ((derived-mode-p 'org-mode)
         (when (or (org-in-regexp org-radio-target-regexp)
-               (org-in-regexp org-target-regexp))
-        (let ((target nil))
-        (setf target (string-trim (match-string 0) "<<" ">>"))
-        (let ((link target)
-              (desc (concat "See " target)))
-          (push (list link desc) org-stored-links)
-          (message "Stored: %s" (or link desc))
-          (car org-stored-links)))))
+                  (org-in-regexp org-target-regexp))
+          (let ((target nil))
+            (setf target (string-trim (match-string 0) "<<" ">>"))
+            (let ((link target)
+                  (desc (concat "See " target)))
+              (push (list link desc) org-stored-links)
+              (message "Stored: %s" (or link desc))
+              (car org-stored-links)))))
        (t (apply orig-fun args)))))
 
 ;; (advice-add 'org-store-link :around #'hurricane//dired-store-link)
@@ -267,9 +267,9 @@ After this command has been run, any buffers it's modified will remain open and 
   (let ((abs-filename (expand-file-name (concat default-directory x))))
     (unless (string= abs-filename "")
       (if (eq last-command 'kill-region)
-        (kill-append abs-filename nil)
-      (kill-new abs-filename))
-    (message "Copy absolute filename: %s" abs-filename))))
+          (kill-append abs-filename nil)
+        (kill-new abs-filename))
+      (message "Copy absolute filename: %s" abs-filename))))
 
 (defun hurricane//file-jump-copy-filename-as-kill (x)
   (unless (string= x "")
@@ -387,3 +387,14 @@ variables `exec-path' and `eshell-path-env'."
   (and evil-mode (evil-force-normal-state))
   (progn
     (keyboard-quit)))
+
+
+(defun hurricane//project-find-project-file (dir)
+  "Look for a .project file in DIR or its ancestors."
+  (when-let ((root (locate-dominating-file dir ".project")))
+    (cons 'transient root)))
+
+(cl-defmethod project-root ((project (head transient)))
+  (cdr project))
+
+;; (add-to-list 'project-find-functions #'hurricane//project-find-project-file)

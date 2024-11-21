@@ -2,7 +2,39 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("参考文档"
+(("天瓏網路書店 | 電腦書專賣店"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.tenlong.com.tw/"))
+("Z-Library项目"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://zh.go-to-library.sk/#useful_link_tab"))
+("快速、便携且实惠的示波器与电感计：7 步教程（附图） - Instructables --- Fast, Portable and Affordable Oscilloscope and Inductance Meter : 7 Steps (with Pictures) - Instructables"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.instructables.com/Fast-Portable-and-Affordable-Oscilloscope-and-Indu/"))
+("Mini Oscilloscope : 9 Steps (with Pictures) - Instructables"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.instructables.com/Mini-Oscilloscope/"))
+("Yours for the making - Instructables"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.instructables.com/"))
+("Who Said Thermal Cameras Weren’t Accessible To The Masses? | Hackaday"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://hackaday.com/2018/06/08/who-said-thermal-cameras-werent-accessible-to-the-masses/"))
+("打造终极智能手表！| LiDAR 与无线控制功能 | 网关（操作指南） --- Build The Ultimate Smartwatch! | LiDAR and Wireless Control Capabilities | Gateway (How To)"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.roboticworx.io/p/build-the-ultimate-smartwatch-lidar"))
+("Build Custom ESP32 Boards From Scratch! | The Complete Guide to Designing Your Own ESP32-S3 and C3 | Full Tutorial"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://www.roboticworx.io/p/build-custom-esp32-boards-from-scratch"))
+("参考文档"
  (filename . "~/onedrive/参考文档/")
  (front-context-string . "Cortex-M3 权威指南.p")
  (rear-context-string . " Nov 13 16:51   ")
@@ -16,10 +48,6 @@
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://libgen.li/"))
-("Z-Library – 世界上最大的电子图书馆。自由访问知识和文化。"
- (handler . eaf--bookmark-restore)
- (eaf-app . "browser")
- (filename . "https://zh.singlelogin.re/"))
 ("Hex Calculator"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
@@ -44,19 +72,10 @@
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://dot2pic.com/"))
-("秘塔AI搜索"
- (handler . eaf--bookmark-restore)
- (eaf-app . "browser")
- (filename . "https://metaso.cn/"))
 ("🔓解锁限制"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "javascript:!function()%7Bfunction%20t(e)%7Be.stopPropagation(),e.stopImmediatePropagation&&e.stopImmediatePropagation()%7Ddocument.querySelectorAll(%22*%22).forEach(e=%3E%7B%22none%22===window.getComputedStyle(e,null).getPropertyValue(%22user-select%22)&&e.style.setProperty(%22user-select%22,%22text%22,%22important%22)%7D),%5B%22copy%22,%22cut%22,%22contextmenu%22,%22selectstart%22,%22mousedown%22,%22mouseup%22,%22mousemove%22,%22keydown%22,%22keypress%22,%22keyup%22%5D.forEach(function(e)%7Bdocument.documentElement.addEventListener(e,t,%7Bcapture:!0%7D)%7D),alert(%22%E8%A7%A3%E9%99%A4%E9%99%90%E5%88%B6%E6%88%90%E5%8A%9F%E5%95%A6%EF%BC%81%22)%7D();"))
-("Make video"
- (filename . "~/Downloads/Make/")
- (front-context-string)
- (rear-context-string . "太宗如何得到《兰亭序》.org\n")
- (position . 411))
 ("https://www.ffmpegbyexample.com/"
  (filename . "https://www.ffmpegbyexample.com/")
  (front-context-string . "\n(defun hurrican")
@@ -337,11 +356,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/OV7670 原理图.org")
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/STM32H7 ADC + DMA + Timer Firmware Tutorial.org")
  (front-context-string)
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 290)
- (last-modified 26423 22743 835007 0))
+ (position . 356)
+ (last-modified 26429 23686 187416 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

@@ -1101,9 +1101,12 @@ that the point is already within a string."
 If `mark-active' on, return region string.
 Otherwise word around point."
   (if mark-active
-      (buffer-substring-no-properties (region-beginning)
-                                      (region-end))
-    (thing-at-point 'word t)))
+      (if (derived-mode-p 'pdf-view-mode)
+          (car (pdf-view-active-region-text))
+        (buffer-substring-no-properties (region-beginning)
+                                        (region-end)))
+    (when (not (derived-mode-p 'pdf-view-mode))
+      (thing-at-point 'word t))))
 
 (defun anki-editor-collect-content-from-result (notesinfo &optional arg)
   (mapcar
@@ -1316,6 +1319,7 @@ Show the heading too, if it is currently invisible."
             (outlines (pdf-tools-annotations-entry-outlines x)))
        (list
         (format "%s%s" content (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
+        'pdf-tools
         page
         edges
         content
@@ -1323,20 +1327,44 @@ Show the heading too, if it is currently invisible."
         outlines)))
    annotsinfo))
 
+(defun org-roam-collect-annotations-for-ivy (node-list &optional arg)
+  (mapcar
+   (lambda (node)
+     (let* ((node-hierarchy  (org-roam-node-hierarchy node))
+            (org-filepath (org-roam-node-file node))
+            (point (org-roam-node-point node))
+            (noter-page (cdr (assoc "NOTER_PAGE" (org-roam-node-properties node)))))
+       (list
+        node-hierarchy
+        'org-roam
+        org-filepath
+        point
+        noter-page)))
+   node-list))
+
 (defun hurricane/pdf-tools-find-annotations (&optional query)
   "Find pdf annotations with QUERY."
   (interactive)
   (ivy-read "Pdf-tools annotations query: "
-            (pdf-tools-collect-annotations-for-ivy
-             (pdf-tools-annotations-db--get-all-entries))
+            (append (pdf-tools-collect-annotations-for-ivy
+                     (pdf-tools-annotations-db--get-all-entries))
+                    (org-roam-collect-annotations-for-ivy
+                     (seq-filter
+                      (lambda (node) (assoc "NOTER_PAGE" (org-roam-node-properties node)))
+                      (org-roam-node-list))))
             :initial-input (or query (hurricane//region-or-word))
             :action (lambda (data)
-                      (org-link-open-from-string
-                       (format "[[%s:%s#%s]]" org-noter-property-note-location (elt data 4)
-                               (cons
-                                (elt data 1)
-                                (cons (nth 1 (elt data 2))
-                                      (nth 0 (elt data 2))))))
+                      (cond ((equal 'org-roam (elt data 1))
+                             (with-current-buffer (find-file-noselect (elt data 2))
+                               (goto-char (elt data 3))
+                               (hurricane/open-noter-page)))
+                            ((equal 'pdf-tools (elt data 1))
+                             (org-link-open-from-string
+                              (format "[[%s:%s#%s]]" org-noter-property-note-location (elt data 5)
+                                      (cons
+                                       (elt data 2)
+                                       (cons (nth 1 (elt data 3))
+                                             (nth 0 (elt data 3))))))))
                       )))
 
 (defun hurricane//pdf-tools-insert-noter-page-link-action (x)

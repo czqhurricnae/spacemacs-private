@@ -1958,12 +1958,12 @@ Version 2019-02-12 2021-08-09"
                                                            (replace-regexp-in-string
                                                             "," "."
                                                             (compile-media-msecs-to-timestamp
-                                        ;；多剪切6 秒钟留白。
+                                        ;；多剪切 6 秒钟留白。
                                                              (+ 4000
                                                                 subed-mpv-playback-position
                                                                 audio-duration)))))
                                                     ;; duration
-                                        ;；多剪切6 秒钟留白。
+                                        ;；多剪切 6 秒钟留白。
                                                     (if if-get-timestamp-from-property
                                                         audio-duration
                                                       (+ 4000 audio-duration))
@@ -2502,7 +2502,7 @@ Version 2019-02-12 2021-08-09"
                ;; 合并背景音乐文件。
                ;; merge-temp-output 的时长必须大于 audio-source，否则 tts-temp-output 播放时
                ;; video 画面在走完时长后停止，而 tts audio 继续播放。
-               ;; backgroundmusic-source 在被合并时，tts audio只被提取并合并至停止画面的时间戳，backgroundmusci-source 则合并至 tts audio 的完整时间戳。
+               ;; backgroundmusic-source 在被合并时，tts audio 只被提取并合并至停止画面的时间戳，backgroundmusci-source 则合并至 tts audio 的完整时间戳。
                ;; 所以 reveal-convert-zoom-images-to-video-output 反而是在停止画面后没有 tts audio，却有 backgroundmusic-source。
                (setq backgroundmusic-cmd (format "ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"[1] volume=0.01 [aud1];[aud1] afade=t=in:st=0:d=3 [aud2];[aud2] afade=t=out:st=%s:d=3 [aud3];[0:a][aud3] amix=inputs=2:duration=longest [audio_out]\" -map 0:v -map \"[audio_out]\" -y \"%s\"" track-temp-output backgroundmusic-source (- (string-to-number audio-duration) 2) reveal-convert-zoom-images-to-video-output))
                (setq final-cmd (concat zoom-cmd "&&" merge-cmd "&&" tts-cmd "&&" track-cmd "&&" backgroundmusic-cmd))))
@@ -2731,7 +2731,7 @@ Version 2019-02-12 2021-08-09"
     (org-download-image $inputStr)
     (org-display-inline-images)))
 
-;; 在函数 switch_to_reader_mode 中加入eval_in_emacs("hurricane/html-to-org-with-pandoc", [html])
+;; 在函数 switch_to_reader_mode 中加入 eval_in_emacs("hurricane/html-to-org-with-pandoc", [html])
 (defun hurricane/html-to-org-with-pandoc (html)
   (kill-new (org-web-tools--html-to-org-with-pandoc html)))
 
@@ -2795,7 +2795,7 @@ Version 2019-02-12 2021-08-09"
       (replace-match "\\1\\2"))))
 
 (defun hurricane/recursively-convert-source-files-from-GBK-to-UTF-8 ()
-  "递归的把当前目录的源文件的编码从GBK转成UTF-8。"
+  "递归的把当前目录的源文件的编码从 GBK 转成 UTF-8。"
   (interactive)
   (let* ((local-root (or (hurricane//git-project-root) default-directory))
          (result nil))

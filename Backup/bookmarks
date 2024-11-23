@@ -2,7 +2,15 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("天瓏網路書店 | 電腦書專賣店"
+(("Z-library Project - eBook Library Z. Download free Books"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://z-library.sk/"))
+("秘塔AI搜索"
+ (handler . eaf--bookmark-restore)
+ (eaf-app . "browser")
+ (filename . "https://metaso.cn/"))
+("天瓏網路書店 | 電腦書專賣店"
  (handler . eaf--bookmark-restore)
  (eaf-app . "browser")
  (filename . "https://www.tenlong.com.tw/"))

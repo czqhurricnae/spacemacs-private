@@ -389,12 +389,26 @@ variables `exec-path' and `eshell-path-env'."
     (keyboard-quit)))
 
 
-(defun hurricane//project-find-project-file (dir)
-  "Look for a .project file in DIR or its ancestors."
-  (when-let ((root (locate-dominating-file dir ".project")))
-    (cons 'transient root)))
+(with-eval-after-load 'project
+  (defun hurricane//project-find-project-file (dir)
+    "Look for a .project file in DIR or its ancestors."
+    (when-let ((root (locate-dominating-file dir ".project")))
+      (cons 'transient root)))
 
-(cl-defmethod project-root ((project (head transient)))
-  (cdr project))
+  (cl-defmethod project-root ((project (head transient)))
+    (cdr project))
 
-;; (add-to-list 'project-find-functions #'hurricane//project-find-project-file)
+  (add-to-list 'project-find-functions #'hurricane//project-find-project-file))
+
+(with-eval-after-load 'ivy
+  (defun swiper-toggle-color-rg ()
+    "Toggle `color-rg' with current swiper input."
+    (interactive)
+    (let ((text (replace-regexp-in-string
+                 "\n" ""
+                 (replace-regexp-in-string "^.*Swiper: " "" (thing-at-point 'line t)))))
+      (setq hurricane//last-swiper-to-counsel-rg-search text)
+      (ivy-quit-and-run
+        (color-rg-search-input hurricane//last-swiper-to-counsel-rg-search default-directory))))
+
+  (define-key ivy-minibuffer-map (kbd "<C-return>") 'swiper-toggle-color-rg))

@@ -16,6 +16,41 @@ def getDirFiles(dir):
                 fileList.append(os.path.join(dir, ff))
     return fileList
 
+def convert_to_fullwidth_punctuations(text):
+    # 定义中文字符的正则表达式
+    cjk_pattern = r'([\u4E00-\u9FCC\u3400-\u4DB5\uFA0E\uFA0F\uFA11\uFA13\uFA14\uFA1F\uFA21\uFA23\uFA24\uFA27-\uFA29]|[\ud840-\ud868][\udc00-\udfff]|\ud869[\udc00-\uded6\udf00-\udfff]|[\ud86a-\ud86c][\udc00-\udfff]|\ud86d[\udc00-\udf34\udf40-\udfff]|\ud86e[\udc00-\udc1d])'
+
+    # 定义中文字符前的半角标点符号及其对应的全角标点符号
+    punct_before_cjk = {
+        '"': '“',
+        '(': '（',
+        "'": '‘'
+    }
+
+    # 定义中文字符后的半角标点符号及其对应的全角标点符号
+    punct_after_cjk = {
+        '.': '。',
+        ',': '，',
+        '!': '！',
+        '?': '？',
+        ':': '：',
+        ';': '；',
+        '"': '”',
+        ')': '）'
+    }
+
+    # 替换中文字符前的半角标点符号
+    for punct_half, punct_full in punct_before_cjk.items():
+        pattern = re.compile(re.escape(punct_half) + cjk_pattern)
+        text = pattern.sub(punct_full + r'\1', text)
+
+    # 替换中文字符后的半角标点符号
+    for punct_half, punct_full in punct_after_cjk.items():
+        pattern = re.compile(cjk_pattern + re.escape(punct_half))
+        text = pattern.sub(r'\1' + punct_full, text)
+
+    return text
+
 def convert_punctuation(text):
     # 定义非中文标点符号到中文标点符号的映射
     punctuation_map = {
@@ -76,7 +111,8 @@ def convert_comments_style(code):
             indent, code_part, comment = match.groups()
             # 将注释转换为 C++ 风格
             new_raw_comment = re.sub(r'//', '', comment).strip()
-            new_comment = f'/* {convert_punctuation(new_raw_comment)} */'
+            # new_comment = f'/* {convert_punctuation(new_raw_comment)} */'
+            new_comment = f'/* {convert_to_fullwidth_punctuations(new_raw_comment)} */'
             # 如果注释在代码之后，将注释放在上面
             if code_part.strip():
                 new_lines.append(f'{indent}{new_comment}')

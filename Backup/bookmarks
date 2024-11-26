@@ -364,11 +364,11 @@
  (rear-context-string . " Mar 21  2021   ")
  (position . 221))
 ("org-capture-last-stored"
- (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/notes/STM32H7 ADC + DMA + Timer Firmware Tutorial.org")
- (front-context-string)
+ (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/snippet.org")
+ (front-context-string . "* TIM_GetITStatu")
  (rear-context-string . "EY:\n#+PAGE_KEY:\n")
- (position . 356)
- (last-modified 26429 23686 187416 0))
+ (position . 217)
+ (last-modified 26437 52452 752080 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

@@ -771,10 +771,6 @@ you should place your code here."
     (let* ((pdf-file-name (substring-no-properties fname)))
       (run-hook-with-args-until-success 'helm-pdfgrep-default-read-command pdf-file-name pageno)))
   (require 'pdf-tools)
-  (defun eaf-pdf-open-with-MarginNote ()
-    (interactive)
-    (spacemacs//open-in-external-app eaf--buffer-url))
-  (eaf-bind-key eaf-pdf-open-with-MarginNote "e" eaf-pdf-viewer-keybinding)
   ;; (setq eww-retrieve-command '("readable"))
   (setq eww-download-directory (concat deft-dir (file-name-as-directory "notes")))
   (with-eval-after-load 'dictionary-overlay

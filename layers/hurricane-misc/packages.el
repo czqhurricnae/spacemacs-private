@@ -1306,15 +1306,15 @@
     (eaf-bind-key insert_or_copy_text "M-w" eaf-browser-keybinding))
 
   (with-eval-after-load 'eaf-pdf-viewer
-    (defun eaf-pdf-viewer-open-with-Adobe-Acrobat ()
+    (defun open-with-Adobe-Acrobat ()
       (interactive)
-      (let* ((page-number (or (eaf-call-sync "execute_function" eaf--buffer-id "current_page") "1")))
+      (let* ((page-number (or (eaf-call-sync "execute_function" eaf--buffer-id "current_page") (pdf-view-current-page))))
         (do-applescript
          (concat "tell application \"Adobe Acrobat\"\n"
                  "	try\n"
-                 (format "		open \"%s\" options \"page=%s\"\n" eaf--buffer-url page-number)
+                 (format "		open \"%s\" options \"page=%s\"\n" (or eaf--buffer-url (buffer-file-name)) page-number)
                  "	on error\n"
-                 (format "		display alert \"Cannot open the file\" & \"%s\" \n" eaf--buffer-url)
+                 (format "		display alert \"Cannot open the file\" & \"%s\" \n" (or eaf--buffer-url (buffer-file-name)))
                  "		return false\n"
                  "	end try\n"
                  "end tell\n"

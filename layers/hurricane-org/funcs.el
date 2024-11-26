@@ -1867,11 +1867,13 @@ their contents."
     (when (use-region-p)
       (setq start (region-beginning))
       (setq end (region-end))
-      (goto-char start))
+      (goto-char start)
+      (save-excursion
+        (insert (format "%s\n" (org-id-new)))))
 
-    (setq start-line (s-trim-right (thing-at-point 'line t)))
+    (setq start-line (s-trim-right (thing-at-point 'uuid t)))
 
-    (kill-new (format "#+transclude: [[file:%s::%s]] :lines 1-%s :src c" (spacemacs--file-path) start-line (count-lines start end)))
+    (kill-new (format "#+transclude: [[file:%s::%s]] :lines 1-%s :src c" (spacemacs--file-path) start-line (+ 1 (count-lines start end))))
     ))
 
 (defun hurricane/get-youtube-chapters (&optional file-path-or-url)

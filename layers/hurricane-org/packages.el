@@ -262,6 +262,58 @@
       ;; @See: https://stackoverflow.com/questions/28417026/org-mode-capture-templates
       ;; Add multi-file journal.
       ;; }}
+
+      (defvar gptel-context--language-map
+        '(("py" . "python")
+          ("c" . "C")
+          ("h" . "C")
+          ("cpp" . "C++")
+          ("java" . "java")
+          ("el" . "emacs-lisp")
+          ("js" . "javascript")
+          ("html" . "html")
+          ("css" . "css")
+          ("sh" . "sh")
+          ("rb" . "ruby")
+          ("go" . "go")
+          ("rs" . "rust")
+          ("hs" . "haskell")
+          ("lua" . "lua")
+          ("pl" . "perl")
+          ("php" . "php")
+          ("sql" . "sql")
+          ("xml" . "xml")
+          ("yaml" . "yaml")
+          ("yml" . "yaml")
+          ("json" . "json")
+          ("md" . "markdown")
+          ("txt" . "text"))
+        "Mapping of file suffixes to language types.")
+
+      (defun gptel-context--buffer-suffix (buffer)
+        "Get the suffix of the file associated with BUFFER and map it to a language type."
+        (let ((file-name (buffer-file-name buffer)))
+          (when file-name
+            (let ((suffix (file-name-extension file-name)))
+              (or (cdr (assoc suffix gptel-context--language-map))
+                  "unknown")))))
+
+      (defun gptel-context--get-selected-code ()
+        "Get selected code snippets from gptel-context--alist."
+        (let (selected-code)
+          (dolist (context gptel-context--alist)
+            (let ((buffer (car context))
+                  (overlays (cdr context)))
+              (dolist (ov overlays)
+                (when (overlay-get ov 'gptel-context)
+                  (let ((start (overlay-start ov))
+                        (end (overlay-end ov))
+                        (language (gptel-context--buffer-suffix buffer)))
+                    (with-current-buffer buffer
+                      (let ((code (buffer-substring-no-properties start end)))
+                        (push (format "#+BEGIN_SRC %s\n%s\n#+END_SRC" language code) selected-code))))))))
+          (reverse selected-code)))
+
       (setq org-capture-templates
             '(("t" "Todo" entry (file+headline org-agenda-file-gtd "Workspace")
                "* TODO [#B] %?\n  %i\n"
@@ -270,6 +322,9 @@
                "* %?\n  %i\n %U"
                :empty-lines 1)
               ("s" "Code Snippet" entry
+               (file org-agenda-file-code-snippet)
+               "* %?\n %(mapconcat 'identity (gptel-context--get-selected-code) \"\n\")")
+              ("S" "Code Snippet" entry
                (file org-agenda-file-code-snippet)
                "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
               ;; ("W" "Work" entry (file+headline org-agenda-file-gtd "Work")

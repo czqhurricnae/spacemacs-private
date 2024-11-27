@@ -365,10 +365,10 @@
  (position . 221))
 ("org-capture-last-stored"
  (filename . "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/braindump/snippet.org")
- (front-context-string . "* Another test \n")
- (rear-context-string . "USY);\n#+END_SRC\n")
- (position . 1383)
- (last-modified 26438 50516 104917 0))
+ (front-context-string . "* 重置输入捕获分频 \n #+B")
+ (rear-context-string . "BLE);\n#+END_SRC\n")
+ (position . 1580)
+ (last-modified 26438 53605 947081 0))
 ("WebDownloads"
  (filename . "~/Library/Mobile Documents/iCloud~QReader~MarginStudy/Documents/WebDownloads/")
  (front-context-string . "FIM手册在波音飞机排故中的应用")

@@ -2067,6 +2067,20 @@ Works only in youtube-sub-extractor-mode buffer."
 
 (defun hurricane-misc/post-init-gptel ()
   (with-eval-after-load 'gptel
+    (defun gptel-context-remove-all ()
+      (interactive)
+      (dolist (context gptel-context--alist)
+        (let ((buffer (car context))
+              (overlays (cdr context)))
+          (with-current-buffer buffer
+            (cl-loop for cov in
+                     (gptel-context--in-region (current-buffer) (point-min) (point-max))
+                     do (progn
+                          (gptel-context-remove cov)))
+            )
+          )))
+
+    (spacemacs/set-leader-keys "$gd" #'gptel-context-remove-all)
     (setq gptel-model "deepseek-chat")
     (setq gptel-default-mode 'org-mode)
     (setq gptel-backend

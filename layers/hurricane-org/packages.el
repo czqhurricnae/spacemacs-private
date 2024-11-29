@@ -311,7 +311,7 @@
                         (language (gptel-context--buffer-suffix buffer)))
                     (with-current-buffer buffer
                       (let ((code (buffer-substring-no-properties start end)))
-                        (push (format "#+BEGIN_SRC %s\n%s\n#+END_SRC" language code) selected-code))))))))
+                        (push (format "%s\n #+BEGIN_SRC %s\n%s\n#+END_SRC" (buffer-file-name) language code) selected-code))))))))
           (reverse selected-code)))
 
       (setq org-capture-templates
@@ -860,6 +860,8 @@
               (filetitle (org-roam-node-file-title node))
               (separator (propertize " < " 'face 'shadow))
               )
+          (when (assoc "NOTER_PAGE" (org-roam-node-properties node))
+            (setq title (propertize title 'face '((:foreground "DarkGoldenrod2")))))
           (cl-case level
             ;; node is a top-level file
             (0 filetitle)

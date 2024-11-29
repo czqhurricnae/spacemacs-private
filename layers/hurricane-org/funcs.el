@@ -1318,7 +1318,7 @@ Show the heading too, if it is currently invisible."
             (full-filepath (pdf-tools-annotations-entry-full-filepath x))
             (outlines (pdf-tools-annotations-entry-outlines x)))
        (list
-        (format "%s%s" content (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
+        (format "%s%s" (propertize content 'face '((:foreground "SkyBlue2"))) (propertize (concat " < " outlines " < " (file-name-nondirectory full-filepath)) 'face '(shadow italic)))
         'pdf-tools
         page
         edges
@@ -1330,7 +1330,7 @@ Show the heading too, if it is currently invisible."
 (defun org-roam-collect-annotations-for-ivy (node-list &optional arg)
   (mapcar
    (lambda (node)
-     (let* ((node-hierarchy  (org-roam-node-hierarchy node))
+     (let* ((node-hierarchy (org-roam-node-hierarchy node))
             (org-filepath (org-roam-node-file node))
             (point (org-roam-node-point node))
             (noter-page (cdr (assoc "NOTER_PAGE" (org-roam-node-properties node)))))
@@ -1339,7 +1339,9 @@ Show the heading too, if it is currently invisible."
         'org-roam
         org-filepath
         point
-        noter-page)))
+        ;; noter-page
+        node
+        )))
    node-list))
 
 (defun hurricane/pdf-tools-find-annotations (&optional query)
@@ -1349,14 +1351,20 @@ Show the heading too, if it is currently invisible."
             (append (pdf-tools-collect-annotations-for-ivy
                      (pdf-tools-annotations-db--get-all-entries))
                     (org-roam-collect-annotations-for-ivy
-                     (seq-filter
-                      (lambda (node) (assoc "NOTER_PAGE" (org-roam-node-properties node)))
-                      (org-roam-node-list))))
+                     (org-roam-node-list))
+                    ;; (org-roam-collect-annotations-for-ivy
+                    ;;  (seq-filter
+                    ;;   (lambda (node) (assoc "NOTER_PAGE" (org-roam-node-properties node)))
+                    ;;   (org-roam-node-list)))
+                    )
             :initial-input (or query (hurricane//region-or-word))
             :action (lambda (data)
                       (cond ((equal 'org-roam (elt data 1))
-                             (with-current-buffer (find-file-noselect (elt data 2))
-                               (goto-char (elt data 3))
+                             ;; (with-current-buffer (find-file-noselect (elt data 2))
+                             ;; (goto-char (elt data 3))
+                             ;; (hurricane/open-noter-page))
+                             (org-roam-node-visit (elt data 4) nil)
+                             (when (assoc "NOTER_PAGE" (org-roam-node-properties (elt data 4)))
                                (hurricane/open-noter-page)))
                             ((equal 'pdf-tools (elt data 1))
                              (org-link-open-from-string

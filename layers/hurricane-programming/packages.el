@@ -48,6 +48,9 @@
     (treesit-auto (recipe
                    :fetcher github
                    :repo "renzmann/treesit-auto"))
+    (tree-sitter (recipe
+                  :fetcher github
+                  :repo "emacs-tree-sitter/elisp-tree-sitter"))
     (tree-sitter-langs (recipe
                         :fetcher github
                         :repo "emacs-tree-sitter/tree-sitter-langs"))
@@ -377,10 +380,13 @@
 (defun hurricane-programming/init-ts-docstr ()
   (use-package ts-docstr
     :ensure t
+    :load-path ("~/.emacs.d/elpa/29.3/develop/ts-docstr-20240101.170401/langs")
+    :config
+    (add-to-list 'ts-docstr-module-alist '(c-ts-mode . ts-docstr-c))
     :custom
-    (setq ts-docstr-desc-summary "@brief        \n*   @note")
-    (setq ts-docstr-desc-param "")
-    (setq ts-docstr-desc-return "      无")))
+    (ts-docstr-desc-summary "@brief        \n*   @note")
+    (ts-docstr-desc-param "")
+    (ts-docstr-desc-return "      无")))
 
 (defun hurricane-programming/init-treesit-auto ()
   (use-package treesit-auto
@@ -392,6 +398,15 @@
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode)))
 
+(defun hurricane-programming/init-tree-sitter ()
+  (use-package tree-sitter
+    :ensure t
+    :config
+    (add-to-list 'tree-sitter-major-mode-language-alist '(c-ts-mode . c))
+    (global-tree-sitter-mode)))
+
+;; @See: https://emacs-china.org/t/emacs-trees-sitter/24591/16
+;; M-x tree-sitter-langs-install-grammars
 (defun hurricane-programming/init-tree-sitter-langs ()
   (use-package tree-sitter-langs
     :ensure t))
